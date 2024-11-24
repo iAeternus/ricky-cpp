@@ -7,10 +7,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 aux_source_directory("${CMAKE_SOURCE_DIR}/src" SRC_DIR)
 aux_source_directory("${CMAKE_SOURCE_DIR}/src/fake" FAKE_DIR)
-include_directories("${CMAKE_SOURCE_DIR}/include/fake")
+aux_source_directory("${CMAKE_SOURCE_DIR}/src/container" CONTAINER_DIR)
 
-add_executable(RICKY_CPP ${SRC_DIR} 
-                        ${FAKE_DIR})
+add_executable(RICKY_CPP 
+    ${SRC_DIR} 
+    ${FAKE_DIR} 
+    ${CONTAINER_DIR}
+)
+
+target_include_directories(RICKY_CPP PUBLIC
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/include/fake"
+    "${CMAKE_SOURCE_DIR}/include/container"
+)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
 

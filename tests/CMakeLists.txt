@@ -8,10 +8,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_TEST_BINARY_DIR})
 
 aux_source_directory("${CMAKE_CURRENT_SOURCE_DIR}" TESTS_DIR)
 aux_source_directory("${CMAKE_SOURCE_DIR}/src/fake" FAKE_DIR)
+aux_source_directory("${CMAKE_SOURCE_DIR}/src/container" CONTAINER_DIR)
 
-include_directories("${CMAKE_SOURCE_DIR}/include/fake")
+add_executable(RICKY_CPP_TESTS 
+    ${TESTS_DIR}
+    ${FAKE_DIR}
+    ${CONTAINER_DIR}
+)
 
-add_executable(RICKY_CPP_TESTS ${TESTS_DIR}
-                                ${FAKE_DIR})
+target_include_directories(RICKY_CPP_TESTS PUBLIC
+    "${CMAKE_SOURCE_DIR}/include"
+    "${CMAKE_SOURCE_DIR}/include/fake"
+    "${CMAKE_SOURCE_DIR}/include/container"
+)
 
 add_test(NAME RICKY_CPP_TESTS COMMAND $<TARGET_FILE:RICKY_CPP_TESTS>)
