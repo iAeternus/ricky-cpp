@@ -25,26 +25,35 @@ namespace ricky {
 
 #define ifelse(expr, t, f) ((expr) ? (t) : (f))
 
-#define hastype(T, type) requires(T t) { typename T::type; }
+#define hastype(T, type)  \
+    requires(T t) {       \
+        typename T::type; \
+    }
 
-#define hasmember(T, member) requires(T t) { &T::member; }
+#define hasmember(T, member) \
+    requires(T t) {          \
+        &T::member;          \
+    }
 
-#define hasmethod(T, method, ...) requires(T t) { t.method( ##__VA_ARGS__);}
+#define hasmethod(T, method, ...) \
+    requires(T t) {               \
+        t.method(##__VA_ARGS__);  \
+    }
 
 #define hasattr(T, attr) hasmember(T, attr) || hastype(T, attr)
 
-	// container size type 
-	using c_size = int64_t;
-	// compare type
-	using cmp_t = int64_t;
+// container size type
+using c_size = int64_t;
+// compare type
+using cmp_t = int64_t;
 
-	// hash type
-	using hash_t = uint64_t;
+// hash type
+using hash_t = uint64_t;
 
-	// 空值, 不会被使用, 仅用于占位符
-	template<typename T>
-	T& None = *reinterpret_cast<T*>(nullptr);
+// 空值, 不会被使用, 仅用于占位符
+template <typename T>
+T &None = *reinterpret_cast<T *>(nullptr);
 
-} // ricky
+} // namespace ricky
 
 #endif // RICKY_HPP

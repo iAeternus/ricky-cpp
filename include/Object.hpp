@@ -9,14 +9,12 @@
 
 namespace ricky {
 
-template<typename Derived>
+template <typename Derived>
 class Object {
 public:
     using RickyObjectDerived = Derived;
-
-    
 };
 
-} // ricky
+} // namespace ricky
 
 #endif // OBJECT_HPP
