@@ -48,6 +48,10 @@
         "numeric": "cpp",
         "random": "cpp",
         "unordered_set": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "bit": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp"
     }
 }

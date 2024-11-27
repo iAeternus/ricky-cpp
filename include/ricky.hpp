@@ -11,7 +11,7 @@
 #include <cassert>
 #include <typeinfo>
 
-namespace ricky {
+namespace my {
 
 #define def inline auto
 
@@ -54,6 +54,6 @@ using hash_t = uint64_t;
 template <typename T>
 T &None = *reinterpret_cast<T *>(nullptr);
 
-} // namespace ricky
+} // namespace my
 
 #endif // RICKY_HPP

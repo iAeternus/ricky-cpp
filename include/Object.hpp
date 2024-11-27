@@ -7,7 +7,7 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-namespace ricky {
+namespace my {
 
 template <typename Derived>
 class Object {
@@ -15,6 +15,6 @@ public:
     using RickyObjectDerived = Derived;
 };
 
-} // namespace ricky
+} // namespace my
 
 #endif // OBJECT_HPP

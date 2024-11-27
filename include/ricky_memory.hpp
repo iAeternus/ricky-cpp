@@ -11,7 +11,7 @@
 
 #include <memory>
 
-namespace ricky {
+namespace my {
 
 /**
  * @brief 分配连续size个T的内存，不会调用T的构造函数
@@ -70,6 +70,6 @@ public:
     }
 };
 
-} // namespace ricky
+} // namespace my
 
 #endif // RICKY_MEMORY_HPP
