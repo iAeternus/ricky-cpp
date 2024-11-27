@@ -19,9 +19,9 @@ namespace my {
  * @return 指向这段连续空间首地址的指针
  */
 template <typename T>
-def my_alloc(size_t size)->T * {
+def my_alloc(size_t size)->T* {
     if (size == 0) return nullptr;
-    return static_cast<T *>(::operator new(sizeof(T) * size));
+    return static_cast<T*>(::operator new(sizeof(T) * size));
 }
 
 /**
@@ -31,7 +31,7 @@ def my_alloc(size_t size)->T * {
  * @return 返回构造好的ptr
  */
 template <typename T, typename... Args>
-def my_construct(T *ptr, Args &&...args)->T * {
+def my_construct(T* ptr, Args&&... args)->T* {
     ::new (ptr) T(std::forward<Args>(args)...);
     return ptr;
 }
@@ -43,7 +43,7 @@ def my_construct(T *ptr, Args &&...args)->T * {
  * @return void
  */
 template <typename T>
-def my_destroy(T *ptr, size_t size = 1) {
+def my_destroy(T* ptr, size_t size = 1) {
     if (ptr == nullptr) return;
     for (size_t i = 0; i < size; ++i, ++ptr) {
         ptr->~T();
@@ -56,7 +56,7 @@ def my_destroy(T *ptr, size_t size = 1) {
  * @return void
  */
 template <typename T>
-def my_delloc(T *&ptr) {
+def my_delloc(T*& ptr) {
     ::operator delete(ptr);
     ptr = nullptr;
 }
@@ -64,7 +64,7 @@ def my_delloc(T *&ptr) {
 template <typename T>
 struct RickyDeleter {
 public:
-    void operator()(T *ptr) const {
+    void operator()(T* ptr) const {
         my_destroy(ptr);
         my_delloc(ptr);
     }

@@ -52,6 +52,10 @@
         "bit": "cpp",
         "compare": "cpp",
         "concepts": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "cstring": "cpp",
+        "format": "cpp",
+        "map": "cpp",
+        "span": "cpp"
     }
 }

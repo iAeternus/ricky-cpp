@@ -19,6 +19,7 @@ target_include_directories(RICKY_CPP PUBLIC
     "${CMAKE_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/include/fake"
     "${CMAKE_SOURCE_DIR}/include/container"
+    "${CMAKE_SOURCE_DIR}/include/io"
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)

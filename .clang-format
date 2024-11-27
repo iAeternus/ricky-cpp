@@ -116,7 +116,7 @@ CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 
 # 构造函数的初始化列表的缩进宽度 TODO may be 8?
-ConstructorInitializerIndentWidth: 4
+ConstructorInitializerIndentWidth: 8
 
 # 延续的行的缩进宽度
 ContinuationIndentWidth: 4
@@ -125,7 +125,7 @@ ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 
 # 继承最常用的指针和引用的对齐方式
-DerivePointerAlignment: true
+DerivePointerAlignment: false
 
 # 固定命名空间注释
 FixNamespaceComments: true
@@ -151,7 +151,7 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 
 # 指针和引用的对齐: Left, Right, Middle
-PointerAlignment: Right
+PointerAlignment: Left
 
 # 允许重新排版注释
 ReflowComments: true

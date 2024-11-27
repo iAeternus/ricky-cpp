@@ -20,6 +20,7 @@ target_include_directories(RICKY_CPP_TESTS PUBLIC
     "${CMAKE_SOURCE_DIR}/include"
     "${CMAKE_SOURCE_DIR}/include/fake"
     "${CMAKE_SOURCE_DIR}/include/container"
+    "${CMAKE_SOURCE_DIR}/include/io"
 )
 
 add_test(NAME RICKY_CPP_TESTS COMMAND $<TARGET_FILE:RICKY_CPP_TESTS>)

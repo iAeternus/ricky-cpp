@@ -52,7 +52,7 @@ using hash_t = uint64_t;
 
 // 空值, 不会被使用, 仅用于占位符
 template <typename T>
-T &None = *reinterpret_cast<T *>(nullptr);
+T& None = *reinterpret_cast<T*>(nullptr);
 
 } // namespace my
 
