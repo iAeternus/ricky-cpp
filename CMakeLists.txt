@@ -17,8 +17,6 @@ add_executable(RICKY_CPP
 
 target_include_directories(RICKY_CPP PUBLIC
     "${CMAKE_SOURCE_DIR}/include"
-    "${CMAKE_SOURCE_DIR}/include/fake"
-    "${CMAKE_SOURCE_DIR}/include/container"
     "${CMAKE_SOURCE_DIR}/include/io"
     "${CMAKE_SOURCE_DIR}/include/util"
     "${CMAKE_SOURCE_DIR}/include/test"
