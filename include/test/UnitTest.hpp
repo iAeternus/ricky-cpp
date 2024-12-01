@@ -13,7 +13,6 @@
 #include "raise_error.hpp"
 
 #include <functional>
-// #include <utility>
 
 namespace my::test {
 
@@ -23,7 +22,7 @@ static io::ColorPrinter test_failed{stdout, io::Color::RED};
 /**
  * 单元测试类
  */
-class UnitTest : Object<UnitTest> {
+class UnitTest : public Object<UnitTest> {
     using self = UnitTest;
 
 public:
@@ -56,7 +55,7 @@ private:
 /**
  * 单元测试组
  */
-class UnitTestGroup : Object<UnitTestGroup> {
+class UnitTestGroup : public Object<UnitTestGroup> {
     // TODO
 };
 
