@@ -18,13 +18,18 @@ public:
     Printer(std::FILE* filePtr, CString sw = " ", CString ew = "\n") :
             ew_(std::move(ew)), sw_(std::move(sw)), outputFile_(filePtr) {}
 
-    template <Printable T0, Printable... Args>
-    void operator()(const T0& obj, const Args&... args) const {
-        __print__(obj);
+    template<Printable... Args>
+    void operator()(const Args&... args) const {
         if constexpr (sizeof...(args) > 0) {
             ((__print__(sw_), __print__(args)), ...);
         }
         __print__(ew_);
+    }
+
+    template <Printable T0, Printable... Args>
+    void operator()(const T0& obj, const Args&... args) const {
+        __print__(obj);
+        operator()(args...);
     }
 
     void operator()() const {
@@ -136,10 +141,17 @@ public:
     ColorPrinter(std::FILE* filePtr, CString color = Color::WHITE) :
             Printer(filePtr), color_(std::move(color)) {}
 
+    template<Printable... Args>
+    void operator()(const Args&... args) const {
+        opencolor();
+        super::operator()(args...);
+        closecolor();
+    }
+
     template <Printable T, Printable... Args>
     void operator()(const T& obj, const Args&... args) const {
-        operator();
-        super::operator(obj, args...);
+        opencolor();
+        super::operator()(obj, args...);
         closecolor();
     }
 

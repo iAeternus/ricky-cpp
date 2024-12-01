@@ -1,5 +1,5 @@
-#include "fake.hpp"
+#include "test_test_utils.hpp"
 
 int main() {
-    fake_function();
+    should_unit_test();
 }

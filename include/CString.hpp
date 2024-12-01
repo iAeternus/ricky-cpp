@@ -12,6 +12,7 @@
 
 #include <cstring>
 #include <format>
+#include <sstream>
 
 namespace my {
 

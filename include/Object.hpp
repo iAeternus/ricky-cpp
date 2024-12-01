@@ -51,9 +51,9 @@ public:
         int len = typeName.size() + 22;
         CString s(len);
 #ifdef _MSC_VER
-        sprintf_s(s.data(), s_len, "<%s 0x%p>", type_name.c_str(), this);
+        sprintf_s(s.data(), s_len, "<%s 0x%p>", typeName.c_str(), this);
 #else
-        std::sprintf(s.data(), "<%s %p>", type_name.c_str(), this);
+        std::sprintf(s.data(), "<%s %p>", typeName.c_str(), this);
 #endif
         return s;
     }

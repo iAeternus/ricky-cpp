@@ -57,6 +57,8 @@ def error_exec(const T& msg, const std::source_location& loc = std::source_locat
 
 #define SystemError(msg) Error("SystemError", msg)
 
+#define TestError(msg) Error("TestError", msg)
+
 } // namespace my
 
 #endif // RAISE_ERROR_HPP

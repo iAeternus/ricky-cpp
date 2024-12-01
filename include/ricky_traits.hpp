@@ -76,9 +76,6 @@ template <typename T>
 requires hasattr(T, Iterator) struct inner_iterator_type<T> : std::type_identity<typename T::Iterator> {};
 
 template <typename T>
-requires hasattr(T, Iterator) struct inner_iterator_type<T> : std::type_identity<typename T::Iterator> {};
-
-template <typename T>
 using traits_inner_iterator_t = typename inner_iterator_type<T>::type;
 
 }; // namespace my
