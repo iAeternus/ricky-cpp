@@ -45,22 +45,22 @@ public:
         my_delloc(str_);
     }
 
-    CString(const CString& other) :
+    CString(const self& other) :
             CString(other.data(), other.size()) {}
 
-    CString(CString&& other) noexcept :
+    CString(self&& other) noexcept :
             str_(other.str_) {
         other.str_ = nullptr;
     }
 
-    CString& operator=(const CString& other) {
+    self& operator=(const self& other) {
         if (this == &other) return *this;
 
         my_delloc(str_);
         return *my_construct(this, other);
     }
 
-    CString& operator=(CString&& other) noexcept {
+    self& operator=(self&& other) noexcept {
         if (this == &other) return *this;
 
         my_delloc(str_);
