@@ -26,11 +26,8 @@ public:
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    IndexIterator() :
-            container_(nullptr), index_(0) {}
-
-    IndexIterator(container_t* container, c_size index) :
-            container_(container ? std::shared_ptr<container_t>(container) : nullptr), index_(index) {}
+    IndexIterator(container_t* container = nullptr, c_size index = 0) :
+            container_(container), index_(index) {}
 
     IndexIterator(const self& other) :
             IndexIterator(other.container_, other.index_) {}
@@ -107,8 +104,16 @@ public:
         return container_ == other.container_ && index_ == other.index_;
     }
 
+    bool operator==(const self& other) const {
+        return __equals__(other);
+    }
+
+    bool operator!=(const self& other) const {
+        return !__equals__(other);
+    }
+
 private:
-    std::shared_ptr<container_t> container_;
+    container_t* container_;
     c_size index_;
 };
 

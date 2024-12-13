@@ -61,15 +61,15 @@ public:
         size_ = capacity_ = 0;
     }
 
-    c_size size() const {
+    constexpr c_size size() const {
         return size_;
     }
 
-    c_size capacity() const {
+    constexpr c_size capacity() const {
         return capacity_;
     }
 
-    bool full() const {
+    constexpr bool full() const {
         return size_ == capacity_;
     }
 
@@ -99,7 +99,7 @@ public:
     /**
      * @brief 重新分配内存
      */
-    void resize(int newSize) {
+    void resize(c_size newSize) {
         my_destroy(this);
         my_construct(this, newSize);
     }

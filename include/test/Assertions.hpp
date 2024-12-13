@@ -57,7 +57,7 @@ public:
         }
     }
 
-    template <NonClassType T>
+    template <StdPrintable T>
     static void assertEquals(const T& expected, const T& actual, CString&& message = "") {
         if (expected != actual) {
             fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
@@ -74,7 +74,7 @@ public:
         }
     }
 
-    template <NonClassType T>
+    template <StdPrintable T>
     static void assertNotEquals(const T& unexpected, const T& actual, CString&& message = "") {
         if (unexpected == actual) {
             fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));

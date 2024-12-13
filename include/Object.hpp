@@ -48,12 +48,12 @@ public:
      */
     CString __str__() const {
         std::string typeName = dtype(Derived);
-        int len = typeName.size() + 22;
+        int len = typeName.size() + 22; // TODO ??
         CString s(len);
 #ifdef _MSC_VER
-        sprintf_s(s.data(), s_len, "<%s 0x%p>", typeName.c_str(), this);
+        sprintf_s(s.data(), s_len, "<%s 0x%p>", typeName.c_str(), static_cast<const void*>(this));
 #else
-        std::sprintf(s.data(), "<%s %p>", typeName.c_str(), this);
+        std::sprintf(s.data(), "<%s %p>", typeName.c_str(), static_cast<const void*>(this));
 #endif
         return s;
     }

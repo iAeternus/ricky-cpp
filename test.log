@@ -1,6 +1,5 @@
-Test case 1
-[32m[Test case 1] Test passed in 506ms
-[0mTest case 2
-[32m[Test case 2] Test passed in 511ms
-[0m[31m[Test case 3] Test failed! Exception: wa
-[0m
+================= test_cstring =================
+[32m[should_construct] Test passed in 0ms
+[0m[32m[should_hash] Test passed in 0ms
+[0m[32m[should_compare] Test passed in 0ms
+[0mTotal tests run: 3, Failures: 0

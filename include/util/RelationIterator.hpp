@@ -36,10 +36,11 @@ public:
 /**
  * @brief 移动自身的策略
  */
-template<std::input_or_output_iterator I>
+template <std::input_or_output_iterator I>
 class SelfAddMove : public BaseIterMove<I> {
     using self = SelfAddMove;
     using super = BaseIterMove<I>;
+
 public:
     using iterator = I;
     using iterator_category = std::bidirectional_iterator_tag;
@@ -60,11 +61,12 @@ public:
     }
 };
 
-template<typename IterMove> // TODO名字
+template <typename IterMove> // TODO名字
 class RelationIterator : public Object<RelationIterator<IterMove>> {
     using self = RelationIterator<IterMove>;
     using super = Object<self>;
-public: 
+
+public:
     using iterator = typename IterMove::iterator;
     using move_t = IterMove;
     using iterator_category = typename IterMove::iterator_category;
@@ -75,26 +77,26 @@ public:
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    RelationIterator() : 
+    RelationIterator() :
             iter_() {}
 
     RelationIterator(const iterator& iter) :
             iter_(iter) {}
 
-    RelationIterator(const self& other) : 
+    RelationIterator(const self& other) :
             iter_(other.iter_) {}
 
     RelationIterator(self&& other) noexcept :
             iter_(std::move(other.iter_)) {}
 
     self& operator=(const self& other) {
-        if(this == &other) return *this;
+        if (this == &other) return *this;
         this->iter_ = other.iter_;
         return *this;
     }
 
     self& operator=(self&& other) noexcept {
-        if(this == &other) return *this;
+        if (this == &other) return *this;
         this->iter_ = std::move(other.iter_);
         return *this;
     }
@@ -139,6 +141,14 @@ public:
 
     bool __equals__(const self& other) const {
         return iter_ == other.iter_;
+    }
+
+    bool operator==(const self& other) const {
+        return __equals__(other);
+    }
+
+    bool operator!=(const self& other) const {
+        return !__equals__(other);
     }
 
 private:

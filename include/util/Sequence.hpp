@@ -25,15 +25,15 @@ public:
     using const_iterator = IndexIterator<true, self, value_t>;
 
     value_t& at(c_size index) {
-        return dynamic_cast<Derived*>(this)->at(index);
+        return static_cast<Derived*>(this)->at(index);
     }
 
     const value_t& at(c_size index) const {
-        return dynamic_cast<const Derived*>(this)->at(index);
+        return static_cast<const Derived*>(this)->at(index);
     }
 
-    c_size size() const {
-        return dynamic_cast<const Derived*>(this)->size();
+    constexpr c_size size() const {
+        return static_cast<const Derived*>(this)->size();
     }
 
     cmp_t __cmp__(const Derived& other) const {
@@ -53,7 +53,7 @@ public:
         if(size() != other.size()) {
             return false;
         }
-        return dynamic_cast<const Derived*>(this)->__cmp__(other) == 0;
+        return static_cast<const Derived*>(this)->__cmp__(other) == 0;
     }
 
     iterator begin() {

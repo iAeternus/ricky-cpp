@@ -86,6 +86,10 @@ public:
         return size_;
     }
 
+    constexpr bool empty() const {
+        return size_ == 0;
+    }
+
     /**
      * @brief 对index范围不做检查
      */
@@ -131,6 +135,10 @@ public:
      * @return void
      */
     void pop(c_size index = -1) {
+        if(empty()) {
+            return;
+        }
+
         c_size m_size = size();
         index = neg_index(index, m_size);
 
@@ -148,6 +156,10 @@ public:
     }
 
     void clear() {
+        if(blocks_.empty()) {
+            return;
+        }
+
         for (auto&& block : blocks_) {
             block.resize(0);
         }
@@ -186,7 +198,7 @@ public:
      * @return self&
      */
     template <Iterable I>
-    self& extend(T&& other) {
+    self& extend(I&& other) {
         for (auto&& item : other) {
             append(std::forward<decltype(item)>(item));
         }
@@ -198,7 +210,7 @@ public:
     }
 
     self operator+(self&& other) {
-        return self(*this).extend(std::move(other));
+        return self(*this).extend(std::forward<self>(other));
     }
 
     self& operator+=(const self& other) {
@@ -206,7 +218,7 @@ public:
     }
 
     self& operator+=(self&& other) {
-        return extend(std::move(other));
+        return extend(std::forward<self>(other));
     }
 
     CString __str__() const {
@@ -225,7 +237,6 @@ public:
     public:
         using self = Iterator<IsConst>;
         using container_t = std::conditional_t<IsConst, const DynArray<value_t>, DynArray<value_t>>;
-        // using container_ptr_t = std::shared_ptr<container_t>;
         using iterator_category = std::random_access_iterator_tag;
         using value_type = std::conditional_t<IsConst, const value_t, value_t>;
         using difference_type = std::ptrdiff_t;
@@ -264,7 +275,7 @@ public:
         }
 
         self& operator++() {
-            if (inblockIndex_ + 1 == dynarray_->blocks_.at(blockIndex_).size()) {
+            if (inblockIndex_ == dynarray_->blocks_.at(blockIndex_).size() - 1) {
                 ++blockIndex_;
                 inblockIndex_ = 0;
                 return *this;
@@ -456,8 +467,8 @@ private:
     }
 
 private:
-    c_size size_;             // 元素个数
-    int backBlockIndex_;      // 最后一个块的索引
+    c_size size_;                   // 元素个数
+    int backBlockIndex_;            // 最后一个块的索引
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
 

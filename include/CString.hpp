@@ -64,7 +64,7 @@ public:
         if (this == &other) return *this;
 
         my_delloc(str_);
-        return *my_construct(this, std::move(other));
+        return *my_construct(this, std::forward<self>(other));
     }
 
     operator const char*() const {
