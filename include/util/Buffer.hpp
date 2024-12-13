@@ -56,7 +56,7 @@ public:
     }
 
     ~Buffer() {
-        my_destroy(buffer_, size_);
+        my_destroy(buffer_, size());
         my_delloc(buffer_);
         size_ = capacity_ = 0;
     }
@@ -83,10 +83,11 @@ public:
 
     /**
      * @brief 在buffer末尾追加元素，不会做容量检查
+     * @return 返回追加的元素
      */
     template <typename... Args>
-    value_t append(Args&&... args) {
-        my_construct(buffer_ + size_, std::forward<Args>(args...));
+    value_t& append(Args&&... args) {
+        my_construct(buffer_ + size_, std::forward<Args>(args)...);
         return buffer_[size_++];
     }
 
@@ -100,7 +101,7 @@ public:
      */
     void resize(int newSize) {
         my_destroy(this);
-        my_construct(this, other);
+        my_construct(this, newSize);
     }
 
     value_t& at(c_size index) {
@@ -111,6 +112,9 @@ public:
         return buffer_[index];
     }
 
+    /**
+     * @brief 转换为Array，拷贝
+     */
     Array<value_t> toArray() const {
         Array<value_t> arr(size_);
         for (c_size i = 0; i < size_; ++i) {
@@ -119,7 +123,10 @@ public:
         return arr;
     }
 
-    Array<value_t> moveArray() {
+    /**
+     * @brief 转换为Array，移动
+     */
+    Array<value_t> toArray() {
         Array<value_t> arr(size_);
         for (c_size i = 0; i < size_; ++i) {
             arr[i] = std::move(at(i));
@@ -130,7 +137,7 @@ public:
 
 private:
     c_size size_, capacity_;
-    value_t buffer_;
+    value_t* buffer_;
 };
 
 } // namespace my::util

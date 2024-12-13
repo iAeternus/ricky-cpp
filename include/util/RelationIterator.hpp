@@ -104,7 +104,7 @@ public:
     }
 
     const_reference operator*() const {
-        return *iter;
+        return *iter_;
     }
 
     pointer operator->() {

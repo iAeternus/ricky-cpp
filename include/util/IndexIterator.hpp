@@ -89,12 +89,12 @@ public:
         return self(container_, index_ - n);
     }
 
-    self& operator+=(difference_type n) const {
+    self& operator+=(difference_type n) {
         index_ += n;
         return *this;
     }
 
-    self& operator-=(difference_type n) const {
+    self& operator-=(difference_type n) {
         index_ -= n;
         return *this;
     }

@@ -79,19 +79,19 @@ public:
         size_ = 0;
     }
 
-    T* data() {
+    value_t* data() {
         return arr_;
     }
 
-    const T* data() const {
+    const value_t* data() const {
         return arr_;
     }
 
-    T& at(c_size index) {
+    value_t& at(c_size index) {
         return arr_[index];
     }
 
-    const T& at(c_size index) const {
+    const value_t& at(c_size index) const {
         return arr_[index];
     }
 
@@ -122,7 +122,7 @@ public:
     /**
      * @brief 分离数组，返回数组指针和大小，并将数组置空
      */
-    std::pair<c_size, T*> separate() const {
+    std::pair<c_size, value_t*> separate() const {
         auto res = std::make_pair(size_, arr_);
         size_ = 0;
         arr_ = nullptr;
@@ -131,7 +131,7 @@ public:
 
 private:
     c_size size_;
-    T* arr_;
+    value_t* arr_;
 };
 
 } // namespace my::util

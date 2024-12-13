@@ -11,6 +11,8 @@
 #include "CString.hpp"
 #include "timer.hpp"
 #include "raise_error.hpp"
+#include "DynArray.hpp"
+#include "printer.hpp"
 
 #include <functional>
 
@@ -30,19 +32,24 @@ public:
             displayName_(displayName), testCase_(testCase) {}
 
     UnitTest(CString&& displayName, std::function<void(void)>&& testCase) :
-            displayName_(std::forward<CString>(displayName)), testCase_(std::forward<std::function<void(void)>>(testCase)) {}
+            displayName_(std::move(displayName)), testCase_(std::move(testCase)) {}
+
+    ~UnitTest() = default;
 
     CString displayName() const {
         return displayName_;
     }
 
-    void start() {
+    bool start() {
         try {
-            test_passed("[", displayName_, "] Test passed in ", timer_(testCase_), "ms");
+            test_passed(std::format("[{}] Test passed in {}ms", displayName_, timer_(testCase_)));
+            return true;
         } catch (const std::runtime_error& re) {
-            test_failed("[", displayName_, "] Test failed! Exception: ", re.what());
+            test_failed(std::format("[{}] Test failed! Exception: {}", displayName_, re.what()));
+            return false;
         } catch (...) {
-            test_failed("[", displayName_, "] Test failed! Unknown exception.");
+            test_failed(std::format("[{}] Test failed! Test failed! Unknown exception.", displayName_));
+            return false;
         }
     }
 
@@ -56,7 +63,31 @@ private:
  * 单元测试组
  */
 class UnitTestGroup : public Object<UnitTestGroup> {
-    // TODO
+public:
+    UnitTestGroup(CString&& groupName) :
+            groupName_(std::move(groupName)), failed_(0), group_() {}
+
+    ~UnitTestGroup() = default;
+
+    void addTest(CString&& displayName, std::function<void(void)>&& testCase) {
+        auto* item = new UnitTest{std::forward<CString>(displayName), std::forward<std::function<void(void)>>(testCase)};
+        group_.append(item);
+    }
+
+    void startAll() {
+        io::print(std::format("================= {} =================", groupName_));
+        for(auto& it : group_) {
+            if(!it->start()) {
+                ++failed_;
+            }
+        }
+        io::print(std::format("Total tests run: {}, Failures: {}", group_.size(), failed_));
+    }
+
+private:
+    CString groupName_;
+    c_size failed_;
+    util::DynArray<UnitTest*> group_;
 };
 
 } // namespace my::test

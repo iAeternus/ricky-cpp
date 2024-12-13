@@ -91,6 +91,10 @@ public:
         return std::strlen(data());
     }
 
+    bool empty() const {
+        return size() == 0;
+    }
+
     char* data() {
         return str_;
     }

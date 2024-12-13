@@ -42,13 +42,22 @@ namespace my {
 
 #define hasattr(T, attr) hasmember(T, attr) || hastype(T, attr)
 
+using i8 = int8_t;
+using u8 = uint8_t;
+using i16 = int16_t;
+using u16 = uint16_t;
+using i32 = int32_t;
+using u32 = uint32_t;
+using i64 = int64_t;
+using u64 = uint64_t;
+
 // container size type
-using c_size = int64_t;
+using c_size = i64;
 // compare type
-using cmp_t = int64_t;
+using cmp_t = i64;
 
 // hash type
-using hash_t = uint64_t;
+using hash_t = u64;
 
 // 空值, 不会被使用, 仅用于占位符
 template <typename T>

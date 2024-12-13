@@ -49,7 +49,7 @@ public:
         return 0;
     }
 
-    bool __equals__(const Derive& other) const {
+    bool __equals__(const Derived& other) const {
         if(size() != other.size()) {
             return false;
         }
@@ -93,7 +93,7 @@ public:
         return -1;
     }
 
-    iterator find_it(const value_t& v) const {
+    iterator find_it(const value_t& v) {
         auto it = begin(), end_ = end();
         while(it != end_) {
             if(*it == v) {

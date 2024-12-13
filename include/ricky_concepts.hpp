@@ -60,6 +60,21 @@ concept Iterable = requires(T obj) {
     {obj.size()};
 };
 
+// 可比较约束概念
+template <typename T>
+concept Comparable = requires(const T& one, const T& other) {
+    { one.__cmp__(other) }
+    ->std::convertible_to<cmp_t>;
+};
+
+// 可断言约束概念
+template <typename T>
+concept Assertable = Comparable<T> || MyPrintable<T>;
+
+// 非类类型约束概念
+template<typename T>
+concept NonClassType = !std::is_class<T>::value;
+
 } // namespace my
 
 #endif // RICKY_CONCEPTS_HPP
