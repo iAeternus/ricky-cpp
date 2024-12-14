@@ -174,7 +174,7 @@ public:
         c_size m_size = size();
         Array<value_t> arr(m_size);
         for (c_size i = 0; i < m_size; ++i) {
-            arr.at(i) = at(i);
+            arr[i] = at(i);
         }
         return arr;
     }
@@ -186,7 +186,7 @@ public:
         c_size m_size = size();
         Array<value_t> arr(m_size);
         for (c_size i = 0; i < m_size; ++i) {
-            arr.at(i) = std::move(at(i));
+            arr[i] = std::move(at(i));
         }
         clear();
         return arr;
@@ -259,7 +259,7 @@ public:
         }
 
         reference operator*() {
-            return dynarray_->blocks_.at(blockIndex_).at(inblockIndex_); // TODO may be compile error!
+            return dynarray_->blocks_.at(blockIndex_).at(inblockIndex_);
         }
 
         const_reference operator*() const {

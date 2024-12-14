@@ -5,6 +5,8 @@
 
 using namespace my;
 
+namespace test_cstring {
+
 auto should_construct = []() {
     // Given
     CString str = "abc";
@@ -55,5 +57,7 @@ void test_cstring() {
 
     group.startAll();
 }
+
+} // namespace test_cstring
 
 #endif // TEST_CSTRING_HPP

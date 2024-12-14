@@ -6,23 +6,25 @@
 
 using namespace my;
 
+namespace my::test::test_dynarray {
+
 auto should_append = []() {
     // Given
     int n = 100;
-    util::DynArray<std::string> d;
+    util::DynArray<CString> d;
 
     // When
     for (int i = 0; i < n; ++i) {
-        d.append(std::to_string(i));
+        d.append(cstr(i));
     }
 
     // Then
     test::Assertions::assertEquals(n, int(d.size()));
-    test::Assertions::assertEquals(std::to_string(n - 1), d.at(d.size() - 1));
+    test::Assertions::assertEquals(cstr(n - 1), d.at(d.size() - 1));
 
     int num = 0;
     for (const auto& it : d) {
-        test::Assertions::assertEquals(std::to_string(num++), it);
+        test::Assertions::assertEquals(cstr(num++), it);
     }
 };
 
@@ -169,5 +171,7 @@ void test_dynarray_speed() {
 
     group.startAll();
 }
+
+} // namespace my::test::test_dynarray
 
 #endif // TEST_DYNARRAY_HPP
