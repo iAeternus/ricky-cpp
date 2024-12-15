@@ -10,7 +10,7 @@ auto should_construct = []() {
     CString str = "abc";
 
     // When & Then
-    Assertions::assertEquals(3, int(str.size()));
+    Assertions::assertEquals(3, i32(str.size()));
     Assertions::assertFalse(str.empty());
     Assertions::assertEquals('a', str[0]);
     Assertions::assertEquals('b', str[1]);

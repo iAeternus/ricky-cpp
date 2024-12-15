@@ -14,7 +14,7 @@ namespace my::util {
 /**
  * @brief exp2[i]: 2^i
  */
-constexpr int64_t exp2[] = {
+constexpr i64 exp2[] = {
     1ll << 0,
     1ll << 1,
     1ll << 2,

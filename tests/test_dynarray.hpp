@@ -8,19 +8,19 @@ namespace my::test::test_dynarray {
 
 auto should_append = []() {
     // Given
-    int n = 100;
+    i32 n = 100;
     util::DynArray<CString> d;
 
     // When
-    for (int i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         d.append(cstr(i));
     }
 
     // Then
-    Assertions::assertEquals(n, int(d.size()));
+    Assertions::assertEquals(n, i32(d.size()));
     Assertions::assertEquals(cstr(n - 1), d.at(d.size() - 1));
 
-    int num = 0;
+    i32 num = 0;
     for (const auto& it : d) {
         Assertions::assertEquals(cstr(num++), it);
     }
@@ -28,51 +28,51 @@ auto should_append = []() {
 
 auto should_insert = []() {
     // Given
-    util::DynArray<int> d = {1, 2, 3, 4, 5};
+    util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
     // When
     d.insert(0, 100);
 
     // Then
-    Assertions::assertEquals(6, int(d.size()));
+    Assertions::assertEquals(6, i32(d.size()));
     Assertions::assertEquals(100, *d.begin());
 };
 
 auto should_pop = []() {
     // Given
-    util::DynArray<int> d = {1, 2, 3, 4, 5};
+    util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
     // When
     d.pop();
 
     // Then
-    Assertions::assertEquals(4, int(d.size()));
+    Assertions::assertEquals(4, i32(d.size()));
     Assertions::assertEquals(4, d.at(d.size() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    Assertions::assertEquals(3, int(d.size()));
+    Assertions::assertEquals(3, i32(d.size()));
     Assertions::assertEquals(2, d.at(0));
 };
 
 auto should_pop2 = []() {
     // Given
-    util::DynArray<int> d;
+    util::DynArray<i32> d;
 
     // When
     d.pop();
 
     // Then
-    Assertions::assertEquals(0, int(d.size()));
+    Assertions::assertEquals(0, i32(d.size()));
     Assertions::assertTrue(d.empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
 
 auto should_clear = []() {
     // Given
-    util::DynArray<int> d = {1, 2, 3, 4, 5};
+    util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
     // When
     d.clear();
@@ -84,34 +84,34 @@ auto should_clear = []() {
     d.clear();
 
     // Then
-    Assertions::assertEquals(0, int(d.size()));
+    Assertions::assertEquals(0, i32(d.size()));
     Assertions::assertTrue(d.empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
 
 auto should_to_array = []() {
     // Given
-    util::DynArray<int> d = {1, 2, 3, 4, 5};
+    util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
     // When
     auto arr = d.toArray();
 
     // Then
-    Assertions::assertEquals(5, int(arr.size()));
+    Assertions::assertEquals(5, i32(arr.size()));
     Assertions::assertEquals(5, arr.at(arr.size() - 1));
     Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
 };
 
 auto should_extend = []() {
     // Given
-    util::DynArray<int> d = {1, 2, 3, 4, 5};
+    util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
     // When
     d += {6, 7};
-    d = d + util::DynArray<int>{8, 9, 10};
+    d = d + util::DynArray<i32>{8, 9, 10};
 
     // Then
-    Assertions::assertEquals(10, int(d.size()));
+    Assertions::assertEquals(10, i32(d.size()));
     Assertions::assertEquals(CString{"[1,2,3,4,5,6,7,8,9,10]"}, d.__str__());
 };
 
@@ -129,32 +129,32 @@ void test_dynarray() {
     group.startAll();
 }
 
-constexpr int N = 1e6;
+constexpr i32 N = 1e6;
 
 auto speed_of_dny_array_append_string = []() {
     util::DynArray<std::string> d;
-    for(int i = 0; i < N; ++i) {
+    for(i32 i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
 auto speed_of_vector_push_back_string = []() {
     std::vector<std::string> v;
-    for(int i = 0; i < N; ++i) {
+    for(i32 i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
 auto speed_of_dny_array_append_int = []() {
-    util::DynArray<int> d;
-    for(int i = 0; i < N; ++i) {
+    util::DynArray<i32> d;
+    for(i32 i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
 auto speed_of_vector_push_back_int = []() {
-    std::vector<int> v;
-    for(int i = 0; i < N; ++i) {
+    std::vector<i32> v;
+    for(i32 i = 0; i < N; ++i) {
         v.push_back(i);
     }
 };

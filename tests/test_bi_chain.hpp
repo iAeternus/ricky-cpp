@@ -20,26 +20,26 @@ auto should_append_and_prepend = []() {
     bc.prepend(cstr(1));
 
     // Then
-    Assertions::assertEquals(5, int(bc.size()));
+    Assertions::assertEquals(5, i32(bc.size()));
     Assertions::assertEquals(CString("<BiChain> [1<-->2<-->3<-->4<-->5]"), bc.__str__());
 };
 
 auto should_iterable = []() {
     // Given
-    int N = 100;
-    util::BiChainList<int> bc;
-    for (int i = 0; i < N; ++i) {
+    i32 N = 100;
+    util::BiChainList<i32> bc;
+    for (i32 i = 0; i < N; ++i) {
         bc.append(i + 1);
     }
 
     // When
-    int sum1 = 0;
+    i32 sum1 = 0;
     for (const auto& it : bc) {
         sum1 += it;
     }
 
     // TODO 这里有问题，不能反向迭代
-    // int sum2 = 0;
+    // i32 sum2 = 0;
     // for (auto it = bc.rbegin(); it != bc.rend(); ++it) {
     //     sum2 += *it;
     // }

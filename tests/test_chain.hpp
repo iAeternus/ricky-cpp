@@ -8,16 +8,16 @@ namespace my::test::test_chain {
 
 auto should_append = []() {
     // Given
-    int N = 100;
+    i32 N = 100;
     util::ChainList<CString> c;
 
     // When
-    for(int i = 0; i < N; ++i) {
+    for(i32 i = 0; i < N; ++i) {
         c.append(cstr(i));
     }
 
     // Then
-    Assertions::assertEquals(N, int(c.size()));
+    Assertions::assertEquals(N, i32(c.size()));
     Assertions::assertFalse(c.empty());
     Assertions::assertTrue(c.contains(cstr(N - 1)));
     Assertions::assertFalse(c.contains(cstr(N)));
@@ -26,14 +26,14 @@ auto should_append = []() {
 
 auto should_iterable = []() {
     // Given
-    int N = 100;
-    util::ChainList<int> c;
-    for(int i = 0; i < N; ++i) {
+    i32 N = 100;
+    util::ChainList<i32> c;
+    for(i32 i = 0; i < N; ++i) {
         c.append(i + 1);
     }
 
     // When
-    int sum = 0;
+    i32 sum = 0;
     for(const auto& it : c) {
         sum += it;
     }
@@ -44,7 +44,7 @@ auto should_iterable = []() {
 
 auto should_to_array = []() {
     // Given
-    util::ChainList<int> c;
+    util::ChainList<i32> c;
     c.append(1);
     c.append(2);
     c.append(3);
@@ -55,13 +55,13 @@ auto should_to_array = []() {
     auto arr = c.toArray();
 
     // Then
-    Assertions::assertEquals(5, int(arr.size()));
+    Assertions::assertEquals(5, i32(arr.size()));
     Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
 };
 
 auto should_clear = []() {
     // Given
-    util::ChainList<int> c;
+    util::ChainList<i32> c;
     c.append(1);
     c.append(2);
     c.append(3);
@@ -72,7 +72,7 @@ auto should_clear = []() {
     c.clear();
 
     // Then
-    Assertions::assertEquals(0, int(c.size()));
+    Assertions::assertEquals(0, i32(c.size()));
     Assertions::assertTrue(c.empty());
     Assertions::assertEquals(c.begin(), c.end());
 
@@ -85,7 +85,7 @@ auto should_clear = []() {
 
 auto should_str = []() {
     // Given
-    util::ChainList<int> c;
+    util::ChainList<i32> c;
     c.append(1);
     c.append(2);
     c.append(3);

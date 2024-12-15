@@ -18,11 +18,11 @@ class DynArray : public Sequence<DynArray<T>, T> {
     using self = DynArray<T>;
     using super = Sequence<DynArray<T>, T>;
     // 动态数组块的数量
-    constexpr static int DYNARRAY_BLOCK_SIZE = 63;
+    constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
     // 最小块大小
     constexpr static c_size BASE_SIZE = 8ll;
     // 不存在块
-    constexpr static int BLOCK_NOT_EXISTS = -1;
+    constexpr static i32 BLOCK_NOT_EXISTS = -1;
 
 public:
     using value_t = T;
@@ -94,7 +94,7 @@ public:
      * @brief 对index范围不做检查
      */
     value_t& at(c_size index) {
-        int blockIndex = get_block_index(index + 1);
+        i32 blockIndex = get_block_index(index + 1);
         c_size inblockIndex = get_inblock_index(index + 1, blockIndex);
         return blocks_.at(blockIndex).at(inblockIndex);
     }
@@ -103,7 +103,7 @@ public:
      * @brief 对index范围不做检查
      */
     const value_t& at(c_size index) const {
-        int blockIndex = get_block_index(index + 1);
+        i32 blockIndex = get_block_index(index + 1);
         c_size inblockIndex = get_inblock_index(index + 1, blockIndex);
         return blocks_.at(blockIndex).at(inblockIndex);
     }
@@ -411,8 +411,8 @@ private:
     /**
      * @brief 得到第ith个元素的块索引，i从1开始，时间复杂度O(log n)
      */
-    int get_block_index(c_size ith) const {
-        int l = 0, r = DYNARRAY_BLOCK_SIZE, mid;
+    i32 get_block_index(c_size ith) const {
+        i32 l = 0, r = DYNARRAY_BLOCK_SIZE, mid;
         while (l < r) {
             mid = l + ((r - l) >> 1);
             if (ith <= (exp2[mid + 1] - 1) * BASE_SIZE) {
@@ -427,7 +427,7 @@ private:
     /**
      * @brief 得到第ith个元素的块内索引，i从1开始
      */
-    c_size get_inblock_index(c_size ith, int blockIndex) const {
+    c_size get_inblock_index(c_size ith, i32 blockIndex) const {
         return ith - BASE_SIZE * (exp2[blockIndex] - 1) - 1;
     }
 
@@ -435,7 +435,7 @@ private:
      * @brief 获取最后一个块的索引
      * @return 不存在块时返回-1
      */
-    int back_block_index() const {
+    i32 back_block_index() const {
         return backBlockIndex_;
     }
 
@@ -458,7 +458,7 @@ private:
      * @brief 尝试唤醒一个新的块，不会做Array的扩容
      */
     void try_wakeup() {
-        int bbi = back_block_index();
+        i32 bbi = back_block_index();
         if (bbi == BLOCK_NOT_EXISTS || blocks_.at(bbi).full()) {
             c_size newSize = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_SIZE, blocks_.at(bbi).size() << 1);
             ++backBlockIndex_;
@@ -468,7 +468,7 @@ private:
 
 private:
     c_size size_;                   // 元素个数
-    int backBlockIndex_;            // 最后一个块的索引
+    i32 backBlockIndex_;            // 最后一个块的索引
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
 
