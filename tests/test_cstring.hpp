@@ -3,20 +3,18 @@
 
 #include "ricky_test.hpp"
 
-using namespace my;
-
-namespace test_cstring {
+namespace my::test::test_cstring {
 
 auto should_construct = []() {
     // Given
     CString str = "abc";
 
     // When & Then
-    test::Assertions::assertEquals(3, int(str.size()));
-    test::Assertions::assertFalse(str.empty());
-    test::Assertions::assertEquals('a', str[0]);
-    test::Assertions::assertEquals('b', str[1]);
-    test::Assertions::assertEquals('c', str[2]);
+    Assertions::assertEquals(3, int(str.size()));
+    Assertions::assertFalse(str.empty());
+    Assertions::assertEquals('a', str[0]);
+    Assertions::assertEquals('b', str[1]);
+    Assertions::assertEquals('c', str[2]);
 };
 
 auto should_hash = []() {
@@ -29,7 +27,7 @@ auto should_hash = []() {
     auto hash2 = str2.__hash__();
 
     // Then
-    test::Assertions::assertNotEquals(hash1, hash2);
+    Assertions::assertNotEquals(hash1, hash2);
 };
 
 auto should_compare = []() {
@@ -40,16 +38,16 @@ auto should_compare = []() {
     CString str4 = "aaab";
 
     // When & Then
-    test::Assertions::assertTrue(str1.__cmp__(str2) < 0);
-    test::Assertions::assertTrue(str2.__cmp__(str3) < 0);
-    test::Assertions::assertTrue(str3.__cmp__(str4) == 0);
+    Assertions::assertTrue(str1.__cmp__(str2) < 0);
+    Assertions::assertTrue(str2.__cmp__(str3) < 0);
+    Assertions::assertTrue(str3.__cmp__(str4) == 0);
 
-    test::Assertions::assertEquals(str3, str4);
-    test::Assertions::assertNotEquals(str2, str4);
+    Assertions::assertEquals(str3, str4);
+    Assertions::assertNotEquals(str2, str4);
 };
 
 void test_cstring() {
-    test::UnitTestGroup group("test_cstring");
+    UnitTestGroup group("test_cstring");
 
     group.addTest("should_construct", should_construct);
     group.addTest("should_hash", should_hash);
@@ -58,6 +56,6 @@ void test_cstring() {
     group.startAll();
 }
 
-} // namespace test_cstring
+} // namespace my::test::test_cstring
 
 #endif // TEST_CSTRING_HPP

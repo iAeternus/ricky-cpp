@@ -34,7 +34,7 @@ concept ChainNodeType = requires(T a, const T& b, T&& c) {
  * @brief 双向链节点类型约束
  */
 template <typename T>
-concept BiChainNodeType = ChainNodeType<T>&& requires(T a) {
+concept BiChainNodeType = ChainNodeType<T> && requires(T a) {
     {a.prev_};
 };
 
@@ -93,6 +93,64 @@ public:
 
     value_t value_;
     self* next_;
+};
+
+/**
+ * @brief 双向链节点，可以前后移动
+ */
+template <typename T>
+class BiChainNode : public Object<BiChainNode<T>> {
+    using self = BiChainNode<T>;
+    using super = Object<self>;
+
+public:
+    using value_t = T;
+
+    BiChainNode(const value_t& value = {}) :
+            value_(value), next_(nullptr), prev_(nullptr) {}
+
+    BiChainNode(const self& other) :
+            value_(other.value_), next_(nullptr), prev_(nullptr) {}
+
+    BiChainNode(self&& other) noexcept :
+            value_(std::move(other.value_)), next_(other.next_), prev_(other.prev_) {
+        other.next_ = other.prev_ = nullptr;
+    }
+
+    self& operator=(const self& other) {
+        this->value_ = other.value_;
+        this->next_ = this->prev_ = nullptr;
+        return *this;
+    }
+
+    self& operator=(self&& other) noexcept {
+        this->value_ = std::move(other.value_);
+        this->next_ = other.next_;
+        this->prev_ = other.prev_;
+        other.next_ = other.prev_ = nullptr;
+        return *this;
+    }
+
+    CString __str__() const {
+        std::stringstream stream;
+        stream << "<BiNode  " << value_ << ">";
+        return CString(stream.str());
+    }
+
+    bool __equals__(const self& other) const {
+        return this->value_ == other.value_;
+    }
+
+    bool operator==(const self& other) const {
+        return this->__equals__(other);
+    }
+
+    bool operator!=(const self& other) const {
+        return !this->__equals__(other);
+    }
+
+    value_t value_;
+    self *next_, *prev_;
 };
 
 } // namespace my::util

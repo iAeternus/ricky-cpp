@@ -234,8 +234,8 @@ public:
 
     template <bool IsConst>
     class Iterator : public Object<Iterator<IsConst>> {
-    public:
         using self = Iterator<IsConst>;
+    public:
         using container_t = std::conditional_t<IsConst, const DynArray<value_t>, DynArray<value_t>>;
         using iterator_category = std::random_access_iterator_tag;
         using value_type = std::conditional_t<IsConst, const value_t, value_t>;

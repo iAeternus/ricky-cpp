@@ -4,14 +4,12 @@
 #include "ricky_test.hpp"
 #include "Chain.hpp"
 
-using namespace my;
-
 namespace my::test::test_chain {
 
 auto should_append = []() {
     // Given
     int N = 100;
-    util::Chain<util::ChainNode<CString>> c;
+    util::ChainList<CString> c;
 
     // When
     for(int i = 0; i < N; ++i) {
@@ -19,17 +17,17 @@ auto should_append = []() {
     }
 
     // Then
-    test::Assertions::assertEquals(N, int(c.size()));
-    test::Assertions::assertFalse(c.empty());
-    test::Assertions::assertTrue(c.contains(cstr(N - 1)));
-    test::Assertions::assertFalse(c.contains(cstr(N)));
-    test::Assertions::assertEquals(cstr(N - 1), c[N - 1]);
+    Assertions::assertEquals(N, int(c.size()));
+    Assertions::assertFalse(c.empty());
+    Assertions::assertTrue(c.contains(cstr(N - 1)));
+    Assertions::assertFalse(c.contains(cstr(N)));
+    Assertions::assertEquals(cstr(N - 1), c[N - 1]);
 };
 
 auto should_iterable = []() {
     // Given
     int N = 100;
-    util::Chain<util::ChainNode<int>> c;
+    util::ChainList<int> c;
     for(int i = 0; i < N; ++i) {
         c.append(i + 1);
     }
@@ -41,12 +39,12 @@ auto should_iterable = []() {
     }
 
     // Then
-    test::Assertions::assertEquals(5050, sum);
+    Assertions::assertEquals(5050, sum);
 };
 
 auto should_to_array = []() {
     // Given
-    util::Chain<util::ChainNode<int>> c;
+    util::ChainList<int> c;
     c.append(1);
     c.append(2);
     c.append(3);
@@ -57,13 +55,13 @@ auto should_to_array = []() {
     auto arr = c.toArray();
 
     // Then
-    test::Assertions::assertEquals(5, int(arr.size()));
-    test::Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
+    Assertions::assertEquals(5, int(arr.size()));
+    Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
 };
 
 auto should_clear = []() {
     // Given
-    util::Chain<util::ChainNode<int>> c;
+    util::ChainList<int> c;
     c.append(1);
     c.append(2);
     c.append(3);
@@ -74,24 +72,41 @@ auto should_clear = []() {
     c.clear();
 
     // Then
-    test::Assertions::assertEquals(0, int(c.size()));
-    test::Assertions::assertTrue(c.empty());
-    test::Assertions::assertEquals(c.begin(), c.end());
+    Assertions::assertEquals(0, int(c.size()));
+    Assertions::assertTrue(c.empty());
+    Assertions::assertEquals(c.begin(), c.end());
 
     // When
     c.clear();
 
     // Then
-    test::Assertions::assertTrue(c.empty());
+    Assertions::assertTrue(c.empty());
+};
+
+auto should_str = []() {
+    // Given
+    util::ChainList<int> c;
+    c.append(1);
+    c.append(2);
+    c.append(3);
+    c.append(4);
+    c.append(5);
+
+    // When
+    CString s = c.__str__();
+
+    // Then
+    Assertions::assertEquals(CString("<Chain> [1->2->3->4->5]"), s);
 };
 
 void test_chain() {
-    test::UnitTestGroup group("test_chain");
+    UnitTestGroup group("test_chain");
 
     group.addTest("should_append", should_append);
     group.addTest("should_iterable", should_iterable);
     group.addTest("should_to_array", should_to_array);
     group.addTest("should_clear", should_clear);
+    group.addTest("should_str", should_str);
 
     group.startAll();
 }

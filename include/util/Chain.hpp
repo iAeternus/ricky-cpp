@@ -124,11 +124,14 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << "<Chain> [";
+        bool first = true;
         for (const auto& current : *this) {
-            stream << current;
-            if (current.next) {
+            if (first) {
+                first = false;
+            } else {
                 stream << "->";
             }
+            stream << current;
         }
         stream << ']';
         return CString(stream.str());
@@ -141,7 +144,10 @@ public:
     }
 
     iterator end() const {
-        return iterator{nullptr};
+        if(!tail_) {
+            return iterator{nullptr};
+        }
+        return iterator{tail_->next_};
     }
 
 protected:
@@ -158,7 +164,13 @@ class ChainIterator : public Object<ChainIterator<Node>> {
     using self = ChainIterator<Node>;
 
 public:
-    using value_t = typename Node::value_t;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = typename Node::value_t;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using reference = value_type&;
+    using const_reference = const value_type&;
 
     ChainIterator(Node* node = nullptr) :
             current_(node) {}
@@ -166,11 +178,19 @@ public:
     ChainIterator(const self& other) :
             current_(other.current_) {}
 
-    value_t& operator*() const {
+    reference operator*() {
         return current_->value_;
     }
 
-    value_t* operator->() const {
+    const_reference operator*() const {
+        return current_->value_;
+    }
+
+    pointer operator->() {
+        return &current_->value_;
+    }
+
+    const_pointer operator->() const {
         return &current_->value_;
     }
 
@@ -190,16 +210,19 @@ public:
     }
 
     bool operator==(const self& other) const {
-        return this->__cmp__(other) == 0;
+        return !this->__cmp__(other);
     }
 
     bool operator!=(const self& other) const {
-        return this->__cmp__(other) != 0;
+        return this->__cmp__(other);
     }
 
 protected:
     Node* current_;
 };
+
+template <typename T>
+using ChainList = Chain<ChainNode<T>, Creator<ChainNode<T>>>;
 
 } // namespace my::util
 

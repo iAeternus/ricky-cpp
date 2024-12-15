@@ -1,5 +1,32 @@
+================= should_group_unit_test =================
+[32m[should_success1] Test passed in 103ms
+[0m[32m[should_success2] Test passed in 117ms
+[0m[31m[should_failed] Test failed! Exception: wa
+[0mTotal tests run: 3, Failures: 1
 ================= test_cstring =================
 [32m[should_construct] Test passed in 0ms
 [0m[32m[should_hash] Test passed in 0ms
 [0m[32m[should_compare] Test passed in 0ms
 [0mTotal tests run: 3, Failures: 0
+================= test_dynarray =================
+[32m[should_append] Test passed in 0ms
+[0m[32m[should_insert] Test passed in 0ms
+[0m[32m[should_pop] Test passed in 0ms
+[0m[32m[should_pop2] Test passed in 0ms
+[0m[32m[should_clear] Test passed in 0ms
+[0m[32m[should_to_array] Test passed in 0ms
+[0m[32m[should_extend] Test passed in 0ms
+[0mTotal tests run: 7, Failures: 0
+================= test_dynarray_speed =================
+[32m[speed_of_dny_array_append_string] Test passed in 61ms
+[0m[32m[speed_of_vector_push_back_string] Test passed in 197ms
+[0m[32m[speed_of_dny_array_append_int] Test passed in 15ms
+[0m[32m[speed_of_vector_push_back_int] Test passed in 5ms
+[0mTotal tests run: 4, Failures: 0
+================= test_chain =================
+[32m[should_append] Test passed in 0ms
+[0m[32m[should_iterable] Test passed in 0ms
+[0m[32m[should_to_array] Test passed in 0ms
+[0m[32m[should_clear] Test passed in 0ms
+[0m[32m[should_str] Test passed in 0ms
+[0mTotal tests run: 5, Failures: 0

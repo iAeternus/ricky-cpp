@@ -4,8 +4,6 @@
 #include "ricky_test.hpp"
 #include "DynArray.hpp"
 
-using namespace my;
-
 namespace my::test::test_dynarray {
 
 auto should_append = []() {
@@ -19,12 +17,12 @@ auto should_append = []() {
     }
 
     // Then
-    test::Assertions::assertEquals(n, int(d.size()));
-    test::Assertions::assertEquals(cstr(n - 1), d.at(d.size() - 1));
+    Assertions::assertEquals(n, int(d.size()));
+    Assertions::assertEquals(cstr(n - 1), d.at(d.size() - 1));
 
     int num = 0;
     for (const auto& it : d) {
-        test::Assertions::assertEquals(cstr(num++), it);
+        Assertions::assertEquals(cstr(num++), it);
     }
 };
 
@@ -36,8 +34,8 @@ auto should_insert = []() {
     d.insert(0, 100);
 
     // Then
-    test::Assertions::assertEquals(6, int(d.size()));
-    test::Assertions::assertEquals(100, *d.begin());
+    Assertions::assertEquals(6, int(d.size()));
+    Assertions::assertEquals(100, *d.begin());
 };
 
 auto should_pop = []() {
@@ -48,15 +46,15 @@ auto should_pop = []() {
     d.pop();
 
     // Then
-    test::Assertions::assertEquals(4, int(d.size()));
-    test::Assertions::assertEquals(4, d.at(d.size() - 1));
+    Assertions::assertEquals(4, int(d.size()));
+    Assertions::assertEquals(4, d.at(d.size() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    test::Assertions::assertEquals(3, int(d.size()));
-    test::Assertions::assertEquals(2, d.at(0));
+    Assertions::assertEquals(3, int(d.size()));
+    Assertions::assertEquals(2, d.at(0));
 };
 
 auto should_pop2 = []() {
@@ -67,9 +65,9 @@ auto should_pop2 = []() {
     d.pop();
 
     // Then
-    test::Assertions::assertEquals(0, int(d.size()));
-    test::Assertions::assertTrue(d.empty());
-    test::Assertions::assertEquals(d.begin(), d.end());
+    Assertions::assertEquals(0, int(d.size()));
+    Assertions::assertTrue(d.empty());
+    Assertions::assertEquals(d.begin(), d.end());
 };
 
 auto should_clear = []() {
@@ -80,15 +78,15 @@ auto should_clear = []() {
     d.clear();
 
     // Then
-    test::Assertions::assertTrue(d.empty());
+    Assertions::assertTrue(d.empty());
 
     // When
     d.clear();
 
     // Then
-    test::Assertions::assertEquals(0, int(d.size()));
-    test::Assertions::assertTrue(d.empty());
-    test::Assertions::assertEquals(d.begin(), d.end());
+    Assertions::assertEquals(0, int(d.size()));
+    Assertions::assertTrue(d.empty());
+    Assertions::assertEquals(d.begin(), d.end());
 };
 
 auto should_to_array = []() {
@@ -99,9 +97,9 @@ auto should_to_array = []() {
     auto arr = d.toArray();
 
     // Then
-    test::Assertions::assertEquals(5, int(arr.size()));
-    test::Assertions::assertEquals(5, arr.at(arr.size() - 1));
-    test::Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
+    Assertions::assertEquals(5, int(arr.size()));
+    Assertions::assertEquals(5, arr.at(arr.size() - 1));
+    Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
 };
 
 auto should_extend = []() {
@@ -113,12 +111,12 @@ auto should_extend = []() {
     d = d + util::DynArray<int>{8, 9, 10};
 
     // Then
-    test::Assertions::assertEquals(10, int(d.size()));
-    test::Assertions::assertEquals(CString{"[1,2,3,4,5,6,7,8,9,10]"}, d.__str__());
+    Assertions::assertEquals(10, int(d.size()));
+    Assertions::assertEquals(CString{"[1,2,3,4,5,6,7,8,9,10]"}, d.__str__());
 };
 
 void test_dynarray() {
-    test::UnitTestGroup group("test_dynarray");
+    UnitTestGroup group("test_dynarray");
 
     group.addTest("should_append", should_append);
     group.addTest("should_insert", should_insert);
@@ -162,7 +160,7 @@ auto speed_of_vector_push_back_int = []() {
 };
 
 void test_dynarray_speed() {
-    test::UnitTestGroup group("test_dynarray");
+    UnitTestGroup group("test_dynarray_speed");
 
     group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);
     group.addTest("speed_of_vector_push_back_string", speed_of_vector_push_back_string);

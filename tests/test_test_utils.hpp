@@ -1,35 +1,37 @@
 #ifndef TEST_UNIT_TEST_HPP
 #define TEST_UNIT_TEST_HPP
 
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 
 #include <iostream>
 #include <exception>
 #include <thread>
 #include <chrono>
 
-using namespace my;
+namespace my::test::test_test_utils {
 
-auto testCase1 = []() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+auto should_success1 = []() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 };
 
-auto testCase2 = []() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+auto should_success2 = []() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 };
 
-auto testCase3 = []() {
+auto should_failed = []() {
     throw std::runtime_error("wa");
 };
 
 void should_group_unit_test() {
-    test::UnitTestGroup group("should_group_unit_test");
+    UnitTestGroup group("should_group_unit_test");
 
-    group.addTest("Test case 1", testCase1);
-    group.addTest("Test case 2", testCase2);
-    group.addTest("Test case 3", testCase3);
+    group.addTest("should_success1", should_success1);
+    group.addTest("should_success2", should_success2);
+    group.addTest("should_failed", should_failed);
 
     group.startAll();
 }
+
+} // namespace my::test::test_test_utils
 
 #endif // TEST_UNIT_TEST_HPP
