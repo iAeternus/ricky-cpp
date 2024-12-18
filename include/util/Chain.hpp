@@ -34,11 +34,11 @@ public:
         clear();
     }
 
-    constexpr c_size size() const {
+    c_size size() const {
         return size_;
     }
 
-    constexpr bool empty() const {
+    bool empty() const {
         return size_ == 0;
     }
 
@@ -201,7 +201,7 @@ public:
 
     self operator++(int) {
         self tmp{current_};
-        current_ = current_->next_;
+        ++tmp;
         return tmp;
     }
 

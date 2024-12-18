@@ -98,11 +98,11 @@ public:
         return arr_[index];
     }
 
-    constexpr c_size size() const {
+    c_size size() const {
         return size_;
     }
 
-    constexpr bool empty() const {
+    bool empty() const {
         return size_ == 0;
     }
 
@@ -152,7 +152,7 @@ public:
     Range(c_size end) :
             Range(0, end, 1) {}
 
-    constexpr c_size size() const {
+    c_size size() const {
         return (end_ - start_ + step_ - 1) / step_;
     }
 
@@ -198,7 +198,7 @@ public:
 
         self operator++(int) {
             self tmp(*this);
-            ++(*this);
+            ++tmp;
             return tmp;
         }
 
@@ -209,7 +209,7 @@ public:
 
         self operator--(int) {
             self tmp(*this);
-            --(*this);
+            --tmp;
             return tmp;
         }
 

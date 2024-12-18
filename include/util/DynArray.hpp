@@ -82,11 +82,11 @@ public:
 
     ~DynArray() = default;
 
-    constexpr c_size size() const {
+    c_size size() const {
         return size_;
     }
 
-    constexpr bool empty() const {
+    bool empty() const {
         return size_ == 0;
     }
 

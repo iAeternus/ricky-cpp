@@ -29,9 +29,9 @@ public:
     }
 
     template <typename F, typename... Args>
-    long long operator()(F&& call_, Args&&... args) {
+    long long operator()(F&& call, Args&&... args) {
         into();
-        std::invoke(std::forward<F>(call_), std::forward<Args>(args)...);
+        std::invoke(std::forward<F>(call), std::forward<Args>(args)...);
         return escape();
     }
 

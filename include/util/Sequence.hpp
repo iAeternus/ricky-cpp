@@ -32,7 +32,7 @@ public:
         return static_cast<const Derived*>(this)->at(index);
     }
 
-    constexpr c_size size() const {
+    c_size size() const {
         return static_cast<const Derived*>(this)->size();
     }
 

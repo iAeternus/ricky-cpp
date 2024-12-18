@@ -128,7 +128,7 @@ public:
 
     self operator--(int) {
         self tmp{super::current_};
-        super::current_ = super::current_->prev_;
+        --tmp;
         return tmp;
     }
 

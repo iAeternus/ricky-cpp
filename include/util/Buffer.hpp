@@ -61,15 +61,15 @@ public:
         size_ = capacity_ = 0;
     }
 
-    constexpr c_size size() const {
+    c_size size() const {
         return size_;
     }
 
-    constexpr c_size capacity() const {
+    c_size capacity() const {
         return capacity_;
     }
 
-    constexpr bool full() const {
+    bool full() const {
         return size_ == capacity_;
     }
 
