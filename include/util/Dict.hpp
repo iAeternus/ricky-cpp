@@ -153,10 +153,14 @@ public:
      * @brief 获得key对应的value，若key不存在，则抛出KeyError
      */
     value_t& get(const key_t& key) {
-        auto* value = get_impl(my_hash(key));
+        hash_t hashVal = my_hash(key);
+        auto* value = get_impl(hashVal);
         if (value == nullptr) {
             KeyError(std::format("Key '{}' not found in dict", key));
             // return None<value_t>;
+            // auto* newValue = new value_t{};
+            // insert_impl(key, *newValue, hashVal);
+            // return *newValue;
         }
         return *value;
     }
@@ -204,7 +208,7 @@ public:
         if (!contains_hash_val(hashVal)) {
             insert_impl(key, value_t{}, hashVal);
         }
-        return get_impl(hashVal);
+        return *get_impl(hashVal);
     }
 
     /**
@@ -245,14 +249,14 @@ public:
      * @brief 根据传入的字典更新字典
      */
     self& update(const self& other) {
-        for(auto&& kv : other) {
+        for (auto&& kv : other) {
             insert(kv.key(), kv.value());
         }
         return *this;
     }
 
     self& update(self&& other) {
-        for(auto& key : other.keys_) {
+        for (auto& key : other.keys_) {
             hash_t hashVal = my_hash(key);
             auto& value = *other.get_impl(hashVal);
             insert(std::move(key), std::move(value), hashVal);
@@ -271,7 +275,123 @@ public:
         keys_.clear();
     }
 
-    // TODO 字典运算
+    /**
+     * @brief 交集
+     */
+    self operator&(const self& other) const {
+        if (this == &other) return *this;
+        if (this->size() > other.size()) return other & *this;
+
+        self res{std::min(this->capacity(), other.capacity())};
+        for (auto&& kv : *this) {
+            if (other.contains(kv.key())) {
+                res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
+            }
+        }
+        return res;
+    }
+
+    self& operator&=(const self& other) {
+        if (this == &other) return *this;
+        *this = *this & other;
+        return *this;
+    }
+
+    /**
+     * @brief 并集，键相同默认选择other的值
+     */
+    self operator|(const self& other) const {
+        if (this == &other) return *this;
+        if (this->size() > other.size()) return other | *this;
+
+        self res{static_cast<c_size>((this->size() + other.size()) / MAX_LOAD_FACTOR)};
+        for (auto&& kv : *this) {
+            res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
+        }
+        for (auto&& kv : other) {
+            res.insert(kv.key(), kv.value());
+        }
+        return res;
+    }
+
+    self& operator|=(const self& other) {
+        if (this == &other) return *this;
+
+        for (auto&& kv : other) {
+            this->insert(kv.key(), kv.value());
+        }
+        return *this;
+    }
+
+    self operator+(const self& other) const {
+        return *this | other;
+    }
+
+    self& operator+=(const self& other) {
+        return *this |= other;
+    }
+
+    /**
+     * @brief 相对补集，并集与交集的差集
+     */
+    self operator^(const self& other) const {
+        if (this == &other) return self{};
+        if (this->size() > other.size()) return other ^ *this;
+
+        self res{std::min(this->capacity(), other.capacity())};
+        for (auto&& kv : *this) {
+            if (!other.contains(kv.key())) {
+                res.insert(kv.key(), kv.value());
+            }
+        }
+        for (auto&& kv : other) {
+            if (!this->contains(kv.key())) {
+                res.insert(kv.key(), kv.value());
+            }
+        }
+        return res;
+    }
+
+    self& operator^=(const self& other) {
+        if (this == &other) {
+            this->clear();
+            return *this;
+        }
+        for (auto&& kv : other) {
+            if (this->contains(kv.key())) {
+                this->pop(kv.key());
+            } else {
+                this->insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
+            }
+        }
+        return *this;
+    }
+
+    /**
+     * @brief 差集
+     */
+    self operator-(const self& other) const {
+        if (this == &other) return self{};
+
+        self res{capacity()};
+        for (auto&& kv : *this) {
+            if (!other.contains(kv.key())) {
+                res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
+            }
+        }
+        return res;
+    }
+
+    self& operator-=(const self& other) {
+        if (this == &other) {
+            this->clear();
+            return *this;
+        }
+        for (auto&& kv : other) {
+            this->pop(kv.key());
+        }
+        return *this;
+    }
 
     bool __equals__(const self& other) const {
         if (this->size() != other.size()) return false;
@@ -370,6 +490,14 @@ public:
 
         bool __equals__(const self& other) const {
             return dict_ == other.dict_ && index_ == other.index_;
+        }
+
+        bool operator==(const self& other) const {
+            return this->__equals__(other);
+        }
+
+        bool operator!=(const self& other) const {
+            return !this->__equals__(other);
         }
 
     private:

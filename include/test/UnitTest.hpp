@@ -69,6 +69,10 @@ public:
 
     ~UnitTestGroup() = default;
 
+    void setup(std::function<void(void)>&& func) {
+        func();
+    }
+
     void addTest(CString&& displayName, std::function<void(void)>&& testCase) {
         auto* item = new UnitTest{std::forward<CString>(displayName), std::forward<std::function<void(void)>>(testCase)};
         group_.append(item);
