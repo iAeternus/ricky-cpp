@@ -158,9 +158,6 @@ public:
         if (value == nullptr) {
             KeyError(std::format("Key '{}' not found in dict", key));
             // return None<value_t>;
-            // auto* newValue = new value_t{};
-            // insert_impl(key, *newValue, hashVal);
-            // return *newValue;
         }
         return *value;
     }

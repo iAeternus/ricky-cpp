@@ -21,7 +21,7 @@ auto should_append_and_prepend = []() {
 
     // Then
     Assertions::assertEquals(5, i32(bc.size()));
-    Assertions::assertEquals(CString("<BiChain> [1<-->2<-->3<-->4<-->5]"), bc.__str__());
+    Assertions::assertEquals("<BiChain> [1<-->2<-->3<-->4<-->5]"_cs, bc.__str__());
 };
 
 auto should_iterable = []() {

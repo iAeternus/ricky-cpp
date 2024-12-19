@@ -173,4 +173,8 @@ struct std::formatter<my::CString> : std::formatter<const char*> {
     }
 };
 
+def operator ""_cs(const char* str, size_t len)->my::CString {
+    return my::CString{str, my::c_size(len)};
+}
+
 #endif // CSTRING_HPP

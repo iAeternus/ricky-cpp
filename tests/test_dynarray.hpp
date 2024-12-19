@@ -36,7 +36,7 @@ auto should_insert = []() {
     // Then
     Assertions::assertEquals(6, i32(d.size()));
     Assertions::assertEquals(100, *d.begin());
-    Assertions::assertEquals(1LL, d.find(CString("1")));
+    Assertions::assertEquals(1LL, d.find("1"_cs));
 };
 
 auto should_pop = []() {
@@ -100,7 +100,7 @@ auto should_to_array = []() {
     // Then
     Assertions::assertEquals(5, i32(arr.size()));
     Assertions::assertEquals(5, arr.at(arr.size() - 1));
-    Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
 auto should_extend = []() {
@@ -113,7 +113,7 @@ auto should_extend = []() {
 
     // Then
     Assertions::assertEquals(10, i32(d.size()));
-    Assertions::assertEquals(CString{"[1,2,3,4,5,6,7,8,9,10]"}, d.__str__());
+    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
 void test_dynarray() {

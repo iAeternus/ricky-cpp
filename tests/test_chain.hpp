@@ -56,7 +56,7 @@ auto should_to_array = []() {
 
     // Then
     Assertions::assertEquals(5, i32(arr.size()));
-    Assertions::assertEquals(CString{"[1,2,3,4,5]"}, arr.__str__());
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
 auto should_clear = []() {
@@ -96,11 +96,11 @@ auto should_str = []() {
     CString s = c.__str__();
 
     // Then
-    Assertions::assertEquals(CString("<Chain> [1->2->3->4->5]"), s);
+    Assertions::assertEquals("<Chain> [1->2->3->4->5]"_cs, s);
 };
 
 void test_chain() {
-    UnitTestGroup group{"test_chain"};
+    UnitTestGroup group{"test_chain"_cs};
 
     group.addTest("should_append", should_append);
     group.addTest("should_iterable", should_iterable);
