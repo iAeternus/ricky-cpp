@@ -1,7 +1,7 @@
 /**
  * @brief 哈希桶，使用Robin哈希实现
  * @author Ricky
- * @date 2024/12/15
+ * @date 2024/12/18
  * @version 1.0
  */
 #ifndef HASH_BUCKET_HPP
@@ -151,7 +151,7 @@ public:
      * @brief 判断哈希值相等
      * @return true=相等 false=不相等
      */
-    bool hashEqual(hash_t hashVal) {
+    bool hashEqual(hash_t hashVal) const {
         return this->hashVal_ == hashVal;
     }
 
@@ -176,10 +176,10 @@ public:
     }
 
     void addMoveDist(int d = 1) {
-        return moveDist_ += d;
+        moveDist_ += d;
     }
 
-    void swap(const self& other) {
+    void swap(self& other) {
         std::swap(this->moveDist_, other.moveDist_);
         std::swap(this->hashVal_, other.hashVal_);
         std::swap(this->value_, other.value_);
@@ -268,7 +268,7 @@ public:
 
     value_t* tryGet(hash_t hashVal) override {
         auto* manager = tryGetManager(hashVal);
-        if (manager == nullptr || !manager.isManaged()) {
+        if (manager == nullptr || !manager->isManaged()) {
             return nullptr;
         }
         return &manager->value();
@@ -276,7 +276,7 @@ public:
 
     const value_t* tryGet(hash_t hashVal) const override {
         auto* manager = tryGetManager(hashVal);
-        if (manager == nullptr || !manager.isManaged()) {
+        if (manager == nullptr || !manager->isManaged()) {
             return nullptr;
         }
         return &manager->value();
@@ -285,7 +285,7 @@ public:
     void pop(hash_t hashVal) override {
         c_size m_capacity = capacity();
         auto* manager = tryGetManager(hashVal);
-        if (manager == nullptr || !manager.isManaged()) {
+        if (manager == nullptr || !manager->isManaged()) {
             return;
         }
 
@@ -354,7 +354,7 @@ public:
         using reference = value_type&;
         using const_reference = const value_type&;
 
-        RobinHashBucketIterator(container_t* bucketPtr = nullptr, c_size index_ = 0) :
+        RobinHashBucketIterator(container_t* bucketPtr = nullptr, c_size index = 0) :
                 bucketPtr_(bucketPtr), index_(index) {}
 
         RobinHashBucketIterator(const self& other) :

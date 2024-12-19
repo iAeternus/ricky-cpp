@@ -14,7 +14,7 @@
 namespace my {
 
 template <Printable T>
-def warn_assert(bool condition, const T& msg, const std::source_location& loc = std::source_location::current()) {
+inline void warn_assert(bool condition, const T& msg, const std::source_location& loc = std::source_location::current()) {
     if (!condition) {
         io::my_warner(
             std::format("file: {}\nline, column: {}, {}\nfunction_name: {}\nerror:",
@@ -27,7 +27,7 @@ def warn_assert(bool condition, const T& msg, const std::source_location& loc = 
 }
 
 template <Printable T>
-def error_exec(const T& msg, const std::source_location& loc = std::source_location::current()) {
+inline void error_exec(const T& msg, const std::source_location& loc = std::source_location::current()) {
     io::my_error(
         std::format("file: {}\nline, column: {}, {}\nfunction_name: {}\n",
                     loc.file_name(),

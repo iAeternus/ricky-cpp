@@ -109,6 +109,18 @@ public:
     }
 
     /**
+     * @brief 线性查找，如果不存在返回长度
+     */
+    c_size find(const value_t& value) const {
+        for(c_size i = 0; i < size_; ++i) {
+            if(at(i) == value) {
+                return i;
+            }
+        }
+        return size_;
+    }
+
+    /**
      * @brief 在动态数组末尾追加元素
      * @param item 需要追加的元素
      * @return 返回追加的元素

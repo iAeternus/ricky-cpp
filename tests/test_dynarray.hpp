@@ -36,6 +36,7 @@ auto should_insert = []() {
     // Then
     Assertions::assertEquals(6, i32(d.size()));
     Assertions::assertEquals(100, *d.begin());
+    Assertions::assertEquals(1LL, d.find(CString("1")));
 };
 
 auto should_pop = []() {
@@ -160,7 +161,7 @@ auto speed_of_vector_push_back_int = []() {
 };
 
 void test_dynarray_speed() {
-    UnitTestGroup group("test_dynarray_speed");
+    UnitTestGroup group{"test_dynarray_speed"};
 
     group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);
     group.addTest("speed_of_vector_push_back_string", speed_of_vector_push_back_string);

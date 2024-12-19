@@ -80,6 +80,91 @@ constexpr i64 exp2[] = {
     1ll << 62,
 };
 
+/**
+ * @brief 计算x的二进制表示中由最低位的1及其后面的所有的0的二进制构成的数值
+ */
+template <typename B>
+constexpr def lowbit(const B& x)->B {
+    return x & -x;
+}
+
+/**
+ * @brief 计算x的二进制表示中最低位的1的索引，索引从0开始
+ */
+template <typename B>
+constexpr def lowbit_index(const B& x)->B {
+    B l{};
+    while ((x >> l & 1) == 0) {
+        ++l;
+    }
+    return l;
+}
+
+/**
+ * @brief 计算x的二进制表示中最高位的1的索引，索引从0开始
+ */
+template <typename B>
+constexpr def highbit_index(const B& x)->B {
+    B l{};
+    while (x >> l) {
+        ++l;
+    }
+    return --l;
+}
+
+/**
+ * @brief 计算x的二进制表示中由最高位的1及其后面的所有的位的二进制构成的数值
+ */
+constexpr def highbit(u64 x)->u64 {
+    x |= (x >> 1ULL);
+    x |= (x >> 2ULL);
+    x |= (x >> 4ULL);
+    x |= (x >> 8ULL);
+    x |= (x >> 16ULL);
+    x |= (x >> 32ULL);
+    return x - (x >> 1ULL);
+}
+
+constexpr def highbit(u32 x)->u32 {
+    x |= (x >> 1U);
+    x |= (x >> 2U);
+    x |= (x >> 4U);
+    x |= (x >> 8U);
+    x |= (x >> 16U);
+    return x - (x >> 1U);
+}
+
+/**
+ * @brief 判断x的二进制表示是否全为1
+ * @return true=是 false=否
+ */
+template<typename B>
+constexpr def all_one(const B& x)->bool {
+    return (x & (x + 1)) == 0;
+}
+
+/**
+ * @brief 判断x的二进制表示是否只有一个1
+ * @return true=是 false=否
+ */
+template<typename B>
+constexpr def only_one(const B& x)->bool {
+    return (x & (x - 1)) == 0;
+}
+
+/**
+ * @brief 向上取整到2的幂
+ */
+constexpr def roundup2(c_size x)->c_size {
+    if(x <= 1) return 0LL;
+
+    --x;
+    for(c_size i = 1LL; i < c_size(sizeof(c_size)) * 8LL; i <<= 1LL) {
+        x |= x >> 1LL;
+    }
+    return x + 1LL;
+}
+
 } // namespace my::util
 
 #endif // BINARY_UTILS_HPP

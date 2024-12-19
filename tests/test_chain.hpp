@@ -100,7 +100,7 @@ auto should_str = []() {
 };
 
 void test_chain() {
-    UnitTestGroup group("test_chain");
+    UnitTestGroup group{"test_chain"};
 
     group.addTest("should_append", should_append);
     group.addTest("should_iterable", should_iterable);

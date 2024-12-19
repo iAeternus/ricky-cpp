@@ -122,8 +122,8 @@ public:
      */
     template <typename... Args>
     void resize(c_size newSize, const Args&... args) {
-        my_destroy(arr_, size_);
-        my_construct(arr_, newSize, args...);
+        my_destroy(this);
+        my_construct(this, newSize, args...);
     }
 
     /**

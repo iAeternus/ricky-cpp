@@ -50,7 +50,7 @@ auto should_iterable = []() {
 };
 
 void test_bi_chain() {
-    UnitTestGroup group("test_bi_chain");
+    UnitTestGroup group{"test_bi_chain"};
 
     group.addTest("should_append_and_prepend", should_append_and_prepend);
     group.addTest("should_iterable", should_iterable);

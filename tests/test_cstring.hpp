@@ -47,7 +47,7 @@ auto should_compare = []() {
 };
 
 void test_cstring() {
-    UnitTestGroup group("test_cstring");
+    UnitTestGroup group{"test_cstring"};
 
     group.addTest("should_construct", should_construct);
     group.addTest("should_hash", should_hash);
