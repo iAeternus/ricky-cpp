@@ -5,12 +5,14 @@
 #include "test_bi_chain.hpp"
 #include "test_binary_utils.hpp"
 #include "test_dist.hpp"
+#include "test_random.hpp"
+#include "test_string.hpp"
 
 #include "test_speed.hpp"
 
 using namespace my::test;
 
-#define TEST_SPEED 1
+#define TEST_SPEED 0
 
 int main() {
     test_test_utils::should_group_unit_test();
@@ -20,6 +22,8 @@ int main() {
     test_bi_chain::test_bi_chain();
     test_binary_utils::test_binary_utils();
     test_dict::test_dict();
+    test_random::test_random();
+    test_string::test_string();
 
 #if TEST_SPEED
     test_speed();

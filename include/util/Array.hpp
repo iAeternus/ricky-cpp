@@ -129,7 +129,7 @@ public:
     /**
      * @brief 分离数组，返回数组指针和大小，并将数组置空
      */
-    std::pair<c_size, value_t*> separate() const {
+    std::pair<c_size, value_t*> separate() {
         auto res = std::make_pair(size_, arr_);
         size_ = 0;
         arr_ = nullptr;

@@ -95,10 +95,6 @@ public:
         return byteCode_[0];
     }
 
-    self upper() const {}
-
-    self lower() const {}
-
     bool isAscii() const {
         return u32(byteCode_[0]) < 0x80;
     }
@@ -121,6 +117,24 @@ public:
 
     bool isLower() const {
         return isAscii() && LOWER_CASE_LETTER.contains(*this);
+    }
+
+    self upper() const {
+        if (isAscii()) {
+            return self{std::toupper(byteCode_[0])};
+        } else {
+            io::my_error("Not supported yet.");
+            return *this;
+        }
+    }
+
+    self lower() const {
+        if (isAscii()) {
+            return self{std::tolower(byteCode_[0])};
+        } else {
+            io::my_error("Not supported yet.");
+            return *this;
+        }
     }
 
     CString __str__() const {
@@ -148,7 +162,7 @@ private:
     char* byteCode_; // 字节码
 };
 
-const Array<CodePoint> CodePoint::BLANK = {'\0', '\t', '\n', '\r', '\v', '\f', ' '};
+const Array<CodePoint> CodePoint::BLANK = {' ', '\0', '\t', '\n', '\r', '\v', '\f'};
 const Array<CodePoint> CodePoint::DIGIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 const Array<CodePoint> CodePoint::LOWER_CASE_LETTER = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
 const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
@@ -158,7 +172,7 @@ const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 
  */
 def getCodePoints(const char* str, c_size len, Encoding* encoding)->DynArray<CodePoint> {
     DynArray<CodePoint> cps;
-    c_size i = 0LL;
+    i32 i = 0;
     while (i < len) {
         cps.append(CodePoint{str + i, encoding});
         i += cps.at(cps.size() - 1).size();

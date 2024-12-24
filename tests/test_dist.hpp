@@ -3,6 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "Dict.hpp"
+#include "Random.hpp"
 
 namespace my::test::test_dict {
 
@@ -106,11 +107,10 @@ std::vector<i32> nums;
 std::vector<std::string> strs;
 
 auto setup = []() {
-    srand((unsigned) time(nullptr));
     n = 1e6;
     k = 100;
     for(i32 i = 0; i < n; ++i) {
-        nums.push_back(rand() % k);
+        nums.push_back(util::rnd.nextI32(0, k));
         strs.push_back(std::to_string(i));
     }
 };

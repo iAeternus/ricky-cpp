@@ -195,6 +195,7 @@ public:
      * @brief 转换为Array，移动
      */
     Array<value_t> toArray() {
+        // io::print(this->__str__());
         c_size m_size = size();
         Array<value_t> arr(m_size);
         for (c_size i = 0; i < m_size; ++i) {

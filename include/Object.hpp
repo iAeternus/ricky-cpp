@@ -17,7 +17,7 @@ namespace my {
 template <typename Derived>
 class Object {
 public:
-    using RickyObjectDerived = Derived;
+    using MyObjectDerived = Derived;
 
     /**
      * 计算hash编码
@@ -75,9 +75,7 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
 }
 
 template <typename T>
-requires(Not<Printable<T>>)
-    std::ostream&
-    operator<<(std::ostream& out, const T& obj) {
+requires(Not<Printable<T>>) std::ostream& operator<<(std::ostream& out, const T& obj) {
     out << '<' << dtype(T) << " 0x" << std::hex << &obj << '>';
     return out;
 }
