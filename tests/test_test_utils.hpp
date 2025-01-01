@@ -22,12 +22,18 @@ auto should_failed = []() {
     throw std::runtime_error("wa");
 };
 
+auto should_throws = []() {
+    Assertions::assertThrows("wa"_cs, should_failed);
+    Assertions::assertThrows("wa", should_failed);
+};
+
 void should_group_unit_test() {
     UnitTestGroup group("should_group_unit_test");
 
     group.addTest("should_success1", should_success1);
     group.addTest("should_success2", should_success2);
     group.addTest("should_failed", should_failed);
+    group.addTest("should_throws", should_throws);
 
     group.startAll();
 }

@@ -17,6 +17,7 @@ target_include_directories(RICKY_CPP_TESTS PUBLIC
     "${CMAKE_SOURCE_DIR}/include/io"
     "${CMAKE_SOURCE_DIR}/include/util"
     "${CMAKE_SOURCE_DIR}/include/test"
+    "${CMAKE_SOURCE_DIR}/include/async"
 )
 
 add_test(NAME RICKY_CPP_TESTS COMMAND $<TARGET_FILE:RICKY_CPP_TESTS>)

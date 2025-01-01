@@ -1,8 +1,9 @@
 ================= should_group_unit_test =================
-[32m[should_success1] Test passed in 103ms
-[0m[32m[should_success2] Test passed in 117ms
+[32m[should_success1] Test passed in 108ms
+[0m[32m[should_success2] Test passed in 108ms
 [0m[31m[should_failed] Test failed! Exception: wa
-[0mTotal tests run: 3, Failures: 1
+[0m[32m[should_throws] Test passed in 0ms
+[0mTotal tests run: 4, Failures: 1
 ================= test_cstring =================
 [32m[should_construct] Test passed in 0ms
 [0m[32m[should_hash] Test passed in 0ms
@@ -17,12 +18,6 @@
 [0m[32m[should_to_array] Test passed in 0ms
 [0m[32m[should_extend] Test passed in 0ms
 [0mTotal tests run: 7, Failures: 0
-================= test_dynarray_speed =================
-[32m[speed_of_dny_array_append_string] Test passed in 61ms
-[0m[32m[speed_of_vector_push_back_string] Test passed in 197ms
-[0m[32m[speed_of_dny_array_append_int] Test passed in 15ms
-[0m[32m[speed_of_vector_push_back_int] Test passed in 5ms
-[0mTotal tests run: 4, Failures: 0
 ================= test_chain =================
 [32m[should_append] Test passed in 0ms
 [0m[32m[should_iterable] Test passed in 0ms
@@ -30,3 +25,60 @@
 [0m[32m[should_clear] Test passed in 0ms
 [0m[32m[should_str] Test passed in 0ms
 [0mTotal tests run: 5, Failures: 0
+================= test_bi_chain =================
+[32m[should_append_and_prepend] Test passed in 0ms
+[0m[32m[should_iterable] Test passed in 0ms
+[0mTotal tests run: 2, Failures: 0
+================= test_binary_utils =================
+[32m[should_cal_lowbit] Test passed in 0ms
+[0m[32m[should_cal_lowbit_index] Test passed in 0ms
+[0m[32m[should_cal_highbit_index] Test passed in 0ms
+[0m[32m[should_cal_highbit] Test passed in 0ms
+[0m[32m[should_judge_all_one] Test passed in 0ms
+[0m[32m[should_judge_only_one] Test passed in 0ms
+[0m[32m[should_roundup2] Test passed in 0ms
+[0mTotal tests run: 7, Failures: 0
+================= test_dict =================
+[32m[should_insert] Test passed in 0ms
+[0m[32m[should_get_or_default] Test passed in 0ms
+[0m[32m[should_set_default] Test passed in 0ms
+[0m[32m[should_update] Test passed in 0ms
+[0m[32m[should_operator] Test passed in 0ms
+[0mTotal tests run: 5, Failures: 0
+================= test_random =================
+u8: 3
+u16: 24549
+u32: 3936654316
+u64: 13033531841653204871
+i8: 52
+i16: -11065
+i32: 457829524
+i64: 1610532693982948796
+float: 0.24453498
+double: 0.8296867584336655
+CString: N6RT6I
+[32m[should_generate_random] Test passed in 0ms
+[0mTotal tests run: 1, Failures: 0
+================= test_string =================
+[32m[should_add] Test passed in 0ms
+[0m[32m[should_mul] Test passed in 0ms
+[0m[32m[should_slice] Test passed in 0ms
+[0m[32m[should_find] Test passed in 0ms
+[0m[32m[should_find_all] Test passed in 0ms
+[0m[32m[should_judge_starts_with] Test passed in 0ms
+[0m[32m[should_judge_ends_with] Test passed in 0ms
+[0m[32m[should_get_upper] Test passed in 0ms
+[0m[32m[should_get_lower] Test passed in 0ms
+[0m[32m[should_trim] Test passed in 0ms
+[0m[32m[should_replace] Test passed in 0ms
+[0m[32m[should_maintain_encoding] Test passed in 0ms
+[0mTotal tests run: 12, Failures: 0
+================= test_array =================
+[32m[should_at] Test passed in 0ms
+[0mTotal tests run: 1, Failures: 0
+================= test_thread_pool =================
+[32m[should_push] Test passed in 1ms
+[0m[32m[should_push_tasks] Test passed in 0ms
+[0m[32m[should_push_tasks_with_exception] Test passed in 0ms
+[0m[32m[should_wait] Test passed in 0ms
+[0mTotal tests run: 4, Failures: 0

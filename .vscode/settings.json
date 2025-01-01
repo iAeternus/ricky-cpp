@@ -78,6 +78,7 @@
         "locale": "cpp",
         "queue": "cpp",
         "version": "cpp",
-        "ranges": "cpp"
+        "ranges": "cpp",
+        "future": "cpp"
     }
 }

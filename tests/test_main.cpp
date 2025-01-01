@@ -1,3 +1,4 @@
+// test_main.cpp
 #include "test_test_utils.hpp"
 #include "test_cstring.hpp"
 #include "test_dynarray.hpp"
@@ -8,14 +9,20 @@
 #include "test_random.hpp"
 #include "test_string.hpp"
 #include "test_array.hpp"
+#include "test_thread_pool.hpp"
 
 #include "test_speed.hpp"
 
 using namespace my::test;
 
-#define TEST_SPEED 1
+/**
+ * @brief 置1 测试功能，置0 测试性能，测试性能运行时间较长
+ */
+#define TEST_FUNCTIONALITY 1
 
 int main() {
+
+#if TEST_FUNCTIONALITY
     test_test_utils::should_group_unit_test();
     test_cstring::test_cstring();
     test_dynarray::test_dynarray();
@@ -26,10 +33,9 @@ int main() {
     test_random::test_random();
     test_string::test_string();
     test_array::test_array();
-
-#if TEST_SPEED
+    test_thread_pool::test_thread_pool();
+#else
     test_speed();
 #endif
 
-    return 0;
 }

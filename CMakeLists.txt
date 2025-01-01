@@ -16,6 +16,7 @@ target_include_directories(RICKY_CPP PUBLIC
     "${CMAKE_SOURCE_DIR}/include/io"
     "${CMAKE_SOURCE_DIR}/include/util"
     "${CMAKE_SOURCE_DIR}/include/test"
+    "${CMAKE_SOURCE_DIR}/include/async"
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)

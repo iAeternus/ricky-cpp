@@ -1,0 +1,126 @@
+#ifndef TEST_THREAD_POOL_HPP
+#define TEST_THREAD_POOL_HPP
+
+#include "ricky_test.hpp"
+#include "ThreadPool.hpp"
+#include "Dict.hpp"
+
+#include <exception>
+
+namespace my::test::test_thread_pool {
+
+auto add = [](int a, int b) {
+    return a + b;
+};
+
+auto throw_exception = []() {
+    throw std::runtime_error("wa");
+};
+
+auto should_push = []() {
+    // Given
+    async::ThreadPool tp{4};
+
+    // When
+    auto future = tp.push(add, 2, 3);
+
+    // Then
+    Assertions::assertEquals(5, future.get());
+};
+
+auto should_push_tasks = []() {
+    // Given
+    async::ThreadPool tp{4};
+
+    // When
+    auto future = tp.push(add, 2, 3);
+    auto future2 = tp.push(add, 4, 5);
+
+    // Then
+    Assertions::assertEquals(5, future.get());
+    Assertions::assertEquals(9, future2.get());
+};
+
+auto should_push_tasks_with_exception = []() {
+    // Given
+    async::ThreadPool tp{4};
+
+    // When
+    auto future = tp.push(throw_exception);
+    auto future2 = tp.push([]() {
+        throw std::runtime_error("wa2");
+    });
+
+    // Then
+    Assertions::assertThrows("wa", [&]() {
+        future.get();
+    });
+
+    Assertions::assertThrows("wa2", [&]() {
+        future2.get();
+    });
+};
+
+auto should_wait = []() {
+    // Given
+    int n = 100;
+    async::ThreadPool tp{4};
+    util::Dict<int, int> futures;
+
+    // When
+    for (int i = 0; i < n; ++i) {
+        futures.insert(i, tp.push(add, i, i).get());
+    }
+    tp.wait();
+
+    // Then
+    for (int i = 0; i < n; ++i) {
+        Assertions::assertEquals(i * 2, futures[i]);
+    }
+};
+
+void test_thread_pool() {
+    UnitTestGroup group{"test_thread_pool"};
+
+    group.addTest("should_push", should_push);
+    group.addTest("should_push_tasks", should_push_tasks);
+    group.addTest("should_push_tasks_with_exception", should_push_tasks_with_exception);
+    group.addTest("should_wait", should_wait);
+
+    group.startAll();
+}
+
+int n; // count of tasks
+auto task = []() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+};
+
+auto speed_of_thread_pool = []() {
+    async::ThreadPool tp{100};
+    for (int i = 0; i < n; ++i) {
+        tp.push(task);
+    }
+    tp.wait();
+};
+
+auto speed_of_sync = []() {
+    for (int i = 0; i < n; ++i) {
+        task();
+    }
+};
+
+void test_thread_pool_speed() {
+    UnitTestGroup group{"test_thread_pool_speed"};
+    group.setup([]() {
+        n = 1000;
+    });
+
+    group.addTest("speed_of_thread_pool", speed_of_thread_pool);
+    group.addTest("speed_of_sync", speed_of_sync);
+
+    group.startAll();
+}
+
+} // namespace my::test::test_thread_pool
+
+#endif // TEST_THREAD_POOL_HPP

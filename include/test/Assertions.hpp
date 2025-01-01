@@ -12,6 +12,7 @@
 #include "Object.hpp"
 
 #include <stdexcept>
+#include <type_traits>
 
 namespace my::test {
 
@@ -78,6 +79,32 @@ public:
     static void assertNotEquals(const T& unexpected, const T& actual, CString&& message = "") {
         if (unexpected == actual) {
             fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
+        }
+    }
+
+    static void assertThrows(CString&& expectedMessage, std::function<void(void)>&& func) {
+        try {
+            func();
+            fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
+        } catch (const std::exception& ex) {
+            if (expectedMessage != ex.what()) {
+                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.what()));
+            }
+        } catch (...) {
+            fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage));
+        }
+    }
+
+    static void assertThrows(const char* expectedMessage, std::function<void(void)>&& func) {
+        try {
+            func();
+            fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
+        } catch (const std::exception& ex) {
+            if (std::strcmp(expectedMessage, ex.what())) {
+                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.what()));
+            }
+        } catch (...) {
+            fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage));
         }
     }
 

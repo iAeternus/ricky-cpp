@@ -137,7 +137,7 @@ public:
 
     bool operator==(const char* other) const { return __equals__(other); }
 
-    bool operator!=(const char* other) const { return __equals__(other); }
+    bool operator!=(const char* other) const { return !__equals__(other); }
 
 private:
     char* str_;
