@@ -12,6 +12,7 @@
 #include "test_thread_pool.hpp"
 #include "test_win_file_utils.hpp"
 #include "test_win_file.hpp"
+#include "test_math_utils.hpp"
 
 #include "test_speed.hpp"
 
@@ -38,6 +39,7 @@ int main() {
     test_thread_pool::test_thread_pool();
     test_win_file_utils::test_win_file_utils();
     test_win_file::test_win_file();
+    test_math_utils::test_math_utils();
 #else
     test_speed();
 #endif

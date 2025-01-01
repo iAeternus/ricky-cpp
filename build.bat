@@ -2,10 +2,10 @@
 
 set "BUILD_DIR=build"
 
-if exist "%BUILD_DIR%" (
-    rmdir /S /Q "%BUILD_DIR%"
+:: build不存在时才创建
+if not exist "%BUILD_DIR%" (
+    mkdir "%BUILD_DIR%"
 )
-mkdir "%BUILD_DIR%"
 
 :: 构建工程
 echo Start build project.
