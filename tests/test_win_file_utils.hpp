@@ -6,6 +6,7 @@
 
 namespace my::test::test_win_file_utils {
 
+static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
 const char* filepath = "F:\\develop\\ricky-cpp\\tests\\test_win_file_utils.hpp";
 const char* dirpath = "F:\\develop\\ricky-cpp\\tests";
 
@@ -44,6 +45,29 @@ auto should_judge_is_dir = []() {
     Assertions::assertTrue(res2);
 };
 
+auto should_mkdir_and_remove = []() {
+    // Given
+    const char* path = fs::win::join(CLASS_PATH, "test");
+
+    // When
+    fs::win::mkdir(path);
+
+    // Then
+    Assertions::assertTrue(fs::win::exists(path));
+
+    // When
+    fs::win::mkdir(path, true);
+
+    // Then
+    Assertions::assertTrue(fs::win::exists(path));
+
+    // When
+    fs::win::remove(path);
+
+    // Then
+    Assertions::assertFalse(fs::win::exists(path));
+};
+
 auto should_join = []() {
     // Given
     const char* path = "C:";
@@ -75,6 +99,7 @@ void test_win_file_utils() {
     group.addTest("should_judge_exists", should_judge_exists);
     group.addTest("should_judge_is_file", should_judge_is_file);
     group.addTest("should_judge_is_dir", should_judge_is_dir);
+    group.addTest("should_mkdir_and_remove", should_mkdir_and_remove);
     group.addTest("should_join", should_join);
     group.addTest("should_list_dir", should_list_dir);
 
