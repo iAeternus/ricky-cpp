@@ -50,13 +50,15 @@ auto should_slice = []() {
 
 auto should_find = []() {
     // Given
-    String s = "abcdef"_s;
+    String s = "abcdeff"_s;
 
     // When
     auto pos = s.find("def"_s);
+    auto pos2 = s.find('f');
 
     // Then
     Assertions::assertEquals(3LL, pos);
+    Assertions::assertEquals(5LL, pos2);
 };
 
 auto should_find_all = []() {

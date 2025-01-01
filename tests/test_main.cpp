@@ -13,7 +13,7 @@
 
 using namespace my::test;
 
-#define TEST_SPEED 0
+#define TEST_SPEED 1
 
 int main() {
     test_test_utils::should_group_unit_test();

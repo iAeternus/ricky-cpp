@@ -51,6 +51,7 @@ class ASCIIEncoding : public Encoding {
 
 public:
     int byte_size(const char* data) const override {
+        (void)data; // 告诉编译器可能不使用data
         return 1;
     }
 
@@ -129,6 +130,7 @@ class UTF32Encoding : public Encoding {
 
 public:
     int byte_size(const char* data) const override {
+        (void)data; // 告诉编译器可能不使用data
         return 4;
     }
 
@@ -150,6 +152,7 @@ class GB2312Encoding : public Encoding {
 
 public:
     int byte_size(const char* data) const override {
+        (void)data; // 告诉编译器可能不使用data
         return 0;
     }
 

@@ -206,6 +206,9 @@ public:
         return slice(start, size());
     }
 
+    /**
+     * @brief 查找子串
+     */
     c_size find(CodePoint c) const {
         return super::find(c);
     }

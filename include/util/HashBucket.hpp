@@ -324,6 +324,7 @@ public:
             valueManager.addMoveDist();
         }
         RuntimeError("RobinHashBucket set_value failed, bucket is full");
+        return nullptr;
     }
 
     void expand(c_size newCapacity) noexcept override {
