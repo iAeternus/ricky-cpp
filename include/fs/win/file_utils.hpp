@@ -1,3 +1,9 @@
+/**
+ * @brief win文件工具
+ * @author Ricky
+ * @date 2025/1/1
+ * @version 1.0
+ */
 #ifndef WIN_FILE_UTILS_HPP
 #define WIN_FILE_UTILS_HPP
 

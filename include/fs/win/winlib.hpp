@@ -1,7 +1,7 @@
 #ifndef WIN_LIB_HPP
 #define WIN_LIB_HPP
 
-#if defined(_WIN32)
+#if defined(_WIN32) || defined(_WIN64)
 #include <WinSock2.h>
 #include <Windows.h>
 #include <fileapi.h>
