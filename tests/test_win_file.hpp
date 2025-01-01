@@ -17,8 +17,10 @@ auto should_write_win_file = []() {
     file.write("hello file.");
 
     // Then
-    file.close();
     Assertions::assertTrue(fs::win::exists(path));
+    Assertions::assertEquals(11LL, file.fileSize());
+
+    file.close();
     Assertions::assertEquals("hello file."_cs, fs::win::File{path, "r"}.read());
 
     // Final
@@ -35,6 +37,8 @@ auto should_append_win_file = []() {
     file.write("hello2");
 
     // Then
+    Assertions::assertEquals(13LL, file.fileSize());
+
     file.close();
     Assertions::assertEquals("hello1 hello2"_cs, fs::win::File{path, "r"}.read());
     
