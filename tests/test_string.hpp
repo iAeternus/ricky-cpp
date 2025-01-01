@@ -141,6 +141,37 @@ auto should_replace = []() {
     Assertions::assertEquals("defdefdef"_s, res);
 };
 
+auto should_maintain_encoding = []() {
+    // Given
+    util::String s = "你好世界";
+
+    // When
+    util::String s2 = s;
+    util::String s3 = s2.slice(0);
+
+    // Then
+    Assertions::assertEquals(s, s2);
+    Assertions::assertEquals(s2, s3);
+
+    // When
+    s3[1] = 'a';
+
+    // Then
+    Assertions::assertEquals("你好世界"_s, s);
+    Assertions::assertEquals("你a世界"_s, s2);
+    Assertions::assertEquals("你a世界"_s, s3);
+    Assertions::assertEquals("你好世界"_s, s.slice(0, s.size()));
+
+    // When
+    auto res = s.replace("你"_s, "你们"_s);
+
+    // Then
+    Assertions::assertEquals("你们好世界"_s, res);
+
+    // util::String s4 = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
+    // io::print(s4.match('{', '}'));
+};
+
 void test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -155,6 +186,7 @@ void test_string() {
     group.addTest("should_get_lower", should_get_lower);
     group.addTest("should_trim", should_trim);
     group.addTest("should_replace", should_replace);
+    group.addTest("should_maintain_encoding", should_maintain_encoding);
 
     group.startAll();
 }
