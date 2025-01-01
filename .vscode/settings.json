@@ -80,5 +80,8 @@
         "version": "cpp",
         "ranges": "cpp",
         "future": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "DATAA"
+    ]
 }

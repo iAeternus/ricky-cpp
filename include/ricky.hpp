@@ -63,6 +63,8 @@ using hash_t = u64;
 template <typename T>
 T& None = *reinterpret_cast<T*>(nullptr);
 
+#define STD ::std::
+
 } // namespace my
 
 #endif // RICKY_HPP

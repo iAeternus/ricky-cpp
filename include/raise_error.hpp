@@ -14,31 +14,31 @@
 namespace my {
 
 template <Printable T>
-inline void warn_assert(bool condition, const T& msg, const std::source_location& loc = std::source_location::current()) {
+inline void warn_assert(bool condition, const T& msg, const STD source_location& loc = STD source_location::current()) {
     if (!condition) {
         io::my_warner(
-            std::format("file: {}\nline, column: {}, {}\nfunction_name: {}\nerror:",
-                        loc.file_name(),
-                        loc.line(),
-                        loc.column(),
-                        loc.function_name()),
+            STD format("file: {}\nline, column: {}, {}\nfunction_name: {}\nerror:",
+                       loc.file_name(),
+                       loc.line(),
+                       loc.column(),
+                       loc.function_name()),
             msg);
     }
 }
 
 template <Printable T>
-inline void error_exec(const T& msg, const std::source_location& loc = std::source_location::current()) {
+inline void error_exec(const T& msg, const STD source_location& loc = STD source_location::current()) {
     io::my_error(
-        std::format("file: {}\nline, column: {}, {}\nfunction_name: {}\n",
-                    loc.file_name(),
-                    loc.line(),
-                    loc.column(),
-                    loc.function_name()),
+        STD format("file: {}\nline, column: {}, {}\nfunction_name: {}\n",
+                   loc.file_name(),
+                   loc.line(),
+                   loc.column(),
+                   loc.function_name()),
         msg);
-    throw std::runtime_error("");
+    throw STD runtime_error("");
 }
 
-#define Error(errorname, msg) error_exec(std::format("{}: {}", errorname, msg))
+#define Error(errorname, msg) error_exec(STD format("{}: {}", errorname, msg))
 
 #define KeyError(msg) Error("KeyError", msg)
 

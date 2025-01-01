@@ -10,6 +10,7 @@
 #include "test_string.hpp"
 #include "test_array.hpp"
 #include "test_thread_pool.hpp"
+#include "test_win_file_utils.hpp"
 
 #include "test_speed.hpp"
 
@@ -34,6 +35,7 @@ int main() {
     test_string::test_string();
     test_array::test_array();
     test_thread_pool::test_thread_pool();
+    test_win_file_utils::test_win_file_utils();
 #else
     test_speed();
 #endif

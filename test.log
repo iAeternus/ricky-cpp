@@ -1,6 +1,6 @@
 ================= should_group_unit_test =================
-[32m[should_success1] Test passed in 108ms
-[0m[32m[should_success2] Test passed in 108ms
+[32m[should_success1] Test passed in 115ms
+[0m[32m[should_success2] Test passed in 105ms
 [0m[31m[should_failed] Test failed! Exception: wa
 [0m[32m[should_throws] Test passed in 0ms
 [0mTotal tests run: 4, Failures: 1
@@ -46,17 +46,17 @@
 [0m[32m[should_operator] Test passed in 0ms
 [0mTotal tests run: 5, Failures: 0
 ================= test_random =================
-u8: 3
-u16: 24549
-u32: 3936654316
-u64: 13033531841653204871
-i8: 52
-i16: -11065
-i32: 457829524
-i64: 1610532693982948796
-float: 0.24453498
-double: 0.8296867584336655
-CString: N6RT6I
+u8: 85
+u16: 51900
+u32: 220480809
+u64: 17926448656602471490
+i8: 82
+i16: 14865
+i32: 970443779
+i64: -7319513021273320941
+float: 0.9896089
+double: 0.48326284272466025
+CString: vZ0uGV
 [32m[should_generate_random] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
 ================= test_string =================
@@ -77,8 +77,30 @@ CString: N6RT6I
 [32m[should_at] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
 ================= test_thread_pool =================
-[32m[should_push] Test passed in 1ms
+[32m[should_push] Test passed in 0ms
 [0m[32m[should_push_tasks] Test passed in 0ms
 [0m[32m[should_push_tasks_with_exception] Test passed in 0ms
-[0m[32m[should_wait] Test passed in 0ms
+[0m[32m[should_wait] Test passed in 1ms
 [0mTotal tests run: 4, Failures: 0
+================= test_win_file_utils =================
+[32m[should_judge_exists] Test passed in 0ms
+[0m[32m[should_judge_is_file] Test passed in 0ms
+[0m[32m[should_judge_is_dir] Test passed in 0ms
+[0m[32m[should_join] Test passed in 0ms
+[0mCMakeLists.txt
+test_array.hpp
+test_binary_utils.hpp
+test_bi_chain.hpp
+test_chain.hpp
+test_cstring.hpp
+test_dist.hpp
+test_dynarray.hpp
+test_main.cpp
+test_random.hpp
+test_speed.hpp
+test_string.hpp
+test_test_utils.hpp
+test_thread_pool.hpp
+test_win_file_utils.hpp
+[32m[should_list_dir] Test passed in 0ms
+[0mTotal tests run: 5, Failures: 0
