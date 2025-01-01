@@ -116,6 +116,14 @@ auto should_extend = []() {
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
+auto should_at = []() {
+    // Given
+    util::DynArray<char> d = {'a', 'b', 'c'};
+
+    // When
+    
+};
+
 void test_dynarray() {
     UnitTestGroup group("test_dynarray");
 

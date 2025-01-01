@@ -7,12 +7,13 @@
 #include "test_dist.hpp"
 #include "test_random.hpp"
 #include "test_string.hpp"
+#include "test_array.hpp"
 
 #include "test_speed.hpp"
 
 using namespace my::test;
 
-#define TEST_SPEED 0
+#define TEST_SPEED 1
 
 int main() {
     test_test_utils::should_group_unit_test();
@@ -24,6 +25,7 @@ int main() {
     test_dict::test_dict();
     test_random::test_random();
     test_string::test_string();
+    test_array::test_array();
 
 #if TEST_SPEED
     test_speed();

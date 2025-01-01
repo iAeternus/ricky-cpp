@@ -26,11 +26,11 @@ public:
         length_ = 0;
     }
 
-    CodePoint* const sharedHead() const {
+    CodePoint* sharedHead() const {
         return sharedHead_;
     }
 
-    Encoding* const encoding() const {
+    Encoding* encoding() const {
         return encoding_;
     }
 
@@ -118,7 +118,7 @@ public:
             res.at(i) = this->at(i);
         }
         for (c_size i = 0; i < o_size; ++i) {
-            res.at(i) = other.at(i);
+            res.at(m_size + i) = other.at(i);
         }
         return res;
     }
@@ -140,7 +140,7 @@ public:
                 res.at(pos++) = at(i);
             }
         }
-        return *this;
+        return res;
     }
 
     CodePoint& at(c_size index) {
@@ -163,7 +163,7 @@ public:
         return length_;
     }
 
-    Encoding* const encoding() const {
+    Encoding* encoding() const {
         return manager_->encoding();
     }
 
@@ -211,9 +211,9 @@ public:
     }
 
     c_size find(const self& pattern, c_size pos = 0) const {
-        c_size m_size = size(), patternSize = pattern.size();
-        for (c_size i = pos; i + patternSize < m_size; ++i) {
-            if (slice(i, i + patternSize) == pattern) {
+        c_size m_size = size(), p_size = pattern.size();
+        for (c_size i = pos; i + p_size <= m_size; ++i) {
+            if (slice(i, i + p_size) == pattern) {
                 return i;
             }
         }

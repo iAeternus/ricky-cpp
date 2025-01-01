@@ -8,7 +8,7 @@ namespace my::test::test_string {
 
 using namespace my::util;
 
-auto should_add = []() { // TODO
+auto should_add = []() {
     // Given
     String s = "abc"_s;
     String s2 = "bcd"_s;
@@ -19,6 +19,7 @@ auto should_add = []() { // TODO
     // Then
     Assertions::assertEquals(6, i32(s.size()));
     Assertions::assertEquals({'b'}, s[3]);
+    Assertions::assertEquals("abcbcd"_s, s);
 };
 
 auto should_mul = []() {

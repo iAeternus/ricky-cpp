@@ -43,7 +43,7 @@ public:
     CodePoint(self&& other) noexcept :
             codeSize_(other.codeSize_), byteCode_(other.byteCode_) {
         other.codeSize_ = 0;
-        my_delloc(other.byteCode_);
+        other.byteCode_ = nullptr;
     }
 
     self& operator=(const self& other) {
@@ -61,7 +61,7 @@ public:
     }
 
     self& operator=(char ch) {
-        my_delloc(byteCode_);
+        my_destroy(byteCode_);
         this->codeSize_ = sizeof(char);
         this->byteCode_ = my_alloc<char>(codeSize_);
         byteCode_[0] = ch;
@@ -121,7 +121,7 @@ public:
 
     self upper() const {
         if (isAscii()) {
-            return self{std::toupper(byteCode_[0])};
+            return self{static_cast<char>(std::toupper(byteCode_[0]))};
         } else {
             io::my_error("Not supported yet.");
             return *this;
@@ -130,7 +130,7 @@ public:
 
     self lower() const {
         if (isAscii()) {
-            return self{std::tolower(byteCode_[0])};
+            return self{static_cast<char>(std::tolower(byteCode_[0]))};
         } else {
             io::my_error("Not supported yet.");
             return *this;
@@ -175,7 +175,7 @@ def getCodePoints(const char* str, c_size len, Encoding* encoding)->DynArray<Cod
     i32 i = 0;
     while (i < len) {
         cps.append(CodePoint{str + i, encoding});
-        i += cps.at(cps.size() - 1).size();
+        i += cps[-1].size();
         if (i > len) EncodingError("Invalid encoding, code point out of range");
     }
     return cps;

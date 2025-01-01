@@ -18,18 +18,21 @@ public:
     Printer(std::FILE* filePtr, CString sw = " ", CString ew = "\n") :
             ew_(std::move(ew)), sw_(std::move(sw)), outputFile_(filePtr) {}
 
-    template<Printable... Args>
-    void operator()(const Args&... args) const {
-        if constexpr (sizeof...(args) > 0) {
-            ((__print__(sw_), __print__(args)), ...);
-        }
-        __print__(ew_);
-    }
+    // template<Printable... Args>
+    // void operator()(const Args&... args) const {
+    //     if constexpr (sizeof...(args) > 0) {
+    //         ((__print__(sw_), __print__(args)), ...);
+    //     }
+    //     __print__(ew_);
+    // }
 
     template <Printable T0, Printable... Args>
     void operator()(const T0& obj, const Args&... args) const {
         __print__(obj);
-        operator()(args...);
+        if constexpr (sizeof...(args) > 0) {
+            ((__print__(sw_), __print__(args)), ...);
+        }
+        __print__(ew_);
     }
 
     void operator()() const {
@@ -97,7 +100,7 @@ protected:
 
     template <typename T>
     requires std::is_pointer_v<T> void __print__(const T obj) const {
-        std::fprintf(outputFile_, "0x%p", obj);
+        std::fprintf(outputFile_, "0x%p", static_cast<void*>(obj));
     }
 
     template <MyPrintable T>
@@ -141,12 +144,12 @@ public:
     ColorPrinter(std::FILE* filePtr, CString color = Color::WHITE) :
             Printer(filePtr), color_(std::move(color)) {}
 
-    template<Printable... Args>
-    void operator()(const Args&... args) const {
-        opencolor();
-        super::operator()(args...);
-        closecolor();
-    }
+    // template<Printable... Args>
+    // void operator()(const Args&... args) const {
+    //     opencolor();
+    //     super::operator()(args...);
+    //     closecolor();
+    // }
 
     template <Printable T, Printable... Args>
     void operator()(const T& obj, const Args&... args) const {

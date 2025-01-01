@@ -112,8 +112,8 @@ public:
      * @brief 线性查找，如果不存在返回长度
      */
     c_size find(const value_t& value) const {
-        for(c_size i = 0; i < size_; ++i) {
-            if(at(i) == value) {
+        for (c_size i = 0; i < size_; ++i) {
+            if (at(i) == value) {
                 return i;
             }
         }
@@ -147,7 +147,7 @@ public:
      * @return void
      */
     void pop(c_size index = -1) {
-        if(empty()) {
+        if (empty()) {
             return;
         }
 
@@ -168,7 +168,7 @@ public:
     }
 
     void clear() {
-        if(blocks_.empty()) {
+        if (blocks_.empty()) {
             return;
         }
 
@@ -186,7 +186,7 @@ public:
         c_size m_size = size();
         Array<value_t> arr(m_size);
         for (c_size i = 0; i < m_size; ++i) {
-            arr[i] = at(i);
+            arr.at(i) = at(i);
         }
         return arr;
     }
@@ -195,11 +195,10 @@ public:
      * @brief 转换为Array，移动
      */
     Array<value_t> toArray() {
-        // io::print(this->__str__());
         c_size m_size = size();
         Array<value_t> arr(m_size);
         for (c_size i = 0; i < m_size; ++i) {
-            arr[i] = std::move(at(i));
+            arr.at(i) = std::move(at(i));
         }
         clear();
         return arr;
@@ -248,6 +247,7 @@ public:
     template <bool IsConst>
     class Iterator : public Object<Iterator<IsConst>> {
         using self = Iterator<IsConst>;
+
     public:
         using container_t = std::conditional_t<IsConst, const DynArray<value_t>, DynArray<value_t>>;
         using iterator_category = std::random_access_iterator_tag;

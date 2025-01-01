@@ -27,7 +27,7 @@ public:
     using value_t = T;
 
     template <typename... Args>
-    Array(c_size size, Args... args) :
+    Array(c_size size, const Args&... args) :
             size_(size), arr_(my_alloc<T>(size_)) {
         for (c_size i = 0; i < size_; ++i) {
             my_construct(data() + i, args...);
