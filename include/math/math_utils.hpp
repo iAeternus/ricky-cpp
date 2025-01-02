@@ -7,7 +7,7 @@
 #ifndef MATH_UTILS_HPP
 #define MATH_UTILS_HPP
 
-#include "ricky.hpp"
+#include "math_concepts.hpp"
 
 #include <cmath>
 
@@ -16,39 +16,10 @@ namespace my::math {
 static constexpr double PI = 3.14159265358979323846;
 static constexpr double E = 2.71828182845904523536;
 static constexpr double GOLDEN_RATIO = 0.61803398874989484820; // 黄金分割比
+static constexpr i32 MOD = 1e9 + 7;                            // 素数模数
 
 /**
- * @brief 检查类型是否为无符号整数类型的约束
- */
-template <typename T>
-concept UnsignedIntegerType = std::is_integral_v<T> && !std::is_signed_v<T>;
-
-/**
- * @brief 检查类型是否为有符号整数类型的约束
- */
-template <typename T>
-concept SignedIntegerType = std::is_integral_v<T>&& std::is_signed_v<T>;
-
-/**
- * @brief 检查类型是否为整数类型的约束
- */
-template <typename T>
-concept IntegerType = UnsignedIntegerType<T> || SignedIntegerType<T>;
-
-/**
- * @brief 检查类型是否为浮点类型的约束
- */
-template <typename T>
-concept FloatingPointType = std::is_floating_point_v<T>;
-
-/**
- * @brief 检查类型是否为数值类型的约束
- */
-template <typename T>
-concept NumberType = IntegerType<T> || FloatingPointType<T>;
-
-/**
- * @brief 计算两个整数的最大公约数
+ * @brief 计算两个整数的最大公约数，O(log2(min(a, b)))
  */
 template <IntegerType T>
 def gcd(T a, T b)->T {
@@ -56,11 +27,56 @@ def gcd(T a, T b)->T {
 }
 
 /**
- * @brief 计算两个整数的最小公倍数
+ * @brief 计算两个整数的最小公倍数，O(log2(min(a, b)))
  */
 template <IntegerType T>
 def lcm(T a, T b)->T {
     return a / gcd(a, b) * b;
+}
+
+/**
+ * @brief 判断素数，O(sqrt(n))
+ */
+template <IntegerType T>
+def isprime(T num)->bool {
+    if (num < 2) {
+        return false;
+    }
+
+    T sqrtNum = std::sqrt(num);
+    for (T i = 2; i <= sqrtNum; ++i) {
+        if (num % i == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+/**
+ * @brief 计算 (a * b) % p
+ */
+template <IntegerType T>
+def mul(T a, T b, T p = MOD)->T {
+    T c = a * b - static_cast<T>(1.0L * a * b / p) * p;
+    c %= p;
+    if (c < 0) {
+        c += p;
+    }
+    return c;
+}
+
+/**
+ * @brief 计算 (a^n) % p
+ */
+template <IntegerType T>
+def pow(T a, T n, T p = MOD)->T {
+    T res{1};
+    for (; n; n /= 2, a = mul(a, a, p)) {
+        if (n % 2) {
+            res = mul(res, a, p);
+        }
+    }
+    return res;
 }
 
 } // namespace my::math

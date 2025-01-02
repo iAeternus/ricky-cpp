@@ -40,12 +40,43 @@ auto should_cal_lcm = []() {
     Assertions::assertEquals(20, res4);
 };
 
+auto should_judge_is_prime = []() {
+    // Given
+    i32 a = 1, b = 2, c = 3, d = 4;
+
+    // When
+    bool res = math::isprime(a);
+    bool res2 = math::isprime(b);
+    bool res3 = math::isprime(c);
+    bool res4 = math::isprime(d);
+
+    // Then
+    Assertions::assertFalse(res);
+    Assertions::assertTrue(res2);
+    Assertions::assertTrue(res3);
+    Assertions::assertFalse(res4);
+};
+
+auto should_cal_pow = []() {
+    // Given
+    i32 a = 2, n = 10, n2 = 0;
+
+    // When
+    i32 res = math::pow(a, n);
+    i32 res2 = math::pow(a, n2);
+
+    // Then
+    Assertions::assertEquals(1024, res);
+    Assertions::assertEquals(1, res2);
+};
 
 void test_math_utils() {
     UnitTestGroup group{"test_math_utils"};
 
     group.addTest("should_cal_gcd", should_cal_gcd);
     group.addTest("should_cal_lcm", should_cal_lcm);
+    group.addTest("should_judge_is_prime", should_judge_is_prime);
+    group.addTest("should_cal_pow", should_cal_pow);
 
     group.startAll();
 }
