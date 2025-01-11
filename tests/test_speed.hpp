@@ -2,7 +2,7 @@
 #define TEST_SPEED_HPP
 
 #include "test_dynarray.hpp"
-#include "test_dist.hpp"
+#include "test_dict.hpp"
 #include "test_thread_pool.hpp"
 
 namespace my::test {

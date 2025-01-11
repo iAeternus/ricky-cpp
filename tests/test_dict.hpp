@@ -1,5 +1,5 @@
-#ifndef TEST_DIST_HPP
-#define TEST_DIST_HPP
+#ifndef TEST_DICT_HPP
+#define TEST_DICT_HPP
 
 #include "ricky_test.hpp"
 #include "Dict.hpp"
@@ -103,8 +103,8 @@ auto should_to_string = []() {
     CString s2 = d2.__str__();
 
     // Then
-    Assertions::assertEquals("{1: 1, 2: 1, 3: 1}"_cs, s);
-    Assertions::assertEquals("{\"aaa\": 1, \"bbb\": 3, \"ccc\": 2}"_cs, s2);
+    Assertions::assertEquals("{1:1,2:1,3:1}"_cs, s);
+    Assertions::assertEquals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
 };
 
 void test_dict() {
@@ -175,4 +175,4 @@ void test_dict_speed() {
 
 } // namespace my::test::test_dict
 
-#endif // TEST_DIST_HPP
+#endif // TEST_DICT_HPP

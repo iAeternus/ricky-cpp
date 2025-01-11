@@ -65,6 +65,8 @@ class String : public Sequence<String, CodePoint> {
     }
 
 public:
+    constexpr static c_size npos = -1LL;
+
     String(const CString& encoding = UTF8) :
             String(0, encoding_map(encoding)) {}
 
@@ -170,7 +172,7 @@ public:
      * @brief 字符串的字节长度
      */
     c_size byteLength() const {
-        c_size length = 0;
+        c_size length = 0LL;
         for (auto&& ch : *this) {
             length += ch.size();
         }
@@ -178,16 +180,16 @@ public:
     }
 
     /** 
-     * @brief 分片，[start, end)
+     * @brief 分割字符串，[start, end)
      */
-    self slice(c_size start, c_size end) {
+    self split(c_size start, c_size end) {
         c_size mSize = size();
         start = neg_index(start, mSize);
         end = neg_index(end, mSize);
         return self{codePoints_ + start, end - start, manager_};
     }
 
-    const self slice(c_size start, c_size end) const {
+    const self split(c_size start, c_size end) const {
         c_size mSize = size();
         start = neg_index(start, mSize);
         end = neg_index(end, mSize);
@@ -195,14 +197,14 @@ public:
     }
 
     /**
-     * @brief 分片，[start, length)
+     * @brief 分割字符串，[start, length)
      */
-    self slice(c_size start) {
-        return slice(start, size());
+    self split(c_size start) {
+        return split(start, size());
     }
 
-    const self slice(c_size start) const {
-        return slice(start, size());
+    const self split(c_size start) const {
+        return split(start, size());
     }
 
     /**
@@ -215,7 +217,7 @@ public:
     c_size find(const self& pattern, c_size pos = 0) const {
         c_size mSize = size(), p_size = pattern.size();
         for (c_size i = pos; i + p_size <= mSize; ++i) {
-            if (slice(i, i + p_size) == pattern) {
+            if (split(i, i + p_size) == pattern) {
                 return i;
             }
         }
@@ -240,14 +242,14 @@ public:
         if (size() < prefix.size()) {
             return false;
         }
-        return slice(0, prefix.size()) == prefix;
+        return split(0, prefix.size()) == prefix;
     }
 
     bool endsWith(const self& suffix) const {
         if (size() < suffix.size()) {
             return false;
         }
-        return slice(size() - suffix.size()) == suffix;
+        return split(size() - suffix.size()) == suffix;
     }
 
     self upper() const {
@@ -273,28 +275,28 @@ public:
      */
     self trim() {
         auto [l, r] = get_trim_index();
-        return slice(l, r);
+        return split(l, r);
     }
 
     const self trim() const {
         auto [l, r] = get_trim_index();
-        return slice(l, r);
+        return split(l, r);
     }
 
     self ltrim() {
-        return slice(get_ltrim_index());
+        return split(get_ltrim_index());
     }
 
     const self ltrim() const {
-        return slice(get_ltrim_index());
+        return split(get_ltrim_index());
     }
 
     self rtrim() {
-        return slice(get_rtrim_index());
+        return split(get_rtrim_index());
     }
 
     const self rtrim() const {
-        return slice(get_rtrim_index());
+        return split(get_rtrim_index());
     }
 
     /**
@@ -302,28 +304,28 @@ public:
      */
     self trim(const self& pattern) {
         auto [l, r] = get_trim_index(pattern);
-        return slice(l, r);
+        return split(l, r);
     }
 
     const self trim(const self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
-        return slice(l, r);
+        return split(l, r);
     }
 
     self ltrim(const self& pattern) {
-        return slice(get_ltrim_index(pattern));
+        return split(get_ltrim_index(pattern));
     }
 
     const self ltrim(const self& pattern) const {
-        return slice(get_ltrim_index(pattern));
+        return split(get_ltrim_index(pattern));
     }
 
     self rtrim(const self& pattern) {
-        return slice(get_rtrim_index(pattern));
+        return split(get_rtrim_index(pattern));
     }
 
     const self rtrim(const self& pattern) const {
-        return slice(get_rtrim_index(pattern));
+        return split(get_rtrim_index(pattern));
     }
 
     // /**
@@ -386,20 +388,20 @@ public:
      */
     self match(const CodePoint& left, const CodePoint& right) const {
         c_size l = find(left);
-        if(l == npos) {
+        if (l == npos) {
             return "";
         }
 
         c_size matchCount = 1;
-        for(c_size r = l + 1, mSize = size(); r < mSize; ++r) {
-            if(at(r) == right) {
+        for (c_size r = l + 1, mSize = size(); r < mSize; ++r) {
+            if (at(r) == right) {
                 --matchCount;
-            } else if(at(r) == left) {
+            } else if (at(r) == left) {
                 ++matchCount;
             }
 
-            if(matchCount == 0) {
-                return slice(l, r + 1);
+            if (matchCount == 0) {
+                return split(l, r + 1);
             }
         }
         ValueError("Unmatched parentheses, too many left parentheses");
@@ -431,8 +433,8 @@ private:
 
     std::pair<c_size, c_size> get_trim_index(const self& pattern) const {
         c_size l = 0, r = size(), p_size = pattern.size();
-        while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
-        while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
+        while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
+        while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
         return std::make_pair(l, r);
     }
 
@@ -444,7 +446,7 @@ private:
 
     c_size get_ltrim_index(const self& pattern) const {
         c_size l = 0, r = size(), p_size = pattern.size();
-        while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
+        while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
         return l;
     }
 
@@ -456,7 +458,7 @@ private:
 
     c_size get_rtrim_index(const self& pattern) const {
         c_size l = 0, r = size(), p_size = pattern.size();
-        while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
+        while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
 
@@ -464,8 +466,6 @@ private:
     c_size length_;
     CodePoint* codePoints_;
     std::shared_ptr<StringManager> manager_;
-
-    constexpr static c_size npos = -1LL;
 };
 
 def operator""_s(const char* str, size_t length)->String {

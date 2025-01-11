@@ -35,18 +35,20 @@ auto should_mul = []() {
     Assertions::assertEquals({'a'}, s[3]);
 };
 
-auto should_slice = []() {
+auto should_split = []() {
     // Given
     String s = "abcdef"_s;
 
     // When
-    auto res = s.slice(1, 2);
-    auto res2 = s.slice(3);
+    auto res = s.split(1, 2);
+    auto res2 = s.split(3);
+    auto res3 = s.split(1, -1);
     
     // Then
     Assertions::assertEquals(1, i32(res.size()));
     Assertions::assertEquals("b"_s, res);
     Assertions::assertEquals("def"_s, res2);
+    Assertions::assertEquals("bcde"_s, res3);
 };
 
 auto should_find = []() {
@@ -56,10 +58,12 @@ auto should_find = []() {
     // When
     auto pos = s.find("def"_s);
     auto pos2 = s.find('f');
+    auto pos3 = s.find("abd"_s);
 
     // Then
     Assertions::assertEquals(3LL, pos);
     Assertions::assertEquals(5LL, pos2);
+    Assertions::assertEquals(util::String::npos, pos3);
 };
 
 auto should_find_all = []() {
@@ -150,7 +154,7 @@ auto should_maintain_encoding = []() {
 
     // When
     util::String s2 = s;
-    util::String s3 = s2.slice(0);
+    util::String s3 = s2.split(0);
 
     // Then
     Assertions::assertEquals(s, s2);
@@ -163,16 +167,13 @@ auto should_maintain_encoding = []() {
     Assertions::assertEquals("你好世界"_s, s);
     Assertions::assertEquals("你a世界"_s, s2);
     Assertions::assertEquals("你a世界"_s, s3);
-    Assertions::assertEquals("你好世界"_s, s.slice(0, s.size()));
+    Assertions::assertEquals("你好世界"_s, s.split(0, s.size()));
 
     // When
     auto res = s.replace("你"_s, "你们"_s);
 
     // Then
     Assertions::assertEquals("你们好世界"_s, res);
-
-    // util::String s4 = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
-    // io::print(s4.match('{', '}'));
 };
 
 // auto should_join_iterator = []() {
@@ -191,8 +192,8 @@ auto should_match_parentheses = []() {
     util::String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
 
     // When
-    String res = s.match('{', '}');
-    String res2 = s.match('[', ']');
+    auto res = s.match('{', '}');
+    auto res2 = s.match('[', ']');
 
     // Then
     Assertions::assertEquals("{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}"_s, res);
@@ -204,7 +205,7 @@ void test_string() {
 
     group.addTest("should_add", should_add);
     group.addTest("should_mul", should_mul);
-    group.addTest("should_slice", should_slice);
+    group.addTest("should_split", should_split);
     group.addTest("should_find", should_find);
     group.addTest("should_find_all", should_find_all);
     group.addTest("should_judge_starts_with", should_judge_starts_with);

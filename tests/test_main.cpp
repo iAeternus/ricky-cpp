@@ -5,7 +5,7 @@
 #include "test_chain.hpp"
 #include "test_bi_chain.hpp"
 #include "test_binary_utils.hpp"
-#include "test_dist.hpp"
+#include "test_dict.hpp"
 #include "test_random.hpp"
 #include "test_string.hpp"
 #include "test_array.hpp"
@@ -14,6 +14,8 @@
 #include "test_win_file.hpp"
 #include "test_math_utils.hpp"
 #include "test_big_integer.hpp"
+#include "test_pair.hpp"
+#include "test_json_parser.hpp"
 
 #include "test_speed.hpp"
 
@@ -42,6 +44,8 @@ int main() {
     test_win_file::test_win_file();
     test_math_utils::test_math_utils();
     test_big_integer::test_big_integer();
+    test_pair::test_pair();
+    test_json_parser::test_json_parser();
 #else
     test_speed();
 #endif

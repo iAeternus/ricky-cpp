@@ -144,19 +144,19 @@ private:
 };
 
 template <MyPrintable T>
-inline CString cstr_impl(const T& value) {
+def cstr_impl(const T& value)->CString {
     return value.__str__();
 }
 
 template <StdPrintable T>
-inline CString cstr_impl(const T& value) {
+def cstr_impl(const T& value)->CString {
     std::stringstream stream;
     stream << value;
     return stream.str();
 }
 
 template <Printable T>
-inline CString cstr(const T& value) {
+def cstr(const T& value)->CString {
     return cstr_impl(value);
 }
 

@@ -121,7 +121,27 @@ auto should_at = []() {
     util::DynArray<char> d = {'a', 'b', 'c'};
 
     // When
-    
+    auto res = d.at(0);
+    auto res2 = d.at(1);
+    auto res3 = d.at(2);
+
+    // Then
+    Assertions::assertEquals('a', res);
+    Assertions::assertEquals('b', res2);
+    Assertions::assertEquals('c', res3);
+};
+
+auto should_find = []() {
+    // Given
+    util::DynArray<CString> d = {"aaa"_cs, "bbb"_cs, "ccc"_cs};
+
+    // When
+    auto res = d.find("aaa"_cs);
+    auto res2 = d.find("ddd"_cs);
+
+    // Then
+    Assertions::assertEquals(0LL, res);
+    Assertions::assertEquals(d.size(), res2);
 };
 
 void test_dynarray() {
@@ -134,6 +154,8 @@ void test_dynarray() {
     group.addTest("should_clear", should_clear);
     group.addTest("should_to_array", should_to_array);
     group.addTest("should_extend", should_extend);
+    group.addTest("should_at", should_at);
+    group.addTest("should_find", should_find);
 
     group.startAll();
 }

@@ -152,7 +152,7 @@ public:
      * @brief 获得key对应的value，若key不存在，则抛出KeyError
      */
     value_t& get(const key_t& key) {
-        hash_t hashVal = my_hash(key);
+        auto hashVal = my_hash(key);
         auto* value = get_impl(hashVal);
         if (value == nullptr) {
             KeyError(std::format("Key '{}' not found in dict", key));
@@ -200,7 +200,7 @@ public:
      * @brief 重载[]运算符，若key不存在，则创建并返回一个默认值
      */
     value_t& operator[](const key_t& key) {
-        hash_t hashVal = my_hash(key);
+        auto hashVal = my_hash(key);
         if (!contains_hash_val(hashVal)) {
             insert_impl(key, value_t{}, hashVal);
         }
@@ -212,7 +212,7 @@ public:
      */
     template <typename _V>
     self& setdefault(const key_t& key, _V&& defaultValue) {
-        hash_t hashVal = my_hash(key);
+        auto hashVal = my_hash(key);
         if (!contains_hash_val(hashVal)) {
             insert_impl(key, std::forward<_V>(defaultValue), hashVal);
         }
@@ -224,7 +224,7 @@ public:
      */
     template <typename _K, typename _V>
     value_t& insert(_K&& key, _V&& value) {
-        hash_t hashVal = my_hash(key);
+        auto hashVal = my_hash(key);
         auto* m_value = get_impl(hashVal);
         if (m_value) {
             return *m_value = std::forward<_V>(value);
@@ -253,7 +253,7 @@ public:
 
     self& update(self&& other) {
         for (auto& key : other.keys_) {
-            hash_t hashVal = my_hash(key);
+            auto hashVal = my_hash(key);
             auto& value = *other.get_impl(hashVal);
             insert(std::move(key), std::move(value), hashVal);
         }
@@ -261,7 +261,7 @@ public:
     }
 
     void pop(const key_t& key) {
-        hash_t hashVal = my_hash(key);
+        auto hashVal = my_hash(key);
         bucket_.pop(hashVal);
         keys_.pop(keys_.find(key));
     }
@@ -412,18 +412,17 @@ public:
             } else {
                 stream << item.key();
             }
-            stream << ": ";
+            stream << ':';
             if constexpr (is_same<value_t, CString, String, std::string>) {
                 stream << '\"' << item.value() << '\"';
             } else {
                 stream << item.value();
             }
-            stream << ", ";
+            stream << ',';
         }
 
         std::string str = stream.str();
-        if (str.size() > 2) {
-            str.pop_back();
+        if (str.size() > 1) {
             str.pop_back();
         }
         str.push_back('}');

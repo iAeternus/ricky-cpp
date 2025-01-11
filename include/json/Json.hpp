@@ -138,6 +138,7 @@ public:
             return "JsonNull";
         default:
             ValueError(std::format("json type {} is not valid", id));
+            return None<CString>;
         }
     }
 
@@ -231,6 +232,7 @@ public:
             return transform<JsonType::JsonDict>().size();
         }
         RuntimeError("Json type is not JSON_ARRAY or JSON_DICT");
+        return None<c_size>;
     }
 
     CString __str__() const {
@@ -252,6 +254,7 @@ public:
             return cstr("null");
         default:
             ValueError(std::format("json type {} is not valid", jsonType_));
+            return None<CString>;
         }
     }
 

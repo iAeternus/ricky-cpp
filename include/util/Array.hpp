@@ -110,7 +110,7 @@ public:
         std::stringstream stream;
         stream << '[';
         for (c_size i = 0; i < size_; ++i) {
-            if (i != 0) stream << ",";
+            if (i != 0) stream << ',';
             stream << at(i);
         }
         stream << ']';
