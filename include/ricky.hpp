@@ -61,7 +61,7 @@ using hash_t = u64;
 
 // 空值, 不会被使用, 仅用于占位符
 template <typename T>
-T& None = *reinterpret_cast<T*>(nullptr);
+T& None = *reinterpret_cast<T*>(NULL);
 
 #define STD ::std::
 

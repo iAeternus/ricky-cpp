@@ -3,6 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "String.hpp"
+#include "Array.hpp"
 
 namespace my::test::test_string {
 
@@ -174,6 +175,30 @@ auto should_maintain_encoding = []() {
     // io::print(s4.match('{', '}'));
 };
 
+// auto should_join_iterator = []() {
+//     // Given
+//     util::Array<int> arr = {1, 2, 3, 4, 5};
+
+//     // When
+//     util::String s = ", "_s.join(arr);
+
+//     // Then
+//     Assertions::assertEquals("1, 2, 3, 4, 5"_s, s);
+// };
+
+auto should_match_parentheses = []() {
+    // Given
+    util::String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
+
+    // When
+    String res = s.match('{', '}');
+    String res2 = s.match('[', ']');
+
+    // Then
+    Assertions::assertEquals("{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}"_s, res);
+    Assertions::assertEquals("[1, 2, 3]"_s, res2);
+};
+
 void test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -189,6 +214,8 @@ void test_string() {
     group.addTest("should_trim", should_trim);
     group.addTest("should_replace", should_replace);
     group.addTest("should_maintain_encoding", should_maintain_encoding);
+    // group.addTest("should_join_iterator", should_join_iterator);
+    group.addTest("should_match_parentheses", should_match_parentheses);
 
     group.startAll();
 }

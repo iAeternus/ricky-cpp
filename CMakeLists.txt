@@ -19,6 +19,7 @@ target_include_directories(RICKY_CPP PUBLIC
     "${CMAKE_SOURCE_DIR}/include/async"
     "${CMAKE_SOURCE_DIR}/include/fs"
     "${CMAKE_SOURCE_DIR}/include/math"
+    "${CMAKE_SOURCE_DIR}/include/json"
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)

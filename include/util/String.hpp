@@ -111,13 +111,13 @@ public:
      * @brief 字符串拼接
      */
     self operator+(const self& other) const {
-        c_size m_size = this->size(), o_size = other.size();
-        self res{m_size + o_size, this->encoding()};
-        for (c_size i = 0; i < m_size; ++i) {
+        c_size mSize = this->size(), o_size = other.size();
+        self res{mSize + o_size, this->encoding()};
+        for (c_size i = 0; i < mSize; ++i) {
             res.at(i) = this->at(i);
         }
         for (c_size i = 0; i < o_size; ++i) {
-            res.at(m_size + i) = other.at(i);
+            res.at(mSize + i) = other.at(i);
         }
         return res;
     }
@@ -132,10 +132,10 @@ public:
      * @brief 字符串复制n份
      */
     self operator*(c_size n) {
-        c_size pos = 0, m_size = size();
-        self res{m_size * n, encoding()};
+        c_size pos = 0, mSize = size();
+        self res{mSize * n, encoding()};
         while (n--) {
-            for (c_size i = 0; i < m_size; ++i) {
+            for (c_size i = 0; i < mSize; ++i) {
                 res.at(pos++) = at(i);
             }
         }
@@ -181,16 +181,16 @@ public:
      * @brief 分片，[start, end)
      */
     self slice(c_size start, c_size end) {
-        c_size m_size = size();
-        start = neg_index(start, m_size);
-        end = neg_index(end, m_size);
+        c_size mSize = size();
+        start = neg_index(start, mSize);
+        end = neg_index(end, mSize);
         return self{codePoints_ + start, end - start, manager_};
     }
 
     const self slice(c_size start, c_size end) const {
-        c_size m_size = size();
-        start = neg_index(start, m_size);
-        end = neg_index(end, m_size);
+        c_size mSize = size();
+        start = neg_index(start, mSize);
+        end = neg_index(end, mSize);
         return self{codePoints_ + start, end - start, manager_};
     }
 
@@ -213,21 +213,21 @@ public:
     }
 
     c_size find(const self& pattern, c_size pos = 0) const {
-        c_size m_size = size(), p_size = pattern.size();
-        for (c_size i = pos; i + p_size <= m_size; ++i) {
+        c_size mSize = size(), p_size = pattern.size();
+        for (c_size i = pos; i + p_size <= mSize; ++i) {
             if (slice(i, i + p_size) == pattern) {
                 return i;
             }
         }
-        return -1;
+        return npos;
     }
 
     Array<c_size> findAll(const self& pattern) const {
         DynArray<c_size> res;
-        c_size pos = 0;
+        c_size pos = 0LL;
         while (true) {
             pos = find(pattern, pos);
-            if (pos == -1) {
+            if (pos == npos) {
                 break;
             }
             res.append(pos);
@@ -252,8 +252,8 @@ public:
 
     self upper() const {
         self res{*this};
-        c_size m_size = size();
-        for (c_size i = 0; i < m_size; ++i) {
+        c_size mSize = size();
+        for (c_size i = 0; i < mSize; ++i) {
             res.at(i) = res.at(i).upper();
         }
         return res;
@@ -261,8 +261,8 @@ public:
 
     self lower() const {
         self res{*this};
-        c_size m_size = size();
-        for (c_size i = 0; i < m_size; ++i) {
+        c_size mSize = size();
+        for (c_size i = 0; i < mSize; ++i) {
             res.at(i) = res.at(i).lower();
         }
         return res;
@@ -326,20 +326,47 @@ public:
         return slice(get_rtrim_index(pattern));
     }
 
+    // /**
+    //  * @brief 使用this连接可迭代对象的每个元素
+    //  * @param iter 可迭代对象
+    //  * @return 返回构建好的结果对象
+    //  */
+    // template <Iterable I>
+    // self join(const I& iter) const {
+    //     c_size newLength = 0LL, pos = 0LL, mSize = this->size();
+    //     for (auto&& elem : iter) {
+    //         newLength = elem.size() + mSize;
+    //     }
+    //     newLength = std::max<c_size>(0LL, newLength - mSize);
+
+    //     self result{newLength, encoding()};
+    //     for (auto&& elem : iter) {
+    //         for (c_size i = 0, eSize = elem.size(); i < eSize; ++i) {
+    //             result.at(pos++) = elem.at(i);
+    //         }
+    //         if (pos < result.size()) {
+    //             for (c_size i = 0; i < mSize; ++i) {
+    //                 result.at(pos++) = this->at(i);
+    //             }
+    //         }
+    //     }
+    //     return result;
+    // }
+
     /**
      * @brief 替换字符串中的子串
      */
     self replace(const self& old_, const self& new_) const {
         DynArray<c_size> indices;
-        c_size pos = 0;
-        while (pos = find(old_, pos), pos != -1) {
+        c_size pos = 0LL;
+        while (pos = find(old_, pos), pos != npos) {
             indices.append(pos);
             pos += old_.size();
         }
 
-        c_size m_size = size();
-        self result{m_size + indices.size() * (new_.size() - old_.size()), encoding()};
-        for (c_size i = 0, j = 0, k = 0; i < m_size; ++i) {
+        c_size mSize = size();
+        self result{mSize + indices.size() * (new_.size() - old_.size()), encoding()};
+        for (c_size i = 0, j = 0, k = 0; i < mSize; ++i) {
             if (j < indices.size() && i == indices[j]) {
                 for (auto&& c : new_) {
                     result.codePoints_[k++] = c;
@@ -351,6 +378,32 @@ public:
             }
         }
         return result;
+    }
+
+    /**
+     * @brief 查找第一个成对出现的字符
+     * @return 返回从left到right的子字符串
+     */
+    self match(const CodePoint& left, const CodePoint& right) const {
+        c_size l = find(left);
+        if(l == npos) {
+            return "";
+        }
+
+        c_size matchCount = 1;
+        for(c_size r = l + 1, mSize = size(); r < mSize; ++r) {
+            if(at(r) == right) {
+                --matchCount;
+            } else if(at(r) == left) {
+                ++matchCount;
+            }
+
+            if(matchCount == 0) {
+                return slice(l, r + 1);
+            }
+        }
+        ValueError("Unmatched parentheses, too many left parentheses");
+        return None<String>;
     }
 
     CString __str__() const {
@@ -411,6 +464,8 @@ private:
     c_size length_;
     CodePoint* codePoints_;
     std::shared_ptr<StringManager> manager_;
+
+    constexpr static c_size npos = -1LL;
 };
 
 def operator""_s(const char* str, size_t length)->String {
