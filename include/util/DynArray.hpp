@@ -241,7 +241,7 @@ public:
             stream << at(i);
         }
         stream << ']';
-        return CString(stream.str());
+        return CString{stream.str()};
     }
 
     template <bool IsConst>

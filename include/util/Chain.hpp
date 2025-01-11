@@ -134,7 +134,7 @@ public:
             stream << current;
         }
         stream << ']';
-        return CString(stream.str());
+        return CString{stream.str()};
     }
 
     using iterator = ChainIterator<Node>;

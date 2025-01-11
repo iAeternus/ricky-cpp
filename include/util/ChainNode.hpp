@@ -134,7 +134,7 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << "<BiNode  " << value_ << ">";
-        return CString(stream.str());
+        return CString{stream.str()};
     }
 
     bool __equals__(const self& other) const {

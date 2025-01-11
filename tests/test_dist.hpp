@@ -90,6 +90,23 @@ auto should_operator = []() {
     Assertions::assertEquals(3, i32(res4.size()));
 };
 
+auto should_to_string = []() {
+    // Given
+    util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}};
+    util::Dict<CString, i32> d2;
+    d2.insert("aaa"_cs, 1);
+    d2.insert("bbb"_cs, 3);
+    d2.insert("ccc"_cs, 2);
+
+    // When
+    CString s = d.__str__();
+    CString s2 = d2.__str__();
+
+    // Then
+    Assertions::assertEquals("{1: 1, 2: 1, 3: 1}"_cs, s);
+    Assertions::assertEquals("{\"aaa\": 1, \"bbb\": 3, \"ccc\": 2}"_cs, s2);
+};
+
 void test_dict() {
     UnitTestGroup group{"test_dict"};
 
@@ -98,6 +115,7 @@ void test_dict() {
     group.addTest("should_set_default", should_set_default);
     group.addTest("should_update", should_update);
     group.addTest("should_operator", should_operator);
+    group.addTest("should_to_string", should_to_string);
 
     group.startAll();
 }
@@ -109,7 +127,7 @@ std::vector<std::string> strs;
 auto setup = []() {
     n = 1e6;
     k = 100;
-    for(i32 i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         nums.push_back(util::rnd.nextI32(0, k));
         strs.push_back(std::to_string(i));
     }
@@ -117,28 +135,28 @@ auto setup = []() {
 
 auto speed_of_dict_count = []() {
     util::Dict<i32, i32> d;
-    for(const auto& num : nums) {
+    for (const auto& num : nums) {
         ++d[num];
     }
 };
 
 auto speed_of_unordered_map_count = []() {
     std::unordered_map<i32, i32> mp;
-    for(const auto& num : nums) {
+    for (const auto& num : nums) {
         ++mp[num];
     }
 };
 
 auto speed_of_dict_insert = []() {
     util::Dict<std::string, i32> d;
-    for(i32 i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         d.insert(strs[i], i);
     }
 };
 
 auto speed_of_unordered_map_insert = []() {
     std::unordered_map<std::string, i32> mp;
-    for(i32 i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         mp.insert(std::make_pair(strs[i], i));
     }
 };

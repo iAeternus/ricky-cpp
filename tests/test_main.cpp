@@ -13,6 +13,7 @@
 #include "test_win_file_utils.hpp"
 #include "test_win_file.hpp"
 #include "test_math_utils.hpp"
+#include "test_big_integer.hpp"
 
 #include "test_speed.hpp"
 
@@ -40,6 +41,7 @@ int main() {
     test_win_file_utils::test_win_file_utils();
     test_win_file::test_win_file();
     test_math_utils::test_math_utils();
+    test_big_integer::test_big_integer();
 #else
     test_speed();
 #endif

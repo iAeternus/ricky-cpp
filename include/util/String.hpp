@@ -9,7 +9,6 @@
 
 #include "CodePoint.hpp"
 #include "NoCopy.hpp"
-#include "Object.hpp"
 
 namespace my::util {
 

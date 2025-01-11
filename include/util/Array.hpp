@@ -114,7 +114,7 @@ public:
             stream << at(i);
         }
         stream << ']';
-        return stream.str();
+        return CString{stream.str()};
     }
 
     /**

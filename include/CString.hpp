@@ -87,8 +87,8 @@ public:
         return str_[index];
     }
 
-    size_t size() const {
-        return std::strlen(data());
+    c_size size() const {
+        return static_cast<c_size>(std::strlen(data()));
     }
 
     bool empty() const {
@@ -107,7 +107,7 @@ public:
         return *this;
     }
 
-    size_t __hash__() const {
+    hash_t __hash__() const {
         return bytes_hash(data(), size());
     }
 
@@ -173,7 +173,7 @@ struct std::formatter<my::CString> : std::formatter<const char*> {
     }
 };
 
-def operator ""_cs(const char* str, size_t len)->my::CString {
+def operator""_cs(const char* str, size_t len)->my::CString {
     return my::CString{str, my::c_size(len)};
 }
 

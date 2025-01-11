@@ -10,12 +10,11 @@
 #include "ricky_memory.hpp"
 #include "binary_utils.hpp"
 #include "HashBucket.hpp"
-#include "DynArray.hpp"
 #include "RelationIterator.hpp"
 
-#include <ranges>
-
 namespace my::util {
+
+class String;
 
 /**
  * @brief 键值对视图
@@ -405,7 +404,30 @@ public:
     }
 
     CString __str__() const {
-        return ""; // TODO String
+        std::stringstream stream;
+        stream << '{';
+        for (auto&& item : *this) {
+            if constexpr (is_same<key_t, CString, String, std::string>) {
+                stream << '\"' << item.key() << '\"';
+            } else {
+                stream << item.key();
+            }
+            stream << ": ";
+            if constexpr (is_same<value_t, CString, String, std::string>) {
+                stream << '\"' << item.value() << '\"';
+            } else {
+                stream << item.value();
+            }
+            stream << ", ";
+        }
+
+        std::string str = stream.str();
+        if (str.size() > 2) {
+            str.pop_back();
+            str.pop_back();
+        }
+        str.push_back('}');
+        return CString{str};
     }
 
     class DictIterator : public Object<DictIterator> {
