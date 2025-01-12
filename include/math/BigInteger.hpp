@@ -290,6 +290,15 @@ public:
         return *this;
     }
 
+    friend self operator%(const self& a, const self& b) {
+        return a - a / b * b;
+    }
+
+    self& operator%=(const self& other) {
+        *this = *this % other;
+        return *this;
+    }
+
     friend bool operator<(const self& a, const self& b) {
         return a.__cmp__(b) < 0;
     }
@@ -367,6 +376,9 @@ public:
     }
 
 private:
+    /**
+     * @brief 移除前导0
+     */
     void cutLeadingZero() {
         while (num_.back() == 0 && num_.size() != 1) {
             num_.pop();
@@ -374,7 +386,7 @@ private:
     }
 
     /**
-     * @brief 计算能存储的长度，每4字节存8个10进制位
+     * @brief 计算长度，每4字节存8个10进制位
      */
     void calcLength() {
         cutLeadingZero();
@@ -382,7 +394,7 @@ private:
         if (tmp == 0) {
             length_ = 1;
         } else {
-            length_ = (num_.size() - 1) * 8;
+            length_ = (num_.size() - 1) * WIDTH;
             while (tmp > 0) {
                 ++length_;
                 tmp /= 10;

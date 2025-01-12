@@ -28,10 +28,10 @@ auto should_construct_with_i64 = []() {
 
 auto should_construct_with_c_string = []() {
     // Given
-    CString num = "123456789123456789123456789"_cs;
+    CString num = "123456789012345678901234567890"_cs;
     CString num2 = "0"_cs;
-    CString num3 = "-123456789123456789123456789"_cs;
-    CString num4 = "-00123456789123456789123456789"_cs;
+    CString num3 = "-123456789012345678901234567890"_cs;
+    CString num4 = "-00123456789012345678901234567890"_cs;
 
     // When
     math::BigInteger bi = num;
@@ -40,14 +40,14 @@ auto should_construct_with_c_string = []() {
     math::BigInteger bi4 = num4;
 
     // Then
-    Assertions::assertEquals("123456789123456789123456789"_cs, bi.__str__());
-    Assertions::assertEquals(27LL, bi.size());
+    Assertions::assertEquals("123456789012345678901234567890"_cs, bi.__str__());
+    Assertions::assertEquals(30LL, bi.size());
     Assertions::assertEquals("0"_cs, bi2.__str__());
     Assertions::assertEquals(1LL, bi2.size());
-    Assertions::assertEquals("-123456789123456789123456789"_cs, bi3.__str__());
-    Assertions::assertEquals(27LL, bi3.size());
-    Assertions::assertEquals("-123456789123456789123456789"_cs, bi4.__str__());
-    Assertions::assertEquals(27LL, bi4.size());
+    Assertions::assertEquals("-123456789012345678901234567890"_cs, bi3.__str__());
+    Assertions::assertEquals(30LL, bi3.size());
+    Assertions::assertEquals("-123456789012345678901234567890"_cs, bi4.__str__());
+    Assertions::assertEquals(30LL, bi4.size());
 };
 
 auto should_add = []() {
@@ -144,6 +144,20 @@ auto should_divide = []() {
     Assertions::assertEquals("493827160549382716054938271605"_cs, bi2.__str__());
 };
 
+auto should_modulus = []() {
+    // Given
+    math::BigInteger bi = "123456789012345678901234567890";
+    math::BigInteger bi2 = "987654321098765432109876543210";
+
+    // When
+    auto res = bi % bi2;
+    bi2 %= bi;
+
+    // Then
+    Assertions::assertEquals("123456789012345678901234567890"_cs, res.__str__());
+    Assertions::assertEquals("9000000000900000000090"_cs, bi2.__str__());
+};
+
 auto should_compare = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -175,6 +189,7 @@ void test_big_integer() {
     group.addTest("should_subtract", should_subtract);
     group.addTest("should_multiply", should_multiply);
     group.addTest("should_divide", should_divide);
+    group.addTest("should_modulus", should_modulus);
     group.addTest("should_compare", should_compare);
 
     group.startAll();
