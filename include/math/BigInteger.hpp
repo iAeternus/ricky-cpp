@@ -9,8 +9,6 @@
 
 #include "DynArray.hpp"
 
-#include <iomanip>
-
 namespace my::math {
 
 class BigInteger : public Object<BigInteger> {
@@ -324,15 +322,15 @@ public:
     }
 
     friend bool operator||(const BigInteger& a, const BigInteger& b) {
-        return a != 0 || b != 0;
+        return a != ZERO || b != ZERO;
     }
 
     friend bool operator&&(const BigInteger& a, const BigInteger& b) {
-        return a != 0 && b != 0;
+        return a != ZERO && b != ZERO;
     }
 
     bool operator!() const {
-        return *this == 0;
+        return *this == ZERO;
     }
 
     CString __str__() const {

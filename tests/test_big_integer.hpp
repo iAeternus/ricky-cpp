@@ -158,6 +158,28 @@ auto should_modulus = []() {
     Assertions::assertEquals("9000000000900000000090"_cs, bi2.__str__());
 };
 
+auto should_logical = []() {
+    // Given
+    math::BigInteger bi = "123456789012345678901234567890";
+    math::BigInteger bi2 = "987654321098765432109876543210";
+
+    // When
+    bool res = bi && bi2;
+    bool res2 = math::BigInteger::ZERO && bi2;
+    bool res3 = bi || bi2;
+    bool res4 = math::BigInteger::ZERO || bi2;
+    bool res5 = !bi;
+    bool res6 = !math::BigInteger::ZERO;
+
+    // Then
+    Assertions::assertTrue(res);
+    Assertions::assertFalse(res2);
+    Assertions::assertTrue(res3);
+    Assertions::assertTrue(res4);
+    Assertions::assertFalse(res5);
+    Assertions::assertTrue(res6);
+};
+
 auto should_compare = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -190,6 +212,7 @@ void test_big_integer() {
     group.addTest("should_multiply", should_multiply);
     group.addTest("should_divide", should_divide);
     group.addTest("should_modulus", should_modulus);
+    group.addTest("should_logical", should_logical);
     group.addTest("should_compare", should_compare);
 
     group.startAll();
