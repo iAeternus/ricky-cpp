@@ -79,6 +79,13 @@ public:
         this->manager_->reset(length_, codePoints_);
     }
 
+    String(c_size length, CodePoint&& codePoint = CodePoint{'0'}, const CString& encoding = UTF8) :
+            String(length, encoding_map(encoding)) {
+        for(c_size i = 0; i < length_; ++i) {
+            at(i) = codePoint;
+        }
+    }
+
     String(const CString& cstr, const CString& encoding = UTF8) :
             String(cstr.data(), cstr.size(), encoding) {}
 
@@ -113,12 +120,12 @@ public:
      * @brief 字符串拼接
      */
     self operator+(const self& other) const {
-        c_size mSize = this->size(), o_size = other.size();
-        self res{mSize + o_size, this->encoding()};
+        c_size mSize = this->size(), oSize = other.size();
+        self res{mSize + oSize, this->encoding()};
         for (c_size i = 0; i < mSize; ++i) {
             res.at(i) = this->at(i);
         }
-        for (c_size i = 0; i < o_size; ++i) {
+        for (c_size i = 0; i < oSize; ++i) {
             res.at(mSize + i) = other.at(i);
         }
         return res;
@@ -210,7 +217,7 @@ public:
     /**
      * @brief 查找子串
      */
-    c_size find(CodePoint c) const {
+    c_size find(const CodePoint& c) const {
         return super::find(c);
     }
 

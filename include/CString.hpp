@@ -103,6 +103,18 @@ public:
         return str_;
     }
 
+    self operator+(const self& other) const {
+        c_size mSize = this->size(), oSize = other.size();
+        CString res{mSize + oSize};
+        for(c_size i = 0; i < mSize; ++i) {
+            res[i] = this->str_[i];
+        }
+        for(c_size i = 0; i < oSize; ++i) {
+            res[mSize + i] = other.str_[i];
+        }
+        return res;
+    }
+
     CString __str__() const {
         return *this;
     }
@@ -175,6 +187,14 @@ struct std::formatter<my::CString> : std::formatter<const char*> {
 
 def operator""_cs(const char* str, size_t len)->my::CString {
     return my::CString{str, my::c_size(len)};
+}
+
+def c2i(char ch)->int {
+    return ch - '0';
+}
+
+def i2c(int ch)->char {
+    return ch + '0';
 }
 
 #endif // CSTRING_HPP

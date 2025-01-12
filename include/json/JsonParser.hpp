@@ -64,7 +64,7 @@ private:
         } else if (jsonStr[0] == util::CodePoint('{')) {
             match = jsonStr.match('{', '}');
         } else if (jsonStr[0] == util::CodePoint{'\"'}) {
-            match = jsonStr.split(0, jsonStr.split(1).find('\"') + 2);
+            match = jsonStr.split(0, jsonStr.split(1).find(util::CodePoint{'\"'}) + 2);
         } else {
             auto stopSignIdx = jsonStr.find(stopSign);
             if (stopSign == util::String::npos) {

@@ -46,12 +46,25 @@ auto should_compare = []() {
     Assertions::assertNotEquals(str2, str4);
 };
 
+auto should_add = []() {
+    // Given
+    CString str = "aaa";
+    CString str2 = "bbb";
+
+    // When
+    auto res = str + str2;
+
+    // Then
+    Assertions::assertEquals("aaabbb"_cs, res);
+};
+
 void test_cstring() {
     UnitTestGroup group{"test_cstring"};
 
     group.addTest("should_construct", should_construct);
     group.addTest("should_hash", should_hash);
     group.addTest("should_compare", should_compare);
+    group.addTest("should_add", should_add);
 
     group.startAll();
 }

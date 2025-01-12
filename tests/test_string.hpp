@@ -9,6 +9,13 @@ namespace my::test::test_string {
 
 using namespace my::util;
 
+auto should_construct = []() {
+    String s = "abc";
+    String s2{10, '0'};
+    Assertions::assertEquals("abc"_cs, s.__str__());
+    Assertions::assertEquals("0000000000"_cs, s2.__str__());
+};
+
 auto should_add = []() {
     // Given
     String s = "abc"_s;
@@ -18,7 +25,7 @@ auto should_add = []() {
     s += s2;
 
     // Then
-    Assertions::assertEquals(6, i32(s.size()));
+    Assertions::assertEquals(6LL, s.size());
     Assertions::assertEquals({'b'}, s[3]);
     Assertions::assertEquals("abcbcd"_s, s);
 };
@@ -57,7 +64,7 @@ auto should_find = []() {
 
     // When
     auto pos = s.find("def"_s);
-    auto pos2 = s.find('f');
+    auto pos2 = s.find(util::CodePoint{'f'});
     auto pos3 = s.find("abd"_s);
 
     // Then
@@ -74,7 +81,7 @@ auto should_find_all = []() {
     auto poss = s.findAll("abc"_s);
 
     // Then
-    Assertions::assertEquals(2, i32(poss.size()));
+    Assertions::assertEquals(2LL, poss.size());
     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
 };
 
@@ -203,6 +210,7 @@ auto should_match_parentheses = []() {
 void test_string() {
     UnitTestGroup group{"test_string"};
 
+    group.addTest("should_construct", should_construct);
     group.addTest("should_add", should_add);
     group.addTest("should_mul", should_mul);
     group.addTest("should_split", should_split);

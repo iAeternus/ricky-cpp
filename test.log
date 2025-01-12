@@ -1,6 +1,6 @@
 ================= should_group_unit_test =================
-[32m[should_success1] Test passed in 115ms
-[0m[32m[should_success2] Test passed in 105ms
+[32m[should_success1] Test passed in 104ms
+[0m[32m[should_success2] Test passed in 109ms
 [0m[31m[should_failed] Test failed! Exception: wa
 [0m[32m[should_throws] Test passed in 0ms
 [0mTotal tests run: 4, Failures: 1
@@ -17,7 +17,9 @@
 [0m[32m[should_clear] Test passed in 0ms
 [0m[32m[should_to_array] Test passed in 0ms
 [0m[32m[should_extend] Test passed in 0ms
-[0mTotal tests run: 7, Failures: 0
+[0m[32m[should_at] Test passed in 0ms
+[0m[32m[should_find] Test passed in 0ms
+[0mTotal tests run: 9, Failures: 0
 ================= test_chain =================
 [32m[should_append] Test passed in 0ms
 [0m[32m[should_iterable] Test passed in 0ms
@@ -44,25 +46,26 @@
 [0m[32m[should_set_default] Test passed in 0ms
 [0m[32m[should_update] Test passed in 0ms
 [0m[32m[should_operator] Test passed in 0ms
-[0mTotal tests run: 5, Failures: 0
+[0m[32m[should_to_string] Test passed in 0ms
+[0mTotal tests run: 6, Failures: 0
 ================= test_random =================
-u8: 85
-u16: 51900
-u32: 220480809
-u64: 17926448656602471490
-i8: 82
-i16: 14865
-i32: 970443779
-i64: -7319513021273320941
-float: 0.9896089
-double: 0.48326284272466025
-CString: vZ0uGV
+u8: 14
+u16: 27956
+u32: 1066951068
+u64: 11254747292360401661
+i8: 98
+i16: 12341
+i32: 1438786599
+i64: 6463706596577047769
+float: 0.04474373
+double: 0.6311627360357774
+CString: SoudKX
 [32m[should_generate_random] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
 ================= test_string =================
 [32m[should_add] Test passed in 0ms
 [0m[32m[should_mul] Test passed in 0ms
-[0m[32m[should_slice] Test passed in 0ms
+[0m[32m[should_split] Test passed in 0ms
 [0m[32m[should_find] Test passed in 0ms
 [0m[32m[should_find_all] Test passed in 0ms
 [0m[32m[should_judge_starts_with] Test passed in 0ms
@@ -72,7 +75,8 @@ CString: vZ0uGV
 [0m[32m[should_trim] Test passed in 0ms
 [0m[32m[should_replace] Test passed in 0ms
 [0m[32m[should_maintain_encoding] Test passed in 0ms
-[0mTotal tests run: 12, Failures: 0
+[0m[32m[should_match_parentheses] Test passed in 0ms
+[0mTotal tests run: 13, Failures: 0
 ================= test_array =================
 [32m[should_at] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
@@ -80,27 +84,60 @@ CString: vZ0uGV
 [32m[should_push] Test passed in 0ms
 [0m[32m[should_push_tasks] Test passed in 0ms
 [0m[32m[should_push_tasks_with_exception] Test passed in 0ms
-[0m[32m[should_wait] Test passed in 1ms
+[0m[32m[should_wait] Test passed in 0ms
 [0mTotal tests run: 4, Failures: 0
 ================= test_win_file_utils =================
 [32m[should_judge_exists] Test passed in 0ms
 [0m[32m[should_judge_is_file] Test passed in 0ms
 [0m[32m[should_judge_is_dir] Test passed in 0ms
+[0m[32m[should_mkdir_and_remove] Test passed in 0ms
 [0m[32m[should_join] Test passed in 0ms
 [0mCMakeLists.txt
+resources
 test_array.hpp
+test_big_integer.hpp
 test_binary_utils.hpp
 test_bi_chain.hpp
 test_chain.hpp
 test_cstring.hpp
-test_dist.hpp
+test_dict.hpp
 test_dynarray.hpp
+test_json_parser.hpp
 test_main.cpp
+test_math_utils.hpp
+test_pair.hpp
 test_random.hpp
 test_speed.hpp
 test_string.hpp
 test_test_utils.hpp
 test_thread_pool.hpp
+test_win_file.hpp
 test_win_file_utils.hpp
 [32m[should_list_dir] Test passed in 0ms
-[0mTotal tests run: 5, Failures: 0
+[0mTotal tests run: 6, Failures: 0
+================= test_win_file =================
+[32m[should_write_win_file] Test passed in 5ms
+[0m[32m[should_append_win_file] Test passed in 3ms
+[0mTotal tests run: 2, Failures: 0
+================= test_math_utils =================
+[32m[should_cal_gcd] Test passed in 0ms
+[0m[32m[should_cal_lcm] Test passed in 0ms
+[0m[32m[should_judge_is_prime] Test passed in 0ms
+[0m[32m[should_cal_pow] Test passed in 0ms
+[0mTotal tests run: 4, Failures: 0
+================= test_big_integer =================
+[32m[should_construct_with_i64] Test passed in 0ms
+[0m[32m[should_construct_with_c_string] Test passed in 0ms
+[0mTotal tests run: 2, Failures: 0
+================= test_pair =================
+[32m[should_construct] Test passed in 0ms
+[0mTotal tests run: 1, Failures: 0
+================= test_json_parser =================
+{"array":[1,2,"3",4,5.6,["a","b","c"],{"d":1,"e":2,"f":3}],"other":null,"bool":1}
+3
+[1,2,"3",4,5.6,["a","b","c"],{"d":1,"e":2,"f":3}]
+null
+1
+{"array":[1,2,"3",4,5.6,["a","b","c"],{"d":1,"e":2,"f":3}],"other":null,"bool":1}
+[32m[should_parse] Test passed in 0ms
+[0mTotal tests run: 1, Failures: 0

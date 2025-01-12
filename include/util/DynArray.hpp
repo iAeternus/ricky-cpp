@@ -91,6 +91,28 @@ public:
     }
 
     /**
+     * @brief 首元，对数组长度不做检查
+     */
+    value_t& front() {
+        return at(0);
+    }
+
+    const value_t& front() const {
+        return at(0);
+    }
+
+    /**
+     * @brief 尾元，对数组长度不做检查
+     */
+    value_t& back() {
+        return at(size() - 1);
+    }
+
+    const value_t& back() const {
+        return at(size() - 1);
+    }
+
+    /**
      * @brief 对index范围不做检查
      */
     value_t& at(c_size index) {
@@ -142,7 +164,7 @@ public:
     }
 
     /**
-     * @brief 移除指定位置的元素
+     * @brief 移除指定位置的元素，默认移除最后一个元素
      * @param index 索引，从0开始。若为-1，则移除最后一个元素
      * @return void
      */
