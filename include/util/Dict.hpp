@@ -9,6 +9,7 @@
 
 #include "ricky_memory.hpp"
 #include "binary_utils.hpp"
+#include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "RelationIterator.hpp"
 
@@ -17,59 +18,16 @@ namespace my::util {
 class String;
 
 /**
- * @brief 键值对视图
- */
-template <Hashable K, typename V>
-class KeyValueView : Object<KeyValueView<K, V>> {
-    using self = KeyValueView<K, V>;
-
-public:
-    using key_t = K;
-    using value_t = V;
-
-    KeyValueView(const key_t* key = nullptr, const value_t* value = nullptr) :
-            key_(key), value_(value) {}
-
-    KeyValueView(const self& other) = default;
-
-    self& operator=(const self& other) = default;
-
-    self& set(const key_t* key, const value_t* value) {
-        this->key_ = key;
-        this->value_ = value;
-        return *this;
-    }
-
-    const key_t& key() const {
-        if (key_ == nullptr) {
-            KeyError("key is null");
-        }
-        return *key_;
-    }
-
-    const value_t& value() const {
-        if (value_ == nullptr) {
-            ValueError("value is null");
-        }
-        return *value_;
-    }
-
-private:
-    const key_t* key_;
-    const value_t* value_;
-};
-
-/**
  * @brief 字典
  */
-template <Hashable K, typename V, typename BUCKET = RobinHashBucket<V>>
-class Dict : Object<Dict<K, V, BUCKET>> {
-    using self = Dict<K, V, BUCKET>;
+template <Hashable K, typename V, typename Bucket = RobinHashBucket<V>>
+class Dict : Object<Dict<K, V, Bucket>> {
+    using self = Dict<K, V, Bucket>;
 
 public:
     using key_t = K;
     using value_t = V;
-    using bucket_t = BUCKET;
+    using bucket_t = Bucket;
 
     Dict(c_size bucketSize = MIN_BUCKET_SIZE) :
             bucket_(bucketSize), keys_() {}

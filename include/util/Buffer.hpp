@@ -1,5 +1,5 @@
 /**
- * @brief 缓冲区
+ * @brief 内存块
  * @author Ricky
  * @date 2024/12/2
  * @version 1.0
