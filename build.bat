@@ -12,4 +12,4 @@ cmake .. -G "MinGW Makefiles"
 
 echo Start Compile Project
 make
-echo Compiled Successfully
+echo Compile and Link Successfully
