@@ -61,7 +61,7 @@ public:
     }
 };
 
-template <typename IterMove> // TODO名字
+template <typename IterMove>
 class RelationIterator : public Object<RelationIterator<IterMove>> {
     using self = RelationIterator<IterMove>;
     using super = Object<self>;

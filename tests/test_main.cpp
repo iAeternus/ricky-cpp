@@ -27,9 +27,8 @@ using namespace my::test;
 #define TEST_FUNCTIONALITY 1
 
 int main() {
-
 #if TEST_FUNCTIONALITY
-    test_test_utils::should_group_unit_test();
+    test_test_utils::test_test_utils();
     test_cstring::test_cstring();
     test_dynarray::test_dynarray();
     test_chain::test_chain();
@@ -49,5 +48,4 @@ int main() {
 #else
     test_speed();
 #endif
-
 }
