@@ -1,5 +1,5 @@
 ================= should_group_unit_test =================
-[32m[should_success1] Test passed in 102ms
+[32m[should_success1] Test passed in 115ms
 [0m[32m[should_success2] Test passed in 110ms
 [0m[31m[should_failed] Test failed! Exception: wa
 [0m[32m[should_throws] Test passed in 0ms
@@ -50,17 +50,17 @@
 [0m[32m[should_to_string] Test passed in 0ms
 [0mTotal tests run: 6, Failures: 0
 ================= test_random =================
-u8: 243
-u16: 62726
-u32: 1381341369
-u64: 8401507935467661150
-i8: 117
-i16: 26597
-i32: 754655627
-i64: 7348511325764967861
-float: 0.031831216
-double: 0.5807613246023089
-CString: FsaWYZ
+u8: 83
+u16: 56635
+u32: 3426368001
+u64: 2253190144467999316
+i8: -70
+i16: 7320
+i32: 1780622946
+i64: -3590107883346494661
+float: 0.461852
+double: 0.34005510283308776
+CString: fwa1ZV
 [32m[should_generate_random] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
 ================= test_string =================
@@ -78,7 +78,8 @@ CString: FsaWYZ
 [0m[32m[should_replace] Test passed in 0ms
 [0m[32m[should_maintain_encoding] Test passed in 0ms
 [0m[32m[should_match_parentheses] Test passed in 0ms
-[0mTotal tests run: 14, Failures: 0
+[0m[32m[should_compare] Test passed in 0ms
+[0mTotal tests run: 15, Failures: 0
 ================= test_array =================
 [32m[should_at] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
@@ -118,7 +119,7 @@ test_win_file_utils.hpp
 [32m[should_list_dir] Test passed in 0ms
 [0mTotal tests run: 6, Failures: 0
 ================= test_win_file =================
-[32m[should_write_win_file] Test passed in 1ms
+[32m[should_write_win_file] Test passed in 5ms
 [0m[32m[should_append_win_file] Test passed in 1ms
 [0mTotal tests run: 2, Failures: 0
 ================= test_math_utils =================
@@ -130,14 +131,16 @@ test_win_file_utils.hpp
 ================= test_big_integer =================
 [32m[should_construct_with_i64] Test passed in 0ms
 [0m[32m[should_construct_with_c_string] Test passed in 0ms
+[0m[32m[should_judge_odd] Test passed in 0ms
 [0m[32m[should_add] Test passed in 0ms
 [0m[32m[should_subtract] Test passed in 0ms
 [0m[32m[should_multiply] Test passed in 0ms
 [0m[32m[should_divide] Test passed in 1ms
 [0m[32m[should_modulus] Test passed in 0ms
+[0m[32m[should_power] Test passed in 0ms
 [0m[32m[should_logical] Test passed in 0ms
 [0m[32m[should_compare] Test passed in 0ms
-[0mTotal tests run: 9, Failures: 0
+[0mTotal tests run: 11, Failures: 0
 ================= test_pair =================
 [32m[should_construct] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0

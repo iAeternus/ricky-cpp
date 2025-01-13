@@ -420,7 +420,7 @@ private:
 private:
     bool sign_;               // true=正数 false=负数
     c_size length_;           // 十进制位数
-    util::DynArray<i32> num_; // 逆序存储
+    util::DynArray<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
 
     static const i32 BASE = 100000000;
     static const i32 WIDTH = 8;
