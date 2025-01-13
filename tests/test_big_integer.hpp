@@ -50,6 +50,23 @@ auto should_construct_with_c_string = []() {
     Assertions::assertEquals(30LL, bi4.size());
 };
 
+auto should_judge_odd = []() {
+    // Given
+    math::BigInteger bi = "123456789012345678901234567890";
+    math::BigInteger bi2 = "123456789012345678901234567891";
+    math::BigInteger bi3 = math::BigInteger::ZERO;
+
+    // When
+    bool res = bi.isOdd();
+    bool res2 = bi2.isOdd();
+    bool res3 = bi3.isOdd();
+
+    // Then
+    Assertions::assertFalse(res);
+    Assertions::assertTrue(res2);
+    Assertions::assertFalse(res3);
+};
+
 auto should_add = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -158,6 +175,17 @@ auto should_modulus = []() {
     Assertions::assertEquals("9000000000900000000090"_cs, bi2.__str__());
 };
 
+auto should_power = []() {
+    // Given
+    math::BigInteger base = "123456789012345678901234567890";
+    
+    // When
+    auto res = base^10;
+
+    // Then
+    Assertions::assertEquals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res.__str__());
+};
+
 auto should_logical = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -207,11 +235,13 @@ void test_big_integer() {
 
     group.addTest("should_construct_with_i64", should_construct_with_i64);
     group.addTest("should_construct_with_c_string", should_construct_with_c_string);
+    group.addTest("should_judge_odd", should_judge_odd);
     group.addTest("should_add", should_add);
     group.addTest("should_subtract", should_subtract);
     group.addTest("should_multiply", should_multiply);
     group.addTest("should_divide", should_divide);
     group.addTest("should_modulus", should_modulus);
+    group.addTest("should_power", should_power);
     group.addTest("should_logical", should_logical);
     group.addTest("should_compare", should_compare);
 

@@ -207,6 +207,26 @@ auto should_match_parentheses = []() {
     Assertions::assertEquals("[1, 2, 3]"_s, res2);
 };
 
+auto should_compare = []() {
+    // Given
+    util::String s = "abc";
+    util::String s2 = "abd";
+    util::String s3 = "abcc";
+    util::String s4 = "abc";
+
+    // When
+    cmp_t res = s.__cmp__(s2);
+    cmp_t res2 = s.__cmp__(s3);
+    cmp_t res3 = s2.__cmp__(s3);
+    cmp_t res4 = s.__cmp__(s4);
+
+    // Then
+    Assertions::assertEquals(-1LL, res);
+    Assertions::assertEquals(-1LL, res2);
+    Assertions::assertEquals(1LL, res3);
+    Assertions::assertEquals(0LL, res4);
+};
+
 void test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -225,6 +245,7 @@ void test_string() {
     group.addTest("should_maintain_encoding", should_maintain_encoding);
     // group.addTest("should_join_iterator", should_join_iterator);
     group.addTest("should_match_parentheses", should_match_parentheses);
+    group.addTest("should_compare", should_compare);
 
     group.startAll();
 }

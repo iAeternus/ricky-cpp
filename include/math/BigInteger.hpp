@@ -107,6 +107,22 @@ public:
     }
 
     /**
+     * @brief 判断是否为奇数
+     * @return true=是 false=否
+     */
+    bool isOdd() const {
+        return num_.front() & 1;
+    }
+
+    /**
+     * @brief 判断是否为偶数
+     * @return true=是 false=否
+     */
+    bool isEven() const {
+        return !isOdd();
+    }
+
+    /**
      * @brief 左移n位，低位补0
      */
     self leftShift(c_size n) const {
@@ -297,28 +313,25 @@ public:
         return *this;
     }
 
-    friend bool operator<(const self& a, const self& b) {
-        return a.__cmp__(b) < 0;
-    }
-
-    friend bool operator<=(const self& a, const self& b) {
-        return a.__cmp__(b) <= 0;
-    }
-
-    friend bool operator>(const self& a, const self& b) {
-        return a.__cmp__(b) > 0;
-    }
-
-    friend bool operator>=(const self& a, const self& b) {
-        return a.__cmp__(b) >= 0;
+    /**
+     * @brief 幂运算，base^exp
+     */
+    friend self operator^(self base, self exp) {
+        self ans{ONE};
+        for(; exp; exp /= 2, base *= base) {
+            if(exp.isOdd()) {
+                ans *= base;
+            }
+        }
+        return ans;
     }
 
     friend bool operator==(const self& a, const self& b) {
-        return a.__cmp__(b) == 0;
+        return a.__equals__(b);
     }
 
     friend bool operator!=(const self& a, const self& b) {
-        return a.__cmp__(b) != 0;
+        return !a.__equals__(b);
     }
 
     friend bool operator||(const BigInteger& a, const BigInteger& b) {
@@ -331,6 +344,10 @@ public:
 
     bool operator!() const {
         return *this == ZERO;
+    }
+
+    explicit operator bool() const {
+        return *this != ZERO;
     }
 
     CString __str__() const {
