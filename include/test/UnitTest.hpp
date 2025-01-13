@@ -9,10 +9,9 @@
 
 #include "Object.hpp"
 #include "CString.hpp"
-#include "timer.hpp"
+#include "Timer.hpp"
 #include "raise_error.hpp"
 #include "DynArray.hpp"
-#include "printer.hpp"
 
 #include <functional>
 

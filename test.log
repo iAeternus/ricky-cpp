@@ -1,6 +1,6 @@
 ================= should_group_unit_test =================
-[32m[should_success1] Test passed in 104ms
-[0m[32m[should_success2] Test passed in 109ms
+[32m[should_success1] Test passed in 102ms
+[0m[32m[should_success2] Test passed in 110ms
 [0m[31m[should_failed] Test failed! Exception: wa
 [0m[32m[should_throws] Test passed in 0ms
 [0mTotal tests run: 4, Failures: 1
@@ -8,7 +8,8 @@
 [32m[should_construct] Test passed in 0ms
 [0m[32m[should_hash] Test passed in 0ms
 [0m[32m[should_compare] Test passed in 0ms
-[0mTotal tests run: 3, Failures: 0
+[0m[32m[should_add] Test passed in 0ms
+[0mTotal tests run: 4, Failures: 0
 ================= test_dynarray =================
 [32m[should_append] Test passed in 0ms
 [0m[32m[should_insert] Test passed in 0ms
@@ -49,21 +50,22 @@
 [0m[32m[should_to_string] Test passed in 0ms
 [0mTotal tests run: 6, Failures: 0
 ================= test_random =================
-u8: 14
-u16: 27956
-u32: 1066951068
-u64: 11254747292360401661
-i8: 98
-i16: 12341
-i32: 1438786599
-i64: 6463706596577047769
-float: 0.04474373
-double: 0.6311627360357774
-CString: SoudKX
+u8: 243
+u16: 62726
+u32: 1381341369
+u64: 8401507935467661150
+i8: 117
+i16: 26597
+i32: 754655627
+i64: 7348511325764967861
+float: 0.031831216
+double: 0.5807613246023089
+CString: FsaWYZ
 [32m[should_generate_random] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
 ================= test_string =================
-[32m[should_add] Test passed in 0ms
+[32m[should_construct] Test passed in 0ms
+[0m[32m[should_add] Test passed in 0ms
 [0m[32m[should_mul] Test passed in 0ms
 [0m[32m[should_split] Test passed in 0ms
 [0m[32m[should_find] Test passed in 0ms
@@ -76,7 +78,7 @@ CString: SoudKX
 [0m[32m[should_replace] Test passed in 0ms
 [0m[32m[should_maintain_encoding] Test passed in 0ms
 [0m[32m[should_match_parentheses] Test passed in 0ms
-[0mTotal tests run: 13, Failures: 0
+[0mTotal tests run: 14, Failures: 0
 ================= test_array =================
 [32m[should_at] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0
@@ -84,7 +86,7 @@ CString: SoudKX
 [32m[should_push] Test passed in 0ms
 [0m[32m[should_push_tasks] Test passed in 0ms
 [0m[32m[should_push_tasks_with_exception] Test passed in 0ms
-[0m[32m[should_wait] Test passed in 0ms
+[0m[32m[should_wait] Test passed in 1ms
 [0mTotal tests run: 4, Failures: 0
 ================= test_win_file_utils =================
 [32m[should_judge_exists] Test passed in 0ms
@@ -116,8 +118,8 @@ test_win_file_utils.hpp
 [32m[should_list_dir] Test passed in 0ms
 [0mTotal tests run: 6, Failures: 0
 ================= test_win_file =================
-[32m[should_write_win_file] Test passed in 5ms
-[0m[32m[should_append_win_file] Test passed in 3ms
+[32m[should_write_win_file] Test passed in 1ms
+[0m[32m[should_append_win_file] Test passed in 1ms
 [0mTotal tests run: 2, Failures: 0
 ================= test_math_utils =================
 [32m[should_cal_gcd] Test passed in 0ms
@@ -128,7 +130,14 @@ test_win_file_utils.hpp
 ================= test_big_integer =================
 [32m[should_construct_with_i64] Test passed in 0ms
 [0m[32m[should_construct_with_c_string] Test passed in 0ms
-[0mTotal tests run: 2, Failures: 0
+[0m[32m[should_add] Test passed in 0ms
+[0m[32m[should_subtract] Test passed in 0ms
+[0m[32m[should_multiply] Test passed in 0ms
+[0m[32m[should_divide] Test passed in 1ms
+[0m[32m[should_modulus] Test passed in 0ms
+[0m[32m[should_logical] Test passed in 0ms
+[0m[32m[should_compare] Test passed in 0ms
+[0mTotal tests run: 9, Failures: 0
 ================= test_pair =================
 [32m[should_construct] Test passed in 0ms
 [0mTotal tests run: 1, Failures: 0

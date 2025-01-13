@@ -7,7 +7,7 @@
 #ifndef RAISE_ERROR_HPP
 #define RAISE_ERROR_HPP
 
-#include "printer.hpp"
+#include "Printer.hpp"
 
 #include <source_location>
 
