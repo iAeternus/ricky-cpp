@@ -1,6 +1,6 @@
 # Ricky CPP
 
-My c++ wheels
+My C++ Wheels
 
 ## Getting Started
 
