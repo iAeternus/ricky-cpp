@@ -16,6 +16,7 @@
 #include "test_big_integer.hpp"
 #include "test_pair.hpp"
 #include "test_json_parser.hpp"
+#include "test_complex.hpp"
 
 #include "test_speed.hpp"
 
@@ -45,6 +46,7 @@ int main() {
     test_big_integer::test_big_integer();
     test_pair::test_pair();
     test_json_parser::test_json_parser();
+    test_complex::test_complex();
 #else
     test_speed();
 #endif

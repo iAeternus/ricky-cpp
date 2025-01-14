@@ -70,6 +70,27 @@ auto should_cal_pow = []() {
     Assertions::assertEquals(1, res2);
 };
 
+auto should_compare = []() {
+    // Given
+    double a = 1.0, b = 1.0;
+    double c = 1.00000001, d = 0.99999999;   // 1e-8
+    double e = 1.000000001, f = 0.999999999; // 1e-9
+
+    // When
+    i32 res = math::compare(a, b);
+    i32 res2 = math::compare(a, c);
+    i32 res3 = math::compare(a, d);
+    i32 res4 = math::compare(a, e);
+    i32 res5 = math::compare(a, f);
+
+    // Then
+    Assertions::assertEquals(0, res);
+    Assertions::assertEquals(-1, res2);
+    Assertions::assertEquals(1, res3);
+    Assertions::assertEquals(0, res4);
+    Assertions::assertEquals(0, res5);
+};
+
 void test_math_utils() {
     UnitTestGroup group{"test_math_utils"};
 
@@ -77,6 +98,7 @@ void test_math_utils() {
     group.addTest("should_cal_lcm", should_cal_lcm);
     group.addTest("should_judge_is_prime", should_judge_is_prime);
     group.addTest("should_cal_pow", should_cal_pow);
+    group.addTest("should_compare", should_compare);
 
     group.startAll();
 }

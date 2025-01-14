@@ -11,9 +11,7 @@ using namespace my::util;
 
 auto should_construct = []() {
     String s = "abc";
-    String s2{10, '0'};
     Assertions::assertEquals("abc"_cs, s.__str__());
-    Assertions::assertEquals("0000000000"_cs, s2.__str__());
 };
 
 auto should_add = []() {
@@ -227,6 +225,17 @@ auto should_compare = []() {
     Assertions::assertEquals(0LL, res4);
 };
 
+auto should_remove_all = []() {
+    // Given
+    util::String s = "   a  bc ";
+
+    // When
+    auto res = s.removeAll(' ');
+
+    // Then
+    Assertions::assertEquals("abc"_s, res);
+};
+
 void test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -246,6 +255,7 @@ void test_string() {
     // group.addTest("should_join_iterator", should_join_iterator);
     group.addTest("should_match_parentheses", should_match_parentheses);
     group.addTest("should_compare", should_compare);
+    group.addTest("should_remove_all", should_remove_all);
 
     group.startAll();
 }

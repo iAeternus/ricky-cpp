@@ -7,6 +7,8 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
+#include <utility>
+
 #include "CodePoint.hpp"
 #include "NoCopy.hpp"
 
@@ -46,15 +48,15 @@ private:
     Encoding* encoding_;
 };
 
-/** 
- * @brief 字符串 
+/**
+ * @brief 字符串
  */
 class String : public Sequence<String, CodePoint> {
     using self = String;
     using super = Sequence<self, CodePoint>;
 
     String(CodePoint* codePoints, c_size length, std::shared_ptr<StringManager> manager) :
-            length_(length), codePoints_(codePoints), manager_(manager) {}
+            length_(length), codePoints_(codePoints), manager_(std::move(manager)) {}
 
     String(c_size length, Encoding* encoding) :
             String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<CodePoint>(length), encoding)) {
@@ -77,13 +79,6 @@ public:
         this->length_ = size;
         this->codePoints_ = arr;
         this->manager_->reset(length_, codePoints_);
-    }
-
-    String(c_size length, CodePoint&& codePoint = CodePoint{'0'}, const CString& encoding = UTF8) :
-            String(length, encoding_map(encoding)) {
-        for(c_size i = 0; i < length_; ++i) {
-            at(i) = codePoint;
-        }
     }
 
     String(const CString& cstr, const CString& encoding = UTF8) :
@@ -186,7 +181,7 @@ public:
         return length;
     }
 
-    /** 
+    /**
      * @brief 分割字符串，[start, end)
      */
     self split(c_size start, c_size end) {
@@ -413,6 +408,20 @@ public:
         }
         ValueError("Unmatched parentheses, too many left parentheses");
         return None<String>;
+    }
+
+    /**
+     * 删除字符串中所有指定字符
+     */
+    self removeAll(CodePoint&& codePoint) const {
+        c_size mSize = size();
+        std::stringstream stream;
+        for (c_size i = 0; i < mSize; ++i) {
+            if (at(i) != codePoint) {
+                stream << at(i);
+            }
+        }
+        return self{stream.str().data()};
     }
 
     CString __str__() const {

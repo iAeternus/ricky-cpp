@@ -79,6 +79,60 @@ def pow(T a, T n, T p = MOD)->T {
     return res;
 }
 
+constexpr static float EPS = 1e-8; // 浮点数误差阈值
+
+/**
+ * @brief 在给定误差阈值下比较两个浮点数
+ * @return a>b返回1，a<b返回-1，a=b返回0
+ */
+template <FloatingPointType T>
+def compare(T a, T b, T eps = EPS)->i32 {
+    if (a - b >= eps) {
+        return 1;
+    } else if (b - a >= eps) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+/**
+ * @brief 在给定误差下判断浮点数是否为正
+ * @return true=是 false=否
+ */
+template <FloatingPointType T>
+def isPositive(T num, T eps = EPS)->bool {
+    return compare(num, 0.0, eps) > 0;
+}
+
+/**
+ * @brief 在给定误差下判断浮点数是否为负
+ * @return true=是 false=否
+ */
+template <FloatingPointType T>
+def isNegative(T num, T eps = EPS)->bool {
+    return compare(num, 0.0, eps) < 0;
+}
+
+/**
+ * @brief 在给定误差下判断浮点数是否为0
+ * @return true=是 false=否
+ */
+template <FloatingPointType T>
+def isZero(T num, T eps = EPS)->bool {
+    return compare(num, 0.0, eps) == 0;
+}
+
+/**
+ * @brief 在给定误差下判断浮点数是否为1
+ * @return true=是 false=否
+ */
+template <FloatingPointType T>
+def isOne(T num, T eps = EPS)->bool {
+    return compare(num, 1.0, eps) == 0;
+}
+
+
 } // namespace my::math
 
 #endif // MATH_UTILS_HPP

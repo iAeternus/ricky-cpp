@@ -8,6 +8,7 @@
 #define ASSERTIONS_HPP
 
 #include "ricky_concepts.hpp"
+#include "math_utils.hpp"
 #include "CString.hpp"
 #include "Object.hpp"
 
@@ -60,8 +61,14 @@ public:
 
     template <StdPrintable T>
     static void assertEquals(const T& expected, const T& actual, CString&& message = "") {
-        if (expected != actual) {
-            fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
+        if constexpr (is_same<T, float, double, long double>) {
+            if (math::compare(expected, actual) != 0) {
+                fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
+            }
+        } else {
+            if (expected != actual) {
+                fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
+            }
         }
     }
 
@@ -77,8 +84,14 @@ public:
 
     template <StdPrintable T>
     static void assertNotEquals(const T& unexpected, const T& actual, CString&& message = "") {
-        if (unexpected == actual) {
-            fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
+        if constexpr (is_same<T, float, double, long double>) {
+            if (math::compare(unexpected, actual) == 0) {
+                fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
+            }
+        } else {
+            if (unexpected == actual) {
+                fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
+            }
         }
     }
 
