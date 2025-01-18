@@ -6,6 +6,13 @@
 
 namespace my::test::test_dynarray {
 
+auto should_construct = []() {
+    util::DynArray<int> d(10, 0);
+    util::DynArray<util::DynArray<int>> d2(3, util::DynArray<int>(3, 0));
+    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.__str__());
+    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.__str__());
+};
+
 auto should_append = []() {
     // Given
     i32 n = 100;
@@ -147,6 +154,7 @@ auto should_find = []() {
 void test_dynarray() {
     UnitTestGroup group("test_dynarray");
 
+    group.addTest("should_construct", should_construct);
     group.addTest("should_append", should_append);
     group.addTest("should_insert", should_insert);
     group.addTest("should_pop", should_pop);

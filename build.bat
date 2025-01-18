@@ -11,5 +11,4 @@ cd "%BUILD_DIR%"
 cmake .. -G "MinGW Makefiles"
 
 echo Start Compile Project
-make
-echo Compile and Link Successfully
+make && echo Compile and Link Successfully || (echo Compilation or Linking Failed & exit /b %ERRORLEVEL%)

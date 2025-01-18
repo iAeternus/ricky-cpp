@@ -68,13 +68,13 @@ public:
     /**
      * @brief 浮点随机数生成区间为左闭右开区间 [min, max)
      */
-    float nextFloat(float min = std::numeric_limits<float>::min(), float max = std::numeric_limits<float>::max()) {
-        std::uniform_real_distribution<float> distribution(min, max);
+    f32 nextFloat(f32 min = std::numeric_limits<f32>::min(), f32 max = std::numeric_limits<f32>::max()) {
+        std::uniform_real_distribution<f32> distribution(min, max);
         return distribution(generator_);
     }
 
-    double nextDouble(double min = std::numeric_limits<double>::min(), double max = std::numeric_limits<double>::max()) {
-        std::uniform_real_distribution<double> distribution(min, max);
+    f64 nextDouble(f64 min = std::numeric_limits<f64>::min(), f64 max = std::numeric_limits<f64>::max()) {
+        std::uniform_real_distribution<f64> distribution(min, max);
         return distribution(generator_);
     }
 

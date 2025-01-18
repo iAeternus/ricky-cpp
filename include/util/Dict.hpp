@@ -80,7 +80,7 @@ public:
     /**
      * @brief 负载因子
      */
-    double loadFactor() const {
+    f64 loadFactor() const {
         return 1.0 * size() / capacity();
     }
 
@@ -555,7 +555,7 @@ private:
     bucket_t bucket_;
     DynArray<key_t> keys_;
 
-    constexpr static double MAX_LOAD_FACTOR = 0.75;
+    constexpr static f64 MAX_LOAD_FACTOR = 0.75;
     constexpr static c_size MIN_BUCKET_SIZE = 8;
 };
 

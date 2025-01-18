@@ -315,7 +315,7 @@ def constexpr make_float(T&& value)->JsonType::JsonFloat {
         return static_cast<JsonType::JsonFloat>(value);
     }
 
-    RuntimeError(std::format("Unsupported {} for make float", dtype(T)));
+    RuntimeError(std::format("Unsupported {} for make f32", dtype(T)));
     return None<JsonType::JsonFloat>;
 }
 

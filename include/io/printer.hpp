@@ -81,11 +81,11 @@ protected:
 
     template <typename T>
     requires std::is_floating_point_v<T> void __print__(const T& obj) const {
-        if constexpr (std::is_same_v<T, float>) {
+        if constexpr (std::is_same_v<T, f32>) {
             std::fprintf(outputFile_, "%f", obj);
-        } else if constexpr (std::is_same_v<T, double>) {
+        } else if constexpr (std::is_same_v<T, f64>) {
             std::fprintf(outputFile_, "%lf", obj);
-        } else if constexpr (std::is_same_v<T, long double>) {
+        } else if constexpr (std::is_same_v<T, long f64>) {
             std::fprintf(outputFile_, "%Lf", obj);
         }
     }

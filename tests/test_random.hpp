@@ -16,8 +16,8 @@ auto should_generate_random = []() {
     io::print(std::format("i16: {}", util::rnd.nextI16()));
     io::print(std::format("i32: {}", util::rnd.nextI32()));
     io::print(std::format("i64: {}", util::rnd.nextI64()));
-    io::print(std::format("float: {}", util::rnd.nextFloat(0, 1)));
-    io::print(std::format("double: {}", util::rnd.nextDouble(0, 1)));
+    io::print(std::format("f32: {}", util::rnd.nextFloat(0, 1)));
+    io::print(std::format("f64: {}", util::rnd.nextDouble(0, 1)));
     io::print(std::format("CString: {}", util::rnd.next(6)));
 };
 

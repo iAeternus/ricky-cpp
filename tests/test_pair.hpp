@@ -9,11 +9,11 @@ namespace my::test::test_pair {
 auto should_construct = []() {
     // Given
     i32 a = 10;
-    double b = 3.14;
+    f64 b = 3.14;
     CString c = "abc";
 
     // When
-    util::Pair<i32, double> p = {a, b};
+    util::Pair<i32, f64> p = {a, b};
     util::Pair<i32, CString> p2{a, c};
 
     // Then

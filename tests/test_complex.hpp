@@ -32,7 +32,7 @@ auto should_calculate_norm = []() {
     math::Complex a = "3 + 4i";
 
     // When
-    double res = a.norm();
+    f64 res = a.norm();
 
     // Then
     Assertions::assertEquals(5.0, res);
@@ -43,7 +43,7 @@ auto should_calculate_arg = []() {
     math::Complex a = "3 + 4i";
 
     // When
-    double res = a.arg();
+    f64 res = a.arg();
 
     // Then
     Assertions::assertEquals(0.9272952180016122, res);

@@ -30,6 +30,13 @@ public:
     DynArray() :
             size_(0), backBlockIndex_(BLOCK_NOT_EXISTS), blocks_(DYNARRAY_BLOCK_SIZE, 0) {}
 
+    DynArray(c_size size, const value_t& item) :
+            DynArray() {
+        for (c_size i = 0; i < size; ++i) {
+            append(item);
+        }
+    }
+
     DynArray(std::initializer_list<value_t>&& init) :
             DynArray() {
         for (auto& item : init) {

@@ -72,7 +72,7 @@ template <typename T>
 concept Assertable = Comparable<T> || MyPrintable<T>;
 
 // 非类类型约束概念
-template<typename T>
+template <typename T>
 concept NonClassType = !std::is_class<T>::value;
 
 } // namespace my

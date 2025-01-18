@@ -18,7 +18,7 @@ class Complex : public Object<Complex> {
 public:
     const static self ZERO;
 
-    Complex(double real_ = 0.0, double imag_ = 0.0) :
+    Complex(f64 real_ = 0.0, f64 imag_ = 0.0) :
             real_(real_), imag_(imag_) {}
 
     Complex(const char* str) {
@@ -30,29 +30,29 @@ public:
         return *this;
     }
 
-    double real() const {
+    f64 real() const {
         return real_;
     }
 
-    double imag() const {
+    f64 imag() const {
         return imag_;
     }
 
-    double normSqr() const {
+    f64 normSqr() const {
         return real_ * real_ + imag_ * imag_;
     }
 
     /**
     * @brief 计算模长
     */
-    double norm() const {
+    f64 norm() const {
         return std::sqrt(normSqr());
     }
 
     /**
      * @brief 计算俯角，单位：弧度
      */
-    double arg() const {
+    f64 arg() const {
         return std::atan2(imag_, real_);
     }
 
@@ -92,7 +92,7 @@ public:
     }
 
     friend self operator/(const self& a, const self& b) {
-        double bNormSqr = b.normSqr();
+        f64 bNormSqr = b.normSqr();
         return self{(a.real_ * b.real_ + a.imag_ * b.imag_) / bNormSqr,
                     (a.imag_ * b.real_ - a.real_ * b.imag_) / bNormSqr};
     }
@@ -169,7 +169,7 @@ private:
         return ch == 'i' || ch == 'I';
     }
 
-    static double parseNumber(const util::String& str, c_size& i) {
+    static f64 parseNumber(const util::String& str, c_size& i) {
         if (isImagSign(str[i])) {
             return 1.0;
         }
@@ -179,7 +179,7 @@ private:
         }
         if (number.empty()) {
             ValueError("Invalid number format");
-            return None<double>;
+            return None<f64>;
         }
         return std::stod(number);
     }
@@ -213,8 +213,8 @@ private:
     }
 
 private:
-    double real_; // 实部
-    double imag_; // 虚部
+    f64 real_; // 实部
+    f64 imag_; // 虚部
 };
 
 } // namespace my::math
