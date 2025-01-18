@@ -7,7 +7,7 @@
 #ifndef PAIR_HPP
 #define PAIR_HPP
 
-#include "CString.hpp"
+#include "Object.hpp"
 
 #include <tuple>
 
