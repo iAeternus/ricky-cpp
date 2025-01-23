@@ -31,6 +31,18 @@ public:
         }
     }
 
+    /**
+     * @brief 对角阵
+     */
+    Matrix(std::initializer_list<value_t>&& initList) :
+            Matrix(initList.size(), initList.size()) {
+        c_size pos = 0;
+        for(auto&& item : initList) {
+            data_[pos][pos] = item;
+            ++pos;
+        }
+    }
+
     c_size rows() const {
         return rows_;
     }
@@ -66,7 +78,7 @@ public:
                                    i1, i2, j1, j2, rows_, cols_));
             return None<self>;
         }
-        self ans{i2 - i1 + 1, j2 - j1 + 1};
+        self ans(i2 - i1 + 1, j2 - j1 + 1);
         for (c_size i = 0; i < ans.rows_; ++i) {
             for (c_size j = 0; j < ans.cols_; ++j) {
                 ans[i][j] = data_[i1 + i][j1 + j];
@@ -95,7 +107,7 @@ public:
             ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
             return None<self>;
         }
-        self ans{a.rows_, a.cols_};
+        self ans(a.rows_, a.cols_);
         for (c_size i = 0; i < a.rows_; ++i) {
             for (c_size j = 0; j < a.cols_; ++j) {
                 ans[i][j] = a[i][j] + b[i][j];
@@ -114,7 +126,7 @@ public:
             ValueError(std::format("Cannot subtract a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
             return None<self>;
         }
-        self ans{a.rows_, a.cols_};
+        self ans(a.rows_, a.cols_);
         for (c_size i = 0; i < a.rows_; ++i) {
             for (c_size j = 0; j < a.cols_; ++j) {
                 ans[i][j] = a[i][j] - b[i][j];
@@ -133,7 +145,7 @@ public:
             ValueError("To be multiplied, the cols of matrix A must equals to the rows of matrix B.");
             return None<self>;
         }
-        self ans{a.rows_, b.cols_};
+        self ans(a.rows_, b.cols_);
         for (c_size i = 0; i < a.rows_; ++i) {
             for (c_size j = 0; j < b.cols_; ++j) {
                 for (c_size k = 0; k < a.cols_; ++k) {
@@ -158,7 +170,7 @@ public:
                                    this->rows_, this->cols_, other.rows_, other.cols_));
             return None<self>;
         }
-        self ans{this->rows_, this->cols_};
+        self ans(this->rows_, this->cols_);
         for (c_size i = 0; i < ans.rows_; ++i) {
             for (c_size j = 0; j < ans.cols_; ++j) {
                 ans[i][j] = this->data_[i][j] * other[i][j];
@@ -168,7 +180,7 @@ public:
     }
 
     self dot(value_t value) const {
-        self ans{rows_, cols_};
+        self ans(rows_, cols_);
         for (c_size i = 0; i < ans.rows_; ++i) {
             for (c_size j = 0; j < ans.cols_; ++j) {
                 ans[i][j] = this->data_[i][j] * value;
@@ -181,7 +193,7 @@ public:
      * @brief 求转置
      */
     self T() const {
-        self ans{cols_, rows_};
+        self ans(cols_, rows_);
         for (c_size i = 0; i < rows_; ++i) {
             for (c_size j = 0; j < cols_; ++j) {
                 ans[j][i] = data_[i][j];
@@ -194,30 +206,36 @@ public:
      * @brief 交换两行
      * @param i 行号，从0开始
      * @param j 行号，从0开始
+     * @return 是否交换，true=是 false=否
      */
-    void swapRow(c_size i, c_size j) {
-        if (i == j) return;
+    bool swapRow(c_size i, c_size j) {
+        if (i == j) return false;
         if (i < 0 || i >= rows_ || j < 0 || j >= rows_) {
             ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
+            return None<bool>;
         }
         for (c_size k = 0; k < cols_; ++k) {
             std::swap(data_[i][k], data_[j][k]);
         }
+        return true;
     }
 
     /**
      * @brief 交换两列
      * @param i 列号，从0开始
      * @param j 列号，从0开始
+     * @return 是否交换，true=是 false=否
      */
-    void swapCol(c_size i, c_size j) {
-        if (i == j) return;
+    bool swapCol(c_size i, c_size j) {
+        if (i == j) return false;
         if (i < 0 || i >= cols_ || j < 0 || j >= cols_) {
             ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
+            return None<bool>;
         }
         for (c_size k = 0; k < rows_; ++k) {
             std::swap(data_[k][i], data_[k][j]);
         }
+        return true;
     }
 
     /**
@@ -230,22 +248,22 @@ public:
         }
 
         self ans = this->clone();
-        util::Array<i32> is(rows_); // 记录行交换
-        util::Array<i32> js(cols_); // 记录列交换
-        value_t d, p;
+        util::Array<c_size> is(rows_); // 记录行交换
+        util::Array<c_size> js(cols_); // 记录列交换
+        value_t p, d;
         for (c_size k = 0; k < rows_; ++k) {
-            d = 0;
+            p = 0;
             for (c_size i = k; i < rows_; ++i) {
                 for (c_size j = k; j < cols_; ++j) {
-                    p = std::fabs(this->data_[i][j]);
-                    if (p > d) {
-                        d = p;
+                    d = std::fabs(this->data_[i][j]);
+                    if (d > p) {
+                        p = d;
                         is[k] = i;
                         js[k] = j;
                     }
                 }
             }
-            checkPivot(d);
+            checkPivot(p);
             ans.swapRow(k, is[k]);
             ans.swapCol(k, js[k]);
             ans[k][k] = reciprocal(ans[k][k]); // 归一化主元
@@ -284,6 +302,41 @@ public:
             return None<value_t>;
         }
 
+        self m = this->clone();
+        value_t d, p;
+        c_size is, js;
+        value_t f = 1.0, ans = 1.0; // 符号因子，行列式值
+        for (c_size k = 0; k < rows_ - 1; ++k) {
+            d = 0;
+            for (c_size i = k; i < rows_; ++i) {
+                for (c_size j = k; j < cols_; ++j) {
+                    p = std::fabs(this->data_[i][j]);
+                    if (p > d) {
+                        d = p;
+                        is = i;
+                        js = j;
+                    }
+                }
+            }
+            checkPivot(p);
+            if (m.swapRow(k, is)) f = -f;
+            if (m.swapCol(k, js)) f = -f;
+            ans *= m[k][k];
+            for (int i = k + 1; i < rows_; ++i) {
+                d = m[i][k] / m[k][k];
+                for (int j = k + 1; j < cols_; ++j) {
+                    m[i][j] -= d * m[k][j];
+                }
+            }
+        }
+        ans *= f * m[rows_ - 1][cols_ - 1];
+        return ans;
+    }
+
+    /**
+     * @brief 求秩
+     */
+    c_size rank() const {
         // TODO
     }
 
@@ -308,7 +361,7 @@ public:
             }
         }
 
-        self l{rows_, cols_}, u{rows_, cols_};
+        self l(rows_, cols_), u(rows_, cols_);
         for (c_size i = 0; i < rows_; ++i) {
             for (c_size j = 0; j < i; ++j) {
                 l[i][j] = q[i][j];
@@ -333,7 +386,7 @@ public:
     }
 
     self clone() const {
-        self ans{this->rows_, this->cols_};
+        self ans(this->rows_, this->cols_);
         for (c_size i = 0; i < ans.rows_; ++i) {
             for (c_size j = 0; j < ans.cols_; ++j) {
                 ans[i][j] = data_[i][j];

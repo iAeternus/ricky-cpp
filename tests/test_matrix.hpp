@@ -7,7 +7,7 @@
 namespace my::test::test_matrix {
 
 auto should_construct = []() {
-    math::Matrix m{3, 4, 1};
+    math::Matrix m(3, 4, 1);
     math::Matrix m2 = {
         {1, 2, 3},
         {4, 5, 6},
@@ -63,7 +63,7 @@ auto should_fill = []() {
 auto should_add = []() {
     // Given
     math::Matrix m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
-    math::Matrix m2{3, 3, 1};
+    math::Matrix m2(3, 3, 1);
 
     // When
     auto res = m + m2;
@@ -77,7 +77,7 @@ auto should_add = []() {
 auto should_subtract = []() {
     // Given
     math::Matrix m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    math::Matrix m2{3, 3, 1};
+    math::Matrix m2(3, 3, 1);
 
     // When
     auto res = m - m2;
@@ -139,6 +139,17 @@ auto should_calculate_inverse = []() {
     Assertions::assertEquals("[[0.2,0.2,0],[-0.2,0.3,1],[0.2,-0.3,0]]"_cs, res.__str__());
 };
 
+auto should_calculate_det = []() {
+    // Given
+    math::Matrix m = {{1, 1, -1, 2}, {-1, -1, -4, 1}, {2, 4, -6, 1}, {1, 2, 4, 2}};
+
+    // When
+    auto res = m.det();
+
+    // Then
+    Assertions::assertEquals(57.0, res);
+};
+
 auto should_lu_decomposition = []() {
     // Given
     math::Matrix m = {{1, 5, -3}, {-2, -7, 3}, {4, 9, 6}};
@@ -164,6 +175,7 @@ void test_matrix() {
     group.addTest("should_dot", should_dot);
     group.addTest("should_transpose", should_transpose);
     group.addTest("should_calculate_inverse", should_calculate_inverse);
+    group.addTest("should_calculate_det", should_calculate_det);
     group.addTest("should_lu_decomposition", should_lu_decomposition);
 
     group.startAll();

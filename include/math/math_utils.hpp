@@ -80,7 +80,7 @@ def pow(T a, T n, T p = MOD)->T {
     return res;
 }
 
-#define EPS DBL_EPSILON // 浮点数误差阈值
+#define EPS 1e-8 // 浮点数误差阈值
 
 /**
  * @brief 在给定误差阈值下比较两个浮点数
@@ -149,7 +149,7 @@ def reciprocal(f64 num)->f64 {
  */
 template <FloatingPointType T>
 def correctFloat(const T& num)->T {
-    if (std::signbit(num) && num == 0.0) {
+    if (isZero(num)) {
         return 0.0;
     }
     return num;
