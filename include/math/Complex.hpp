@@ -18,8 +18,8 @@ class Complex : public Object<Complex> {
 public:
     const static self ZERO;
 
-    Complex(f64 real_ = 0.0, f64 imag_ = 0.0) :
-            real_(real_), imag_(imag_) {}
+    Complex(f64 re_ = 0.0, f64 im_ = 0.0) :
+            re_(re_), im_(im_) {}
 
     Complex(const char* str) {
         *this = str;
@@ -31,15 +31,15 @@ public:
     }
 
     f64 real() const {
-        return real_;
+        return re_;
     }
 
     f64 imag() const {
-        return imag_;
+        return im_;
     }
 
     f64 normSqr() const {
-        return real_ * real_ + imag_ * imag_;
+        return re_ * re_ + im_ * im_;
     }
 
     /**
@@ -53,18 +53,18 @@ public:
      * @brief 计算俯角，单位：弧度
      */
     f64 arg() const {
-        return std::atan2(imag_, real_);
+        return std::atan2(im_, re_);
     }
 
     /**
     * @brief 共轭复数
     */
     self conj() const {
-        return self{real_, -imag_};
+        return self{re_, -im_};
     }
 
     friend self operator+(const self& a, const self& b) {
-        return self{a.real_ + b.real_, a.imag_ + b.imag_};
+        return self{a.re_ + b.re_, a.im_ + b.im_};
     }
 
     self& operator+=(const self& other) {
@@ -73,7 +73,7 @@ public:
     }
 
     friend self operator-(const self& a, const self& b) {
-        return self{a.real_ - b.real_, a.imag_ - b.imag_};
+        return self{a.re_ - b.re_, a.im_ - b.im_};
     }
 
     self& operator-=(const self& other) {
@@ -82,8 +82,8 @@ public:
     }
 
     friend self operator*(const self& a, const self& b) {
-        return self{a.real_ * b.real_ - a.imag_ * b.imag_,
-                    a.imag_ * b.real_ + a.real_ * b.imag_};
+        return self{a.re_ * b.re_ - a.im_ * b.im_,
+                    a.im_ * b.re_ + a.re_ * b.im_};
     }
 
     self& operator*=(const self& other) {
@@ -93,8 +93,8 @@ public:
 
     friend self operator/(const self& a, const self& b) {
         f64 bNormSqr = b.normSqr();
-        return self{(a.real_ * b.real_ + a.imag_ * b.imag_) / bNormSqr,
-                    (a.imag_ * b.real_ - a.real_ * b.imag_) / bNormSqr};
+        return self{(a.re_ * b.re_ + a.im_ * b.im_) / bNormSqr,
+                    (a.im_ * b.re_ - a.re_ * b.im_) / bNormSqr};
     }
 
     self& operator/=(const self& other) {
@@ -104,19 +104,19 @@ public:
 
     CString __str__() const {
         std::stringstream stream;
-        if (isZero(real_) && isZero(imag_)) {
+        if (isZero(re_) && isZero(im_)) {
             return CString{"0"};
         }
 
-        if (!isZero(real_)) {
-            stream << real_;
+        if (!isZero(re_)) {
+            stream << re_;
         }
-        if (!isZero(imag_)) {
-            if (!isZero(real_) && isPositive(imag_)) {
+        if (!isZero(im_)) {
+            if (!isZero(re_) && isPositive(im_)) {
                 stream << '+';
             }
-            if (!isOne(imag_)) {
-                stream << imag_;
+            if (!isOne(im_)) {
+                stream << im_;
             }
             stream << 'i';
         }
@@ -130,7 +130,7 @@ public:
     }
 
     bool __equals__(const self& other) const {
-        return compare(this->real_, other.real_) == 0 && compare(this->imag_, other.imag_) == 0;
+        return compare(this->re_, other.re_) == 0 && compare(this->im_, other.im_) == 0;
     }
 
 private:
@@ -140,22 +140,22 @@ private:
         c_size tSize = trimStr.size();
         if (i < tSize && trimStr[i] == '+') {
             ++i;
-            real_ = parseNumber(trimStr, i);
+            re_ = parseNumber(trimStr, i);
         } else if (i < tSize && trimStr[i] == '-') {
             ++i;
-            real_ = -parseNumber(trimStr, i);
+            re_ = -parseNumber(trimStr, i);
         } else {
-            real_ = peekReal(trimStr) ? parseNumber(trimStr, i) : 0.0;
+            re_ = peekReal(trimStr) ? parseNumber(trimStr, i) : 0.0;
         }
 
         if (i < trimStr.size() && trimStr[i] == '+') {
             ++i;
-            imag_ = parseNumber(trimStr, i);
+            im_ = parseNumber(trimStr, i);
         } else if (i < trimStr.size() && trimStr[i] == '-') {
             ++i;
-            imag_ = -parseNumber(trimStr, i);
+            im_ = -parseNumber(trimStr, i);
         } else {
-            imag_ = peekImag(trimStr, i) ? parseNumber(trimStr, i) : 0.0;
+            im_ = peekImag(trimStr, i) ? parseNumber(trimStr, i) : 0.0;
         }
         if (i < trimStr.size() && isImagSign(trimStr[i])) {
             ++i;
@@ -213,8 +213,8 @@ private:
     }
 
 private:
-    f64 real_; // 实部
-    f64 imag_; // 虚部
+    f64 re_; // 实部
+    f64 im_; // 虚部
 };
 
 } // namespace my::math

@@ -37,7 +37,7 @@ public:
     Matrix(std::initializer_list<value_t>&& initList) :
             Matrix(initList.size(), initList.size()) {
         c_size pos = 0;
-        for(auto&& item : initList) {
+        for (auto&& item : initList) {
             data_[pos][pos] = item;
             ++pos;
         }
@@ -247,15 +247,15 @@ public:
             return None<self>;
         }
 
+        value_t p, d;
         self ans = this->clone();
         util::Array<c_size> is(rows_); // 记录行交换
         util::Array<c_size> js(cols_); // 记录列交换
-        value_t p, d;
         for (c_size k = 0; k < rows_; ++k) {
-            p = 0;
+            p = 0.0;
             for (c_size i = k; i < rows_; ++i) {
                 for (c_size j = k; j < cols_; ++j) {
-                    d = std::fabs(this->data_[i][j]);
+                    d = std::fabs(ans[i][j]);
                     if (d > p) {
                         p = d;
                         is[k] = i;
@@ -302,29 +302,29 @@ public:
             return None<value_t>;
         }
 
-        self m = this->clone();
         value_t d, p;
         c_size is, js;
+        self m = this->clone();
         value_t f = 1.0, ans = 1.0; // 符号因子，行列式值
         for (c_size k = 0; k < rows_ - 1; ++k) {
-            d = 0;
+            p = 0.0;
             for (c_size i = k; i < rows_; ++i) {
                 for (c_size j = k; j < cols_; ++j) {
-                    p = std::fabs(this->data_[i][j]);
-                    if (p > d) {
-                        d = p;
+                    d = std::fabs(m[i][j]);
+                    if (d > p) {
+                        p = d;
                         is = i;
                         js = j;
                     }
                 }
             }
-            checkPivot(p);
+            p = correctFloat(p);
             if (m.swapRow(k, is)) f = -f;
             if (m.swapCol(k, js)) f = -f;
             ans *= m[k][k];
-            for (int i = k + 1; i < rows_; ++i) {
+            for (c_size i = k + 1; i < rows_; ++i) {
                 d = m[i][k] / m[k][k];
-                for (int j = k + 1; j < cols_; ++j) {
+                for (c_size j = k + 1; j < cols_; ++j) {
                     m[i][j] -= d * m[k][j];
                 }
             }
@@ -336,8 +336,35 @@ public:
     /**
      * @brief 求秩
      */
-    c_size rank() const {
-        // TODO
+    i32 rank() const {
+        i32 ans = 0;
+        value_t d, p;
+        self m = this->clone();
+        c_size n = std::min(rows_, cols_), is, js;
+        for (int k = 0; k < n; ++k) {
+            p = 0.0;
+            for (int i = 1; i < rows_; ++i) {
+                for (int j = 1; j < cols_; ++j) {
+                    d = std::fabs(m[i][j]);
+                    if (d > p) {
+                        p = d;
+                        is = i;
+                        js = j;
+                    }
+                }
+            }
+            if (isZero(p)) return ans;
+            ++ans;
+            m.swapRow(k, is);
+            m.swapCol(k, js);
+            for (c_size i = k + 1; i < rows_; ++i) {
+                d = m[i][k] / m[k][k];
+                for (c_size j = k + 1; j < cols_; ++j) {
+                    m[i][j] -= d * m[k][j];
+                }
+            }
+        }
+        return ans;
     }
 
     /**

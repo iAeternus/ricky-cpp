@@ -150,6 +150,17 @@ auto should_calculate_det = []() {
     Assertions::assertEquals(57.0, res);
 };
 
+auto should_calculate_rank = []() {
+    // Given
+    math::Matrix m = {{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
+
+    // When
+    auto res = m.rank();
+
+    // Then
+    Assertions::assertEquals(1, res);
+};
+
 auto should_lu_decomposition = []() {
     // Given
     math::Matrix m = {{1, 5, -3}, {-2, -7, 3}, {4, 9, 6}};
@@ -176,6 +187,7 @@ void test_matrix() {
     group.addTest("should_transpose", should_transpose);
     group.addTest("should_calculate_inverse", should_calculate_inverse);
     group.addTest("should_calculate_det", should_calculate_det);
+    group.addTest("should_calculate_rank", should_calculate_rank);
     group.addTest("should_lu_decomposition", should_lu_decomposition);
 
     group.startAll();
