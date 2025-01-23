@@ -89,7 +89,7 @@ auto should_list_dir = []() {
 
     // Then
     for(const auto& filename : filenames) {
-        io::print(filename);
+        io::println(filename);
     }
 };
 

@@ -18,17 +18,17 @@ auto should_parse = []() {
     auto json = json::JsonParser::parse(s);
 
     // Then
-    io::print(json);
-    io::print(json.size());
-    io::print(json["array"_s]);
-    io::print(json["other"_s]);
-    io::print(json["bool"_s]);
+    io::println(json);
+    io::println(json.size());
+    io::println(json["array"_s]);
+    io::println(json["other"_s]);
+    io::println(json["bool"_s]);
 
     // When
     auto jsonStr = json::JsonParser::parse(json);
 
     // Then
-    io::print(jsonStr);
+    io::println(jsonStr);
 };
 
 void test_json_parser() {

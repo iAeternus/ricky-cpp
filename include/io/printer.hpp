@@ -159,7 +159,8 @@ private:
     CString color_;
 };
 
-static Printer print{stdout};
+static Printer println{stdout};
+static Printer print{stdout, " ", " "};
 static ColorPrinter my_warner{stdin, Color::YELLOW};
 static ColorPrinter my_error{stderr, Color::RED};
 

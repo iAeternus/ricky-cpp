@@ -82,13 +82,13 @@ public:
     }
 
     void startAll() {
-        io::print(std::format("================= {} =================", groupName_));
+        io::println(std::format("================= {} =================", groupName_));
         for(auto& it : group_) {
             if(!it->start()) {
                 ++failed_;
             }
         }
-        io::print(std::format("Total tests run: {}, Failures: {}", group_.size(), failed_));
+        io::println(std::format("Total tests run: {}, Failures: {}", group_.size(), failed_));
     }
 
 private:
