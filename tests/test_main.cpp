@@ -20,6 +20,7 @@
 #include "test_matrix.hpp"
 #include "test_disjoint_set.hpp"
 #include "test_graph.hpp"
+#include "test_generator.hpp"
 
 #include "test_speed.hpp"
 
@@ -53,6 +54,7 @@ int main() {
     test_matrix::test_matrix();
     test_disjoint_set::test_disjoint_set();
     test_graph::test_graph();
+    test_generator::test_generator();
 #else
     test_speed();
 #endif

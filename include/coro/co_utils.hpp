@@ -50,6 +50,7 @@ struct CoroAwaiter : public std::suspend_always, public Object<CoroAwaiter> {
      * @brief 协程挂起时调用
      */
     Coroutine await_suspend(Coroutine coro) const noexcept {
+        (void)coro;
         return coro_ ? coro_ : std::noop_coroutine();
     }
 };
