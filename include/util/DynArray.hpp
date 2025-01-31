@@ -521,18 +521,19 @@ private:
  */
 template <typename T>
 def opt(const DynArray<std::any>& args, c_size index) -> T {
-    if (index >= args.size()) {
+    if (index < 0 || index >= args.size()) {
         ValueError("Index out of range in opt function.");
         return None<T>;
     }
 
     try {
-        return std::any_cast<T>(args[index]);
+        return std::any_cast<T>(args.at(index));
     } catch (const std::bad_any_cast& e) {
         ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[index].type().name()));
         return None<T>;
     }
 }
+
 } // namespace my::util
 
 #endif // DYN_ARRAY_HPP
