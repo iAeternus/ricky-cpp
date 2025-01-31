@@ -22,6 +22,7 @@ target_include_directories(RICKY_CPP_TESTS PUBLIC
     "${CMAKE_SOURCE_DIR}/include/math"
     "${CMAKE_SOURCE_DIR}/include/json"
     "${CMAKE_SOURCE_DIR}/include/graph"
+    "${CMAKE_SOURCE_DIR}/include/coro"
 )
 
 add_test(NAME RICKY_CPP_TESTS COMMAND $<TARGET_FILE:RICKY_CPP_TESTS>)

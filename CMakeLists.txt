@@ -21,6 +21,7 @@ target_include_directories(RICKY_CPP PUBLIC
     "${CMAKE_SOURCE_DIR}/include/math"
     "${CMAKE_SOURCE_DIR}/include/json"
     "${CMAKE_SOURCE_DIR}/include/graph"
+    "${CMAKE_SOURCE_DIR}/include/coro"
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/build)
