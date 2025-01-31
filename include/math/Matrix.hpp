@@ -12,11 +12,12 @@
 
 namespace my::math {
 
-class Matrix : public Object<Matrix> {
-    using self = Matrix;
+template<typename E>
+class Matrix : public Object<Matrix<E>> {
+    using self = Matrix<E>;
 
 public:
-    using value_t = f64;
+    using value_t = E;
 
     Matrix(c_size rows = 1, c_size cols = 1, value_t value = 0.0) :
             rows_(rows), cols_(cols), data_(rows_, util::DynArray<value_t>(cols_, value)) {}
@@ -371,10 +372,10 @@ public:
      * @brief LU分解。使用高斯-约当消元
      * @return pair的first为L，second为U
      */
-    std::pair<self, self> LU() const {
+    Pair<self, self> LU() const {
         if (!isSquare()) {
             ValueError("Only square matrices are LU decomposition.");
-            return None<std::pair<self, self>>;
+            return None<Pair<self, self>>;
         }
 
         self q = this->clone();
@@ -401,7 +402,7 @@ public:
                 u[i][j] = q[i][j];
             }
         }
-        return std::make_pair(l, u);
+        return Pair{l, u};
     }
 
     /**

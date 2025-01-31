@@ -26,7 +26,7 @@ public:
     }
 
     self& operator=(const char* str) {
-        parse(util::String{str});
+        parse(String{str});
         return *this;
     }
 
@@ -134,7 +134,7 @@ public:
     }
 
 private:
-    void parse(const util::String& str) {
+    void parse(const String& str) {
         c_size i = 0LL;
         auto trimStr = str.removeAll(' ');
         c_size tSize = trimStr.size();
@@ -169,7 +169,7 @@ private:
         return ch == 'i' || ch == 'I';
     }
 
-    static f64 parseNumber(const util::String& str, c_size& i) {
+    static f64 parseNumber(const String& str, c_size& i) {
         if (isImagSign(str[i])) {
             return 1.0;
         }
@@ -187,7 +187,7 @@ private:
     /**
     * 从第一个数字起探测是否有实部，不会检查字符是否是数字
     */
-    static bool peekReal(const util::String& str) {
+    static bool peekReal(const String& str) {
         c_size mSize = str.size();
         for (c_size i = 0; i < mSize; ++i) {
             if (str[i] == '+' || str[i] == '-') {
@@ -202,7 +202,7 @@ private:
     /**
     * 从i起探测是否有虚部，不会检查字符是否是数字
     */
-    static bool peekImag(const util::String& str, c_size i) {
+    static bool peekImag(const String& str, c_size i) {
         c_size mSize = str.size();
         for (c_size j = i; j < mSize; ++j) {
             if (isImagSign(str[j])) {

@@ -7,8 +7,6 @@
 
 namespace my::test::test_string {
 
-using namespace my::util;
-
 auto should_construct = []() {
     String s = "abc";
     Assertions::assertEquals("abc"_cs, s.__str__());
@@ -62,13 +60,13 @@ auto should_find = []() {
 
     // When
     auto pos = s.find("def"_s);
-    auto pos2 = s.find(util::CodePoint{'f'});
+    auto pos2 = s.find('f');
     auto pos3 = s.find("abd"_s);
 
     // Then
     Assertions::assertEquals(3LL, pos);
     Assertions::assertEquals(5LL, pos2);
-    Assertions::assertEquals(util::String::npos, pos3);
+    Assertions::assertEquals(String::npos, pos3);
 };
 
 auto should_find_all = []() {
@@ -155,11 +153,11 @@ auto should_replace = []() {
 
 auto should_maintain_encoding = []() {
     // Given
-    util::String s = "你好世界";
+    String s = "你好世界";
 
     // When
-    util::String s2 = s;
-    util::String s3 = s2.split(0);
+    String s2 = s;
+    String s3 = s2.split(0);
 
     // Then
     Assertions::assertEquals(s, s2);
@@ -186,7 +184,7 @@ auto should_maintain_encoding = []() {
 //     util::Array<int> arr = {1, 2, 3, 4, 5};
 
 //     // When
-//     util::String s = ", "_s.join(arr);
+//     String s = ", "_s.join(arr);
 
 //     // Then
 //     Assertions::assertEquals("1, 2, 3, 4, 5"_s, s);
@@ -194,7 +192,7 @@ auto should_maintain_encoding = []() {
 
 auto should_match_parentheses = []() {
     // Given
-    util::String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
+    String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
 
     // When
     auto res = s.match('{', '}');
@@ -207,10 +205,10 @@ auto should_match_parentheses = []() {
 
 auto should_compare = []() {
     // Given
-    util::String s = "abc";
-    util::String s2 = "abd";
-    util::String s3 = "abcc";
-    util::String s4 = "abc";
+    String s = "abc";
+    String s2 = "abd";
+    String s3 = "abcc";
+    String s4 = "abc";
 
     // When
     cmp_t res = s.__cmp__(s2);
@@ -227,7 +225,7 @@ auto should_compare = []() {
 
 auto should_remove_all = []() {
     // Given
-    util::String s = "   a  bc ";
+    String s = "   a  bc ";
 
     // When
     auto res = s.removeAll(' ');

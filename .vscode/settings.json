@@ -79,7 +79,8 @@
         "queue": "cpp",
         "version": "cpp",
         "ranges": "cpp",
-        "future": "cpp"
+        "future": "cpp",
+        "shared_mutex": "cpp"
     },
     "cSpell.words": [
         "DATAA"

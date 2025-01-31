@@ -11,6 +11,8 @@
 #include "Buffer.hpp"
 #include "Array.hpp"
 
+#include <any>
+
 namespace my::util {
 
 template <typename T>
@@ -391,7 +393,7 @@ public:
          * @brief 计算this与other的差值
          */
         difference_type operator-(const self& other) const {
-            if (__cmp__(*this, other) < 0) return -(other - *this);
+            if (this->__cmp__(other) < 0) return -(other - *this);
             if (this->dynarray_ != other.dynarray_) {
                 RuntimeError("Iterator not belong to the same container.");
             }
@@ -401,7 +403,7 @@ public:
             }
             difference_type diff = this->dynarray_->blocks_.at(other.blockIndex_).size() - other.inblockIndex_;
             for (c_size i = other.blockIndex_ + 1; i < this->blockIndex_; ++i) {
-                diff += this->dynarray_.at(i).size();
+                diff += this->dynarray_->blocks_.at(i).size();
             }
             return diff + this->inblockIndex_;
         }
@@ -514,6 +516,23 @@ private:
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
 
+/**
+ * @brief 选择参数
+ */
+template <typename T>
+def opt(const DynArray<std::any>& args, c_size index) -> T {
+    if (index >= args.size()) {
+        ValueError("Index out of range in opt function.");
+        return None<T>;
+    }
+
+    try {
+        return std::any_cast<T>(args[index]);
+    } catch (const std::bad_any_cast& e) {
+        ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[index].type().name()));
+        return None<T>;
+    }
+}
 } // namespace my::util
 
 #endif // DYN_ARRAY_HPP

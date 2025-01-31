@@ -128,7 +128,7 @@ auto setup = []() {
     n = 1e6;
     k = 100;
     for (i32 i = 0; i < n; ++i) {
-        nums.push_back(util::rnd.nextI32(0, k));
+        nums.push_back(util::Random::instance().next<i32>(0, k));
         strs.push_back(std::to_string(i));
     }
 };

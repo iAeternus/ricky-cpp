@@ -12,6 +12,7 @@
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "RelationIterator.hpp"
+#include "Pair.hpp"
 
 namespace my::util {
 
@@ -32,10 +33,10 @@ public:
     Dict(c_size bucketSize = MIN_BUCKET_SIZE) :
             bucket_(bucketSize), keys_() {}
 
-    Dict(std::initializer_list<std::pair<key_t, value_t>>&& initList) :
+    Dict(std::initializer_list<Pair<key_t, value_t>>&& initList) :
             Dict(roundup2(initList.size() / MAX_LOAD_FACTOR)) {
-        for (auto&& kv : initList) {
-            insert(kv.first, kv.second);
+        for (auto&& [key, val] : initList) {
+            insert(key, val);
         }
     }
 

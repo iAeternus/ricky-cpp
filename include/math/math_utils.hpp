@@ -87,7 +87,7 @@ def pow(T a, T n, T p = MOD)->T {
  * @return a>b返回1，a<b返回-1，a=b返回0
  */
 template <FloatingPointType T>
-def compare(const T& a, const T& b, T eps = EPS)->i32 {
+def compare(const T& a, const T& b, T eps = EPS)->cmp_t {
     if (a - b >= eps) {
         return 1;
     } else if (b - a >= eps) {

@@ -10,6 +10,7 @@
 #include "raise_error.hpp"
 #include "ricky_memory.hpp"
 #include "Sequence.hpp"
+#include "Pair.hpp"
 
 #include <initializer_list>
 
@@ -129,8 +130,8 @@ public:
     /**
      * @brief 分离数组，返回数组指针和大小，并将数组置空
      */
-    std::pair<c_size, value_t*> separate() {
-        auto res = std::make_pair(size_, arr_);
+    Pair<c_size, value_t*> separate() {
+        auto res = Pair{size_, arr_};
         size_ = 0;
         arr_ = nullptr;
         return res;

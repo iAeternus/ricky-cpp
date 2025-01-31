@@ -12,13 +12,13 @@
 #include "CodePoint.hpp"
 #include "NoCopy.hpp"
 
-namespace my::util {
+namespace my {
 
 class StringManager : public Object<StringManager>, public NoCopy {
     using self = StringManager;
 
 public:
-    StringManager(c_size length, CodePoint* sharedHead, Encoding* encoding) :
+    StringManager(c_size length, util::CodePoint* sharedHead, util::Encoding* encoding) :
             length_(length), sharedHead_(sharedHead), encoding_(encoding) {}
 
     ~StringManager() {
@@ -27,15 +27,15 @@ public:
         length_ = 0;
     }
 
-    CodePoint* sharedHead() const {
+    util::CodePoint* sharedHead() const {
         return sharedHead_;
     }
 
-    Encoding* encoding() const {
+    util::Encoding* encoding() const {
         return encoding_;
     }
 
-    void reset(c_size length, CodePoint* sharedHead) {
+    void reset(c_size length, util::CodePoint* sharedHead) {
         my_destroy(sharedHead_, length_);
         my_delloc(sharedHead_);
         this->sharedHead_ = sharedHead;
@@ -44,22 +44,22 @@ public:
 
 private:
     c_size length_;
-    CodePoint* sharedHead_;
-    Encoding* encoding_;
+    util::CodePoint* sharedHead_;
+    util::Encoding* encoding_;
 };
 
 /**
  * @brief 字符串
  */
-class String : public Sequence<String, CodePoint> {
+class String : public util::Sequence<String, util::CodePoint> {
     using self = String;
-    using super = Sequence<self, CodePoint>;
+    using super = util::Sequence<self, util::CodePoint>;
 
-    String(CodePoint* codePoints, c_size length, std::shared_ptr<StringManager> manager) :
+    String(util::CodePoint* codePoints, c_size length, std::shared_ptr<StringManager> manager) :
             length_(length), codePoints_(codePoints), manager_(std::move(manager)) {}
 
-    String(c_size length, Encoding* encoding) :
-            String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<CodePoint>(length), encoding)) {
+    String(c_size length, util::Encoding* encoding) :
+            String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<util::CodePoint>(length), encoding)) {
         for (c_size i = 0; i < length_; ++i) {
             my_construct(manager_->sharedHead() + i);
         }
@@ -69,11 +69,11 @@ class String : public Sequence<String, CodePoint> {
 public:
     constexpr static c_size npos = -1LL;
 
-    String(const CString& encoding = UTF8) :
-            String(0, encoding_map(encoding)) {}
+    String(const CString& encoding = util::UTF8) :
+            String(0, util::encoding_map(encoding)) {}
 
-    String(const char* str, c_size length = -1, const CString& encoding = UTF8) :
-            String(0, encoding_map(encoding)) {
+    String(const char* str, c_size length = -1, const CString& encoding = util::UTF8) :
+            String(0, util::encoding_map(encoding)) {
         length = ifelse(length > 0, length, std::strlen(str));
         auto [size, arr] = getCodePoints(str, length, manager_->encoding()).toArray().separate();
         this->length_ = size;
@@ -81,7 +81,7 @@ public:
         this->manager_->reset(length_, codePoints_);
     }
 
-    String(const CString& cstr, const CString& encoding = UTF8) :
+    String(const CString& cstr, const CString& encoding = util::UTF8) :
             String(cstr.data(), cstr.size(), encoding) {}
 
     String(const self& other) :
@@ -146,19 +146,19 @@ public:
         return res;
     }
 
-    CodePoint& at(c_size index) {
+    util::CodePoint& at(c_size index) {
         return codePoints_[index];
     }
 
-    const CodePoint& at(c_size index) const {
+    const util::CodePoint& at(c_size index) const {
         return codePoints_[index];
     }
 
-    CodePoint& operator[](c_size index) {
+    util::CodePoint& operator[](c_size index) {
         return at(index);
     }
 
-    const CodePoint& operator[](c_size index) const {
+    const util::CodePoint& operator[](c_size index) const {
         return at(index);
     }
 
@@ -166,7 +166,7 @@ public:
         return length_;
     }
 
-    Encoding* encoding() const {
+    util::Encoding* encoding() const {
         return manager_->encoding();
     }
 
@@ -212,7 +212,7 @@ public:
     /**
      * @brief 查找子串
      */
-    c_size find(const CodePoint& c) const {
+    c_size find(const util::CodePoint& c) const {
         return super::find(c);
     }
 
@@ -226,8 +226,8 @@ public:
         return npos;
     }
 
-    Array<c_size> findAll(const self& pattern) const {
-        DynArray<c_size> res;
+    util::Array<c_size> findAll(const self& pattern) const {
+        util::DynArray<c_size> res;
         c_size pos = 0LL;
         while (true) {
             pos = find(pattern, pos);
@@ -361,7 +361,7 @@ public:
      * @brief 替换字符串中的子串
      */
     self replace(const self& old_, const self& new_) const {
-        DynArray<c_size> indices;
+        util::DynArray<c_size> indices;
         c_size pos = 0LL;
         while (pos = find(old_, pos), pos != npos) {
             indices.append(pos);
@@ -388,7 +388,7 @@ public:
      * @brief 查找第一个成对出现的字符
      * @return 返回从left到right的子字符串
      */
-    self match(const CodePoint& left, const CodePoint& right) const {
+    self match(const util::CodePoint& left, const util::CodePoint& right) const {
         c_size l = find(left);
         if (l == npos) {
             return "";
@@ -413,7 +413,7 @@ public:
     /**
      * 删除字符串中所有指定字符
      */
-    self removeAll(CodePoint&& codePoint) const {
+    self removeAll(util::CodePoint&& codePoint) const {
         c_size mSize = size();
         std::stringstream stream;
         for (c_size i = 0; i < mSize; ++i) {
@@ -480,7 +480,7 @@ private:
 
 private:
     c_size length_;
-    CodePoint* codePoints_;
+    util::CodePoint* codePoints_;
     std::shared_ptr<StringManager> manager_;
 };
 
@@ -488,6 +488,6 @@ def operator""_s(const char* str, size_t length)->String {
     return String{str, static_cast<c_size>(length)};
 }
 
-} // namespace my::util
+} // namespace my
 
 #endif // STRING_HPP

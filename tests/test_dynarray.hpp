@@ -151,6 +151,17 @@ auto should_find = []() {
     Assertions::assertEquals(d.size(), res2);
 };
 
+// auto should_sort = []() {
+//     // Given
+//     util::DynArray<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
+
+//     // When
+//     std::sort(d.begin(), d.end());
+
+//     // Then
+//     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
+// };
+
 void test_dynarray() {
     UnitTestGroup group("test_dynarray");
 
@@ -164,6 +175,7 @@ void test_dynarray() {
     group.addTest("should_extend", should_extend);
     group.addTest("should_at", should_at);
     group.addTest("should_find", should_find);
+    // group.addTest("should_sort", should_sort);
 
     group.startAll();
 }

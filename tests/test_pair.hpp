@@ -13,40 +13,39 @@ auto should_construct = []() {
     CString c = "abc";
 
     // When
-    util::Pair<i32, f64> p = {a, b};
-    util::Pair<i32, CString> p2{a, c};
+    Pair<i32, f64> p = {a, b};
+    Pair<i32, CString> p2{a, c};
 
     // Then
     Assertions::assertEquals("(10, 3.14)"_cs, p.__str__());
     Assertions::assertEquals("(10, \"abc\")"_cs, p2.__str__());
 
     // When
-    util::Pair<i32, CString> p3{p2};
-    util::Pair<i32, CString> p4 = p3;
+    Pair<i32, CString> p3{p2};
+    Pair<i32, CString> p4 = p3;
 
     // Then
     Assertions::assertEquals("(10, \"abc\")"_cs, p3.__str__());
     Assertions::assertEquals("(10, \"abc\")"_cs, p4.__str__());
 };
 
-// auto should_structured_binding = []() {
-//     // Given
-//     using namespace my::util;
-//     Pair<i32, i32> p = {1, 2};
+auto should_structured_binding = []() {
+    // Given
+    Pair<i32, i32> p = {1, 2};
 
-//     // When
-//     auto [x, y] = p;
+    // When
+    auto [x, y] = p;
 
-//     // Then
-//     Assertions::assertEquals(1, x);
-//     Assertions::assertEquals(2, y);
-// };
+    // Then
+    Assertions::assertEquals(1, x);
+    Assertions::assertEquals(2, y);
+};
 
 void test_pair() {
     UnitTestGroup group{"test_pair"};
 
     group.addTest("should_construct", should_construct);
-    // group.addTest("should_structured_binding", should_structured_binding);
+    group.addTest("should_structured_binding", should_structured_binding);
 
     group.startAll();
 }

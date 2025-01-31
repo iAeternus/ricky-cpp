@@ -41,7 +41,7 @@ public:
      * @return json字符串
      */
     def static parse(const Json& json)->JsonType::JsonStr {
-        return util::String{json.__str__(), util::UTF8};
+        return String{json.__str__(), util::UTF8};
     }
 
 private:
@@ -51,11 +51,11 @@ private:
      * @param stopSign 停止字符
      * @return 解析后的JSON对象和剩余的字符串
      */
-    def static parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint& stopSign)->std::pair<Json, JsonType::JsonStr> {
+    def static parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint& stopSign)->Pair<Json, JsonType::JsonStr> {
         jsonStr = jsonStr.trim();
         if (jsonStr.size() == 0) {
             ValueError("Json string is empty");
-            return None<std::pair<Json, JsonType::JsonStr>>;
+            return None<Pair<Json, JsonType::JsonStr>>;
         }
 
         JsonType::JsonStr match;
@@ -67,7 +67,7 @@ private:
             match = jsonStr.split(0, jsonStr.split(1).find(util::CodePoint{'\"'}) + 2);
         } else {
             auto stopSignIdx = jsonStr.find(stopSign);
-            if (stopSign == util::String::npos) {
+            if (stopSign == String::npos) {
                 match = jsonStr;
             } else {
                 match = jsonStr.split(0, stopSignIdx);
@@ -78,7 +78,7 @@ private:
         if (remain.size()) {
             if (remain[0] != stopSign) {
                 ValueError(std::format("Stop sign \'{}\' not found", stopSign));
-                return None<std::pair<Json, JsonType::JsonStr>>;
+                return None<Pair<Json, JsonType::JsonStr>>;
             }
             remain = remain.split(1).trim();
         }

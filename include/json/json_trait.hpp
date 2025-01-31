@@ -24,7 +24,7 @@ struct JsonType {
     using JsonInt = i64;
     using JsonFloat = f64;
     using JsonBool = bool;
-    using JsonStr = util::String;
+    using JsonStr = String;
     using JsonArray = util::DynArray<Json>;
     using JsonDict = util::Dict<JsonStr, Json>;
     using JsonNull = Null;

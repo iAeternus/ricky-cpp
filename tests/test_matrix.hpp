@@ -7,13 +7,13 @@
 namespace my::test::test_matrix {
 
 auto should_construct = []() {
-    math::Matrix m(3, 4, 1);
-    math::Matrix m2 = {
+    math::Matrix<f64> m(3, 4, 1);
+    math::Matrix<f64> m2 = {
         {1, 2, 3},
         {4, 5, 6},
         {7, 8, 9},
     };
-    math::Matrix m3;
+    math::Matrix<f64> m3;
 
     Assertions::assertEquals(3LL, m.rows());
     Assertions::assertEquals(4LL, m.cols());
@@ -29,7 +29,7 @@ auto should_construct = []() {
 };
 
 auto should_at = []() {
-    math::Matrix m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+    math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     Assertions::assertEquals(0.0, m.at(0, 0));
     Assertions::assertEquals(m[0][0], m.at(0, 0));
     Assertions::assertEquals(8.0, m.at(2, 2));
@@ -38,7 +38,7 @@ auto should_at = []() {
 
 auto should_get_mat = []() {
     // Given
-    math::Matrix m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+    math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When
     auto res = m.getMat(1, 1, 2, 2);
@@ -51,7 +51,7 @@ auto should_get_mat = []() {
 
 auto should_fill = []() {
     // Given
-    math::Matrix m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+    math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When
     m.fill(1);
@@ -62,8 +62,8 @@ auto should_fill = []() {
 
 auto should_add = []() {
     // Given
-    math::Matrix m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
-    math::Matrix m2(3, 3, 1);
+    math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+    math::Matrix<f64> m2(3, 3, 1);
 
     // When
     auto res = m + m2;
@@ -76,8 +76,8 @@ auto should_add = []() {
 
 auto should_subtract = []() {
     // Given
-    math::Matrix m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
-    math::Matrix m2(3, 3, 1);
+    math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+    math::Matrix<f64> m2(3, 3, 1);
 
     // When
     auto res = m - m2;
@@ -90,8 +90,8 @@ auto should_subtract = []() {
 
 auto should_multiply = []() {
     // Given
-    math::Matrix m = {{1, 2}, {3, 4}};
-    math::Matrix m2 = {{5, 6}, {7, 8}};
+    math::Matrix<f64> m = {{1, 2}, {3, 4}};
+    math::Matrix<f64> m2 = {{5, 6}, {7, 8}};
 
     // When
     auto res = m * m2;
@@ -105,8 +105,8 @@ auto should_multiply = []() {
 auto should_dot = []() {
     // Given
     f64 n = 2;
-    math::Matrix m = {{1, 2}, {3, 4}};
-    math::Matrix m2 = {{5, 6}, {7, 8}};
+    math::Matrix<f64> m = {{1, 2}, {3, 4}};
+    math::Matrix<f64> m2 = {{5, 6}, {7, 8}};
 
     // When
     auto res = m.dot(m2);
@@ -119,7 +119,7 @@ auto should_dot = []() {
 
 auto should_transpose = []() {
     // Given
-    math::Matrix m = {{1, 2, 3}, {4, 5, 6}};
+    math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}};
 
     // When
     auto res = m.T();
@@ -130,7 +130,7 @@ auto should_transpose = []() {
 
 auto should_calculate_inverse = []() {
     // Given
-    math::Matrix m = {{3, 0, 2}, {2, 0, -2}, {0, 1, 1}};
+    math::Matrix<f64> m = {{3, 0, 2}, {2, 0, -2}, {0, 1, 1}};
 
     // When
     auto res = m.inv();
@@ -141,7 +141,7 @@ auto should_calculate_inverse = []() {
 
 auto should_calculate_det = []() {
     // Given
-    math::Matrix m = {{1, 1, -1, 2}, {-1, -1, -4, 1}, {2, 4, -6, 1}, {1, 2, 4, 2}};
+    math::Matrix<f64> m = {{1, 1, -1, 2}, {-1, -1, -4, 1}, {2, 4, -6, 1}, {1, 2, 4, 2}};
 
     // When
     auto res = m.det();
@@ -152,7 +152,7 @@ auto should_calculate_det = []() {
 
 auto should_calculate_rank = []() {
     // Given
-    math::Matrix m = {{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
+    math::Matrix<f64> m = {{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
 
     // When
     auto res = m.rank();
@@ -163,10 +163,10 @@ auto should_calculate_rank = []() {
 
 auto should_lu_decomposition = []() {
     // Given
-    math::Matrix m = {{1, 5, -3}, {-2, -7, 3}, {4, 9, 6}};
+    math::Matrix<f64> m = {{1, 5, -3}, {-2, -7, 3}, {4, 9, 6}};
 
     // When
-    auto[L, U] = m.LU();
+    auto [L, U] = m.LU();
 
     // Then
     Assertions::assertEquals("[[1,0,0],[-2,1,0],[4,-3.66667,1]]"_cs, L.__str__());

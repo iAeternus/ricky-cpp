@@ -19,6 +19,7 @@
 #include "test_complex.hpp"
 #include "test_matrix.hpp"
 #include "test_disjoint_set.hpp"
+#include "test_graph.hpp"
 
 #include "test_speed.hpp"
 
@@ -51,6 +52,7 @@ int main() {
     test_complex::test_complex();
     test_matrix::test_matrix();
     test_disjoint_set::test_disjoint_set();
+    test_graph::test_graph();
 #else
     test_speed();
 #endif
