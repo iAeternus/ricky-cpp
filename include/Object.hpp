@@ -14,6 +14,9 @@
 
 namespace my {
 
+/**
+ * @brief 根对象（CRTP基类）
+ */
 template <typename Derived>
 class Object {
 public:
@@ -60,7 +63,7 @@ public:
 };
 
 /**
- * 静态多态约束
+ * CRTP模式，静态多态约束
  * 相比于使用虚函数的动态多态，开销更小
  */
 template <typename T>

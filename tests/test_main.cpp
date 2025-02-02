@@ -21,6 +21,7 @@
 #include "test_disjoint_set.hpp"
 #include "test_graph.hpp"
 #include "test_generator.hpp"
+#include "test_stream.hpp"
 
 #include "test_speed.hpp"
 
@@ -55,6 +56,7 @@ int main() {
     test_disjoint_set::test_disjoint_set();
     test_graph::test_graph();
     test_generator::test_generator();
+    test_stream::test_stream();
 #else
     test_speed();
 #endif

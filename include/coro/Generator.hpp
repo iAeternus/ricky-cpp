@@ -11,6 +11,7 @@
 
 #include <exception>
 #include <iterator>
+#include <type_traits>
 #include <utility>
 
 namespace my::coro {
@@ -19,6 +20,7 @@ template <typename T>
 class Generator : public Object<Generator<T>>, public NoCopy {
     using self = Generator<T>;
     static_assert(std::is_default_constructible_v<T>, "Generator requires default constructible result type");
+    static_assert(!std::is_const_v<T>, "Generator result type cannot be const");
 
 public:
     struct promise_type;

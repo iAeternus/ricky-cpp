@@ -81,7 +81,8 @@
         "ranges": "cpp",
         "future": "cpp",
         "shared_mutex": "cpp",
-        "coroutine": "cpp"
+        "coroutine": "cpp",
+        "execution": "cpp"
     },
     "cSpell.words": [
         "DATAA"
