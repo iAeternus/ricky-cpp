@@ -44,6 +44,7 @@ auto should_get_sub_mat = []() {
     auto res = m.subMat(1, 1, 2, 2);
 
     // Then
+    Assertions::assertEquals(res.__str__(), res.toMatrix().__str__());
     Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.toMatrix().__str__());
 };
 

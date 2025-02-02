@@ -15,6 +15,9 @@ namespace my::math {
 template <typename E>
 class Matrix;
 
+/**
+ * @brief 矩阵视图
+ */
 template <typename E>
 class MatrixView : public Object<MatrixView<E>> {
     using self = MatrixView<E>;
@@ -49,12 +52,35 @@ public:
         return result;
     }
 
+    CString __str__() const {
+        std::stringstream stream;
+        stream << '[';
+        for (c_size i = 0; i < rows_; ++i) {
+            stream << '[';
+            for (c_size j = 0; j < cols_; ++j) {
+                stream << at(i, j);
+                if (j != cols_ - 1) {
+                    stream << ',';
+                }
+            }
+            stream << ']';
+            if (i != rows_ - 1) {
+                stream << ',';
+            }
+        }
+        stream << ']';
+        return CString{stream.str()};
+    }
+
 private:
     const Matrix<E>& ref_;
     c_size rowBegin_, colBegin_;
     c_size rows_, cols_;
 };
 
+/**
+ * @brief 矩阵
+ */
 template <typename E>
 class Matrix : public Object<Matrix<E>> {
     using self = Matrix<E>;

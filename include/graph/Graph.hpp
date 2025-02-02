@@ -152,8 +152,8 @@ public:
         stream << "Graph (" << (isDirected_ ? "Directed" : "Undirected") << ")\n";
         stream << "Vertex count: " << vertexCount() << '\n';
         stream << "Edge count: " << edgeCount() << '\n';
-        stream << "Vertex value type: " << typeid(V).name() << '\n';
-        stream << "Edge value type: " << typeid(E).name() << '\n';
+        stream << "Vertex value type: " << dtype(V) << '\n';
+        stream << "Edge value type: " << dtype(E) << '\n';
         stream << "Adjacency List:\n";
 
         for (const auto& vertex : vertices_.values()) {
@@ -169,7 +169,7 @@ public:
             }
             stream << '\n';
         }
-        return CString(stream.str());
+        return CString{stream.str()};
     }
 
 private:
