@@ -12,23 +12,72 @@
 
 namespace my::math {
 
-template<typename E>
+template <typename E>
+class Matrix;
+
+template <typename E>
+class MatrixView : public Object<MatrixView<E>> {
+    using self = MatrixView<E>;
+
+public:
+    MatrixView(const Matrix<E>& ref, c_size rowBegin, c_size colBegin, c_size rows, c_size cols) :
+            ref_(ref), rowBegin_(rowBegin), colBegin_(colBegin), rows_(rows), cols_(cols) {}
+
+    c_size rows() const {
+        return rows_;
+    }
+
+    c_size cols() const {
+        return cols_;
+    }
+
+    typename Matrix<E>::ConstRowProxy operator[](c_size i) const {
+        return ref_[rowBegin_ + i];
+    }
+
+    E at(c_size i, c_size j) const {
+        return ref_.at(rowBegin_ + i, colBegin_ + j);
+    }
+
+    Matrix<E> toMatrix() const {
+        Matrix<E> result(rows_, cols_);
+        for (c_size i = 0; i < rows_; ++i) {
+            for (c_size j = 0; j < cols_; ++j) {
+                result[i][j] = at(i, j);
+            }
+        }
+        return result;
+    }
+
+private:
+    const Matrix<E>& ref_;
+    c_size rowBegin_, colBegin_;
+    c_size rows_, cols_;
+};
+
+template <typename E>
 class Matrix : public Object<Matrix<E>> {
     using self = Matrix<E>;
 
 public:
     using value_t = E;
 
+    class RowProxy;
+    class ConstRowProxy;
+
     Matrix(c_size rows = 1, c_size cols = 1, value_t value = 0.0) :
-            rows_(rows), cols_(cols), data_(rows_, util::DynArray<value_t>(cols_, value)) {}
+            rows_(rows), cols_(cols), data_(rows_ * cols_, value) {}
 
     Matrix(std::initializer_list<std::initializer_list<value_t>>&& initList) :
-            rows_(initList.size()) {
+            rows_(initList.size()), cols_(rows_ > 0 ? initList.begin()->size() : 0), data_(rows_ * cols_) {
+        size_t index = 0;
         for (auto&& row : initList) {
-            data_.append(util::DynArray<value_t>{std::move(row)});
-        }
-        if (rows_ > 0) {
-            cols_ = data_[0].size();
+            if (c_size(row.size()) != cols_) {
+                ValueError("Inconsistent row sizes in initializer list");
+            }
+            for (auto&& item : row) {
+                data_.at(index++) = std::move(item);
+            }
         }
     }
 
@@ -39,7 +88,7 @@ public:
             Matrix(initList.size(), initList.size()) {
         c_size pos = 0;
         for (auto&& item : initList) {
-            data_[pos][pos] = item;
+            at_impl(pos, pos) = item;
             ++pos;
         }
     }
@@ -52,55 +101,78 @@ public:
         return cols_;
     }
 
+    /**
+     * @brief 判断是否为方阵
+     * @return true=是 false=否
+     */
+    bool isSquare() const {
+        return rows_ == cols_;
+    }
+
+    bool shapeEquals(const self& other) const {
+        return this->rows_ == other.rows_ && this->cols_ == other.cols_;
+    }
+
     value_t& at(c_size i, c_size j) {
-        return data_.at(i).at(j);
+        if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
+            ValueError(std::format("Index[{}, {}] out of range", i, j));
+            return None<value_t>;
+        }
+        return at_impl(i, j);
     }
 
     const value_t& at(c_size i, c_size j) const {
-        return data_.at(i).at(j);
+        if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
+            ValueError(std::format("Index[{}, {}] out of range", i, j));
+            return None<value_t>;
+        }
+        return at_impl(i, j);
     }
 
-    util::DynArray<value_t>& operator[](c_size index) {
-        return data_[index];
+    RowProxy operator[](c_size i) {
+        if (i < 0 || i >= rows_) {
+            ValueError(std::format("Row index[{}] out of range", i));
+            return None<RowProxy>;
+        }
+        return RowProxy{data_, i * cols_, cols_};
     }
 
-    const util::DynArray<value_t>& operator[](c_size index) const {
-        return data_[index];
+    ConstRowProxy operator[](c_size i) const {
+        if (i < 0 || i >= rows_) {
+            ValueError(std::format("Row index[{}] out of range", i));
+            return None<ConstRowProxy>;
+        }
+        return ConstRowProxy{data_, i * cols_, cols_};
     }
 
     /**
-     * @brief 获取当前矩阵的子矩阵
+     * @brief 获取当前矩阵的子矩阵，行列均为闭区间
      */
-    self getMat(c_size i1, c_size j1, c_size i2, c_size j2) const {
-        i2 = neg_index(i2, rows_);
-        j2 = neg_index(j2, cols_);
-        if (i1 < 0 || j1 < 0 || i1 > i2 || j1 > j2) {
+    MatrixView<value_t> subMat(c_size i1, c_size j1, c_size i2, c_size j2) const {
+        if (i1 > i2 || j1 > j2 || i1 < 0 || j1 < 0 || i2 >= rows_ || j2 >= cols_) {
             ValueError(std::format("Cannot get submatrix [{}..{}] x [{}..{}] of a ({}x{}) matrix.",
                                    i1, i2, j1, j2, rows_, cols_));
-            return None<self>;
+            return None<MatrixView<value_t>>;
         }
-        self ans(i2 - i1 + 1, j2 - j1 + 1);
-        for (c_size i = 0; i < ans.rows_; ++i) {
-            for (c_size j = 0; j < ans.cols_; ++j) {
-                ans[i][j] = data_[i1 + i][j1 + j];
-            }
-        }
-        return ans;
+        return MatrixView<value_t>{*this, i1, j1, i2 - i1 + 1, j2 - j1 + 1};
     }
 
     /**
      * @brief 填充矩阵
      */
-    void fill(value_t value) {
-        for (c_size i = 0; i < rows_; ++i) {
-            for (c_size j = 0; j < cols_; ++j) {
-                data_[i][j] = value;
-            }
+    void fill(value_t&& value) {
+        for (auto&& elem : data_) {
+            elem = std::move(value);
         }
     }
 
-    bool shapeEquals(const self& other) const {
-        return this->rows_ == other.rows_ && this->cols_ == other.cols_;
+    self clone() const {
+        self ans(this->rows_, this->cols_);
+        c_size size = this->data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            ans.data_[i] = this->data_[i];
+        }
+        return ans;
     }
 
     friend self operator+(const self& a, const self& b) {
@@ -109,35 +181,49 @@ public:
             return None<self>;
         }
         self ans(a.rows_, a.cols_);
-        for (c_size i = 0; i < a.rows_; ++i) {
-            for (c_size j = 0; j < a.cols_; ++j) {
-                ans[i][j] = a[i][j] + b[i][j];
-            }
+        c_size size = ans.data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            ans.data_[i] = a.data_[i] + b.data_[i];
         }
         return ans;
     }
 
     self& operator+=(const self& other) {
-        *this = *this + other;
+        if (!this->shapeEquals(other)) {
+            ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.",
+                                   this->rows_, this->cols_, other.rows_, other.cols_));
+            return None<self>;
+        }
+        c_size size = this->data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            this->data_[i] += other.data_[i];
+        }
         return *this;
     }
 
     friend self operator-(const self& a, const self& b) {
         if (!a.shapeEquals(b)) {
-            ValueError(std::format("Cannot subtract a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
+            ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
             return None<self>;
         }
         self ans(a.rows_, a.cols_);
-        for (c_size i = 0; i < a.rows_; ++i) {
-            for (c_size j = 0; j < a.cols_; ++j) {
-                ans[i][j] = a[i][j] - b[i][j];
-            }
+        c_size size = ans.data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            ans.data_[i] = a.data_[i] - b.data_[i];
         }
         return ans;
     }
 
     self& operator-=(const self& other) {
-        *this = *this - other;
+        if (!this->shapeEquals(other)) {
+            ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.",
+                                   this->rows_, this->cols_, other.rows_, other.cols_));
+            return None<self>;
+        }
+        c_size size = this->data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            this->data_[i] -= other.data_[i];
+        }
         return *this;
     }
 
@@ -146,15 +232,16 @@ public:
             ValueError("To be multiplied, the cols of matrix A must equals to the rows of matrix B.");
             return None<self>;
         }
-        self ans(a.rows_, b.cols_);
+        self result(a.rows_, b.cols_);
         for (c_size i = 0; i < a.rows_; ++i) {
-            for (c_size j = 0; j < b.cols_; ++j) {
-                for (c_size k = 0; k < a.cols_; ++k) {
-                    ans[i][j] += a[i][k] * b[k][j];
+            for (c_size k = 0; k < a.cols_; ++k) {
+                auto a_ik = a[i][k];
+                for (c_size j = 0; j < b.cols_; ++j) {
+                    result[i][j] += a_ik * b[k][j];
                 }
             }
         }
-        return ans;
+        return result;
     }
 
     self& operator*=(const self& other) {
@@ -172,20 +259,18 @@ public:
             return None<self>;
         }
         self ans(this->rows_, this->cols_);
-        for (c_size i = 0; i < ans.rows_; ++i) {
-            for (c_size j = 0; j < ans.cols_; ++j) {
-                ans[i][j] = this->data_[i][j] * other[i][j];
-            }
+        c_size size = ans.data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            ans.data_[i] = this->data_[i] * other.data_[i];
         }
         return ans;
     }
 
     self dot(value_t value) const {
         self ans(rows_, cols_);
-        for (c_size i = 0; i < ans.rows_; ++i) {
-            for (c_size j = 0; j < ans.cols_; ++j) {
-                ans[i][j] = this->data_[i][j] * value;
-            }
+        c_size size = ans.data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            ans.data_[i] = this->data_[i] * value;
         }
         return ans;
     }
@@ -197,7 +282,7 @@ public:
         self ans(cols_, rows_);
         for (c_size i = 0; i < rows_; ++i) {
             for (c_size j = 0; j < cols_; ++j) {
-                ans[j][i] = data_[i][j];
+                ans.at_impl(j, i) = this->at_impl(i, j);
             }
         }
         return ans;
@@ -216,7 +301,7 @@ public:
             return None<bool>;
         }
         for (c_size k = 0; k < cols_; ++k) {
-            std::swap(data_[i][k], data_[j][k]);
+            std::swap(at_impl(i, k), at_impl(j, k));
         }
         return true;
     }
@@ -234,7 +319,7 @@ public:
             return None<bool>;
         }
         for (c_size k = 0; k < rows_; ++k) {
-            std::swap(data_[k][i], data_[k][j]);
+            std::swap(at_impl(k, i), at_impl(k, j));
         }
         return true;
     }
@@ -405,46 +490,51 @@ public:
         return Pair{l, u};
     }
 
-    /**
-     * @brief 判断是否为方阵
-     * @return true=是 false=否
-     */
-    bool isSquare() const {
-        return rows_ == cols_;
-    }
-
-    self clone() const {
-        self ans(this->rows_, this->cols_);
-        for (c_size i = 0; i < ans.rows_; ++i) {
-            for (c_size j = 0; j < ans.cols_; ++j) {
-                ans[i][j] = data_[i][j];
+    CString __str__() const {
+        std::stringstream stream;
+        stream << '[';
+        for (c_size i = 0; i < rows_; ++i) {
+            stream << '[';
+            for (c_size j = 0; j < cols_; ++j) {
+                stream << at_impl(i, j);
+                if (j != cols_ - 1) {
+                    stream << ',';
+                }
+            }
+            stream << ']';
+            if (i != rows_ - 1) {
+                stream << ',';
             }
         }
-        return ans;
-    }
-
-    CString __str__() const {
-        return data_.__str__();
+        stream << ']';
+        return CString{stream.str()};
     }
 
     cmp_t __cmp__(const self& other) const {
-        if (this->rows_ != other.rows_ || this->cols_ != other.cols_) {
+        if (!this->shapeEquals(other)) {
             ValueError("Only matrices of the same dimension are comparable");
             return None<cmp_t>;
         }
-        for (c_size i = 0; i < rows_; ++i) {
-            for (c_size j = 0; j < cols_; ++j) {
-                if (compare(this->data_[i][j], other[i][j]) > 0) {
-                    return 1;
-                } else if (compare(this->data_[i][j], other[i][j]) < 0) {
-                    return -1;
-                }
+        c_size size = this->data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            if (compare(this->data_[i], other.data_[i]) > 0) {
+                return 1;
+            } else if (compare(this->data_[i], other.data_[i]) < 0) {
+                return -1;
             }
         }
         return 0;
     }
 
 private:
+    value_t& at_impl(c_size i, c_size j) {
+        return data_.at(i * cols_ + j);
+    }
+
+    const value_t& at_impl(c_size i, c_size j) const {
+        return data_.at(i * cols_ + j);
+    }
+
     /**
      * @brief 校验高斯-约当消元法的主元，不能为0
      */
@@ -455,17 +545,55 @@ private:
     }
 
     void correct() {
-        for (c_size i = 0; i < rows_; ++i) {
-            for (c_size j = 0; j < cols_; ++j) {
-                data_[i][j] = correctFloat(data_[i][j]);
-            }
+        c_size size = data_.size();
+        for (c_size i = 0; i < size; ++i) {
+            data_[i] = correctFloat(data_[i]);
         }
     }
 
+public:
+    class RowProxy {
+    public:
+        RowProxy(util::DynArray<value_t>& data, c_size start_col, c_size cols) :
+                data_(data), start_col_(start_col), cols_(cols) {}
+
+        value_t& operator[](c_size j) {
+            if (j < 0 || j >= cols_) {
+                ValueError("Column index out of range");
+                return None<value_t>;
+            }
+            return data_[start_col_ + j];
+        }
+
+    private:
+        util::DynArray<value_t>& data_;
+        c_size start_col_;
+        c_size cols_;
+    };
+
+    class ConstRowProxy {
+    public:
+        ConstRowProxy(const util::DynArray<value_t>& data, c_size start_col, c_size cols) :
+                data_(data), start_col_(start_col), cols_(cols) {}
+
+        const value_t& operator[](c_size j) const {
+            if (j < 0 || j >= cols_) {
+                ValueError("Column index out of range");
+                return None<value_t>;
+            }
+            return data_[start_col_ + j];
+        }
+
+    private:
+        const util::DynArray<value_t>& data_;
+        c_size start_col_;
+        c_size cols_;
+    };
+
 private:
-    c_size rows_; // 行数
-    c_size cols_; // 列数
-    util::DynArray<util::DynArray<value_t>> data_;
+    c_size rows_;                  // 行数
+    c_size cols_;                  // 列数
+    util::DynArray<value_t> data_; // 一维存储，提高空间局部性
 };
 
 } // namespace my::math

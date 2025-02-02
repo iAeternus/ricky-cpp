@@ -36,17 +36,15 @@ auto should_at = []() {
     Assertions::assertEquals(m[2][2], m.at(2, 2));
 };
 
-auto should_get_mat = []() {
+auto should_get_sub_mat = []() {
     // Given
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When
-    auto res = m.getMat(1, 1, 2, 2);
-    auto res2 = m.getMat(0, 0, -1, -1);
+    auto res = m.subMat(1, 1, 2, 2);
 
     // Then
-    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.__str__());
-    Assertions::assertEquals("[[0,1,2],[3,4,5],[6,7,8]]"_cs, res2.__str__());
+    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.toMatrix().__str__());
 };
 
 auto should_fill = []() {
@@ -178,7 +176,7 @@ void test_matrix() {
 
     group.addTest("should_construct", should_construct);
     group.addTest("should_at", should_at);
-    group.addTest("should_get_mat", should_get_mat);
+    group.addTest("should_get_sub_mat", should_get_sub_mat);
     group.addTest("should_fill", should_fill);
     group.addTest("should_add", should_add);
     group.addTest("should_subtract", should_subtract);
