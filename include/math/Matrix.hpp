@@ -23,7 +23,9 @@ class MatrixView : public Object<MatrixView<E>> {
     using self = MatrixView<E>;
 
 public:
-    MatrixView(const Matrix<E>& ref, c_size rowBegin, c_size colBegin, c_size rows, c_size cols) :
+    using value_t = E;
+
+    MatrixView(const Matrix<value_t>& ref, c_size rowBegin, c_size colBegin, c_size rows, c_size cols) :
             ref_(ref), rowBegin_(rowBegin), colBegin_(colBegin), rows_(rows), cols_(cols) {}
 
     c_size rows() const {
@@ -34,16 +36,16 @@ public:
         return cols_;
     }
 
-    typename Matrix<E>::ConstRowProxy operator[](c_size i) const {
+    typename Matrix<value_t>::ConstRowProxy operator[](c_size i) const {
         return ref_[rowBegin_ + i];
     }
 
-    E at(c_size i, c_size j) const {
+    value_t at(c_size i, c_size j) const {
         return ref_.at(rowBegin_ + i, colBegin_ + j);
     }
 
-    Matrix<E> toMatrix() const {
-        Matrix<E> result(rows_, cols_);
+    Matrix<value_t> toMatrix() const {
+        Matrix<value_t> result(rows_, cols_);
         for (c_size i = 0; i < rows_; ++i) {
             for (c_size j = 0; j < cols_; ++j) {
                 result[i][j] = at(i, j);
@@ -73,7 +75,7 @@ public:
     }
 
 private:
-    const Matrix<E>& ref_;
+    const Matrix<value_t>& ref_;
     c_size rowBegin_, colBegin_;
     c_size rows_, cols_;
 };
