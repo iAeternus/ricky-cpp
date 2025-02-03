@@ -22,9 +22,9 @@ auto should_plus = []() {
     auto d = util::Date::of(1970);
 
     // When
-    auto d2 = d.plusDays(366); // 1971-01-02
+    auto d2 = d.plusDays(366);   // 1971-01-02
     auto d3 = d2.plusMonths(13); // 1972-02-02
-    auto d4 = d3.plusYears(2); // 1974-02-02
+    auto d4 = d3.plusYears(2);   // 1974-02-02
 
     // Then
     Assertions::assertEquals("1974-02-02"_cs, d4.__str__());
@@ -35,9 +35,9 @@ auto should_minus = []() {
     auto d = util::Date::of(1970);
 
     // When
-    auto d2 = d.minusDays(366); // 1968-12-31
+    auto d2 = d.minusDays(366);   // 1968-12-31
     auto d3 = d2.minusMonths(13); // 1967-11-30
-    auto d4 = d3.minusYears(2); // 1965-11-30
+    auto d4 = d3.minusYears(2);   // 1965-11-30
 
     // Then
     Assertions::assertEquals("1965-11-30"_cs, d4.__str__());
