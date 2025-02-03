@@ -29,7 +29,7 @@ template <typename Upstream, typename Func, typename T>
 class MapStream;
 
 /**
- * @brief 基础流（CRTP基类）
+ * @brief 流CRTP基类
  */
 template <typename Derived, typename T>
 class Stream {
@@ -143,7 +143,7 @@ private:
     Func func_;
 };
 
-// 工厂函数
+// Stream工厂
 template <Iterable I>
 def stream(I&& iter) {
     return IterStream(iter.begin(), iter.end());

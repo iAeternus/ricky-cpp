@@ -157,6 +157,14 @@ public:
         return at_impl(i, j);
     }
 
+    value_t& operator()(c_size i, c_size j) {
+        return at_impl(i, j);
+    }
+
+    const value_t& operator()(c_size i, c_size j) const {
+        return at_impl(i, j);
+    }
+
     RowProxy operator[](c_size i) {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
@@ -263,9 +271,9 @@ public:
         self result(a.rows_, b.cols_);
         for (c_size i = 0; i < a.rows_; ++i) {
             for (c_size k = 0; k < a.cols_; ++k) {
-                auto a_ik = a[i][k];
+                auto a_ik = a(i, k);
                 for (c_size j = 0; j < b.cols_; ++j) {
-                    result[i][j] += a_ik * b[k][j];
+                    result(i, j) += a_ik * b(k, j);
                 }
             }
         }
@@ -310,7 +318,7 @@ public:
         self ans(cols_, rows_);
         for (c_size i = 0; i < rows_; ++i) {
             for (c_size j = 0; j < cols_; ++j) {
-                ans.at_impl(j, i) = this->at_impl(i, j);
+                ans(j, i) = this->at_impl(i, j);
             }
         }
         return ans;
@@ -383,7 +391,7 @@ public:
             ans[k][k] = reciprocal(ans[k][k]); // 归一化主元
             for (c_size j = 0; j < cols_; ++j) {
                 if (j == k) continue;
-                ans[k][j] *= ans[k][k];
+                ans[k][j] *= ans[k][k];   
             }
             for (c_size i = 0; i < rows_; ++i) {
                 if (i == k) continue;
