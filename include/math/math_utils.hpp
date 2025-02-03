@@ -8,6 +8,7 @@
 #define MATH_UTILS_HPP
 
 #include "math_concepts.hpp"
+#include "raise_error.hpp"
 
 #include <cmath>
 #include <cfloat>
@@ -18,6 +19,16 @@ static constexpr f64 PI = 3.14159265358979323846;
 static constexpr f64 E = 2.71828182845904523536;
 static constexpr f64 GOLDEN_RATIO = 0.61803398874989484820; // 黄金分割比
 static constexpr i32 MOD = 1e9 + 7;                         // 素数模数
+
+template<typename T>
+def min(const T& a, const T& b) -> const T& {
+    return b < a ? b : a;
+}
+
+template<typename T>
+def max(const T& a, const T& b) -> const T& {
+    return a < b ? b : a;
+}
 
 /**
  * @brief 计算两个整数的最大公约数，O(log2(min(a, b)))
@@ -153,6 +164,57 @@ def correctFloat(const T& num)->T {
         return 0.0;
     }
     return num;
+}
+
+/**
+ * @brief 相加并校验是否溢出，若溢出抛出RuntimeError
+ */
+def addExact(i64 x, i64 y)->i64 {
+    i64 r = x + y;
+    // HD 2-12 Overflow iff both arguments have the opposite sign of the result
+    if (((x ^ r) & (y ^ r)) < 0) {
+        RuntimeError("i64 overflow");
+    }
+    return r;
+}
+
+/**
+ * @brief 相减并校验是否溢出，若溢出抛出RuntimeError
+ */
+def subtractExact(i64 x, i64 y)->i64 {
+    i64 r = x - y;
+    // HD 2-12 Overflow iff the arguments have different signs and
+    // the sign of the result is different from the sign of x
+    if (((x ^ y) & (x ^ r)) < 0) {
+        RuntimeError("i64 overflow");
+    }
+    return r;
+}
+
+/**
+ * @brief 相乘并校验是否溢出，若溢出抛出RuntimeError
+ */
+def multiplyExact(i32 x, i32 y)->i32 {
+    i64 r = i64(x) * i64(y);
+    if (i32(r) != r) {
+        RuntimeError("i32 overflow");
+    }
+    return i32(r);
+}
+
+def multiplyExact(i64 x, i64 y)->i64 {
+    i64 r = x * y;
+    i64 ax = std::abs(x);
+    i64 ay = std::abs(y);
+    if (((ax | ay) >> 31 != 0)) {
+        // Some bits greater than 2^31 that might cause overflow
+        // Check the result using the divide operator
+        // and check for the special case of LONG_LONG_MIN * -1
+        if (((y != 0) && (r / y != x)) || (x == LONG_LONG_MIN && y == -1)) {
+            RuntimeError("i64 overflow");
+        }
+    }
+    return r;
 }
 
 } // namespace my::math

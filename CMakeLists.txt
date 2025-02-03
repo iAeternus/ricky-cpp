@@ -37,10 +37,13 @@ endif()
 # ----------------------------------------
 # 源码管理
 # ----------------------------------------
-aux_source_directory("${CMAKE_SOURCE_DIR}/src" SRC_DIR)
+file(GLOB_RECURSE SRC_FILES 
+    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+    "${CMAKE_SOURCE_DIR}/src/*.cxx"
+)
 
-# 主可执行文件
-add_executable(RICKY_CPP ${SRC_DIR})
+# 添加可执行文件
+add_executable(RICKY_CPP ${SRC_FILES})
 
 # ----------------------------------------
 # include目录配置

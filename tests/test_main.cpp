@@ -22,6 +22,7 @@
 #include "test_graph.hpp"
 #include "test_generator.hpp"
 #include "test_stream.hpp"
+#include "test_duration.hpp"
 
 #include "test_speed.hpp"
 
@@ -57,6 +58,7 @@ int main() {
     test_graph::test_graph();
     test_generator::test_generator();
     test_stream::test_stream();
+    test_duration::test_duration();
 #else
     test_speed();
 #endif
