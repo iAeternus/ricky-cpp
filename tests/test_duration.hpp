@@ -14,6 +14,7 @@ auto should_construct = []() {
     auto d5 = util::Duration::ofMillis(4);
     auto d6 = util::Duration::ofNanos(4);
     auto d7 = util::Duration::ZERO;
+    auto d8 = util::Duration::ofDays(2);
 
     Assertions::assertEquals(4LL, d.toDays());
     Assertions::assertEquals(96LL, d.toHours());
@@ -28,6 +29,7 @@ auto should_construct = []() {
     Assertions::assertEquals("PT0.004000000S"_cs, d5.__str__());
     Assertions::assertEquals("PT0.000000004S"_cs, d6.__str__());
     Assertions::assertEquals("PT0.0S"_cs, d7.__str__());
+    Assertions::assertEquals("PT2D1H1S"_cs, (d8 + util::Duration::ofSeconds(3601)).__str__());
 };
 
 auto should_add = []() {
@@ -42,7 +44,7 @@ auto should_add = []() {
     Assertions::assertEquals(49LL, res.toHours());
 };
 
-auto should_substract = []() {
+auto should_subtract = []() {
     // Given
     auto d = util::Duration::ofHours(25);
     auto d2 = util::Duration::ofDays(1);
@@ -71,7 +73,7 @@ void test_duration() {
 
     group.addTest("should_construct", should_construct);
     group.addTest("should_add", should_add);
-    group.addTest("should_substract", should_substract);
+    group.addTest("should_subtract", should_subtract);
     group.addTest("should_multiply", should_multiply);
 
     group.startAll();

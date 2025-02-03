@@ -23,6 +23,7 @@
 #include "test_generator.hpp"
 #include "test_stream.hpp"
 #include "test_duration.hpp"
+#include "test_date_time.hpp"
 
 #include "test_speed.hpp"
 
@@ -59,6 +60,7 @@ int main() {
     test_generator::test_generator();
     test_stream::test_stream();
     test_duration::test_duration();
+    test_date_time::test_date_time();
 #else
     test_speed();
 #endif
