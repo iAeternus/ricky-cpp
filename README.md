@@ -19,6 +19,6 @@ git clone https://github.com/iAeternus/ricky-cpp.git
 ### 3. Run the Test
 
 ```shell
-./run_test
+./run_tests
 ```
 

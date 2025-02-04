@@ -21,6 +21,6 @@ if %ERRORLEVEL% NEQ 0 (
     echo Error: Tests failed.
     exit /b %ERRORLEVEL%
 )
-echo Tests completed successfully.
+echo Tests ran successfully.
 
 endlocal
