@@ -266,10 +266,10 @@ class Time : public Object<Time> {
     using self = Time;
 
 public:
-    static const Time MIN;      // 00:00:00.000
-    static const Time MAX;      // 23:59:59.999999999
-    static const Time MIDNIGHT; // 00:00
-    static const Time NOON;     // 12:00
+    static const self MIN;      // 00:00:00.000
+    static const self MAX;      // 23:59:59.999999999
+    static const self MIDNIGHT; // 00:00
+    static const self NOON;     // 12:00
 
     static constexpr i32 HOURS_PER_DAY = 24;                                       // Hours per day.
     static constexpr i32 MINUTES_PER_HOUR = 60;                                    // Minutes per hour.
