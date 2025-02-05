@@ -29,7 +29,7 @@ auto should_merge_and_find = []() {
     Assertions::assertTrue(ds.isConnected(1, 6));
     Assertions::assertFalse(ds.isConnected(1, 8));
 
-    for(i32 i = 1; i <= 10; ++i) {
+    for (i32 i = 1; i <= 10; ++i) {
         io::print(ds.getRank(i));
     }
     io::println();

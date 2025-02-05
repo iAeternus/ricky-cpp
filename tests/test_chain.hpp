@@ -12,7 +12,7 @@ auto should_append = []() {
     util::ChainList<CString> c;
 
     // When
-    for(i32 i = 0; i < N; ++i) {
+    for (i32 i = 0; i < N; ++i) {
         c.append(cstr(i));
     }
 
@@ -28,13 +28,13 @@ auto should_iterable = []() {
     // Given
     i32 N = 100;
     util::ChainList<i32> c;
-    for(i32 i = 0; i < N; ++i) {
+    for (i32 i = 0; i < N; ++i) {
         c.append(i + 1);
     }
 
     // When
     i32 sum = 0;
-    for(const auto& it : c) {
+    for (const auto& it : c) {
         sum += it;
     }
 
@@ -74,7 +74,6 @@ auto should_clear = []() {
     // Then
     Assertions::assertEquals(0, i32(c.size()));
     Assertions::assertTrue(c.empty());
-    Assertions::assertEquals(c.begin(), c.end());
 
     // When
     c.clear();

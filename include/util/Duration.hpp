@@ -96,7 +96,7 @@ public:
     }
 
     CString __str__() const {
-        if(*this == ZERO) {
+        if (*this == ZERO) {
             return CString{"PT0.0S"};
         }
 

@@ -80,7 +80,7 @@ public:
     }
 
     iterator end() const {
-        if(!super::tail_) {
+        if (!super::tail_) {
             return iterator{nullptr};
         }
         return iterator{super::tail_->next_};
@@ -91,7 +91,7 @@ public:
     }
 
     reverse_iterator rend() const {
-        if(!super::head_) {
+        if (!super::head_) {
             return reverse_iterator{nullptr};
         }
         return reverse_iterator{super::head_->prev_};
@@ -143,7 +143,6 @@ public:
     bool operator!=(const self& other) const {
         return this->__cmp__(other);
     }
-
 };
 
 template <typename T>

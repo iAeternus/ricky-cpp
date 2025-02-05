@@ -48,8 +48,8 @@ public:
         return self{year, month + 1, day};
     }
 
-    static self fromEpochDay(i64 epochDay) {
-        return fromEpochDayImpl(epochDay);
+    static self ofEpochDay(i64 epochDay) {
+        return ofEpochDayImpl(epochDay);
     }
 
     /**
@@ -76,6 +76,7 @@ public:
     i32 year() const noexcept { return year_; }
     i32 month() const noexcept { return month_; }
     i32 day() const noexcept { return day_; }
+    i32 dayOfMonth() const noexcept { return day_; }
 
     i32 dayOfYear() const {
         static constexpr i32 leap[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
@@ -102,8 +103,8 @@ public:
     /**
      * @brief 日期运算
      */
-    self plusDays(i64 days) const {
-        return fromEpochDay(toEpochDay() + days);
+    self plusYears(i64 years) const {
+        return adjustDay(year_ + years, month_);
     }
 
     self plusMonths(i64 months) const {
@@ -117,28 +118,61 @@ public:
         return adjustDay(newYear, newMonth);
     }
 
-    self plusYears(i64 years) const {
-        return adjustDay(year_ + years, month_);
+    self plusWeeks(i64 weeks) const {
+        return plusDays(math::multiplyExact(weeks, 7LL));
     }
 
-    self minusDays(i64 days) const {
-        return plusDays(-days);
-    }
-
-    self minusMonths(i64 months) const {
-        return plusMonths(-months);
+    self plusDays(i64 days) const {
+        return ofEpochDay(toEpochDay() + days);
     }
 
     self minusYears(i64 years) const {
         return plusYears(-years);
     }
 
+    self minusMonths(i64 months) const {
+        return plusMonths(-months);
+    }
+
+    self minusWeeks(i64 weeks) const {
+        return minusDays(math::multiplyExact(weeks, 7LL));
+    }
+
+    self minusDays(i64 days) const {
+        return plusDays(-days);
+    }
+
     /**
      * @brief 日期调整
      */
-    self withYear(i32 year) const { return adjustDay(year, month_); }
-    self withMonth(i32 month) const { return adjustDay(year_, month); }
-    self withDay(i32 day) const { return self::of(year_, month_, day); }
+    self withYear(i32 year) const {
+        if (year == year_) {
+            return *this;
+        }
+        return adjustDay(year, month_);
+    }
+
+    self withMonth(i32 month) const {
+        if (month == month_) {
+            return *this;
+        }
+        return adjustDay(year_, month);
+    }
+
+    self withDay(i32 day) const {
+        if (day == day_) {
+            return *this;
+        }
+        return of(year_, month_, day);
+    }
+
+    self withDayOfMonth(i32 datOfMonth) const {
+        return of(year_, month_, datOfMonth);
+    }
+
+    self withDayOfYear(i32 dayOfYear) const {
+        return ofYearDay(year_, dayOfYear);
+    }
 
     /**
      * @brief 本月的最后一天
@@ -185,7 +219,7 @@ private:
     Date(i32 year, i32 month, i32 day) :
             year_(year), month_(month), day_(day) {}
 
-    static self fromEpochDayImpl(i64 epochDay) {
+    static self ofEpochDayImpl(i64 epochDay) {
         i64 z = epochDay + 719468;
         i64 era = (z >= 0 ? z : z - 146096) / 146097;
         u32 doe = static_cast<u32>(z - era * 146097);
@@ -419,6 +453,34 @@ public:
         return Duration::ofSeconds(this->toSecondOfDay() - other.toSecondOfDay(), this->nano() - other.nano());
     }
 
+    self withHour(i32 hour) {
+        if (hour == hour_) {
+            return *this;
+        }
+        return self{hour, minute_, second_, nano_};
+    }
+
+    self withMinute(i32 minute) {
+        if (minute == minute_) {
+            return *this;
+        }
+        return self{hour_, minute, second_, nano_};
+    }
+
+    self withSecond(i32 second) {
+        if (second == second_) {
+            return *this;
+        }
+        return self{hour_, minute_, second, nano_};
+    }
+
+    self withNano(i32 nanoOfSecond) {
+        if (nanoOfSecond == nano_) {
+            return *this;
+        }
+        return self{hour_, minute_, second_, nanoOfSecond};
+    }
+
     /**
      * @brief 当日总秒数
      */
@@ -503,64 +565,190 @@ public:
     /**
      * @brief 根据纪元秒构建，TODO考虑时差
      */
-    static self ofEpochSecond(i64 epochSecond, i32 nanoOfSecond);
+    static self ofEpochSecond(i64 epochSecond, i32 nanoOfSecond = 0) {
+        if (nanoOfSecond < 0 || nanoOfSecond >= 999'999'999) ValueError("Nano out of range");
+        i32 epochDay = epochSecond / Time::SECONDS_PER_DAY;
+        i32 secsOfDay = epochSecond % Time::SECONDS_PER_DAY;
+        auto date = Date::ofEpochDay(epochDay);
+        auto time = Time::ofNanoOfDay(secsOfDay * Time::NANOS_PER_SECOND + nanoOfSecond);
+        return self{date, time};
+    }
 
     /**
      * @brief 解析"yyyy-MM-dd hh:mm:ss"格式
      */
-    static self parse(const CString& str);
+    static self parse(const CString& str) {
+        i32 year, month, day, hour, minute, second;
+        if (sscanf(str.data(), "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &minute, &second) != 6) {
+            ValueError("Invalid date time format");
+        }
+        return self::of(year, month, day, hour, minute, second);
+    }
 
-    Date toDate() const;
-    Time toTime() const;
+    /**
+     * @brief 获取当前日期时间
+     */
+    static self now() {
+        auto now = std::chrono::system_clock::now();
+        time_t time = std::chrono::system_clock::to_time_t(now);
+        auto time_tm = localtime(&time);
+        auto diff = now - std::chrono::system_clock::from_time_t(time);
+        auto nanoseconds = duration_cast<std::chrono::nanoseconds>(diff);
+        return self{Date::of(time_tm->tm_year + 1900, time_tm->tm_mon + 1, time_tm->tm_mday),
+                    Time::of(time_tm->tm_hour, time_tm->tm_min, time_tm->tm_sec, i32(nanoseconds.count()))};
+    }
 
-    i32 dayOfMonth() const;
-    i32 dayOfYear() const;
-    i32 dayOfWeek() const;
+    Date toDate() const { return date_; }
+    Time toTime() const { return time_; }
 
-    i32 year() const;
-    i32 month() const;
-    i32 day() const;
-    i32 hour() const;
-    i32 minute() const;
-    i32 second() const;
-    i32 nano() const;
+    i32 dayOfMonth() const { return date_.dayOfMonth(); }
+    i32 dayOfYear() const { return date_.dayOfYear(); }
+    i32 dayOfWeek() const { return date_.dayOfWeek(); }
+
+    i32 year() const { return date_.year(); }
+    i32 month() const { return date_.month(); }
+    i32 day() const { return date_.day(); }
+    i32 hour() const { return time_.hour(); }
+    i32 minute() const { return time_.minute(); }
+    i32 second() const { return time_.second(); }
+    i32 nano() const { return time_.nano(); }
 
     /**
      * @brief 日期时间调整
      */
-    self withYear(i32 year);
-    self withMonth(i32 month);
-    self withDayOfMonth(i32 dayOfMonth);
-    self withDayOfYear(i32 dayOfYear);
-    self withHour(i32 hour);
-    self withMinute(i32 minute);
-    self withSecond(i32 second);
-    self withNano(i32 nano);
+    self with(Date newDate, Time newTime) {
+        if (date_ == newDate && time_ == newTime) {
+            return *this;
+        }
+        return self{newDate, newTime};
+    }
+
+    self withYear(i32 year) {
+        return with(date_.withYear(year), time_);
+    }
+
+    self withMonth(i32 month) {
+        return with(date_.withMonth(month), time_);
+    }
+
+    self withDayOfMonth(i32 dayOfMonth) {
+        return with(date_.withDayOfMonth(dayOfMonth), time_);
+    }
+
+    self withDayOfYear(i32 dayOfYear) {
+        return with(date_.withDayOfYear(dayOfYear), time_);
+    }
+
+    self withHour(i32 hour) {
+        return with(date_, time_.withHour(hour));
+    }
+
+    self withMinute(i32 minute) {
+        return with(date_, time_.withMinute(minute));
+    }
+
+    self withSecond(i32 second) {
+        return with(date_, time_.withSecond(second));
+    }
+
+    self withNano(i32 nano) {
+        return with(date_, time_.withNano(nano));
+    }
 
     /**
      * @brief 日期时间运算
      */
-    self plusYears(i64 years);
-    self plusMonths(i64 months);
-    self plusWeeks(i64 weeks);
-    self plusDays(i64 days);
-    self plusHours(i64 hours);
-    self plusMinutes(i64 minutes);
-    self plusSeconds(i64 seconds);
-    self plusNanos(i64 nanos);
+    self plusYears(i64 years) {
+        return with(date_.plusYears(years), time_);
+    }
 
-    self minusYears(i64 years);
-    self minusMonths(i64 months);
-    self minusWeeks(i64 weeks);
-    self minusDays(i64 days);
-    self minusHours(i64 hours);
-    self minusMinutes(i64 minutes);
-    self minusSeconds(i64 seconds);
-    self minusNanos(i64 nanos);
+    self plusMonths(i64 months) {
+        return with(date_.plusMonths(months), time_);
+    }
 
-    cmp_t __cmp__(const self& other) const;
+    self plusWeeks(i64 weeks) {
+        return with(date_.plusWeeks(weeks), time_);
+    }
 
-    CString __str__() const;
+    self plusDays(i64 days) {
+        return with(date_.plusDays(days), time_);
+    }
+
+    self plusHours(i64 hours) {
+        return with(date_, time_.plusHours(hours));
+    }
+
+    self plusMinutes(i64 minutes) {
+        return with(date_, time_.plusMinutes(minutes));
+    }
+
+    self plusSeconds(i64 seconds) {
+        return with(date_, time_.plusSeconds(seconds));
+    }
+
+    self plusNanos(i64 nanos) {
+        return with(date_, time_.plusNanos(nanos));
+    }
+
+    self minusYears(i64 years) {
+        return with(date_.minusYears(years), time_);
+    }
+
+    self minusMonths(i64 months) {
+        return with(date_.minusMonths(months), time_);
+    }
+
+    self minusWeeks(i64 weeks) {
+        return with(date_.minusWeeks(weeks), time_);
+    }
+
+    self minusDays(i64 days) {
+        return with(date_.minusDays(days), time_);
+    }
+
+    self minusHours(i64 hours) {
+        return with(date_, time_.minusHours(hours));
+    }
+
+    self minusMinutes(i64 minutes) {
+        return with(date_, time_.minusMinutes(minutes));
+    }
+
+    self minusSeconds(i64 seconds) {
+        return with(date_, time_.minusSeconds(seconds));
+    }
+
+    self minusNanos(i64 nanos) {
+        return with(date_, time_.minusNanos(nanos));
+    }
+
+    Duration operator-(const self& other) const {
+        return this->toDuration() - other.toDuration();
+    }
+
+    i64 toEpochSecond() const {
+        i64 epochDay = date_.toEpochDay();
+        i64 secondOfDay = time_.toSecondOfDay();
+        return epochDay * Time::SECONDS_PER_DAY + secondOfDay;
+    }
+
+    Duration toDuration() const {
+        i64 epochDay = date_.toEpochDay();
+        i64 secondOfDay = time_.toSecondOfDay();
+        i32 nanoOfSecond = time_.toNanoOfDay() - secondOfDay * Time::NANOS_PER_SECOND;
+        return Duration::ofSeconds(epochDay * Time::SECONDS_PER_DAY + secondOfDay, nanoOfSecond);
+    }
+
+    cmp_t __cmp__(const self& other) const {
+        auto date_cmp = date_.__cmp__(other.date_);
+        return date_cmp == 0 ? time_.__cmp__(other.time_) : date_cmp;
+    }
+
+    CString __str__() const {
+        std::stringstream stream;
+        stream << date_.__str__().data() << 'T' << time_.__str__().data() << 'Z';
+        return CString{stream.str()};
+    }
 
 private:
     Date date_;

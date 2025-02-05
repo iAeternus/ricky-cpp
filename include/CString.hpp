@@ -106,10 +106,10 @@ public:
     self operator+(const self& other) const {
         c_size mSize = this->size(), oSize = other.size();
         CString res{mSize + oSize};
-        for(c_size i = 0; i < mSize; ++i) {
+        for (c_size i = 0; i < mSize; ++i) {
             res[i] = this->str_[i];
         }
-        for(c_size i = 0; i < oSize; ++i) {
+        for (c_size i = 0; i < oSize; ++i) {
             res[mSize + i] = other.str_[i];
         }
         return res;
@@ -156,19 +156,19 @@ private:
 };
 
 template <MyPrintable T>
-def cstr_impl(const T& value)->CString {
+def cstr_impl(const T& value) -> CString {
     return value.__str__();
 }
 
 template <StdPrintable T>
-def cstr_impl(const T& value)->CString {
+def cstr_impl(const T& value) -> CString {
     std::stringstream stream;
     stream << value;
     return stream.str();
 }
 
 template <Printable T>
-def cstr(const T& value)->CString {
+def cstr(const T& value) -> CString {
     return cstr_impl(value);
 }
 
@@ -189,11 +189,11 @@ def operator""_cs(const char* str, size_t len)->my::CString {
     return my::CString{str, my::c_size(len)};
 }
 
-def c2i(char ch)->int {
+def c2i(char ch) -> int {
     return ch - '0';
 }
 
-def i2c(int ch)->char {
+def i2c(int ch) -> char {
     return ch + '0';
 }
 

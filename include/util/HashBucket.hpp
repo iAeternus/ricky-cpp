@@ -37,7 +37,7 @@ public:
      */
     virtual self* clone() const = 0;
 
-    /** 
+    /**
      * @brief 尝试根据hash值获取元素
      * @return 返回指针，如果没有则返回nullptr
      */

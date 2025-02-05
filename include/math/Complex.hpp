@@ -1,9 +1,9 @@
 /**
-* @brief 复数
-* @author Ricky
-* @date 2025/1/13
-* @version 1.0
-*/
+ * @brief 复数
+ * @author Ricky
+ * @date 2025/1/13
+ * @version 1.0
+ */
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
@@ -43,8 +43,8 @@ public:
     }
 
     /**
-    * @brief 计算模长
-    */
+     * @brief 计算模长
+     */
     f64 norm() const {
         return std::sqrt(normSqr());
     }
@@ -57,8 +57,8 @@ public:
     }
 
     /**
-    * @brief 共轭复数
-    */
+     * @brief 共轭复数
+     */
     self conj() const {
         return self{re_, -im_};
     }
@@ -185,8 +185,8 @@ private:
     }
 
     /**
-    * 从第一个数字起探测是否有实部，不会检查字符是否是数字
-    */
+     * 从第一个数字起探测是否有实部，不会检查字符是否是数字
+     */
     static bool peekReal(const String& str) {
         c_size mSize = str.size();
         for (c_size i = 0; i < mSize; ++i) {
@@ -200,8 +200,8 @@ private:
     }
 
     /**
-    * 从i起探测是否有虚部，不会检查字符是否是数字
-    */
+     * 从i起探测是否有虚部，不会检查字符是否是数字
+     */
     static bool peekImag(const String& str, c_size i) {
         c_size mSize = str.size();
         for (c_size j = i; j < mSize; ++j) {

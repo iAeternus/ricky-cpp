@@ -14,11 +14,12 @@ namespace my::util {
 /**
  * 需要子类实现 size() 和 at()
  */
-template<typename Derived, typename T>
+template <typename Derived, typename T>
 class Sequence : public Object<Sequence<Derived, T>> {
 public:
     using self = Sequence<Derived, T>;
     using super = Object<Sequence<Derived, T>>;
+
 public:
     using value_t = T;
     using iterator = IndexIterator<false, self, value_t>;
@@ -39,18 +40,18 @@ public:
     cmp_t __cmp__(const Derived& other) const {
         auto m_it = begin(), m_end = end();
         auto o_it = other.begin(), o_end = other.end();
-        while(m_it != m_end && o_it != o_end) {
-            if(*m_it < *o_it) return -1;
-            if(*m_it > *o_it) return 1;
+        while (m_it != m_end && o_it != o_end) {
+            if (*m_it < *o_it) return -1;
+            if (*m_it > *o_it) return 1;
             ++m_it, ++o_it;
         }
-        if(m_it != m_end) return 1;
-        if(o_it != o_end) return -1;
+        if (m_it != m_end) return 1;
+        if (o_it != o_end) return -1;
         return 0;
     }
 
     bool __equals__(const Derived& other) const {
-        if(size() != other.size()) {
+        if (size() != other.size()) {
             return false;
         }
         return static_cast<const Derived*>(this)->__cmp__(other) == 0;
@@ -85,8 +86,8 @@ public:
     }
 
     c_size find(const value_t& v) const {
-        for(c_size i = 0, siz = size(); i < siz; ++i) {
-            if(at(i) == v) {
+        for (c_size i = 0, siz = size(); i < siz; ++i) {
+            if (at(i) == v) {
                 return i;
             }
         }
@@ -95,8 +96,8 @@ public:
 
     iterator find_it(const value_t& v) {
         auto it = begin(), end_ = end();
-        while(it != end_) {
-            if(*it == v) {
+        while (it != end_) {
+            if (*it == v) {
                 return it;
             }
             ++it;
@@ -106,15 +107,14 @@ public:
 
     const_iterator find_it(const value_t& v) const {
         auto it = begin(), end_ = end();
-        while(it != end_) {
-            if(*it == v) {
+        while (it != end_) {
+            if (*it == v) {
                 return it;
             }
             ++it;
         }
         return end_;
     }
-
 };
 
 } // namespace my::util

@@ -391,7 +391,7 @@ public:
             ans[k][k] = reciprocal(ans[k][k]); // 归一化主元
             for (c_size j = 0; j < cols_; ++j) {
                 if (j == k) continue;
-                ans[k][j] *= ans[k][k];   
+                ans[k][j] *= ans[k][k];
             }
             for (c_size i = 0; i < rows_; ++i) {
                 if (i == k) continue;

@@ -144,7 +144,7 @@ public:
     }
 
     iterator end() const {
-        if(!tail_) {
+        if (!tail_) {
             return iterator{nullptr};
         }
         return iterator{tail_->next_};

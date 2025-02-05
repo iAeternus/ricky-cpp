@@ -6,18 +6,18 @@
 
 namespace my::test::test_win_file_utils {
 
-static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
-const char* filepath = "F:\\develop\\ricky-cpp\\tests\\test_win_file_utils.hpp";
-const char* dirpath = "F:\\develop\\ricky-cpp\\tests";
+static constexpr const char* CLASS_PATH = R"(F:\develop\ricky-cpp\tests\resources)";
+const char* filepath = R"(F:\develop\ricky-cpp\tests\test_win_file_utils.hpp)";
+const char* dir_path = R"(F:\develop\ricky-cpp\tests)";
 
 auto should_judge_exists = []() {
     // Given
-    const char* pathnotexists = "F:\\develop\\ricky-cpp\\tests\\aaa.txt";
+    const char* path_not_exists = R"(F:\develop\ricky-cpp\tests\aaa.txt)";
 
     // When
     bool res = fs::win::exists(filepath);
-    bool res2 = fs::win::exists(dirpath);
-    bool res3 = fs::win::exists(pathnotexists);
+    bool res2 = fs::win::exists(dir_path);
+    bool res3 = fs::win::exists(path_not_exists);
 
     // Then
     Assertions::assertTrue(res);
@@ -28,7 +28,7 @@ auto should_judge_exists = []() {
 auto should_judge_is_file = []() {
     // When
     bool res = fs::win::isfile(filepath);
-    bool res2 = fs::win::isfile(dirpath);
+    bool res2 = fs::win::isfile(dir_path);
 
     // Then
     Assertions::assertTrue(res);
@@ -38,7 +38,7 @@ auto should_judge_is_file = []() {
 auto should_judge_is_dir = []() {
     // When
     bool res = fs::win::isdir(filepath);
-    bool res2 = fs::win::isdir(dirpath);
+    bool res2 = fs::win::isdir(dir_path);
 
     // Then
     Assertions::assertFalse(res);
@@ -79,16 +79,16 @@ auto should_join = []() {
     auto res2 = fs::win::join(path2, path3);
 
     // Then
-    Assertions::assertEquals("C:\\test\\"_cs, res);
-    Assertions::assertEquals("C:\\test\\"_cs, res2);
+    Assertions::assertEquals(R"(C:\test\)"_cs, res);
+    Assertions::assertEquals(R"(C:\test\)"_cs, res2);
 };
 
 auto should_list_dir = []() {
     // When
-    auto filenames = fs::win::listdir(dirpath);
+    auto filenames = fs::win::listdir(dir_path);
 
     // Then
-    for(const auto& filename : filenames) {
+    for (const auto& filename : filenames) {
         io::println(filename);
     }
 };

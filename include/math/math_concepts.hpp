@@ -15,7 +15,7 @@ concept UnsignedIntegerType = std::is_integral_v<T> && !std::is_signed_v<T>;
  * @brief 检查类型是否为有符号整数类型的约束
  */
 template <typename T>
-concept SignedIntegerType = std::is_integral_v<T>&& std::is_signed_v<T>;
+concept SignedIntegerType = std::is_integral_v<T> && std::is_signed_v<T>;
 
 /**
  * @brief 检查类型是否为整数类型的约束

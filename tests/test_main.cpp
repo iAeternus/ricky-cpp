@@ -25,6 +25,7 @@
 #include "test_duration.hpp"
 #include "test_date.hpp"
 #include "test_time.hpp"
+#include "test_date_time.hpp"
 
 #include "test_speed.hpp"
 
@@ -63,6 +64,7 @@ int main() {
     test_duration::test_duration();
     test_date::test_date();
     test_time::test_time();
+    test_date_time::test_date_time();
 #else
     test_speed();
 #endif

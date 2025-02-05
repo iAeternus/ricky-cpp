@@ -83,8 +83,8 @@ public:
 
     void startAll() {
         io::println(std::format("================= {} =================", groupName_));
-        for(auto& it : group_) {
-            if(!it->start()) {
+        for (auto& it : group_) {
+            if (!it->start()) {
                 ++failed_;
             }
         }

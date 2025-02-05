@@ -72,7 +72,7 @@ auto should_plus = []() {
     auto t = util::Time::of(6);
 
     // When
-    auto t2 = t.plusHours(1); // 7:00
+    auto t2 = t.plusHours(1);     // 7:00
     auto t3 = t2.plusMinutes(61); // 8:01
     auto t4 = t3.plusSeconds(61); // 8:02:01
 
@@ -85,7 +85,7 @@ auto should_minus = []() {
     auto t = util::Time::of(18);
 
     // When
-    auto t2 = t.minusHours(1); // 17:00
+    auto t2 = t.minusHours(1);     // 17:00
     auto t3 = t2.minusMinutes(61); // 15:59
     auto t4 = t3.minusSeconds(61); // 15:57:59
 
@@ -119,7 +119,7 @@ void test_time() {
     group.addTest("should_plus", should_plus);
     group.addTest("should_minus", should_minus);
     group.addTest("should_subtract", should_subtract);
-    
+
     group.startAll();
 }
 

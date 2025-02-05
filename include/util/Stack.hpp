@@ -9,8 +9,6 @@
 
 namespace my::util {
 
-
-
 } // namespace my::util
 
 #endif // STACK_HPP

@@ -1,9 +1,9 @@
 /**
-* @brief 高精度整数类
-* @author Ricky
-* @date 2025/1/12
-* @version 1.0
-*/
+ * @brief 高精度整数类
+ * @author Ricky
+ * @date 2025/1/12
+ * @version 1.0
+ */
 #ifndef BIG_INTEGER_HPP
 #define BIG_INTEGER_HPP
 
@@ -318,8 +318,8 @@ public:
      */
     friend self operator^(self base, self exp) {
         self ans{ONE};
-        for(; exp; exp /= 2, base *= base) {
-            if(exp.isOdd()) {
+        for (; exp; exp /= 2, base *= base) {
+            if (exp.isOdd()) {
                 ans *= base;
             }
         }

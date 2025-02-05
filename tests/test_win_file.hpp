@@ -6,7 +6,7 @@
 
 namespace my::test::test_win_file {
 
-static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
+static constexpr const char* CLASS_PATH = R"(F:\develop\ricky-cpp\tests\resources)";
 
 auto should_write_win_file = []() {
     // // Given
@@ -41,7 +41,7 @@ auto should_append_win_file = []() {
 
     file.close();
     Assertions::assertEquals("hello1 hello2"_cs, fs::win::File{path, "r"}.read());
-    
+
     // Final
     fs::win::remove(path);
 };

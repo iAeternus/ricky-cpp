@@ -184,28 +184,28 @@ constexpr i32 N = 1e6;
 
 auto speed_of_dny_array_append_string = []() {
     util::DynArray<std::string> d;
-    for(i32 i = 0; i < N; ++i) {
+    for (i32 i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
 auto speed_of_vector_push_back_string = []() {
     std::vector<std::string> v;
-    for(i32 i = 0; i < N; ++i) {
+    for (i32 i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
 auto speed_of_dny_array_append_int = []() {
     util::DynArray<i32> d;
-    for(i32 i = 0; i < N; ++i) {
+    for (i32 i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
 auto speed_of_vector_push_back_int = []() {
     std::vector<i32> v;
-    for(i32 i = 0; i < N; ++i) {
+    for (i32 i = 0; i < N; ++i) {
         v.push_back(i);
     }
 };

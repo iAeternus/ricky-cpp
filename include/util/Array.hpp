@@ -227,7 +227,7 @@ private:
 };
 
 template <Iterable I, typename Init>
-def sum(I&& obj, Init init = Init{})->Init {
+def sum(I&& obj, Init init = Init{}) -> Init {
     for (auto&& elem : obj) {
         init += elem;
     }

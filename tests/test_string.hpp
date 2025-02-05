@@ -46,7 +46,7 @@ auto should_split = []() {
     auto res = s.split(1, 2);
     auto res2 = s.split(3);
     auto res3 = s.split(1, -1);
-    
+
     // Then
     Assertions::assertEquals(1, i32(res.size()));
     Assertions::assertEquals("b"_s, res);

@@ -1,21 +1,21 @@
 {
-    "configurations": [
-        {
-            "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}/**",
-                "F:\\application\\develop\\google-test\\googletest-609281088cfefc76f9d0ce82e1ff6c30cc3591e5\\googletest\\include"
-            ],
-            "defines": [
-                "_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "F:\\application\\develop\\gcc\\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev0\\mingw64\\bin\\g++.exe",
-            "cStandard": "c23",
-            "cppStandard": "c++23"
-        }
-    ],
-    "version": 4
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "F:\\application\\develop\\google-test\\googletest-609281088cfefc76f9d0ce82e1ff6c30cc3591e5\\googletest\\include"
+      ],
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "intelliSenseMode": "windows-gcc-x64",
+      "compilerPath": "F:\\application\\develop\\gcc\\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev0\\mingw64\\bin\\g++.exe",
+      "cStandard": "c23",
+      "cppStandard": "c++23"
+    }
+  ],
+  "version": 4
 }

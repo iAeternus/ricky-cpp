@@ -92,7 +92,7 @@ public:
 
     coro::Generator<value_t> generator() const {
         for (auto it = begin_; it != end_; ++it) {
-            co_yield* it;
+            co_yield *it;
         }
     }
 

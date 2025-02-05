@@ -142,9 +142,9 @@ private:
 
     def static parseBool(JsonType::JsonStr& jsonStr)->Json {
         using namespace my::util;
-        if(jsonStr == "true"_s) {
+        if (jsonStr == "true"_s) {
             return Json{true};
-        } else if(jsonStr == "false"_s) {
+        } else if (jsonStr == "false"_s) {
             return Json{false};
         } else {
             ValueError(std::format("Invalid bool parse: {}", jsonStr));

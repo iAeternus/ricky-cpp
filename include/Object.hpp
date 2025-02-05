@@ -54,7 +54,7 @@ public:
         i32 len = typeName.size() + 22; // TODO ??
         CString s(len);
 #ifdef _MSC_VER
-        sprintf_s(s.data(), s_len, "<%s 0x%p>", typeName.c_str(), static_cast<const void*>(this));
+        sprintf_s(s.data(), len, "<%s 0x%p>", typeName.c_str(), static_cast<const void*>(this));
 #else
         std::sprintf(s.data(), "<%s %p>", typeName.c_str(), static_cast<const void*>(this));
 #endif
@@ -78,7 +78,8 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
 }
 
 template <typename T>
-requires(Not<Printable<T>>) std::ostream& operator<<(std::ostream& out, const T& obj) {
+    requires(Not<Printable<T>>)
+std::ostream& operator<<(std::ostream& out, const T& obj) {
     out << '<' << dtype(T) << " 0x" << std::hex << &obj << '>';
     return out;
 }

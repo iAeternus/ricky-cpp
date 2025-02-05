@@ -122,10 +122,10 @@ auto should_calc_epoch_day = []() {
     auto d4 = util::Date::of(2024, 12, 31);
 
     // When
-    auto res = util::Date::fromEpochDay(d.toEpochDay());
-    auto res2 = util::Date::fromEpochDay(d2.toEpochDay());
-    auto res3 = util::Date::fromEpochDay(d3.toEpochDay());
-    auto res4 = util::Date::fromEpochDay(d4.toEpochDay());
+    auto res = util::Date::ofEpochDay(d.toEpochDay());
+    auto res2 = util::Date::ofEpochDay(d2.toEpochDay());
+    auto res3 = util::Date::ofEpochDay(d3.toEpochDay());
+    auto res4 = util::Date::ofEpochDay(d4.toEpochDay());
 
     // Then
     Assertions::assertEquals(d, res);

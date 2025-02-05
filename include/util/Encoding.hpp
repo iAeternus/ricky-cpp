@@ -168,7 +168,7 @@ public:
 /**
  * @brief 编码名-编码方式 映射
  */
-def encoding_map(const CString& encodingName)->Encoding* {
+def encoding_map(const CString& encodingName) -> Encoding* {
     static Dict<CString, Encoding*> encodingMap_ = {
         {ASCII, new ASCIIEncoding{}},
         {UTF8, new UTF8Encoding{}},

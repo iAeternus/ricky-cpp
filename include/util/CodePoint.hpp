@@ -170,7 +170,7 @@ const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 
 /**
  * @brief 获取字符串的所有码点
  */
-def getCodePoints(const char* str, c_size len, Encoding* encoding)->DynArray<CodePoint> {
+def getCodePoints(const char* str, c_size len, Encoding* encoding) -> DynArray<CodePoint> {
     DynArray<CodePoint> cps;
     i32 i = 0;
     while (i < len) {
