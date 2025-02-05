@@ -22,7 +22,7 @@ if %ERRORLEVEL% NEQ 0 (
 echo Project configured successfully.
 
 echo Compiling project with %CPU_CORES% parallel jobs...
-cmake --build . --parallel %CPU_CORES%
+cmake --build . -j %CPU_CORES%
 if %ERRORLEVEL% NEQ 0 (
     echo Error: Compilation or linking failed.
     exit /b %ERRORLEVEL%

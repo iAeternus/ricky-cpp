@@ -13,6 +13,7 @@ project(RICKY_CPP VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)            # 强制使用C++23标准
 set(CMAKE_CXX_STANDARD_REQUIRED ON)   # 必须支持C++23
 set(CMAKE_CXX_EXTENSIONS OFF)         # 禁用编译器扩展
+set(CMAKE_BUILD_PARALLEL_LEVEL 8)
 
 # ----------------------------------------
 # 并行编译配置（自动检测CPU核心数）
