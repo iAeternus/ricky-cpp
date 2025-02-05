@@ -37,6 +37,7 @@ cmake-build-debug-mingw/*
 .vscode/ipch/*
 .clangd/*
 vcpkg/*
+.idea/*
 
 # Others
 *.log
