@@ -6,13 +6,13 @@
 
 namespace my::test::test_win_file_utils {
 
-static constexpr const char* CLASS_PATH = R"(F:\develop\ricky-cpp\tests\resources)";
-const char* filepath = R"(F:\develop\ricky-cpp\tests\test_win_file_utils.hpp)";
-const char* dir_path = R"(F:\develop\ricky-cpp\tests)";
+static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
+const char* filepath = "F:\\develop\\ricky-cpp\\tests\\test_win_file_utils.hpp";
+const char* dir_path = "F:\\develop\\ricky-cpp\\tests";
 
 auto should_judge_exists = []() {
     // Given
-    const char* path_not_exists = R"(F:\develop\ricky-cpp\tests\aaa.txt)";
+    const char* path_not_exists = "F:\\develop\\ricky-cpp\\tests\\aaa.txt";
 
     // When
     bool res = fs::win::exists(filepath);
@@ -79,8 +79,8 @@ auto should_join = []() {
     auto res2 = fs::win::join(path2, path3);
 
     // Then
-    Assertions::assertEquals(R"(C:\test\)"_cs, res);
-    Assertions::assertEquals(R"(C:\test\)"_cs, res2);
+    Assertions::assertEquals("C:\\test\\"_cs, res);
+    Assertions::assertEquals("C:\\test\\"_cs, res2);
 };
 
 auto should_list_dir = []() {

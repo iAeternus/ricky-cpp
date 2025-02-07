@@ -25,7 +25,7 @@ class IterStream;
 template <typename Upstream, typename Pred, typename T>
 class FilterStream;
 
-template <typename Upstream, typename Func, typename T>
+template <typename Upstream, typename Mapper, typename T>
 class MapStream;
 
 /**
@@ -49,12 +49,12 @@ public:
     /**
      * @brief 中间操作：映射
      */
-    template <typename Func>
-    auto map(Func&& func) && {
-        using RetType = std::invoke_result_t<Func, value_t>;
-        return MapStream<Derived, Func, RetType>(
+    template <typename Mapper>
+    auto map(Mapper&& func) && {
+        using RetType = std::invoke_result_t<Mapper, value_t>;
+        return MapStream<Derived, Mapper, RetType>(
             std::move(static_cast<Derived&>(*this)),
-            std::forward<Func>(func));
+            std::forward<Mapper>(func));
     }
 
     /**
@@ -126,10 +126,10 @@ private:
 /**
  * @brief 映射流
  */
-template <typename Upstream, typename Func, typename RetType>
-class MapStream : public Stream<MapStream<Upstream, Func, RetType>, RetType> {
+template <typename Upstream, typename Mapper, typename RetType>
+class MapStream : public Stream<MapStream<Upstream, Mapper, RetType>, RetType> {
 public:
-    MapStream(Upstream&& upstream, Func&& func) :
+    MapStream(Upstream&& upstream, Mapper&& func) :
             upstream_(std::move(upstream)), func_(std::move(func)) {}
 
     coro::Generator<RetType> generator() const {
@@ -140,7 +140,7 @@ public:
 
 private:
     Upstream upstream_;
-    Func func_;
+    Mapper func_;
 };
 
 // Stream工厂

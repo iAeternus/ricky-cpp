@@ -13,7 +13,6 @@ project(RICKY_CPP VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)            # 强制使用C++23标准
 set(CMAKE_CXX_STANDARD_REQUIRED ON)   # 必须支持C++23
 set(CMAKE_CXX_EXTENSIONS OFF)         # 禁用编译器扩展
-set(CMAKE_BUILD_PARALLEL_LEVEL 8)    # 并行编译级别设置为8
 
 # ----------------------------------------
 # 并行编译配置（自动检测CPU核心数）
@@ -24,7 +23,6 @@ if (NUM_JOBS EQUAL 0)
     set(NUM_JOBS 4)  # 核心数检测失败时回退到4线程
 endif ()
 message(STATUS "[MAIN] Parallel jobs: ${NUM_JOBS}")
-set(CMAKE_JOB_POOLS compile=${NUM_JOBS})
 
 # ----------------------------------------
 # 预编译头文件（PCH）配置

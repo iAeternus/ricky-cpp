@@ -6,7 +6,7 @@
 
 namespace my::test::test_win_file {
 
-static constexpr const char* CLASS_PATH = R"(F:\develop\ricky-cpp\tests\resources)";
+static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
 
 auto should_write_win_file = []() {
     // // Given
