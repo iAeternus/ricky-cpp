@@ -21,12 +21,12 @@ class CString {
 
 public:
     CString() :
-            str_(my_alloc<char>(1)) {
+            str_(my_alloc<char>(1)), len_(sizeof(char)) {
         std::memset(str_, 0, 1);
     }
 
     CString(c_size len) :
-            str_(my_alloc<char>(len + 1)) {
+            str_(my_alloc<char>(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
     }
 
@@ -49,8 +49,9 @@ public:
             CString(other.data(), other.size()) {}
 
     CString(self&& other) noexcept :
-            str_(other.str_) {
+            str_(other.str_), len_(other.len_) {
         other.str_ = nullptr;
+        other.len_ = 0;
     }
 
     self& operator=(const self& other) {
@@ -88,11 +89,11 @@ public:
     }
 
     c_size size() const {
-        return static_cast<c_size>(std::strlen(data()));
+        return len_;
     }
 
     bool empty() const {
-        return size() == 0;
+        return len_ == 0;
     }
 
     char* data() {
@@ -153,6 +154,7 @@ public:
 
 private:
     char* str_;
+    c_size len_;
 };
 
 template <MyPrintable T>
