@@ -21,10 +21,19 @@ auto should_generate_random = []() {
     io::println(std::format("CString: {}", util::Random::instance().nextStr(6)));
 };
 
+auto should_generate_uniform_sum_numbers = []() {
+    // Given    
+    i32 n = 100, sum = 1e6;
+
+    // When & Then
+    io::println(util::Random::instance().generate_uniform_sum_numbers(n, sum));
+};
+
 void test_random() {
     UnitTestGroup group{"test_random"};
 
     group.addTest("should_generate_random", should_generate_random);
+    group.addTest("should_generate_uniform_sum_numbers", should_generate_uniform_sum_numbers);
 
     group.startAll();
 }
