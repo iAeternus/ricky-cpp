@@ -787,7 +787,7 @@ private:
  * @tparam T 目标类型。
  * @param args 动态数组。
  * @param index 参数索引。
- * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围返回 None。
+ * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError。
  */
 template <typename T>
 def opt(const DynArray<std::any>& args, c_size index)->T {
