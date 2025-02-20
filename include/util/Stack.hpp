@@ -7,7 +7,68 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
+#include "DynArray.hpp"
+
 namespace my::util {
+
+template <typename T>
+class Stack {
+public:
+    Stack() :
+            data_({}) {}
+
+    c_size size() const {
+        return data_.size();
+    }
+
+    bool isEmpty() const {
+        return data_.empty();
+    }
+
+    /**
+     * @brief 入栈
+     */
+    template <typename U>
+    void push(U&& item) {
+        data_.append(std::forward<U>(item));
+    }
+
+    /**
+     * @brief 出栈
+     */
+    void pop() {
+        data_.pop(-1);
+    }
+
+    /**
+     * @brief 查看栈顶元素
+     * @note 若栈空，则抛出ValueError
+     * @return 栈顶元素的引用
+     */
+    T& peek() {
+        if (isEmpty()) {
+            ValueError("Stack is empty.");
+            return None<T>;
+        }
+        return data_.back();
+    }
+
+    /**
+     * @brief 查看栈顶元素（常量版本）
+     * @note 若栈空，则抛出ValueError
+     * @return 栈顶元素的引用
+     */
+    const T& peek() const {
+        if (isEmpty()) {
+            ValueError("Stack is empty.");
+            return None<T&>;
+        }
+        return data_.back();
+    }
+
+private:
+    DynArray<T> data_;
+};
 
 } // namespace my::util
 
