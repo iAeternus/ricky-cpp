@@ -14,6 +14,8 @@ namespace my::util {
 template <typename T>
 class Stack {
 public:
+    using value_t = T;
+
     Stack() :
             data_({}) {}
 
@@ -27,6 +29,13 @@ public:
 
     /**
      * @brief 入栈
+     */
+    void push(const value_t& item) {
+        data_.append(item);
+    }
+
+    /**
+     * @brief 入栈（右值引用版本）
      */
     template <typename U>
     void push(U&& item) {

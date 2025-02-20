@@ -236,6 +236,18 @@ public:
 
     /**
      * @brief 在动态数组末尾追加元素。
+     * @param item 需要追加的元素。
+     * @return 返回追加的元素的引用。
+     */
+    value_t& append(const value_t& item) {
+        try_wakeup();
+        auto& res = back_block().append(item);
+        ++size_;
+        return res;
+    }
+    
+    /**
+     * @brief 在动态数组末尾追加元素。（右值引用版本）
      * @tparam U 元素的类型。
      * @param item 需要追加的元素。
      * @return 返回追加的元素的引用。
