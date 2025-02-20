@@ -21,6 +21,7 @@ namespace my::util {
  * 
  * DynArray 是一个模板类，提供了类似 std::vector 的动态数组功能。
  * 通过将数据分块存储来管理内存，一定程度上优化了内存分配和访问效率。
+ * 容器优势：尾插、尾删
  * 
  * @tparam T 存储元素的类型。
  */
@@ -161,44 +162,44 @@ public:
     /**
      * @brief 获取动态数组的第一个元素。
      * @return 返回第一个元素的引用。
-     * @note 如果数组为空，行为未定义。
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义。
      */
     value_t& front() {
-        return at(0);
+        return blocks_.at(0).at(0);
     }
 
     /**
      * @brief 获取动态数组的第一个元素（常量版本）。
      * @return 返回第一个元素的 const 引用。
-     * @note 如果数组为空，行为未定义。
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义。
      */
     const value_t& front() const {
-        return at(0);
+        return blocks_.at(0).at(0);
     }
 
     /**
      * @brief 获取动态数组的最后一个元素。
      * @return 返回最后一个元素的引用。
-     * @note 如果数组为空，行为未定义。
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义。
      */
     value_t& back() {
-        return at(size() - 1);
+        return blocks_.at(backBlockIndex_).back();
     }
 
     /**
      * @brief 获取动态数组的最后一个元素（常量版本）。
      * @return 返回最后一个元素的 const 引用。
-     * @note 如果数组为空，行为未定义。
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义。
      */
     const value_t& back() const {
-        return at(size() - 1);
+        return blocks_.at(backBlockIndex_).back();
     }
 
     /**
      * @brief 通过索引访问元素（非 const 版本）。
      * @param index 元素的索引，从 0 开始。
      * @return 返回指定索引处的元素的引用。
-     * @note 如果索引超出范围，行为未定义。
+     * @note 时间复杂度O(logN)。如果索引超出范围，行为未定义。
      */
     value_t& at(c_size index) {
         i32 blockIndex = get_block_index(index + 1);
@@ -210,7 +211,7 @@ public:
      * @brief 通过索引访问元素（const 版本）。
      * @param index 元素的索引，从 0 开始。
      * @return 返回指定索引处的元素的 const 引用。
-     * @note 如果索引超出范围，行为未定义。
+     * @note 时间复杂度O(logN)。如果索引超出范围，行为未定义。
      */
     const value_t& at(c_size index) const {
         i32 blockIndex = get_block_index(index + 1);

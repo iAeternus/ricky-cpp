@@ -81,6 +81,22 @@ public:
         return buffer_;
     }
 
+    value_t& front() {
+        return buffer_[0];
+    }
+
+    const value_t& front() const {
+        return buffer_[0];
+    }
+
+    value_t& back() {
+        return buffer_[size_ - 1];
+    }
+
+    const value_t& back() const {
+        return buffer_[size_ - 1];
+    }
+
     /**
      * @brief 在buffer末尾追加元素，不会做容量检查
      * @return 返回追加的元素

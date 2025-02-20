@@ -1,6 +1,7 @@
 // test_main.cpp
 #include "test_test_utils.hpp"
 #include "test_cstring.hpp"
+#include "test_buffer.hpp"
 #include "test_dynarray.hpp"
 #include "test_chain.hpp"
 #include "test_bi_chain.hpp"
@@ -40,6 +41,7 @@ int main() {
 #if TEST_FUNCTIONALITY
     test_test_utils::test_test_utils();
     test_cstring::test_cstring();
+    test_buffer::test_buffer();
     test_dynarray::test_dynarray();
     test_chain::test_chain();
     test_bi_chain::test_bi_chain();
