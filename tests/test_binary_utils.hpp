@@ -80,9 +80,9 @@ auto should_judge_only_one = []() {
 
 auto should_roundup2 = []() {
     // Given
-    c_size x = 0LL;
-    c_size x2 = 3LL;
-    c_size x3 = 4LL;
+    isize x = 0LL;
+    isize x2 = 3LL;
+    isize x3 = 4LL;
 
     // When
     auto res = util::roundup2(x);

@@ -204,11 +204,11 @@ public:
      * @brief 下标访问，需要当前Json对象为JsonArray类型
      * @param index 索引，从0开始
      */
-    self& operator[](c_size index) {
+    self& operator[](isize index) {
         return transform<JsonType::JsonArray>()[index];
     }
 
-    const self& operator[](c_size index) const {
+    const self& operator[](isize index) const {
         return transform<JsonType::JsonArray>()[index];
     }
 
@@ -217,14 +217,14 @@ public:
      * @param index 索引，从0开始。若为-1，则移除最后一个元素
      * @return void
      */
-    void pop(c_size index = -1) {
+    void pop(isize index = -1) {
         transform<JsonType::JsonArray>().pop(index);
     }
 
     /**
      * @brief 获取json对象的长度，需要当前Json对象为JsonArray或JsonDict类型
      */
-    c_size size() const {
+    isize size() const {
         if (is<JsonType::JsonArray>()) {
             return transform<JsonType::JsonArray>().size();
         }
@@ -232,7 +232,7 @@ public:
             return transform<JsonType::JsonDict>().size();
         }
         RuntimeError("Json type is not JSON_ARRAY or JSON_DICT");
-        return None<c_size>;
+        return None<isize>;
     }
 
     CString __str__() const {
@@ -296,7 +296,7 @@ private:
 };
 
 template <typename T>
-def constexpr make_int(T&& value)->JsonType::JsonInt {
+fn constexpr make_int(T&& value)->JsonType::JsonInt {
     using RT = std::remove_cvref_t<T>;
 
     if constexpr (std::is_arithmetic_v<RT>) {
@@ -308,7 +308,7 @@ def constexpr make_int(T&& value)->JsonType::JsonInt {
 }
 
 template <typename T>
-def constexpr make_float(T&& value)->JsonType::JsonFloat {
+fn constexpr make_float(T&& value)->JsonType::JsonFloat {
     using RT = std::remove_cvref_t<T>;
 
     if constexpr (std::is_arithmetic_v<RT>) {
@@ -320,7 +320,7 @@ def constexpr make_float(T&& value)->JsonType::JsonFloat {
 }
 
 template <typename T>
-def constexpr make_bool(T&& value)->JsonType::JsonBool {
+fn constexpr make_bool(T&& value)->JsonType::JsonBool {
     return static_cast<JsonType::JsonBool>(value);
 }
 

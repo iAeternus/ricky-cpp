@@ -40,9 +40,9 @@ public:
      * @param args 用于初始化数组元素的参数。
      */
     template <typename... Args>
-    Array(c_size size, const Args&... args) :
+    Array(isize size, const Args&... args) :
             size_(size), arr_(my_alloc<T>(size_)) {
-        for (c_size i = 0; i < size_; ++i) {
+        for (isize i = 0; i < size_; ++i) {
             my_construct(data() + i, args...);
         }
     }
@@ -53,7 +53,7 @@ public:
      */
     Array(std::initializer_list<T>&& initList) :
             size_(initList.size()), arr_(my_alloc<T>(size_)) {
-        c_size idx = 0;
+        isize idx = 0;
         for (const T& item : initList) {
             my_construct(data() + idx++, item);
         }
@@ -65,7 +65,7 @@ public:
      */
     Array(const self& other) :
             size_(other.size_), arr_(my_alloc<T>(size_)) {
-        for (c_size i = 0; i < size_; ++i) {
+        for (isize i = 0; i < size_; ++i) {
             my_construct(data() + i, other.data()[i]);
         }
     }
@@ -145,7 +145,7 @@ public:
      * @return 返回对应元素的引用。
      * @note 不会对索引进行边界检查，如果索引超出范围，可能会导致未定义行为。
      */
-    value_t& at(c_size index) {
+    value_t& at(isize index) {
         return arr_[index];
     }
 
@@ -155,7 +155,7 @@ public:
      * @return 返回对应元素的常量引用。
      * @note 不会对索引进行边界检查，如果索引超出范围，可能会导致未定义行为。
      */
-    const value_t& at(c_size index) const {
+    const value_t& at(isize index) const {
         return arr_[index];
     }
 
@@ -163,7 +163,7 @@ public:
      * @brief 获取数组的大小。
      * @return 返回数组的大小。
      */
-    c_size size() const {
+    isize size() const {
         return size_;
     }
 
@@ -182,7 +182,7 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (c_size i = 0; i < size_; ++i) {
+        for (isize i = 0; i < size_; ++i) {
             if (i != 0) stream << ',';
             stream << at(i);
         }
@@ -198,7 +198,7 @@ public:
      * @note 调用此方法会销毁原数组中的所有元素并释放内存。
      */
     template <typename... Args>
-    void resize(c_size newSize, const Args&... args) {
+    void resize(isize newSize, const Args&... args) {
         my_destroy(this);
         my_construct(this, newSize, args...);
     }
@@ -208,7 +208,7 @@ public:
      * @return 返回包含数组大小和指针的 Pair。
      * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针。
      */
-    Pair<c_size, value_t*> separate() {
+    Pair<isize, value_t*> separate() {
         auto res = Pair{size_, arr_};
         size_ = 0;
         arr_ = nullptr;
@@ -216,7 +216,7 @@ public:
     }
 
 private:
-    c_size size_;  // 静态数组长度
+    isize size_;   // 静态数组长度
     value_t* arr_; // 指向静态数组首地址的指针
 };
 
@@ -235,7 +235,7 @@ public:
      * @param end 结束值（不包含）。
      * @param step 步长。
      */
-    Range(c_size start, c_size end, c_size step = 1) :
+    Range(isize start, isize end, isize step = 1) :
             start_(start), end_(end), step_(step) {}
 
     /**
@@ -243,14 +243,14 @@ public:
      * 默认起始值为 0，步长为 1。
      * @param end 结束值（不包含）。
      */
-    Range(c_size end) :
+    Range(isize end) :
             Range(0, end, 1) {}
 
     /**
      * @brief 获取范围的大小。
      * @return 返回范围的大小。
      */
-    c_size size() const {
+    isize size() const {
         return (end_ - start_ + step_ - 1) / step_;
     }
 
@@ -260,7 +260,7 @@ public:
 
     public:
         using iterator_category = std::bidirectional_iterator_tag;
-        using value_type = c_size;
+        using value_type = isize;
         using difference_type = std::ptrdiff_t;
         using pointer = value_type*;
         using const_pointer = const value_type*;
@@ -272,7 +272,7 @@ public:
          * @param current 当前值。
          * @param step 步长。
          */
-        RangeIterator(c_size current, c_size step) :
+        RangeIterator(isize current, isize step) :
                 current_(current), step_(step) {}
 
         /**
@@ -366,11 +366,11 @@ public:
         }
 
     private:
-        c_size current_, step_;
+        isize current_, step_;
     };
 
 private:
-    c_size start_, end_, step_; // 起点、终点、步长
+    isize start_, end_, step_; // 起点、终点、步长
 };
 
 /**
@@ -382,7 +382,7 @@ private:
  * @return 返回总和。
  */
 template <Iterable I, typename Init>
-def sum(I&& obj, Init init = Init{})->Init {
+fn sum(I&& obj, Init init = Init{})->Init {
     for (auto&& elem : obj) {
         init += elem;
     }

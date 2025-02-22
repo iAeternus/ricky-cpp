@@ -30,7 +30,7 @@ public:
     /**
      * @brief 容量
      */
-    virtual c_size capacity() const = 0;
+    virtual isize capacity() const = 0;
 
     /**
      * @brief 克隆自身
@@ -53,7 +53,7 @@ public:
     /**
      * @brief 扩容
      */
-    virtual void expand(c_size newCapacity) noexcept = 0;
+    virtual void expand(isize newCapacity) noexcept = 0;
 
     /**
      * @brief 清空hash桶
@@ -63,7 +63,7 @@ public:
     /**
      * @brief 将hash值转换为索引
      */
-    virtual c_size hash2index(hash_t hashVal) const {
+    virtual isize hash2index(hash_t hashVal) const {
         return hashVal % capacity();
     }
 
@@ -287,7 +287,7 @@ public:
      * @brief 默认构造函数。
      * 初始化一个空哈希桶。
      */
-    RobinHashBucket(c_size size = 0) :
+    RobinHashBucket(isize size = 0) :
             robinManagers_(size) {}
 
     /**
@@ -332,7 +332,7 @@ public:
      * @brief 获取哈希桶的容量。
      * @return 返回哈希桶的容量。
      */
-    c_size capacity() const override {
+    isize capacity() const override {
         return robinManagers_.size();
     }
 
@@ -353,9 +353,9 @@ public:
      * @return 返回管理器地址，如果没有找到返回 nullptr。
      */
     manager_t* tryGetManager(hash_t hashVal) {
-        c_size m_capacity = capacity();
-        c_size idx = super::hash2index(hashVal);
-        for (c_size i = 0; i < m_capacity; ++i) {
+        isize m_capacity = capacity();
+        isize idx = super::hash2index(hashVal);
+        for (isize i = 0; i < m_capacity; ++i) {
             auto& manager = robinManagers_.at((idx + i) % m_capacity);
             if (!manager.isManaged() || manager.hashEqual(hashVal)) {
                 return &manager;
@@ -373,9 +373,9 @@ public:
      * @return 返回常量管理器地址，如果没有找到返回 nullptr。
      */
     const manager_t* tryGetManager(hash_t hashVal) const {
-        c_size m_capacity = capacity();
-        c_size idx = super::hash2index(hashVal);
-        for (c_size i = 0; i < m_capacity; ++i) {
+        isize m_capacity = capacity();
+        isize idx = super::hash2index(hashVal);
+        for (isize i = 0; i < m_capacity; ++i) {
             const auto& manager = robinManagers_.at((idx + i) % m_capacity);
             if (!manager.isManaged() || manager.hashEqual(hashVal)) {
                 return &manager;
@@ -415,15 +415,15 @@ public:
      * @param hashVal 哈希值。
      */
     void pop(hash_t hashVal) override {
-        c_size m_capacity = capacity();
+        isize m_capacity = capacity();
         auto* manager = tryGetManager(hashVal);
         if (manager == nullptr || !manager->isManaged()) {
             return;
         }
 
-        c_size curIdx = std::distance(&robinManagers_.at(0), manager);
+        isize curIdx = std::distance(&robinManagers_.at(0), manager);
         while (true) {
-            c_size nextIdx = (curIdx + 1) % m_capacity;
+            isize nextIdx = (curIdx + 1) % m_capacity;
             auto& curManager = robinManagers_.at(curIdx);
             auto& nextManager = robinManagers_.at(nextIdx);
             if (!nextManager.isManaged() || nextManager.moveLe(0)) {
@@ -445,9 +445,9 @@ public:
     template <typename V>
     value_t* setValue(V&& value, hash_t hashVal) {
         manager_t valueManager{std::forward<V>(value), hashVal, 0};
-        c_size m_capacity = capacity();
-        c_size idx = super::hash2index(hashVal);
-        for (c_size i = 0; i < m_capacity; ++i) {
+        isize m_capacity = capacity();
+        isize idx = super::hash2index(hashVal);
+        for (isize i = 0; i < m_capacity; ++i) {
             auto& manager = robinManagers_.at((idx + i) % m_capacity);
             if (!manager.isManaged()) {
                 manager = std::move(valueManager);
@@ -467,7 +467,7 @@ public:
      * @brief 扩展哈希桶的大小。
      * @param newCapacity 新的容量。
      */
-    void expand(c_size newCapacity) noexcept override {
+    void expand(isize newCapacity) noexcept override {
         Array<manager_t> tmpManager{std::move(robinManagers_)};
         robinManagers_.resize(newCapacity);
         for (auto&& manager : tmpManager) {
@@ -503,7 +503,7 @@ public:
          * @param bucketPtr 指向哈希桶的指针。
          * @param index 初始索引。
          */
-        RobinHashBucketIterator(container_t* bucketPtr = nullptr, c_size index = 0) :
+        RobinHashBucketIterator(container_t* bucketPtr = nullptr, isize index = 0) :
                 bucketPtr_(bucketPtr), index_(index) {}
 
         /**
@@ -565,7 +565,7 @@ public:
          */
         self& operator++() {
             ++index_;
-            c_size m_size = bucketPtr_->size();
+            isize m_size = bucketPtr_->size();
             while (index_ < m_size && !bucketPtr_->at(index_).isManaged()) {
                 ++index_;
             }
@@ -594,7 +594,7 @@ public:
 
     private:
         container_t* bucketPtr_;
-        c_size index_;
+        isize index_;
     };
 
     using iterator = RobinHashBucketIterator<false>;
@@ -605,8 +605,8 @@ public:
      * @return 返回起始迭代器。
      */
     iterator begin() {
-        c_size m_capacity = capacity();
-        for (c_size i = 0; i < m_capacity; ++i) {
+        isize m_capacity = capacity();
+        for (isize i = 0; i < m_capacity; ++i) {
             if (robinManagers_.at(i).isManaged()) {
                 return iterator{&robinManagers_, i};
             }
@@ -619,8 +619,8 @@ public:
      * @return 返回起始迭代器。
      */
     const_iterator begin() const {
-        c_size m_capacity = capacity();
-        for (c_size i = 0; i < m_capacity; ++i) {
+        isize m_capacity = capacity();
+        for (isize i = 0; i < m_capacity; ++i) {
             if (robinManagers_.at(i).isManaged()) {
                 return const_iterator{&robinManagers_, i};
             }

@@ -53,12 +53,12 @@ public:
     /**
      * @brief 生成指定长度的随机字符串
      */
-    CString nextStr(c_size len) {
+    CString nextStr(isize len) {
         static const CString characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_cs;
         CString result(len);
-        std::uniform_int_distribution<c_size> distribution(0, characters.size() - 1);
+        std::uniform_int_distribution<isize> distribution(0, characters.size() - 1);
 
-        for (c_size i = 0; i < len; ++i) {
+        for (isize i = 0; i < len; ++i) {
             result[i] = characters[distribution(generator_)];
         }
 

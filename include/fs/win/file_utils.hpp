@@ -18,7 +18,7 @@ static constexpr char PATH_SEP = '\\';
  * @brief 判断文件或文件夹是否存在
  * @return true=存在 false=不存在
  */
-def exists(const char* path) -> bool {
+fn exists(const char* path)->bool {
     DWORD attributes = GetFileAttributesA(path);
     return (attributes != INVALID_FILE_ATTRIBUTES);
 }
@@ -27,7 +27,7 @@ def exists(const char* path) -> bool {
  * @brief 判断是否为文件
  * @return true=是 false=否
  */
-def isfile(const char* path) -> bool {
+fn isfile(const char* path)->bool {
     DWORD attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
@@ -36,7 +36,7 @@ def isfile(const char* path) -> bool {
  * @brief 判断是否为文件夹
  * @return true=是 false=否
  */
-def isdir(const char* path) -> bool {
+fn isdir(const char* path)->bool {
     DWORD attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0);
 }
@@ -45,7 +45,7 @@ def isdir(const char* path) -> bool {
  * @brief 创建一个文件夹
  * @return void
  */
-def mkdir(const char* path, bool exist_ok = false) {
+fn mkdir(const char* path, bool exist_ok = false) {
     BOOL state = CreateDirectoryA(path, nullptr);
 
     switch (state) {
@@ -64,7 +64,7 @@ def mkdir(const char* path, bool exist_ok = false) {
  * @brief 删除一个文件或文件夹
  * @return void
  */
-def remove(const char* path) {
+fn remove(const char* path) {
     if (!exists(path)) {
         FileNotFoundError(std::format("File or Directory not found in {}", path));
     }
@@ -80,10 +80,10 @@ def remove(const char* path) {
  * @brief 拼接两个路径，若第一个路径结尾没有分隔符，会添加一个分隔符
  * @return 拼接后的路径
  */
-def join(const char* path1, const char* path2) -> CString {
-    c_size length1 = std::strlen(path1);
-    c_size length2 = std::strlen(path2);
-    c_size length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
+fn join(const char* path1, const char* path2)->CString {
+    isize length1 = std::strlen(path1);
+    isize length2 = std::strlen(path2);
+    isize length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
 
     CString result{length};
     std::memcpy(result.data(), path1, length1);
@@ -100,7 +100,7 @@ def join(const char* path1, const char* path2) -> CString {
  * @brief 列出文件夹中的文件名
  * @return 文件名集合
  */
-def listdir(const char* path) -> util::DynArray<CString> {
+fn listdir(const char* path)->util::DynArray<CString> {
     WIN32_FIND_DATAA find_data;
     HANDLE handle = FindFirstFileA(join(path, "*"), &find_data);
 

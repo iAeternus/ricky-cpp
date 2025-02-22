@@ -19,7 +19,7 @@ public:
     Stack() :
             data_({}) {}
 
-    c_size size() const {
+    isize size() const {
         return data_.size();
     }
 
@@ -81,4 +81,4 @@ private:
 
 } // namespace my::util
 
-#endif // STACK_HPP 
+#endif // STACK_HPP

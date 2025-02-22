@@ -34,7 +34,7 @@ class DynArray : public Sequence<DynArray<T>, T> {
     constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
 
     // 最小块大小，每个块的初始大小
-    constexpr static c_size BASE_SIZE = 8ll;
+    constexpr static isize BASE_SIZE = 8ll;
 
     // 不存在块时的特殊值
     constexpr static i32 BLOCK_NOT_EXISTS = -1;
@@ -54,9 +54,9 @@ public:
      * @param size 动态数组的大小。
      * @param item 用于填充数组的元素，默认为空值。
      */
-    DynArray(c_size size, const value_t& item = value_t{}) :
+    DynArray(isize size, const value_t& item = value_t{}) :
             DynArray() {
-        for (c_size i = 0; i < size; ++i) {
+        for (isize i = 0; i < size; ++i) {
             append(item);
         }
     }
@@ -147,7 +147,7 @@ public:
      * @brief 获取动态数组的大小。
      * @return 返回数组中元素的个数。
      */
-    c_size size() const {
+    isize size() const {
         return size_;
     }
 
@@ -201,9 +201,9 @@ public:
      * @return 返回指定索引处的元素的引用。
      * @note 时间复杂度O(logN)。如果索引超出范围，行为未定义。
      */
-    value_t& at(c_size index) {
+    value_t& at(isize index) {
         i32 blockIndex = get_block_index(index + 1);
-        c_size inblockIndex = get_inblock_index(index + 1, blockIndex);
+        isize inblockIndex = get_inblock_index(index + 1, blockIndex);
         return blocks_.at(blockIndex).at(inblockIndex);
     }
 
@@ -213,9 +213,9 @@ public:
      * @return 返回指定索引处的元素的 const 引用。
      * @note 时间复杂度O(logN)。如果索引超出范围，行为未定义。
      */
-    const value_t& at(c_size index) const {
+    const value_t& at(isize index) const {
         i32 blockIndex = get_block_index(index + 1);
-        c_size inblockIndex = get_inblock_index(index + 1, blockIndex);
+        isize inblockIndex = get_inblock_index(index + 1, blockIndex);
         return blocks_.at(blockIndex).at(inblockIndex);
     }
 
@@ -225,8 +225,8 @@ public:
      * @return 如果存在返回第一个匹配元素的索引，否则返回数组的大小。
      * @note 查找时间复杂度为 O(n)，n 为数组大小。
      */
-    c_size find(const value_t& value) const {
-        for (c_size i = 0; i < size_; ++i) {
+    isize find(const value_t& value) const {
+        for (isize i = 0; i < size_; ++i) {
             if (at(i) == value) {
                 return i;
             }
@@ -245,7 +245,7 @@ public:
         ++size_;
         return res;
     }
-    
+
     /**
      * @brief 在动态数组末尾追加元素。（右值引用版本）
      * @tparam U 元素的类型。
@@ -267,9 +267,9 @@ public:
      * @param item 需要插入的元素。
      */
     template <typename U>
-    void insert(c_size index, U&& item) {
+    void insert(isize index, U&& item) {
         append(std::forward<U>(item));
-        for (c_size i = size() - 1; i > index; --i) {
+        for (isize i = size() - 1; i > index; --i) {
             std::swap(at(i), at(i - 1));
         }
     }
@@ -278,15 +278,15 @@ public:
      * @brief 移除指定位置的元素。
      * @param index 移除位置，从 0 开始，默认移除最后一个元素。
      */
-    void pop(c_size index = -1) {
+    void pop(isize index = -1) {
         if (empty()) {
             return;
         }
 
-        c_size m_size = size();
+        isize m_size = size();
         index = neg_index(index, m_size);
 
-        for (c_size i = index + 1; i < m_size; ++i) {
+        for (isize i = index + 1; i < m_size; ++i) {
             at(i - 1) = std::move(at(i));
         }
 
@@ -319,9 +319,9 @@ public:
      * @return 返回包含所有元素的 Array。
      */
     Array<value_t> toArray() const {
-        c_size m_size = size();
+        isize m_size = size();
         Array<value_t> arr(m_size);
-        for (c_size i = 0; i < m_size; ++i) {
+        for (isize i = 0; i < m_size; ++i) {
             arr.at(i) = at(i);
         }
         return arr;
@@ -333,9 +333,9 @@ public:
      * @note 转换后原动态数组将被清空。
      */
     Array<value_t> toArray() {
-        c_size m_size = size();
+        isize m_size = size();
         Array<value_t> arr(m_size);
-        for (c_size i = 0; i < m_size; ++i) {
+        for (isize i = 0; i < m_size; ++i) {
             arr.at(i) = std::move(at(i));
         }
         clear();
@@ -399,7 +399,7 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (c_size i = 0, m_size = size(); i < m_size; ++i) {
+        for (isize i = 0, m_size = size(); i < m_size; ++i) {
             if (i) stream << ',';
             stream << at(i);
         }
@@ -431,7 +431,7 @@ public:
          * @param blockIndex 块索引。
          * @param inblockIndex 块内索引。
          */
-        Iterator(container_t* dynarray = nullptr, c_size blockIndex = 0, c_size inblockIndex = 0) :
+        Iterator(container_t* dynarray = nullptr, isize blockIndex = 0, isize inblockIndex = 0) :
                 blockIndex_(blockIndex), inblockIndex_(inblockIndex), dynarray_(dynarray) {}
 
         /**
@@ -549,9 +549,9 @@ public:
         self& operator+=(difference_type n) {
             if (n == 0) return *this;
 
-            c_size target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_SIZE + inblockIndex_ + n;
+            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_SIZE + inblockIndex_ + n;
             i32 new_block = dynarray_->get_block_index(target + 1);
-            c_size new_inblock = dynarray_->get_inblock_index(target, new_block);
+            isize new_inblock = dynarray_->get_inblock_index(target, new_block);
 
             if (new_block >= dynarray_->blocks_.size()) {
                 new_block = dynarray_->blocks_.size() - 1;
@@ -583,9 +583,9 @@ public:
         self& operator-=(difference_type n) {
             if (n == 0) return *this;
 
-            c_size target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_SIZE + inblockIndex_ - n;
+            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_SIZE + inblockIndex_ - n;
             i32 new_block = dynarray_->get_block_index(target + 1);
-            c_size new_inblock = dynarray_->get_inblock_index(target, new_block);
+            isize new_inblock = dynarray_->get_inblock_index(target, new_block);
 
             if (new_block < 0) {
                 new_block = 0;
@@ -629,7 +629,7 @@ public:
                 return this->inblockIndex_ - other.inblockIndex_;
             }
             difference_type diff = this->dynarray_->blocks_.at(other.blockIndex_).size() - other.inblockIndex_;
-            for (c_size i = other.blockIndex_ + 1; i < this->blockIndex_; ++i) {
+            for (isize i = other.blockIndex_ + 1; i < this->blockIndex_; ++i) {
                 diff += this->dynarray_->blocks_.at(i).size();
             }
             return diff + this->inblockIndex_;
@@ -675,8 +675,8 @@ public:
         }
 
     private:
-        c_size blockIndex_;     // 当前块索引
-        c_size inblockIndex_;   // 当前块内的索引
+        isize blockIndex_;      // 当前块索引
+        isize inblockIndex_;    // 当前块内的索引
         container_t* dynarray_; // 当前指向当前动态数组的指针
     };
 
@@ -722,7 +722,7 @@ private:
      * @return 返回块索引。
      * @note 时间复杂度为 O(log n)。
      */
-    i32 get_block_index(c_size ith) const {
+    i32 get_block_index(isize ith) const {
         i32 l = 0, r = DYNARRAY_BLOCK_SIZE, mid;
         while (l < r) {
             mid = l + ((r - l) >> 1);
@@ -741,7 +741,7 @@ private:
      * @param blockIndex 块索引。
      * @return 返回块内索引。
      */
-    c_size get_inblock_index(c_size ith, i32 blockIndex) const {
+    isize get_inblock_index(isize ith, i32 blockIndex) const {
         return ith - BASE_SIZE * (exp2[blockIndex] - 1) - 1;
     }
 
@@ -783,14 +783,14 @@ private:
             // 计算新块的大小：
             // - 如果当前块不存在，初始大小为 BASE_SIZE
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            c_size newSize = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_SIZE, blocks_.at(bbi).size() << 1);
+            isize newSize = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_SIZE, blocks_.at(bbi).size() << 1);
             ++backBlockIndex_;            // 将最后一个块的索引递增，指向新块
             back_block().resize(newSize); // 调整新块的大小
         }
     }
 
 private:
-    c_size size_;                   // 元素个数
+    isize size_;                    // 元素个数
     i32 backBlockIndex_;            // 最后一个块的索引
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
@@ -803,7 +803,7 @@ private:
  * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError。
  */
 template <typename T>
-def opt(const DynArray<std::any>& args, c_size index)->T {
+fn opt(const DynArray<std::any>& args, isize index)->T {
     if (index < 0 || index >= args.size()) {
         ValueError("Index out of range in opt function.");
         return None<T>;

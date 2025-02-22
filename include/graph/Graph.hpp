@@ -30,11 +30,11 @@ public:
     explicit Graph(bool isDirected = true) :
             isDirected_(isDirected) {}
 
-    c_size vertexCount() const {
+    isize vertexCount() const {
         return vertices_.size();
     }
 
-    c_size edgeCount() const {
+    isize edgeCount() const {
         return edgeCount_;
     }
 
@@ -42,7 +42,7 @@ public:
      * @brief 获取从ID节点出发的边的数量
      * @return 若节点不存在，则返回-1
      */
-    c_size edgeCount(i64 id) const {
+    isize edgeCount(i64 id) const {
         if (!vertices_.contains(id)) {
             return -1;
         }
@@ -173,7 +173,7 @@ public:
     }
 
 private:
-    c_size edgeCount_ = 0;                   // 边数，无向图为双倍边
+    isize edgeCount_ = 0;                    // 边数，无向图为双倍边
     bool isDirected_;                        // 是否为有向图 true=是 false=否
     util::Dict<i64, Vertex<V, E>> vertices_; // 邻接表
 

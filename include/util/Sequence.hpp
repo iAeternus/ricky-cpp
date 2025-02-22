@@ -25,15 +25,15 @@ public:
     using iterator = IndexIterator<false, self, value_t>;
     using const_iterator = IndexIterator<true, self, value_t>;
 
-    value_t& at(c_size index) {
+    value_t& at(isize index) {
         return static_cast<Derived*>(this)->at(index);
     }
 
-    const value_t& at(c_size index) const {
+    const value_t& at(isize index) const {
         return static_cast<const Derived*>(this)->at(index);
     }
 
-    c_size size() const {
+    isize size() const {
         return static_cast<const Derived*>(this)->size();
     }
 
@@ -73,11 +73,11 @@ public:
         return const_iterator(this, size());
     }
 
-    value_t& operator[](c_size index) {
+    value_t& operator[](isize index) {
         return at(neg_index(index, size()));
     }
 
-    const value_t& operator[](c_size index) const {
+    const value_t& operator[](isize index) const {
         return at(neg_index(index, size()));
     }
 
@@ -85,8 +85,8 @@ public:
         return find_it(v) != end();
     }
 
-    c_size find(const value_t& v) const {
-        for (c_size i = 0, siz = size(); i < siz; ++i) {
+    isize find(const value_t& v) const {
+        for (isize i = 0, siz = size(); i < siz; ++i) {
             if (at(i) == v) {
                 return i;
             }

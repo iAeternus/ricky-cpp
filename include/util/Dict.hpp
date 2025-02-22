@@ -43,7 +43,7 @@ public:
      * 初始化一个空字典，使用指定的桶大小（默认为 MIN_BUCKET_SIZE）。
      * @param bucketSize 桶的初始大小。
      */
-    Dict(c_size bucketSize = MIN_BUCKET_SIZE) :
+    Dict(isize bucketSize = MIN_BUCKET_SIZE) :
             bucket_(bucketSize), keys_() {}
 
     /**
@@ -106,7 +106,7 @@ public:
      * @brief 获取字典中键值对的数量。
      * @return 返回键值对的数量。
      */
-    c_size size() const {
+    isize size() const {
         return keys_.size();
     }
 
@@ -114,7 +114,7 @@ public:
      * @brief 获取桶的容量。
      * @return 返回桶的容量。
      */
-    c_size capacity() const {
+    isize capacity() const {
         return bucket_.capacity();
     }
 
@@ -364,7 +364,7 @@ public:
         if (this == &other) return *this;
         if (this->size() > other.size()) return other | *this;
 
-        self res{static_cast<c_size>((this->size() + other.size()) / MAX_LOAD_FACTOR)};
+        self res{static_cast<isize>((this->size() + other.size()) / MAX_LOAD_FACTOR)};
         for (auto&& kv : *this) {
             res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
         }
@@ -559,7 +559,7 @@ public:
          * @param dict 指向字典的指针。
          * @param index 初始索引。
          */
-        DictIterator(const Dict* dict, c_size index) :
+        DictIterator(const Dict* dict, isize index) :
                 dict_(dict), index_(index) {
             update_kv(0);
         }
@@ -714,7 +714,7 @@ public:
          * @brief 更新当前键值对。
          * @param add 需要调整的指数。
          */
-        void update_kv(c_size add) {
+        void update_kv(isize add) {
             index_ += add;
             if (index_ < 0 || index_ >= dict_->size()) {
                 kv_.set(nullptr, nullptr);
@@ -726,7 +726,7 @@ public:
 
     private:
         const Dict* dict_; // 指向字典的指针
-        c_size index_;     // 当前迭代器所在索引
+        isize index_;      // 当前迭代器所在索引
         value_type kv_;    // 当前键值对
     };
 
@@ -782,7 +782,7 @@ private:
      * 调用此函数将桶的大小扩大一倍。桶的初始大小为 `MIN_BUCKET_SIZE`，新的桶大小为当前大小的两倍。
      */
     void expand() {
-        bucket_.expand(std::max<c_size>(MIN_BUCKET_SIZE, capacity() << 1LL));
+        bucket_.expand(std::max<isize>(MIN_BUCKET_SIZE, capacity() << 1LL));
     }
 
     /**
@@ -843,7 +843,7 @@ private:
     DynArray<key_t> keys_; // 键的动态数组
 
     constexpr static f64 MAX_LOAD_FACTOR = 0.75; // 最大负载因子
-    constexpr static c_size MIN_BUCKET_SIZE = 8; // 最小桶大小
+    constexpr static isize MIN_BUCKET_SIZE = 8;  // 最小桶大小
 };
 
 } // namespace my::util

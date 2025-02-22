@@ -93,7 +93,7 @@ public:
 
 private:
     CString groupName_;
-    c_size failed_;
+    isize failed_;
     util::DynArray<UnitTest*> group_;
 };
 

@@ -84,7 +84,7 @@ constexpr i64 exp2[] = {
  * @brief 计算x的二进制表示中由最低位的1及其后面的所有的0的二进制构成的数值
  */
 template <typename B>
-constexpr def lowbit(const B& x) -> B {
+constexpr fn lowbit(const B& x)->B {
     return x & -x;
 }
 
@@ -92,7 +92,7 @@ constexpr def lowbit(const B& x) -> B {
  * @brief 计算x的二进制表示中最低位的1的索引，索引从0开始
  */
 template <typename B>
-constexpr def lowbit_index(const B& x) -> B {
+constexpr fn lowbit_index(const B& x)->B {
     B l{};
     while ((x >> l & 1) == 0) {
         ++l;
@@ -104,7 +104,7 @@ constexpr def lowbit_index(const B& x) -> B {
  * @brief 计算x的二进制表示中最高位的1的索引，索引从0开始
  */
 template <typename B>
-constexpr def highbit_index(const B& x) -> B {
+constexpr fn highbit_index(const B& x)->B {
     B l{};
     while (x >> l) {
         ++l;
@@ -115,7 +115,7 @@ constexpr def highbit_index(const B& x) -> B {
 /**
  * @brief 计算x的二进制表示中由最高位的1及其后面的所有的位的二进制构成的数值
  */
-constexpr def highbit(u64 x) -> u64 {
+constexpr fn highbit(u64 x)->u64 {
     x |= (x >> 1ULL);
     x |= (x >> 2ULL);
     x |= (x >> 4ULL);
@@ -125,7 +125,7 @@ constexpr def highbit(u64 x) -> u64 {
     return x - (x >> 1ULL);
 }
 
-constexpr def highbit(u32 x) -> u32 {
+constexpr fn highbit(u32 x)->u32 {
     x |= (x >> 1U);
     x |= (x >> 2U);
     x |= (x >> 4U);
@@ -139,7 +139,7 @@ constexpr def highbit(u32 x) -> u32 {
  * @return true=是 false=否
  */
 template <typename B>
-constexpr def all_one(const B& x) -> bool {
+constexpr fn all_one(const B& x)->bool {
     return (x & (x + 1)) == 0;
 }
 
@@ -148,18 +148,18 @@ constexpr def all_one(const B& x) -> bool {
  * @return true=是 false=否
  */
 template <typename B>
-constexpr def only_one(const B& x) -> bool {
+constexpr fn only_one(const B& x)->bool {
     return (x & (x - 1)) == 0;
 }
 
 /**
  * @brief 向上取整到2的幂
  */
-constexpr def roundup2(c_size x) -> c_size {
+constexpr fn roundup2(isize x)->isize {
     if (x <= 1) return 0LL;
 
     --x;
-    for (c_size i = 1LL; i < c_size(sizeof(c_size)) * 8LL; i <<= 1LL) {
+    for (isize i = 1LL; i < isize(sizeof(isize)) * 8LL; i <<= 1LL) {
         x |= x >> 1LL;
     }
     return x + 1LL;

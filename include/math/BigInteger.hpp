@@ -67,14 +67,14 @@ public:
     }
 
     self& operator=(const char* str) {
-        c_size len = strlen(str), stop = 0LL;
+        isize len = strlen(str), stop = 0LL;
         i32 tmp = 0, ten = 1;
         num_.clear();
         sign_ = (str[0] != '-');
         if (!sign_) {
             stop = 1LL;
         }
-        for (c_size i = len; i > stop; --i) {
+        for (isize i = len; i > stop; --i) {
             tmp += c2i(str[i - 1]) * ten;
             ten *= 10;
             if ((len - i) % WIDTH + 1 == WIDTH) {
@@ -102,7 +102,7 @@ public:
         return *this;
     }
 
-    c_size size() const {
+    isize size() const {
         return length_;
     }
 
@@ -125,8 +125,8 @@ public:
     /**
      * @brief 左移n位，低位补0
      */
-    self leftShift(c_size n) const {
-        c_size tmp = n % WIDTH;
+    self leftShift(isize n) const {
+        isize tmp = n % WIDTH;
         self ans;
         ans.length_ = n + 1;
         n /= WIDTH;
@@ -159,10 +159,10 @@ public:
         }
         self ans;
         i32 carry = 0, aa, bb;
-        c_size aSize = a.num_.size(), bSize = b.num_.size();
-        c_size maxSize = std::max(aSize, bSize);
+        isize aSize = a.num_.size(), bSize = b.num_.size();
+        isize maxSize = std::max(aSize, bSize);
         ans.num_.clear();
-        for (c_size i = 0; i < maxSize; ++i) {
+        for (isize i = 0; i < maxSize; ++i) {
             aa = aSize <= i ? 0 : a.num_[i];
             bb = bSize <= i ? 0 : b.num_[i];
             ans.num_.append((aa + bb + carry) % BASE);
@@ -211,10 +211,10 @@ public:
         }
         self ans;
         i32 carry = 0, aa, bb;
-        c_size aSize = a.num_.size(), bSize = b.num_.size();
-        c_size maxSize = std::max(aSize, bSize);
+        isize aSize = a.num_.size(), bSize = b.num_.size();
+        isize maxSize = std::max(aSize, bSize);
         ans.num_.clear();
-        for (c_size i = 0; i < maxSize; ++i) {
+        for (isize i = 0; i < maxSize; ++i) {
             aa = a.num_[i];
             bb = bSize <= i ? 0 : b.num_[i];
             ans.num_.append((aa - bb - carry + BASE) % BASE);
@@ -241,10 +241,10 @@ public:
     }
 
     friend self operator*(const self& a, const self& b) {
-        c_size aSize = a.num_.size(), bSize = b.num_.size();
+        isize aSize = a.num_.size(), bSize = b.num_.size();
         util::DynArray<i64> res;
-        for (c_size i = 0; i < aSize; ++i) {
-            for (c_size j = 0; j < bSize; ++j) {
+        for (isize i = 0; i < aSize; ++i) {
+            for (isize j = 0; j < bSize; ++j) {
                 i64 tmp = i64(a.num_[i]) * i64(b.num_[j]);
                 i + j < res.size() ? res[i + j] += tmp : res.append(tmp);
             }
@@ -255,9 +255,9 @@ public:
         self ans;
         ans.sign_ = a.sign_ == b.sign_ || (res.size() == 1 && res[0] == 0);
         ans.num_.clear();
-        c_size resSize = res.size();
+        isize resSize = res.size();
         i64 carry = 0, tmp;
-        for (c_size i = 0; i < resSize; ++i) {
+        for (isize i = 0; i < resSize; ++i) {
             tmp = res[i];
             ans.num_.append((tmp + carry) % BASE);
             carry = (tmp + carry) / BASE;
@@ -285,8 +285,8 @@ public:
         CString str(aa.size() + 1);
         std::memset(str.data(), 0, str.size());
         self tmp;
-        c_size lenDiff = aa.length_ - bb.length_;
-        for (c_size i = 0; i <= lenDiff; ++i) {
+        isize lenDiff = aa.length_ - bb.length_;
+        for (isize i = 0; i <= lenDiff; ++i) {
             tmp = bb.leftShift(lenDiff - i);
             while (aa >= tmp) {
                 ++str[i];
@@ -351,13 +351,13 @@ public:
     }
 
     CString __str__() const {
-        c_size mSize = num_.size();
+        isize mSize = num_.size();
         std::stringstream stream;
         if (!sign_) {
             stream << '-';
         }
         stream << num_.back();
-        for (c_size i = mSize - 2; i >= 0; --i) {
+        for (isize i = mSize - 2; i >= 0; --i) {
             // 改WIDTH的时候这里要改
             stream << std::format("{:08d}", num_[i]);
         }
@@ -375,8 +375,8 @@ public:
             } else if (this->length_ > other.length_) {
                 return 1;
             } else {
-                c_size aSize = this->num_.size();
-                for (c_size i = aSize - 1; i >= 0; --i) {
+                isize aSize = this->num_.size();
+                for (isize i = aSize - 1; i >= 0; --i) {
                     if (this->num_[i] < other.num_[i]) {
                         return -1;
                     } else if (this->num_[i] > other.num_[i]) {
@@ -419,7 +419,7 @@ private:
 
 private:
     bool sign_;               // true=正数 false=负数
-    c_size length_;           // 十进制位数
+    isize length_;            // 十进制位数
     util::DynArray<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
 
     static const i32 BASE = 100000000;

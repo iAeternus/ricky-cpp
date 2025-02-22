@@ -37,7 +37,7 @@ class ThreadPool : public Object<ThreadPool>, public NoCopy {
 public:
     using Task = std::function<void(void)>;
 
-    ThreadPool(c_size numOfThreads) :
+    ThreadPool(isize numOfThreads) :
             threads_(numOfThreads), stopFlag_(StopFlag::WAIT_FOREVER) {
         auto worker = [this]() {
             while (true) {

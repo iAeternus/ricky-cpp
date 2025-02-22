@@ -92,7 +92,7 @@ public:
 
     coro::Generator<value_t> generator() const {
         for (auto it = begin_; it != end_; ++it) {
-            co_yield *it;
+            co_yield* it;
         }
     }
 
@@ -145,7 +145,7 @@ private:
 
 // Stream工厂
 template <Iterable I>
-def stream(I&& iter) {
+fn stream(I&& iter) {
     return IterStream(iter.begin(), iter.end());
 }
 

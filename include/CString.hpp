@@ -35,7 +35,7 @@ public:
      * @brief 根据指定长度创建字符串
      * @param len 字符串的长度
      */
-    CString(c_size len) :
+    CString(isize len) :
             str_(my_alloc<char>(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
     }
@@ -52,7 +52,7 @@ public:
      * @param str C 风格字符串
      * @param len 字符串的长度
      */
-    CString(const char* str, c_size len) :
+    CString(const char* str, isize len) :
             CString(len) {
         std::memcpy(data(), str, len);
     }
@@ -141,7 +141,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的字符引用
      */
-    char& operator[](c_size index) {
+    char& operator[](isize index) {
         return str_[index];
     }
 
@@ -150,7 +150,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的字符常量引用
      */
-    const char& operator[](c_size index) const {
+    const char& operator[](isize index) const {
         return str_[index];
     }
 
@@ -158,7 +158,7 @@ public:
      * @brief 获取字符串的长度
      * @return 字符串的长度
      */
-    c_size size() const {
+    isize size() const {
         return len_;
     }
 
@@ -192,12 +192,12 @@ public:
      * @return 拼接后的新字符串
      */
     self operator+(const self& other) const {
-        c_size mSize = this->size(), oSize = other.size();
+        isize mSize = this->size(), oSize = other.size();
         CString res{mSize + oSize};
-        for (c_size i = 0; i < mSize; ++i) {
+        for (isize i = 0; i < mSize; ++i) {
             res[i] = this->str_[i];
         }
-        for (c_size i = 0; i < oSize; ++i) {
+        for (isize i = 0; i < oSize; ++i) {
             res[mSize + i] = other.str_[i];
         }
         return res;
@@ -263,8 +263,8 @@ public:
     bool operator!=(const char* other) const { return !__equals__(other); }
 
 private:
-    char* str_;  // 存储字符串的动态数组
-    c_size len_; // 字符串的长度
+    char* str_; // 存储字符串的动态数组
+    isize len_; // 字符串的长度
 };
 
 /**
@@ -274,7 +274,7 @@ private:
  * @return 转换后的 CString 对象
  */
 template <MyPrintable T>
-def cstr_impl(const T& value)->CString {
+fn cstr_impl(const T& value)->CString {
     return value.__str__();
 }
 
@@ -285,7 +285,7 @@ def cstr_impl(const T& value)->CString {
  * @return 转换后的 CString 对象
  */
 template <StdPrintable T>
-def cstr_impl(const T& value)->CString {
+fn cstr_impl(const T& value)->CString {
     std::stringstream stream;
     stream << value;
     return stream.str();
@@ -298,7 +298,7 @@ def cstr_impl(const T& value)->CString {
  * @return 转换后的 CString 对象
  */
 template <Printable T>
-def cstr(const T& value)->CString {
+fn cstr(const T& value)->CString {
     return cstr_impl(value);
 }
 
@@ -316,7 +316,7 @@ inline const char* stdstr(const CString& value) {
  * @param ch 字符
  * @return 对应的整数值
  */
-def c2i(char ch)->int {
+fn c2i(char ch)->int {
     return ch - '0';
 }
 
@@ -325,7 +325,7 @@ def c2i(char ch)->int {
  * @param ch 整数
  * @return 对应的字符
  */
-def i2c(int ch)->char {
+fn i2c(int ch)->char {
     return ch + '0';
 }
 
@@ -347,8 +347,8 @@ struct std::formatter<my::CString> : std::formatter<const char*> {
  * @param len 字符串长度
  * @return 转换后的 CString 对象
  */
-def operator""_cs(const char* str, size_t len)->my::CString {
-    return my::CString{str, my::c_size(len)};
+fn operator""_cs(const char* str, size_t len)->my::CString {
+    return my::CString{str, my::isize(len)};
 }
 
 #endif // CSTRING_HPP

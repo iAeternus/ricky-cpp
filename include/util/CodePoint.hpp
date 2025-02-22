@@ -87,8 +87,8 @@ public:
     /**
      * @brief 字节码长度
      */
-    c_size size() const noexcept {
-        return c_size(codeSize_);
+    isize size() const noexcept {
+        return isize(codeSize_);
     }
 
     operator char() const {
@@ -146,7 +146,7 @@ public:
     }
 
     cmp_t __cmp__(const self& other) const {
-        c_size m_size = this->size(), o_size = other.size();
+        isize m_size = this->size(), o_size = other.size();
         if (m_size != o_size) {
             return m_size - o_size;
         }
@@ -170,7 +170,7 @@ const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 
 /**
  * @brief 获取字符串的所有码点
  */
-def getCodePoints(const char* str, c_size len, Encoding* encoding) -> DynArray<CodePoint> {
+fn getCodePoints(const char* str, isize len, Encoding* encoding)->DynArray<CodePoint> {
     DynArray<CodePoint> cps;
     i32 i = 0;
     while (i < len) {

@@ -25,29 +25,29 @@ class MatrixView : public Object<MatrixView<E>> {
 public:
     using value_t = E;
 
-    MatrixView(const Matrix<value_t>& ref, c_size rowBegin, c_size colBegin, c_size rows, c_size cols) :
+    MatrixView(const Matrix<value_t>& ref, isize rowBegin, isize colBegin, isize rows, isize cols) :
             ref_(ref), rowBegin_(rowBegin), colBegin_(colBegin), rows_(rows), cols_(cols) {}
 
-    c_size rows() const {
+    isize rows() const {
         return rows_;
     }
 
-    c_size cols() const {
+    isize cols() const {
         return cols_;
     }
 
-    typename Matrix<value_t>::ConstRowProxy operator[](c_size i) const {
+    typename Matrix<value_t>::ConstRowProxy operator[](isize i) const {
         return ref_[rowBegin_ + i];
     }
 
-    value_t at(c_size i, c_size j) const {
+    value_t at(isize i, isize j) const {
         return ref_.at(rowBegin_ + i, colBegin_ + j);
     }
 
     Matrix<value_t> toMatrix() const {
         Matrix<value_t> result(rows_, cols_);
-        for (c_size i = 0; i < rows_; ++i) {
-            for (c_size j = 0; j < cols_; ++j) {
+        for (isize i = 0; i < rows_; ++i) {
+            for (isize j = 0; j < cols_; ++j) {
                 result[i][j] = at(i, j);
             }
         }
@@ -57,9 +57,9 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (c_size i = 0; i < rows_; ++i) {
+        for (isize i = 0; i < rows_; ++i) {
             stream << '[';
-            for (c_size j = 0; j < cols_; ++j) {
+            for (isize j = 0; j < cols_; ++j) {
                 stream << at(i, j);
                 if (j != cols_ - 1) {
                     stream << ',';
@@ -76,8 +76,8 @@ public:
 
 private:
     const Matrix<value_t>& ref_;
-    c_size rowBegin_, colBegin_;
-    c_size rows_, cols_;
+    isize rowBegin_, colBegin_;
+    isize rows_, cols_;
 };
 
 /**
@@ -93,14 +93,14 @@ public:
     class RowProxy;
     class ConstRowProxy;
 
-    Matrix(c_size rows = 1, c_size cols = 1, value_t value = 0.0) :
+    Matrix(isize rows = 1, isize cols = 1, value_t value = 0.0) :
             rows_(rows), cols_(cols), data_(rows_ * cols_, value) {}
 
     Matrix(std::initializer_list<std::initializer_list<value_t>>&& initList) :
             rows_(initList.size()), cols_(rows_ > 0 ? initList.begin()->size() : 0), data_(rows_ * cols_) {
         size_t index = 0;
         for (auto&& row : initList) {
-            if (c_size(row.size()) != cols_) {
+            if (isize(row.size()) != cols_) {
                 ValueError("Inconsistent row sizes in initializer list");
             }
             for (auto&& item : row) {
@@ -114,18 +114,18 @@ public:
      */
     Matrix(std::initializer_list<value_t>&& initList) :
             Matrix(initList.size(), initList.size()) {
-        c_size pos = 0;
+        isize pos = 0;
         for (auto&& item : initList) {
             at_impl(pos, pos) = item;
             ++pos;
         }
     }
 
-    c_size rows() const {
+    isize rows() const {
         return rows_;
     }
 
-    c_size cols() const {
+    isize cols() const {
         return cols_;
     }
 
@@ -141,7 +141,7 @@ public:
         return this->rows_ == other.rows_ && this->cols_ == other.cols_;
     }
 
-    value_t& at(c_size i, c_size j) {
+    value_t& at(isize i, isize j) {
         if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
             ValueError(std::format("Index[{}, {}] out of range", i, j));
             return None<value_t>;
@@ -149,7 +149,7 @@ public:
         return at_impl(i, j);
     }
 
-    const value_t& at(c_size i, c_size j) const {
+    const value_t& at(isize i, isize j) const {
         if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
             ValueError(std::format("Index[{}, {}] out of range", i, j));
             return None<value_t>;
@@ -157,15 +157,15 @@ public:
         return at_impl(i, j);
     }
 
-    value_t& operator()(c_size i, c_size j) {
+    value_t& operator()(isize i, isize j) {
         return at_impl(i, j);
     }
 
-    const value_t& operator()(c_size i, c_size j) const {
+    const value_t& operator()(isize i, isize j) const {
         return at_impl(i, j);
     }
 
-    RowProxy operator[](c_size i) {
+    RowProxy operator[](isize i) {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
             return None<RowProxy>;
@@ -173,7 +173,7 @@ public:
         return RowProxy{data_, i * cols_, cols_};
     }
 
-    ConstRowProxy operator[](c_size i) const {
+    ConstRowProxy operator[](isize i) const {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
             return None<ConstRowProxy>;
@@ -184,7 +184,7 @@ public:
     /**
      * @brief 获取当前矩阵的子矩阵，行列均为闭区间
      */
-    MatrixView<value_t> subMat(c_size i1, c_size j1, c_size i2, c_size j2) const {
+    MatrixView<value_t> subMat(isize i1, isize j1, isize i2, isize j2) const {
         if (i1 > i2 || j1 > j2 || i1 < 0 || j1 < 0 || i2 >= rows_ || j2 >= cols_) {
             ValueError(std::format("Cannot get submatrix [{}..{}] x [{}..{}] of a ({}x{}) matrix.",
                                    i1, i2, j1, j2, rows_, cols_));
@@ -204,8 +204,8 @@ public:
 
     self clone() const {
         self ans(this->rows_, this->cols_);
-        c_size size = this->data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = this->data_.size();
+        for (isize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i];
         }
         return ans;
@@ -217,8 +217,8 @@ public:
             return None<self>;
         }
         self ans(a.rows_, a.cols_);
-        c_size size = ans.data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = ans.data_.size();
+        for (isize i = 0; i < size; ++i) {
             ans.data_[i] = a.data_[i] + b.data_[i];
         }
         return ans;
@@ -230,8 +230,8 @@ public:
                                    this->rows_, this->cols_, other.rows_, other.cols_));
             return None<self>;
         }
-        c_size size = this->data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = this->data_.size();
+        for (isize i = 0; i < size; ++i) {
             this->data_[i] += other.data_[i];
         }
         return *this;
@@ -243,8 +243,8 @@ public:
             return None<self>;
         }
         self ans(a.rows_, a.cols_);
-        c_size size = ans.data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = ans.data_.size();
+        for (isize i = 0; i < size; ++i) {
             ans.data_[i] = a.data_[i] - b.data_[i];
         }
         return ans;
@@ -256,8 +256,8 @@ public:
                                    this->rows_, this->cols_, other.rows_, other.cols_));
             return None<self>;
         }
-        c_size size = this->data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = this->data_.size();
+        for (isize i = 0; i < size; ++i) {
             this->data_[i] -= other.data_[i];
         }
         return *this;
@@ -269,10 +269,10 @@ public:
             return None<self>;
         }
         self result(a.rows_, b.cols_);
-        for (c_size i = 0; i < a.rows_; ++i) {
-            for (c_size k = 0; k < a.cols_; ++k) {
+        for (isize i = 0; i < a.rows_; ++i) {
+            for (isize k = 0; k < a.cols_; ++k) {
                 auto a_ik = a(i, k);
-                for (c_size j = 0; j < b.cols_; ++j) {
+                for (isize j = 0; j < b.cols_; ++j) {
                     result(i, j) += a_ik * b(k, j);
                 }
             }
@@ -295,8 +295,8 @@ public:
             return None<self>;
         }
         self ans(this->rows_, this->cols_);
-        c_size size = ans.data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = ans.data_.size();
+        for (isize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i] * other.data_[i];
         }
         return ans;
@@ -304,8 +304,8 @@ public:
 
     self dot(value_t value) const {
         self ans(rows_, cols_);
-        c_size size = ans.data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = ans.data_.size();
+        for (isize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i] * value;
         }
         return ans;
@@ -316,8 +316,8 @@ public:
      */
     self T() const {
         self ans(cols_, rows_);
-        for (c_size i = 0; i < rows_; ++i) {
-            for (c_size j = 0; j < cols_; ++j) {
+        for (isize i = 0; i < rows_; ++i) {
+            for (isize j = 0; j < cols_; ++j) {
                 ans(j, i) = this->at_impl(i, j);
             }
         }
@@ -330,13 +330,13 @@ public:
      * @param j 行号，从0开始
      * @return 是否交换，true=是 false=否
      */
-    bool swapRow(c_size i, c_size j) {
+    bool swapRow(isize i, isize j) {
         if (i == j) return false;
         if (i < 0 || i >= rows_ || j < 0 || j >= rows_) {
             ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
             return None<bool>;
         }
-        for (c_size k = 0; k < cols_; ++k) {
+        for (isize k = 0; k < cols_; ++k) {
             std::swap(at_impl(i, k), at_impl(j, k));
         }
         return true;
@@ -348,13 +348,13 @@ public:
      * @param j 列号，从0开始
      * @return 是否交换，true=是 false=否
      */
-    bool swapCol(c_size i, c_size j) {
+    bool swapCol(isize i, isize j) {
         if (i == j) return false;
         if (i < 0 || i >= cols_ || j < 0 || j >= cols_) {
             ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
             return None<bool>;
         }
-        for (c_size k = 0; k < rows_; ++k) {
+        for (isize k = 0; k < rows_; ++k) {
             std::swap(at_impl(k, i), at_impl(k, j));
         }
         return true;
@@ -371,12 +371,12 @@ public:
 
         value_t p, d;
         self ans = this->clone();
-        util::Array<c_size> is(rows_); // 记录行交换
-        util::Array<c_size> js(cols_); // 记录列交换
-        for (c_size k = 0; k < rows_; ++k) {
+        util::Array<isize> is(rows_); // 记录行交换
+        util::Array<isize> js(cols_); // 记录列交换
+        for (isize k = 0; k < rows_; ++k) {
             p = 0.0;
-            for (c_size i = k; i < rows_; ++i) {
-                for (c_size j = k; j < cols_; ++j) {
+            for (isize i = k; i < rows_; ++i) {
+                for (isize j = k; j < cols_; ++j) {
                     d = std::fabs(ans[i][j]);
                     if (d > p) {
                         p = d;
@@ -389,25 +389,25 @@ public:
             ans.swapRow(k, is[k]);
             ans.swapCol(k, js[k]);
             ans[k][k] = reciprocal(ans[k][k]); // 归一化主元
-            for (c_size j = 0; j < cols_; ++j) {
+            for (isize j = 0; j < cols_; ++j) {
                 if (j == k) continue;
                 ans[k][j] *= ans[k][k];
             }
-            for (c_size i = 0; i < rows_; ++i) {
+            for (isize i = 0; i < rows_; ++i) {
                 if (i == k) continue;
-                for (c_size j = 0; j < cols_; ++j) {
+                for (isize j = 0; j < cols_; ++j) {
                     if (j == k) continue;
                     ans[i][j] -= ans[i][k] * ans[k][j];
                 }
             }
-            for (c_size i = 0; i < rows_; ++i) {
+            for (isize i = 0; i < rows_; ++i) {
                 if (i == k) continue;
                 ans[i][k] *= (-ans[k][k]);
             }
         }
 
         // 逆交换，还原行和列
-        for (c_size k = rows_ - 1; k >= 0; --k) {
+        for (isize k = rows_ - 1; k >= 0; --k) {
             ans.swapRow(k, js[k]);
             ans.swapCol(k, is[k]);
         }
@@ -425,13 +425,13 @@ public:
         }
 
         value_t d, p;
-        c_size is, js;
+        isize is, js;
         self m = this->clone();
         value_t f = 1.0, ans = 1.0; // 符号因子，行列式值
-        for (c_size k = 0; k < rows_ - 1; ++k) {
+        for (isize k = 0; k < rows_ - 1; ++k) {
             p = 0.0;
-            for (c_size i = k; i < rows_; ++i) {
-                for (c_size j = k; j < cols_; ++j) {
+            for (isize i = k; i < rows_; ++i) {
+                for (isize j = k; j < cols_; ++j) {
                     d = std::fabs(m[i][j]);
                     if (d > p) {
                         p = d;
@@ -444,9 +444,9 @@ public:
             if (m.swapRow(k, is)) f = -f;
             if (m.swapCol(k, js)) f = -f;
             ans *= m[k][k];
-            for (c_size i = k + 1; i < rows_; ++i) {
+            for (isize i = k + 1; i < rows_; ++i) {
                 d = m[i][k] / m[k][k];
-                for (c_size j = k + 1; j < cols_; ++j) {
+                for (isize j = k + 1; j < cols_; ++j) {
                     m[i][j] -= d * m[k][j];
                 }
             }
@@ -462,7 +462,7 @@ public:
         i32 ans = 0;
         value_t d, p;
         self m = this->clone();
-        c_size n = std::min(rows_, cols_), is, js;
+        isize n = std::min(rows_, cols_), is, js;
         for (int k = 0; k < n; ++k) {
             p = 0.0;
             for (int i = 1; i < rows_; ++i) {
@@ -479,9 +479,9 @@ public:
             ++ans;
             m.swapRow(k, is);
             m.swapCol(k, js);
-            for (c_size i = k + 1; i < rows_; ++i) {
+            for (isize i = k + 1; i < rows_; ++i) {
                 d = m[i][k] / m[k][k];
-                for (c_size j = k + 1; j < cols_; ++j) {
+                for (isize j = k + 1; j < cols_; ++j) {
                     m[i][j] -= d * m[k][j];
                 }
             }
@@ -500,25 +500,25 @@ public:
         }
 
         self q = this->clone();
-        for (c_size k = 0; k < q.rows_ - 1; ++k) {
+        for (isize k = 0; k < q.rows_ - 1; ++k) {
             checkPivot(q[k][k]);
-            for (c_size i = k + 1; i < rows_; ++i) {
+            for (isize i = k + 1; i < rows_; ++i) {
                 q[i][k] /= q[k][k];
-                for (c_size j = k + 1; j < cols_; ++j) {
+                for (isize j = k + 1; j < cols_; ++j) {
                     q[i][j] -= q[i][k] * q[k][j];
                 }
             }
         }
 
         self l(rows_, cols_), u(rows_, cols_);
-        for (c_size i = 0; i < rows_; ++i) {
-            for (c_size j = 0; j < i; ++j) {
+        for (isize i = 0; i < rows_; ++i) {
+            for (isize j = 0; j < i; ++j) {
                 l[i][j] = q[i][j];
                 u[i][j] = 0;
             }
             l[i][i] = 1;
             u[i][i] = q[i][i];
-            for (c_size j = i + 1; j < cols_; ++j) {
+            for (isize j = i + 1; j < cols_; ++j) {
                 l[i][j] = 0;
                 u[i][j] = q[i][j];
             }
@@ -529,9 +529,9 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (c_size i = 0; i < rows_; ++i) {
+        for (isize i = 0; i < rows_; ++i) {
             stream << '[';
-            for (c_size j = 0; j < cols_; ++j) {
+            for (isize j = 0; j < cols_; ++j) {
                 stream << at_impl(i, j);
                 if (j != cols_ - 1) {
                     stream << ',';
@@ -551,8 +551,8 @@ public:
             ValueError("Only matrices of the same dimension are comparable");
             return None<cmp_t>;
         }
-        c_size size = this->data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = this->data_.size();
+        for (isize i = 0; i < size; ++i) {
             if (compare(this->data_[i], other.data_[i]) > 0) {
                 return 1;
             } else if (compare(this->data_[i], other.data_[i]) < 0) {
@@ -563,11 +563,11 @@ public:
     }
 
 private:
-    value_t& at_impl(c_size i, c_size j) {
+    value_t& at_impl(isize i, isize j) {
         return data_.at(i * cols_ + j);
     }
 
-    const value_t& at_impl(c_size i, c_size j) const {
+    const value_t& at_impl(isize i, isize j) const {
         return data_.at(i * cols_ + j);
     }
 
@@ -581,8 +581,8 @@ private:
     }
 
     void correct() {
-        c_size size = data_.size();
-        for (c_size i = 0; i < size; ++i) {
+        isize size = data_.size();
+        for (isize i = 0; i < size; ++i) {
             data_[i] = correctFloat(data_[i]);
         }
     }
@@ -590,10 +590,10 @@ private:
 public:
     class RowProxy {
     public:
-        RowProxy(util::DynArray<value_t>& data, c_size start_col, c_size cols) :
+        RowProxy(util::DynArray<value_t>& data, isize start_col, isize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
-        value_t& operator[](c_size j) {
+        value_t& operator[](isize j) {
             if (j < 0 || j >= cols_) {
                 ValueError("Column index out of range");
                 return None<value_t>;
@@ -603,16 +603,16 @@ public:
 
     private:
         util::DynArray<value_t>& data_;
-        c_size start_col_;
-        c_size cols_;
+        isize start_col_;
+        isize cols_;
     };
 
     class ConstRowProxy {
     public:
-        ConstRowProxy(const util::DynArray<value_t>& data, c_size start_col, c_size cols) :
+        ConstRowProxy(const util::DynArray<value_t>& data, isize start_col, isize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
-        const value_t& operator[](c_size j) const {
+        const value_t& operator[](isize j) const {
             if (j < 0 || j >= cols_) {
                 ValueError("Column index out of range");
                 return None<value_t>;
@@ -622,13 +622,13 @@ public:
 
     private:
         const util::DynArray<value_t>& data_;
-        c_size start_col_;
-        c_size cols_;
+        isize start_col_;
+        isize cols_;
     };
 
 private:
-    c_size rows_;                  // 行数
-    c_size cols_;                  // 列数
+    isize rows_;                   // 行数
+    isize cols_;                   // 列数
     util::DynArray<value_t> data_; // 一维存储，提高空间局部性
 };
 
