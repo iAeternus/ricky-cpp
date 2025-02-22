@@ -41,7 +41,8 @@
 using namespace my::test;
 
 /**
- * @brief 置1 测试功能，置0 测试性能，测试性能运行时间较长
+ * @brief 测试模式设置
+ * @note 置1 功能测试；置0 基准测试（运行时间较长）
  */
 #define TEST_MODE 1
 

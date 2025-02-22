@@ -18,7 +18,7 @@ namespace my::math {
 static constexpr f64 PI = 3.14159265358979323846;
 static constexpr f64 E = 2.71828182845904523536;
 static constexpr f64 GOLDEN_RATIO = 0.61803398874989484820; // 黄金分割比
-static constexpr i32 MOD = 1e9 + 7;                         // 素数模数
+static constexpr i32 MOD = 1e9 + 7;                         // i32范围内的素数模数
 
 template <typename T>
 fn min(const T& a, const T& b)->const T& {

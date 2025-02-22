@@ -9,7 +9,7 @@
 
 namespace my::test::test_thread_pool {
 
-auto add = [](int a, int b) {
+auto add = [](i32 a, i32 b) {
     return a + b;
 };
 
@@ -63,18 +63,18 @@ auto should_push_tasks_with_exception = []() {
 
 auto should_wait = []() {
     // Given
-    int n = 100;
+    i32 n = 100;
     async::ThreadPool tp{4};
-    util::Dict<int, int> futures;
+    util::Dict<i32, i32> futures;
 
     // When
-    for (int i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         futures.insert(i, tp.push(add, i, i).get());
     }
     tp.wait();
 
     // Then
-    for (int i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         Assertions::assertEquals(i * 2, futures[i]);
     }
 };
@@ -90,21 +90,21 @@ void test_thread_pool() {
     group.startAll();
 }
 
-int n; // count of tasks
+i32 n; // count of tasks
 auto task = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 };
 
 auto speed_of_thread_pool = []() {
     async::ThreadPool tp{100};
-    for (int i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         tp.push(task);
     }
     tp.wait();
 };
 
 auto speed_of_sync = []() {
-    for (int i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         task();
     }
 };

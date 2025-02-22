@@ -307,7 +307,7 @@ fn cstr(const T& value)->CString {
  * @param value CString 对象
  * @return 标准 C 风格字符串
  */
-inline const char* stdstr(const CString& value) {
+fn stdstr(const CString& value)->const char* {
     return value.data();
 }
 

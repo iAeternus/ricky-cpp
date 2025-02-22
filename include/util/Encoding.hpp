@@ -30,7 +30,7 @@ public:
     /**
      * @brief 返回当前编码方式，开头字符的字节数
      */
-    virtual int byte_size(const char* data) const = 0;
+    virtual i32 byte_size(const char* data) const = 0;
 
     /**
      * @brief 返回当前编码方式的克隆
@@ -50,7 +50,7 @@ class ASCIIEncoding : public Encoding {
     using super = Encoding;
 
 public:
-    int byte_size(const char* data) const override {
+    i32 byte_size(const char* data) const override {
         (void)data; // 告诉编译器可能不使用data
         return 1;
     }
@@ -72,7 +72,7 @@ class UTF8Encoding : public Encoding {
     using super = Encoding;
 
 public:
-    int byte_size(const char* data) const override {
+    i32 byte_size(const char* data) const override {
         if ((data[0] & 0x80) == 0) {
             return 1; // 以0    开头（0xxxxxxx），1字节编码
         } else if ((data[0] & 0xE0) == 0xC0) {
@@ -104,7 +104,7 @@ class UTF16Encoding : public Encoding {
     using super = Encoding;
 
 public:
-    int byte_size(const char* data) const override {
+    i32 byte_size(const char* data) const override {
         if ((data[0] & 0xFC) == 0xD8) {
             return 4; // 以110110开头（110110xx 110111xx），4字节编码
         } else {
@@ -129,7 +129,7 @@ class UTF32Encoding : public Encoding {
     using super = Encoding;
 
 public:
-    int byte_size(const char* data) const override {
+    i32 byte_size(const char* data) const override {
         (void)data; // 告诉编译器可能不使用data
         return 4;
     }
@@ -151,7 +151,7 @@ class GB2312Encoding : public Encoding {
     using super = Encoding;
 
 public:
-    int byte_size(const char* data) const override {
+    i32 byte_size(const char* data) const override {
         (void)data; // 告诉编译器可能不使用data
         return 0;
     }

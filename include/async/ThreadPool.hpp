@@ -9,10 +9,11 @@
 
 #include "Array.hpp"
 #include "NoCopy.hpp"
+#include "Queue.hpp"
 
 #include <thread>
 #include <functional>
-#include <queue>
+// #include <queue>
 #include <mutex>
 #include <condition_variable>
 #include <future>
@@ -141,7 +142,7 @@ private:
 
 private:
     util::Array<std::thread> threads_;
-    std::queue<Task> tasks_;
+    util::Queue<Task> tasks_;
     std::mutex mtx_;
     std::condition_variable condition_;
     i8 stopFlag_;
