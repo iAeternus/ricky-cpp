@@ -16,7 +16,7 @@ namespace my {
 /**
  * @brief rust-like `fn` 关键字
  * @note 规范：
- * 冠以`fn`的函数，返回值应后置
+ * 冠以`fn`的函数，应适合内联，且返回值应后置
  * 对于静态函数，`fn`应该放在static后
  * 对于constexpr函数，`fn`应该放在constexpr后
  */
