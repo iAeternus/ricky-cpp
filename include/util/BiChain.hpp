@@ -30,7 +30,7 @@ public:
 
     template <typename... Args>
     void append(Args&&... args) {
-        BiNode* newNode = super::creator_(std::forward<Args>(args)...);
+        auto* newNode = super::creator_(std::forward<Args>(args)...);
 
         if (super::size_ == 0) {
             super::head_ = newNode;
@@ -44,7 +44,7 @@ public:
 
     template <typename... Args>
     void prepend(Args&&... args) {
-        BiNode* newNode = super::creator_(std::forward<Args>(args)...);
+        auto* newNode = super::creator_(std::forward<Args>(args)...);
 
         if (super::size_ == 0) {
             super::tail_ = newNode;

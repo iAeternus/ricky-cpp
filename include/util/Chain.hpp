@@ -65,7 +65,7 @@ public:
     }
 
     void clear() {
-        Node* current = head_;
+        auto* current = head_;
         Node* nextNode = nullptr;
         while (current) {
             nextNode = current->next_;
@@ -79,7 +79,7 @@ public:
     value_t& operator[](c_size index) {
         index = neg_index(index, size_);
 
-        Node* current = head_;
+        auto* current = head_;
         while (index--) {
             current = current->next_;
         }
@@ -89,7 +89,7 @@ public:
     const value_t& operator[](c_size index) const {
         index = neg_index(index, size_);
 
-        Node* current = head_;
+        auto* current = head_;
         while (index--) {
             current = current->next_;
         }

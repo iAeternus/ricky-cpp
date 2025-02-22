@@ -1,5 +1,6 @@
 /**
- * @brief 队列，使用带尾指针的循环单链表实现
+ * @file Queue.hpp
+ * @brief 基于带尾指针的循环单链表实现的队列类
  * @author Ricky
  * @date 2025/1/13
  * @version 1.0
@@ -12,6 +13,11 @@
 
 namespace my::util {
 
+/**
+  * @brief 基于带尾指针的循环单链表实现的队列
+  * @tparam Node 指定链表节点类型
+  * @tparam C 指定节点管理器类型，用于创建和销毁节点，默认为 `Creator<Node>`
+  */
 template <ChainNodeType Node, typename C = Creator<Node>>
 class ChainQueue {
     using self = ChainQueue<Node, C>;
@@ -19,67 +25,91 @@ class ChainQueue {
 public:
     using value_t = typename Node::value_t;
 
+    /**
+      * @brief 构造函数，初始化队列
+      */
     ChainQueue() :
             size_(0), tail_(new ChainNode<value_t>()) {
         tail_->next_ = tail_;
     }
 
+    /**
+      * @brief 析构函数，释放队列中的所有节点
+      */
     ~ChainQueue() {
         clear();
         my_destroy(tail_);
     }
 
+    /**
+      * @brief 获取队列的大小
+      * @return 队列中元素的个数
+      */
     c_size size() const {
         return size_;
     }
 
-    c_size empty() const {
+    /**
+      * @brief 判断队列是否为空
+      * @return 队列为空时返回 `true`，否则返回 `false`
+      */
+    bool empty() const {
         return tail_->next_ == tail_;
     }
 
+    /**
+      * @brief 清空队列，释放所有节点
+      */
     void clear() {
         auto* p = tail_->next_;
-        auto* d = p->next_; // 待删节点
-        while(d != p) {
-            p->next_ = d->next_;
-            d = p->next_;
+        while (p != tail_) {
+            auto* d = p;
+            p = p->next_;
+            my_destroy(d);
         }
-        tail_ = p;
+        tail_->next_ = tail_;
         size_ = 0;
     }
 
     /**
-     * @brief 入队
-     * @note 时间复杂度 O(1)，采用尾插
-     */
+      * @brief 入队操作，将元素添加到队列尾部
+      * @tparam Args 入队元素的参数类型
+      * @param args 入队元素的参数
+      * @note 时间复杂度为 O(1)，采用尾插法
+      */
     template <typename... Args>
     void push(Args&&... args) {
         auto* newNode = creator_(std::forward<Args>(args)...);
         newNode->next_ = tail_->next_;
         tail_->next_ = newNode;
-        tail_ = tail_->next_;
+        tail_ = newNode;
         ++size_;
     }
 
     /**
-     * @brief 出队
-     * @note 时间复杂度 O(1)，采用头删
-     */
+      * @brief 出队操作，移除队列头部元素
+      * @note 时间复杂度为 O(1)，采用头删法
+      */
     void pop() {
         if (empty()) {
             RuntimeError("Queue is empty.");
             return;
         }
         auto* p = tail_->next_;
-        auto* d = p->next_; // 待删节点
-        if (d == tail_) {
-            tail_ = p;
+        auto* d = p->next_; // 待删除节点
+        if (d == tail_) {   // 如果队列仅剩一个节点
+            tail_ = p;      // 更新尾节点为起始节点
         }
         p->next_ = d->next_;
         my_destroy(d);
         --size_;
     }
 
+    /**
+      * @brief 获取队列首元素的引用
+      * @return 队首元素的引用
+      * @note 如果队列为空，会抛出异常
+      */
     value_t& front() {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -88,6 +118,11 @@ public:
         return tail_->next_->next_->value_;
     }
 
+    /**
+      * @brief 获取队列首元素的常量引用
+      * @return 队首元素的常量引用
+      * @note 如果队列为空，会抛出异常
+      */
     const value_t& front() const {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -96,6 +131,11 @@ public:
         return tail_->next_->next_->value_;
     }
 
+    /**
+      * @brief 获取队列尾元素的引用
+      * @return 队尾元素的引用
+      * @note 如果队列为空，会抛出异常
+      */
     value_t& tail() {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -104,6 +144,11 @@ public:
         return tail_->value_;
     }
 
+    /**
+      * @brief 获取队列尾元素的常量引用
+      * @return 队尾元素的常量引用
+      * @note 如果队列为空，会抛出异常
+      */
     const value_t& tail() const {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -113,11 +158,15 @@ public:
     }
 
 private:
-    c_size size_;              // 队列长度
+    c_size size_;              // 队列中元素的个数
     ChainNode<value_t>* tail_; // 指向虚拟尾节点的指针
-    C creator_;                // 节点管理器
+    C creator_;                // 节点管理器，用于创建和销毁节点
 };
 
+/**
+  * @brief 定义队列类型，节点类型为 `ChainNode<T>`
+  * @tparam T 节点存储的值类型
+  */
 template <typename T>
 using Queue = ChainQueue<ChainNode<T>, Creator<ChainNode<T>>>;
 
