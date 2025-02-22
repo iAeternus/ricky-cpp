@@ -53,7 +53,7 @@ public:
 
     template <typename... Args>
     void append(Args&&... args) {
-        Node* newNode = creator_(std::forward<Args>(args)...);
+        auto* newNode = creator_(std::forward<Args>(args)...);
 
         if (size_ == 0) {
             head_ = newNode;

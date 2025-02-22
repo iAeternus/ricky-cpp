@@ -49,8 +49,8 @@ class ChainNode : public Object<ChainNode<T>> {
 public:
     using value_t = T;
 
-    ChainNode(const value_t& value = {}) :
-            value_(value), next_(nullptr) {}
+    ChainNode(const value_t& value = {}, self* next = nullptr) :
+            value_(value), next_(next) {}
 
     ChainNode(const self& other) :
             value_(other.value_), next_(other.next_) {}

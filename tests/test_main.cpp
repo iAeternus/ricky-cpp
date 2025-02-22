@@ -1,4 +1,10 @@
-// test_main.cpp
+/**
+ * @brief 测试启动器
+ * @author Ricky
+ * @date 2024/12/1
+ * @version 2.0 优化了测试模式宏定义
+ * @file test_main.cpp
+ */
 #include "test_test_utils.hpp"
 #include "test_cstring.hpp"
 #include "test_buffer.hpp"
@@ -28,6 +34,7 @@
 #include "test_time.hpp"
 #include "test_date_time.hpp"
 #include "test_stack.hpp"
+#include "test_queue.hpp"
 
 #include "test_speed.hpp"
 
@@ -36,10 +43,10 @@ using namespace my::test;
 /**
  * @brief 置1 测试功能，置0 测试性能，测试性能运行时间较长
  */
-#define TEST_FUNCTIONALITY 1
+#define TEST_MODE 1
 
 int main() {
-#if TEST_FUNCTIONALITY
+#if TEST_MODE
     test_test_utils::test_test_utils();
     test_cstring::test_cstring();
     test_buffer::test_buffer();
@@ -69,6 +76,7 @@ int main() {
     test_time::test_time();
     test_date_time::test_date_time();
     test_stack::test_stack();
+    test_queue::test_queue();
 #else
     test_speed();
 #endif
