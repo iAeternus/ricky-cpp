@@ -14,10 +14,10 @@
 namespace my::util {
 
 /**
-  * @brief 基于带尾指针的循环单链表实现的队列
-  * @tparam Node 指定链表节点类型
-  * @tparam C 指定节点管理器类型，用于创建和销毁节点，默认为 `Creator<Node>`
-  */
+ * @brief 基于带尾指针的循环单链表实现的队列
+ * @tparam Node 指定链表节点类型
+ * @tparam C 指定节点管理器类型，用于创建和销毁节点，默认为 `Creator<Node>`
+ */
 template <ChainNodeType Node, typename C = Creator<Node>>
 class ChainQueue {
     using self = ChainQueue<Node, C>;
@@ -26,40 +26,40 @@ public:
     using value_t = typename Node::value_t;
 
     /**
-      * @brief 构造函数，初始化队列
-      */
+     * @brief 构造函数，初始化队列
+     */
     ChainQueue() :
             size_(0), tail_(new ChainNode<value_t>()) {
         tail_->next_ = tail_;
     }
 
     /**
-      * @brief 析构函数，释放队列中的所有节点
-      */
+     * @brief 析构函数，释放队列中的所有节点
+     */
     ~ChainQueue() {
         clear();
         my_destroy(tail_);
     }
 
     /**
-      * @brief 获取队列的大小
-      * @return 队列中元素的个数
-      */
+     * @brief 获取队列的大小
+     * @return 队列中元素的个数
+     */
     isize size() const {
         return size_;
     }
 
     /**
-      * @brief 判断队列是否为空
-      * @return 队列为空时返回 `true`，否则返回 `false`
-      */
+     * @brief 判断队列是否为空
+     * @return 队列为空时返回 `true`，否则返回 `false`
+     */
     bool empty() const {
         return tail_->next_ == tail_;
     }
 
     /**
-      * @brief 清空队列，释放所有节点
-      */
+     * @brief 清空队列，释放所有节点
+     */
     void clear() {
         auto* p = tail_->next_;
         while (p != tail_) {
@@ -72,11 +72,11 @@ public:
     }
 
     /**
-      * @brief 入队操作，将元素添加到队列尾部
-      * @tparam Args 入队元素的参数类型
-      * @param args 入队元素的参数
-      * @note 时间复杂度为 O(1)，采用尾插法
-      */
+     * @brief 入队操作，将元素添加到队列尾部
+     * @tparam Args 入队元素的参数类型
+     * @param args 入队元素的参数
+     * @note 时间复杂度为 O(1)，采用尾插法
+     */
     template <typename... Args>
     void push(Args&&... args) {
         auto* newNode = creator_(std::forward<Args>(args)...);
@@ -87,9 +87,9 @@ public:
     }
 
     /**
-      * @brief 出队操作，移除队列头部元素
-      * @note 时间复杂度为 O(1)，采用头删法
-      */
+     * @brief 出队操作，移除队列头部元素
+     * @note 时间复杂度为 O(1)，采用头删法
+     */
     void pop() {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -106,10 +106,10 @@ public:
     }
 
     /**
-      * @brief 获取队列首元素的引用
-      * @return 队首元素的引用
-      * @note 如果队列为空，会抛出异常
-      */
+     * @brief 获取队列首元素的引用
+     * @return 队首元素的引用
+     * @note 如果队列为空，会抛出异常
+     */
     value_t& front() {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -119,10 +119,10 @@ public:
     }
 
     /**
-      * @brief 获取队列首元素的常量引用
-      * @return 队首元素的常量引用
-      * @note 如果队列为空，会抛出异常
-      */
+     * @brief 获取队列首元素的常量引用
+     * @return 队首元素的常量引用
+     * @note 如果队列为空，会抛出异常
+     */
     const value_t& front() const {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -132,10 +132,10 @@ public:
     }
 
     /**
-      * @brief 获取队列尾元素的引用
-      * @return 队尾元素的引用
-      * @note 如果队列为空，会抛出异常
-      */
+     * @brief 获取队列尾元素的引用
+     * @return 队尾元素的引用
+     * @note 如果队列为空，会抛出异常
+     */
     value_t& tail() {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -145,10 +145,10 @@ public:
     }
 
     /**
-      * @brief 获取队列尾元素的常量引用
-      * @return 队尾元素的常量引用
-      * @note 如果队列为空，会抛出异常
-      */
+     * @brief 获取队列尾元素的常量引用
+     * @return 队尾元素的常量引用
+     * @note 如果队列为空，会抛出异常
+     */
     const value_t& tail() const {
         if (empty()) {
             RuntimeError("Queue is empty.");
@@ -164,9 +164,9 @@ private:
 };
 
 /**
-  * @brief 定义队列类型，节点类型为 `ChainNode<T>`
-  * @tparam T 节点存储的值类型
-  */
+ * @brief 定义队列类型，节点类型为 `ChainNode<T>`
+ * @tparam T 节点存储的值类型
+ */
 template <typename T>
 using Queue = ChainQueue<ChainNode<T>, Creator<ChainNode<T>>>;
 
