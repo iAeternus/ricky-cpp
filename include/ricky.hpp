@@ -22,7 +22,7 @@ namespace my {
  */
 #define fn inline auto
 
-#define fnr(R) inline R
+#define fr(R) inline R
 
 /**
  * @brief 获取类型名
