@@ -35,6 +35,7 @@
 #include "test_date_time.hpp"
 #include "test_stack.hpp"
 #include "test_queue.hpp"
+#include "test_log.hpp"
 
 #include "test_speed.hpp"
 
@@ -78,6 +79,7 @@ int main() {
     test_date_time::test_date_time();
     test_stack::test_stack();
     test_queue::test_queue();
+    test_log::test_log();
 #else
     test_speed();
 #endif

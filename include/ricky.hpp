@@ -84,6 +84,15 @@ using hash_t = u32; // hash type
 #endif
 
 /**
+ * @brief 类型范围
+ */
+#define I32_MIN INT_MIN
+#define I32_MAX INT_MAX
+#define I64_MIN LONG_LONG_MIN
+#define I64_MAX LONG_LONG_MAX
+// TODO
+
+/**
  * @brief 空值, 不会被使用, 仅用于占位符
  */
 template <typename T>

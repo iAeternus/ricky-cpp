@@ -6,6 +6,23 @@
 
 namespace my::test::test_array {
 
+auto it_works = []() {
+    util::Array<CString> arr(5);
+    Assertions::assertFalse(arr.empty());
+
+    arr[0] = "aaa", arr[1] = "bbb", arr[2] = "ccc";
+    Assertions::assertEquals(5LL, arr.size());
+    Assertions::assertEquals("[aaa,bbb,ccc,,]"_cs, arr.__str__());
+
+    arr.resize(2);
+    Assertions::assertEquals(2LL, arr.size());
+    Assertions::assertEquals("[,]"_cs, arr.__str__());
+
+    arr.resize(0);
+    Assertions::assertTrue(arr.empty());
+    Assertions::assertEquals("[]"_cs, arr.__str__());
+};
+
 auto should_at = []() {
     // Given
     util::Array<char> arr = {'a', 'b', 'c'};
@@ -26,6 +43,7 @@ auto should_at = []() {
 void test_array() {
     UnitTestGroup group{"test_array"};
 
+    group.addTest("it_works", it_works);
     group.addTest("should_at", should_at);
 
     group.startAll();
