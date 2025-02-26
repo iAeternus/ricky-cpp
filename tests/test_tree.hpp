@@ -58,7 +58,7 @@ auto should_bfs = []() {
 
 void test_tree() {
     UnitTestGroup group{"test_tree"};
-    
+
     group.addTest("it_works", it_works);
     group.addTest("should_dfs", should_dfs);
     group.addTest("should_bfs", should_bfs);

@@ -58,8 +58,9 @@ public:
 
     /**
      * @brief 深度优先遍历
+     * @param callback 回调函数，用于处理每个节点的值
      */
-    void dfs(CallBack callback) const {
+    void dfs(Callback callback) const {
         root_->forEach(callback);
     }
 

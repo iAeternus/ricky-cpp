@@ -18,10 +18,6 @@ template <typename T>
 concept TreeNodeType = requires(T a, const T& b, T&& c) {
     { T() }
     ->std::same_as<T>;
-    // { a = b }
-    // ->std::same_as<T&>;
-    // { T(b) }
-    // ->std::same_as<T>;
     { a = std::move(c) }
     ->std::same_as<T&>;
     { T(std::move(c)) }
