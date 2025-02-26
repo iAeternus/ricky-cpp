@@ -33,7 +33,7 @@ public:
     }
 
     template <typename... Args>
-    T* operator()(Args... args) {
+    T* operator()(Args&&... args) {
         return &createdValues_.append(T{std::forward<Args>(args)...});
     }
 

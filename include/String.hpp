@@ -736,7 +736,7 @@ private:
   * @param length 字符串长度
   * @return 转换后的 `String` 对象
   */
-fn operator""_s(const char* str, size_t length)->String {
+fn operator""_s(const char* str, size_t length)->const String {
     return String{str, static_cast<isize>(length)};
 }
 

@@ -36,6 +36,7 @@
 #include "test_stack.hpp"
 #include "test_queue.hpp"
 #include "test_log.hpp"
+#include "test_tree.hpp"
 
 #include "test_speed.hpp"
 
@@ -80,6 +81,7 @@ int main() {
     test_stack::test_stack();
     test_queue::test_queue();
     test_log::test_log();
+    test_tree::test_tree();
 #else
     test_speed();
 #endif
