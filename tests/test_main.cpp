@@ -27,6 +27,7 @@
 #include "test_matrix.hpp"
 #include "test_disjoint_set.hpp"
 #include "test_graph.hpp"
+#include "test_graph_algorithm.hpp"
 #include "test_generator.hpp"
 #include "test_stream.hpp"
 #include "test_duration.hpp"
@@ -72,6 +73,7 @@ int main() {
     test_matrix::test_matrix();
     test_disjoint_set::test_disjoint_set();
     test_graph::test_graph();
+    test_graph_algorithm::test_graph_algorithm();
     test_generator::test_generator();
     test_stream::test_stream();
     test_duration::test_duration();
