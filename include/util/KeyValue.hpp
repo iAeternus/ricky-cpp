@@ -14,7 +14,7 @@ namespace my::util {
 /**
  * @brief 键值对视图
  */
-template <Hashable K, typename V>
+template <KeyType K, typename V>
 class KeyValueView : Object<KeyValueView<K, V>> {
     using self = KeyValueView<K, V>;
 

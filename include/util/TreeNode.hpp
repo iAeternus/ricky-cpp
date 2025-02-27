@@ -219,10 +219,10 @@ enum Color {
 /**
  * @brief 红黑树节点，存储键值对
  */
-template <typename K, typename V>
-class BRTreeNode : public Object<BRTreeNode<K, V>> {
+template <Comparable K, typename V>
+class RBTreeNode : public Object<RBTreeNode<K, V>> {
 public:
-    using self = BRTreeNode<K, V>;
+    using self = RBTreeNode<K, V>;
     using key_t = K;
     using value_t = V;
     using Callback = std::function<void(const KeyValueView<key_t, value_t>&)>;
@@ -234,17 +234,17 @@ public:
     self* rchild_;  // 指向右孩子的指针
     self* parent_;  // 指向父节点的指针，定义根节点的父指针指向自身
 
-    explicit BRTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, self* parent = nullptr) :
+    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, self* parent = nullptr) :
             color_(BLACK), key_(key), value_(value), lchild_(nullptr), rchild_(nullptr), parent_(parent) {
         if (parent_ == nullptr) {
             parent_ = this;
         }
     }
 
-    BRTreeNode(const self&) = delete;
+    RBTreeNode(const self&) = delete;
     self& operator=(const self&) = delete;
 
-    BRTreeNode(self&& other) noexcept :
+    RBTreeNode(self&& other) noexcept :
             color_(other.color_),
             key_(std::move(other.key_)),
             value_(std::move(other.value)),
@@ -265,6 +265,35 @@ public:
         this->parent_ = other.parent_;
         other.lchild_ = other.rchild_ = other.parent_ = nullptr;
         return *this;
+    }
+
+    /**
+     * @brief 遍历本节点之下的所有子节点，按照先序遍历排列
+     */
+    void forEach(Callback callback) const {
+        callback(this->value_);
+        lchild_->forEach(callback);
+        rchild_->forEach(callback);
+    }
+
+    /**
+     * @brief 遍历本节点之下的所有子节点，按照后序遍历排列
+     */
+    void forEachRev(Callback callback) const {
+        lchild_->forEachRev(callback);
+        rchild_->forEachRev(callback);
+        callback(this->value_);
+    }
+
+    /**
+     * @brief 遍历本节点以上的所有祖先节点
+     */
+    void forEachParent(Callback callback) const {
+        const self* p = this;
+        while (p != nullptr && p != p->parent_) {
+            callback(p->value_);
+            p = p->parent_;
+        }
     }
 
     CString __str__() const {
