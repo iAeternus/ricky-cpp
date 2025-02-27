@@ -115,7 +115,7 @@ CompactNamespaces: true
 # 构造函数的初始化列表要么都在同一行，要么都各自一行
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 
-# 构造函数的初始化列表的缩进宽度 TODO may be 8?
+# 构造函数的初始化列表的缩进宽度
 ConstructorInitializerIndentWidth: 8
 
 # 延续的行的缩进宽度
