@@ -170,16 +170,16 @@ public:
      */
     void forEach(Callback callback) const {
         callback(this->value_);
-        lchild_->forEach(callback);
-        rchild_->forEach(callback);
+        if (lchild_) lchild_->forEach(callback);
+        if (rchild_) rchild_->forEach(callback);
     }
 
     /**
      * @brief 遍历本节点之下的所有子节点，按照后序遍历排列
      */
     void forEachRev(Callback callback) const {
-        lchild_->forEachRev(callback);
-        rchild_->forEachRev(callback);
+        if (lchild_) lchild_->forEachRev(callback);
+        if (rchild_) rchild_->forEachRev(callback);
         callback(this->value_);
     }
 
@@ -203,8 +203,8 @@ public:
 private:
     void print(std::stringstream& stream, const CString& prefix) const {
         stream << prefix.data() << "+-- " << value_ << '\n';
-        lchild_->print(stream, prefix + "|   ");
-        rchild_->print(stream, prefix + "|   ");
+        if (lchild_) lchild_->print(stream, prefix + "|   ");
+        if (rchild_) rchild_->print(stream, prefix + "|   ");
     }
 };
 
@@ -212,14 +212,14 @@ private:
  * @brief 红黑树节点颜色
  */
 enum Color {
-    RED,   // 红 = 0
-    BLACK, // 黑 = 1
+    BLACK, // 黑 = 0
+    RED,   // 红 = 1
 };
 
 /**
  * @brief 红黑树节点，存储键值对
  */
-template <Comparable K, typename V>
+template <Sortable K, typename V>
 class RBTreeNode : public Object<RBTreeNode<K, V>> {
 public:
     using self = RBTreeNode<K, V>;
@@ -227,19 +227,19 @@ public:
     using value_t = V;
     using Callback = std::function<void(const KeyValueView<key_t, value_t>&)>;
 
-    Color color_;   //颜色
     key_t key_;     // 键
     value_t value_; // 值
+    Color color_;   // 颜色
     self* lchild_;  // 指向左孩子的指针
     self* rchild_;  // 指向右孩子的指针
-    self* parent_;  // 指向父节点的指针，定义根节点的父指针指向自身
+    self* parent_;  // 指向父节点的指针，定义根节点的父指针指向NIL
 
-    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, self* parent = nullptr) :
-            color_(BLACK), key_(key), value_(value), lchild_(nullptr), rchild_(nullptr), parent_(parent) {
-        if (parent_ == nullptr) {
-            parent_ = this;
-        }
-    }
+    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, Color color = RED,
+                        self* lchild = nullptr, self* rchild = nullptr, self* parent = nullptr) :
+            key_(key), value_(value), color_(color), lchild_(lchild), rchild_(rchild), parent_(parent) {}
+
+    explicit RBTreeNode(key_t&& key, value_t&& value, Color color = RED) :
+            key_(std::move(key)), value_(std::move(value)), color_(color), lchild_(nullptr), rchild_(nullptr), parent_(nullptr) {}
 
     RBTreeNode(const self&) = delete;
     self& operator=(const self&) = delete;
@@ -267,46 +267,21 @@ public:
         return *this;
     }
 
-    /**
-     * @brief 遍历本节点之下的所有子节点，按照先序遍历排列
-     */
-    void forEach(Callback callback) const {
-        callback(this->value_);
-        lchild_->forEach(callback);
-        rchild_->forEach(callback);
-    }
-
-    /**
-     * @brief 遍历本节点之下的所有子节点，按照后序遍历排列
-     */
-    void forEachRev(Callback callback) const {
-        lchild_->forEachRev(callback);
-        rchild_->forEachRev(callback);
-        callback(this->value_);
-    }
-
-    /**
-     * @brief 遍历本节点以上的所有祖先节点
-     */
-    void forEachParent(Callback callback) const {
-        const self* p = this;
-        while (p != nullptr && p != p->parent_) {
-            callback(p->value_);
-            p = p->parent_;
+    cmp_t __cmp__(const self& other) const {
+        if constexpr (Comparable<key_t>) {
+            return this->key_.__cmp__(other.key_);
+        } else if constexpr (Subtractble<key_t>) {
+            return this->key_ - other.key_;
+        } else {
+            KeyError(std::format("Key type[{}] is not sortable", dtype(key_t)));
+            return None<cmp_t>;
         }
     }
 
     CString __str__() const {
         std::stringstream stream;
-        this->print(stream, "");
+        stream << (color_ == RED ? io::Color::RED : "") << '(' << key_ << ',' << value_ << ')' << io::Color::CLOSE << '\n';
         return CString{stream.str()};
-    }
-
-private:
-    void print(std::stringstream& stream, const CString& prefix) const {
-        stream << prefix.data() << "+-- " << value_ << '\n';
-        lchild_->print(stream, prefix + "|   ");
-        rchild_->print(stream, prefix + "|   ");
     }
 };
 

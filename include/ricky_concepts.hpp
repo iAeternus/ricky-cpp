@@ -15,11 +15,15 @@
 
 namespace my {
 
-// 可以隐式转换为const char*的类型约束概念
+/**
+ * @brief 可以隐式转换为const char*的类型约束概念
+ */
 template <typename S>
 concept ConvertibleToCstr = std::convertible_to<S, const char*>;
 
-// 可输出的类型约束概念
+/**
+ * @brief 可输出的类型约束概念
+ */
 template <typename T>
 concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, float, double, long double, nullptr_t, std::string>;
 
@@ -32,7 +36,9 @@ concept MyPrintable = requires(T t) {
 template <typename T>
 concept Printable = MyPrintable<T> || StdPrintable<T>;
 
-// 可哈希的类型约束概念
+/**
+ * @brief 可哈希的类型约束概念
+ */
 template <typename T>
 concept MyLikeHashable = requires(const T& one, const T& other) {
     { one.__hash__() }
@@ -52,7 +58,9 @@ concept StdHashable = requires(const T& one, const T& other) {
 template <typename T>
 concept Hashable = MyLikeHashable<T> || StdHashable<T>;
 
-// 可迭代类型约束概念
+/**
+ * @brief 可迭代类型约束概念
+ */
 template <typename T>
 concept Iterable = requires(T obj) {
     {obj.begin()};
@@ -60,22 +68,42 @@ concept Iterable = requires(T obj) {
     {obj.size()};
 };
 
-// 可比较约束概念
+/**
+ * @brief 可比较约束概念
+ */
 template <typename T>
 concept Comparable = requires(const T& one, const T& other) {
     { one.__cmp__(other) }
     ->std::convertible_to<cmp_t>;
 };
 
-// 可作为键
-template <typename T>
-concept KeyType = Hashable<T> || Comparable<T>;
+template<typename T>
+concept Subtractble = requires(const T& one, const T& other) {
+    { one - other }
+    ->std::convertible_to<T>;
+};
 
-// 可断言约束概念
+/**
+ * @brief 可排序约束概念
+ */
 template <typename T>
-concept Assertable = Comparable<T> || MyPrintable<T>;
+concept Sortable = Comparable<T> || Subtractble<T>;
 
-// 非类类型约束概念
+/**
+ * @brief 可作为键
+ */
+template <typename T>
+concept KeyType = Hashable<T> || Sortable<T>;
+
+/**
+ * @brief 可断言约束概念
+ */
+template <typename T>
+concept Assertable = Comparable<T> && MyPrintable<T>;
+
+/**
+ * @brief 非类类型约束概念
+ */
 template <typename T>
 concept NonClassType = !std::is_class<T>::value;
 

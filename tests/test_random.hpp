@@ -3,7 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "Random.hpp"
-#include "printer.hpp"
+#include "Printer.hpp"
 
 namespace my::test::test_random {
 
@@ -22,7 +22,7 @@ auto should_generate_random = []() {
 };
 
 auto should_generate_uniform_sum_numbers = []() {
-    // Given    
+    // Given
     i32 n = 100, sum = 1e6;
 
     // When & Then

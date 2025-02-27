@@ -25,12 +25,22 @@ public:
     TreeImpl() :
             size_(0), root_(nullptr) {}
 
+    ~TreeImpl() {
+        clear();
+        root_ = nullptr;
+    }
+
     Node* root() {
         return root_;
     }
 
     const Node* const root() const {
         return root_;
+    }
+
+    void clear() {
+        destroyNode(root_);
+        size_ = 0;
     }
 
     template <typename... Args>
@@ -95,6 +105,15 @@ private:
     isize size_; // 节点个数
     Node* root_; // 根节点
     C creator_;  // 节点创建管理器
+
+private:
+    void destroyNode(Node* root) {
+        if (root == nullptr) return;
+        for(auto* child : root->children_) {
+            destroyNode(child);
+        }
+        my_destroy(root);
+    }
 };
 
 template <typename T>
