@@ -29,6 +29,7 @@ public:
 
     ~RBTree() {
         clear();
+        my_destroy(NIL);
         my_delloc(NIL);
         root_ = NIL = nullptr;
     }
