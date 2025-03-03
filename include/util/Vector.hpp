@@ -200,7 +200,8 @@ public:
      */
     value_t& append(const value_t& item) {
         try_expand();
-        data_[size_++] = item;
+        my_construct(data_ + size_, item);
+        ++size_;
         return back();
     }
 

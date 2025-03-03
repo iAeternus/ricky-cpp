@@ -197,6 +197,47 @@ void test_vector() {
     group.startAll();
 }
 
+constexpr i32 N = 1e6;
+
+auto speed_of_my_vector_append_string = []() {
+    util::Vector<std::string> d;
+    for (i32 i = 0; i < N; ++i) {
+        d.append("aaaaa");
+    }
+};
+
+auto speed_of_vector_push_back_string = []() {
+    std::vector<std::string> v;
+    for (i32 i = 0; i < N; ++i) {
+        v.push_back("aaaaa");
+    }
+};
+
+auto speed_of_my_vector_append_i32 = []() {
+    util::Vector<i32> d;
+    for (i32 i = 0; i < N; ++i) {
+        d.append(i);
+    }
+};
+
+auto speed_of_vector_push_back_i32 = []() {
+    std::vector<i32> v;
+    for (i32 i = 0; i < N; ++i) {
+        v.push_back(i);
+    }
+};
+
+void test_vector_speed() {
+    UnitTestGroup group{"test_vector_speed"};
+
+    group.addTest("speed_of_my_vector_append_string", speed_of_my_vector_append_string);
+    group.addTest("speed_of_vector_push_back_string", speed_of_vector_push_back_string);
+    group.addTest("speed_of_my_vector_append_i32", speed_of_my_vector_append_i32);
+    group.addTest("speed_of_vector_push_back_i32", speed_of_vector_push_back_i32);
+
+    group.startAll();
+}
+
 } // namespace my::test::test_vector
 
 #endif // TEST_VECTOR_HPP
