@@ -52,15 +52,15 @@ public:
     /**
      * @brief 断言两个值相等，否则抛出异常
      */
-    template <Assertable T>
-    static void assertEquals(const T& expected, const T& actual, CString&& message = "") {
+    template <Assertable T, Assertable U>
+    static void assertEquals(const T& expected, const U& actual, CString&& message = "") {
         if (expected.__cmp__(actual) != 0) {
             fail(std::format("Expected {}, but got {}", expected.__str__(), actual.__str__(), std::forward<CString>(message)));
         }
     }
 
-    template <StdPrintable T>
-    static void assertEquals(const T& expected, const T& actual, CString&& message = "") {
+    template <StdPrintable T, StdPrintable U>
+    static void assertEquals(const T& expected, const U& actual, CString&& message = "") {
         if constexpr (is_same<T, f32, f64, f128>) {
             if (math::compare(expected, actual) != 0) {
                 fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
@@ -75,15 +75,15 @@ public:
     /**
      * @brief 断言两个值不相等，否则抛出异常
      */
-    template <Assertable T>
-    static void assertNotEquals(const T& unexpected, const T& actual, CString&& message = "") {
+    template <Assertable T, Assertable U>
+    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "") {
         if (unexpected.__cmp__(actual) == 0) {
             fail(std::format("Expected not {}, but got {}", unexpected.__str__(), actual.__str__()), std::forward<CString>(message));
         }
     }
 
-    template <StdPrintable T>
-    static void assertNotEquals(const T& unexpected, const T& actual, CString&& message = "") {
+    template <StdPrintable T, StdPrintable U>
+    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "") {
         if constexpr (is_same<T, f32, f64, f128>) {
             if (math::compare(unexpected, actual) == 0) {
                 fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));

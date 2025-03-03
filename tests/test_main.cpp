@@ -39,6 +39,7 @@
 #include "test_log.hpp"
 #include "test_tree.hpp"
 #include "test_sorted_dict.hpp"
+#include "test_vector.hpp"
 
 #include "test_speed.hpp"
 
@@ -86,6 +87,7 @@ int main() {
     test_log::test_log();
     test_tree::test_tree();
     test_sorted_dict::test_sorted_dict();
+    test_vector::test_vector();
 #else
     test_speed();
 #endif

@@ -15,16 +15,16 @@ auto should_construct = []() {
     };
     math::Matrix<f64> m3;
 
-    Assertions::assertEquals(3LL, m.rows());
-    Assertions::assertEquals(4LL, m.cols());
+    Assertions::assertEquals(3, m.rows());
+    Assertions::assertEquals(4, m.cols());
     Assertions::assertEquals("[[1,1,1,1],[1,1,1,1],[1,1,1,1]]"_cs, m.__str__());
 
-    Assertions::assertEquals(3LL, m2.rows());
-    Assertions::assertEquals(3LL, m2.cols());
+    Assertions::assertEquals(3, m2.rows());
+    Assertions::assertEquals(3, m2.cols());
     Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, m2.__str__());
 
-    Assertions::assertEquals(1LL, m3.rows());
-    Assertions::assertEquals(1LL, m3.cols());
+    Assertions::assertEquals(1, m3.rows());
+    Assertions::assertEquals(1, m3.cols());
     Assertions::assertEquals("[[0]]"_cs, m3.__str__());
 };
 

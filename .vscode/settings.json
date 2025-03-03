@@ -82,7 +82,8 @@
     "future": "cpp",
     "shared_mutex": "cpp",
     "coroutine": "cpp",
-    "execution": "cpp"
+    "execution": "cpp",
+    "xmemory": "cpp"
   },
   "cSpell.words": [
     "coro",

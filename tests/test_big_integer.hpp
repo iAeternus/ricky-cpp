@@ -19,11 +19,11 @@ auto should_construct_with_i64 = []() {
 
     // Then
     Assertions::assertEquals("123456789"_cs, bi.__str__());
-    Assertions::assertEquals(9LL, bi.size());
+    Assertions::assertEquals(9, bi.size());
     Assertions::assertEquals("0"_cs, bi2.__str__());
-    Assertions::assertEquals(1LL, bi2.size());
+    Assertions::assertEquals(1, bi2.size());
     Assertions::assertEquals("-123456789"_cs, bi3.__str__());
-    Assertions::assertEquals(9LL, bi3.size());
+    Assertions::assertEquals(9, bi3.size());
 };
 
 auto should_construct_with_c_string = []() {
@@ -41,13 +41,13 @@ auto should_construct_with_c_string = []() {
 
     // Then
     Assertions::assertEquals("123456789012345678901234567890"_cs, bi.__str__());
-    Assertions::assertEquals(30LL, bi.size());
+    Assertions::assertEquals(30, bi.size());
     Assertions::assertEquals("0"_cs, bi2.__str__());
-    Assertions::assertEquals(1LL, bi2.size());
+    Assertions::assertEquals(1, bi2.size());
     Assertions::assertEquals("-123456789012345678901234567890"_cs, bi3.__str__());
-    Assertions::assertEquals(30LL, bi3.size());
+    Assertions::assertEquals(30, bi3.size());
     Assertions::assertEquals("-123456789012345678901234567890"_cs, bi4.__str__());
-    Assertions::assertEquals(30LL, bi4.size());
+    Assertions::assertEquals(30, bi4.size());
 };
 
 auto should_judge_odd = []() {

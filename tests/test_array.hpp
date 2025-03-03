@@ -11,11 +11,11 @@ auto it_works = []() {
     Assertions::assertFalse(arr.empty());
 
     arr[0] = "aaa", arr[1] = "bbb", arr[2] = "ccc";
-    Assertions::assertEquals(5LL, arr.size());
+    Assertions::assertEquals(5, arr.size());
     Assertions::assertEquals("[aaa,bbb,ccc,,]"_cs, arr.__str__());
 
     arr.resize(2);
-    Assertions::assertEquals(2LL, arr.size());
+    Assertions::assertEquals(2, arr.size());
     Assertions::assertEquals("[,]"_cs, arr.__str__());
 
     arr.resize(0);

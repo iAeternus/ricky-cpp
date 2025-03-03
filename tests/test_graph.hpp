@@ -30,10 +30,10 @@ auto should_create_graph = []() {
 
     // Then
     Assertions::assertTrue(g.isDirected());
-    Assertions::assertEquals(6LL, g.vertexCount());
-    Assertions::assertEquals(10LL, g.edgeCount());
-    Assertions::assertEquals(2LL, g.edgeCount(1));
-    Assertions::assertEquals(-1LL, g.edgeCount(7));
+    Assertions::assertEquals(6, g.vertexCount());
+    Assertions::assertEquals(10, g.edgeCount());
+    Assertions::assertEquals(2, g.edgeCount(1));
+    Assertions::assertEquals(-1, g.edgeCount(7));
     io::print(g);
 };
 

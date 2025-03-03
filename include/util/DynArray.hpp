@@ -162,7 +162,7 @@ public:
     /**
      * @brief 获取动态数组的第一个元素
      * @return 返回第一个元素的引用
-     * @note 时间复杂度O(1)如果数组为空，行为未定义
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     value_t& front() {
         return blocks_.at(0).at(0);
@@ -171,7 +171,7 @@ public:
     /**
      * @brief 获取动态数组的第一个元素（常量版本）
      * @return 返回第一个元素的 const 引用
-     * @note 时间复杂度O(1)如果数组为空，行为未定义
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     const value_t& front() const {
         return blocks_.at(0).at(0);
@@ -180,7 +180,7 @@ public:
     /**
      * @brief 获取动态数组的最后一个元素
      * @return 返回最后一个元素的引用
-     * @note 时间复杂度O(1)如果数组为空，行为未定义
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     value_t& back() {
         return blocks_.at(backBlockIndex_).back();
@@ -189,7 +189,7 @@ public:
     /**
      * @brief 获取动态数组的最后一个元素（常量版本）
      * @return 返回最后一个元素的 const 引用
-     * @note 时间复杂度O(1)如果数组为空，行为未定义
+     * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     const value_t& back() const {
         return blocks_.at(backBlockIndex_).back();
@@ -199,7 +199,7 @@ public:
      * @brief 通过索引访问元素（非 const 版本）
      * @param index 元素的索引，从 0 开始
      * @return 返回指定索引处的元素的引用
-     * @note 时间复杂度O(logN)如果索引超出范围，行为未定义
+     * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
     value_t& at(isize index) {
         i32 blockIndex = get_block_index(index + 1);
@@ -211,7 +211,7 @@ public:
      * @brief 通过索引访问元素（const 版本）
      * @param index 元素的索引，从 0 开始
      * @return 返回指定索引处的元素的 const 引用
-     * @note 时间复杂度O(logN)如果索引超出范围，行为未定义
+     * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
     const value_t& at(isize index) const {
         i32 blockIndex = get_block_index(index + 1);
@@ -235,9 +235,9 @@ public:
     }
 
     /**
-     * @brief 在动态数组末尾追加元素
-     * @param item 需要追加的元素
-     * @return 返回追加的元素的引用
+     * @brief 在末尾追加元素（拷贝语义）
+     * @param item 要追加的元素
+     * @return 被追加元素的引用
      */
     value_t& append(const value_t& item) {
         try_wakeup();
@@ -247,10 +247,9 @@ public:
     }
 
     /**
-     * @brief 在动态数组末尾追加元素（右值引用版本）
-     * @tparam U 元素的类型
-     * @param item 需要追加的元素
-     * @return 返回追加的元素的引用
+     * @brief 在末尾追加元素（移动语义）
+     * @param item 要移动的元素
+     * @return 被追加元素的引用
      */
     template <typename U>
     value_t& append(U&& item) {
@@ -262,12 +261,14 @@ public:
 
     /**
      * @brief 在指定位置插入元素
-     * @tparam U 元素的类型
-     * @param index 插入位置，从 0 开始
-     * @param item 需要插入的元素
+     * @tparam U 可转发类型
+     * @param index 插入位置，从0开始
+     * @param item 要插入的元素
      */
     template <typename U>
     void insert(isize index, U&& item) {
+        if (index < 0 || index > size_) return;
+
         append(std::forward<U>(item));
         for (isize i = size() - 1; i > index; --i) {
             std::swap(at(i), at(i - 1));
@@ -279,14 +280,10 @@ public:
      * @param index 移除位置，从 0 开始，默认移除最后一个元素
      */
     void pop(isize index = -1) {
-        if (empty()) {
-            return;
-        }
+        if (empty()) return;
 
-        isize m_size = size();
-        index = neg_index(index, m_size);
-
-        for (isize i = index + 1; i < m_size; ++i) {
+        index = neg_index(index, size_);
+        for (isize i = index + 1; i < size_; ++i) {
             at(i - 1) = std::move(at(i));
         }
 
@@ -319,9 +316,8 @@ public:
      * @return 返回包含所有元素的 Array
      */
     Array<value_t> toArray() const {
-        isize m_size = size();
-        Array<value_t> arr(m_size);
-        for (isize i = 0; i < m_size; ++i) {
+        Array<value_t> arr(size_);
+        for (isize i = 0; i < size_; ++i) {
             arr.at(i) = at(i);
         }
         return arr;
@@ -333,9 +329,8 @@ public:
      * @note 转换后原动态数组将被清空
      */
     Array<value_t> toArray() {
-        isize m_size = size();
-        Array<value_t> arr(m_size);
-        for (isize i = 0; i < m_size; ++i) {
+        Array<value_t> arr(size_);
+        for (isize i = 0; i < size_; ++i) {
             arr.at(i) = std::move(at(i));
         }
         clear();
@@ -399,7 +394,7 @@ public:
     CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (isize i = 0, m_size = size(); i < m_size; ++i) {
+        for (isize i = 0; i < size_; ++i) {
             if (i) stream << ',';
             stream << at(i);
         }
@@ -408,7 +403,7 @@ public:
     }
 
     /**
-     * @brief 迭代器
+     * @brief 迭代器支持
      * @tparam IsConst 是否为常量迭代器
      */
     template <bool IsConst>

@@ -80,9 +80,9 @@ auto should_judge_only_one = []() {
 
 auto should_roundup2 = []() {
     // Given
-    isize x = 0LL;
-    isize x2 = 3LL;
-    isize x3 = 4LL;
+    isize x = 0;
+    isize x2 = 3;
+    isize x3 = 4;
 
     // When
     auto res = util::roundup2(x);
@@ -90,9 +90,9 @@ auto should_roundup2 = []() {
     auto res3 = util::roundup2(x3);
 
     // Then
-    Assertions::assertEquals(0LL, res);
-    Assertions::assertEquals(4LL, res2);
-    Assertions::assertEquals(4LL, res3);
+    Assertions::assertEquals(0, res);
+    Assertions::assertEquals(4, res2);
+    Assertions::assertEquals(4, res3);
 };
 
 void test_binary_utils() {

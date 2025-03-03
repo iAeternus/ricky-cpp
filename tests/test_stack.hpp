@@ -12,16 +12,16 @@ auto it_works = []() {
 
     st.push(1), st.push(2), st.push(3);
     Assertions::assertFalse(st.isEmpty());
-    Assertions::assertEquals(3LL, st.size());
+    Assertions::assertEquals(3, st.size());
     Assertions::assertTrue(3, st.peek());
 
     st.pop();
-    Assertions::assertEquals(2LL, st.size());
+    Assertions::assertEquals(2, st.size());
     Assertions::assertEquals(2, st.peek());
 
     st.pop(), st.pop();
     Assertions::assertTrue(st.isEmpty());
-    Assertions::assertEquals(0LL, st.size());
+    Assertions::assertEquals(0, st.size());
 };
 
 void test_stack() {

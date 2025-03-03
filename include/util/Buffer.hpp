@@ -56,7 +56,7 @@ public:
     }
 
     ~Buffer() {
-        my_destroy(buffer_, size());
+        my_destroy(buffer_, size_);
         my_delloc(buffer_);
         size_ = capacity_ = 0;
     }

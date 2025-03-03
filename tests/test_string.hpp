@@ -21,8 +21,8 @@ auto should_add = []() {
     s += s2;
 
     // Then
-    Assertions::assertEquals(6LL, s.size());
-    Assertions::assertEquals({'b'}, s[3]);
+    Assertions::assertEquals(6, s.size());
+    Assertions::assertEquals(util::CodePoint{'b'}, s[3]);
     Assertions::assertEquals("abcbcd"_s, s);
 };
 
@@ -35,7 +35,7 @@ auto should_mul = []() {
 
     // Then
     Assertions::assertEquals(6, i32(s.size()));
-    Assertions::assertEquals({'a'}, s[3]);
+    Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
 };
 
 auto should_split = []() {
@@ -64,8 +64,8 @@ auto should_find = []() {
     auto pos3 = s.find("abd"_s);
 
     // Then
-    Assertions::assertEquals(3LL, pos);
-    Assertions::assertEquals(5LL, pos2);
+    Assertions::assertEquals(3, pos);
+    Assertions::assertEquals(5, pos2);
     Assertions::assertEquals(String::npos, pos3);
 };
 
@@ -77,7 +77,7 @@ auto should_find_all = []() {
     auto poss = s.findAll("abc"_s);
 
     // Then
-    Assertions::assertEquals(2LL, poss.size());
+    Assertions::assertEquals(2, poss.size());
     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
 };
 
@@ -217,10 +217,10 @@ auto should_compare = []() {
     cmp_t res4 = s.__cmp__(s4);
 
     // Then
-    Assertions::assertEquals(-1LL, res);
-    Assertions::assertEquals(-1LL, res2);
-    Assertions::assertEquals(1LL, res3);
-    Assertions::assertEquals(0LL, res4);
+    Assertions::assertEquals(-1, res);
+    Assertions::assertEquals(-1, res2);
+    Assertions::assertEquals(1, res3);
+    Assertions::assertEquals(0, res4);
 };
 
 auto should_remove_all = []() {

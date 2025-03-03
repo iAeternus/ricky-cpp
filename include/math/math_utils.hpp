@@ -209,8 +209,8 @@ fn multiplyExact(i64 x, i64 y)->i64 {
     if (((ax | ay) >> 31 != 0)) {
         // Some bits greater than 2^31 that might cause overflow
         // Check the result using the divide operator
-        // and check for the special case of LONG_LONG_MIN * -1
-        if (((y != 0) && (r / y != x)) || (x == LONG_LONG_MIN && y == -1)) {
+        // and check for the special case of I64_MIN * -1
+        if (((y != 0) && (r / y != x)) || (x == I64_MIN && y == -1)) {
             RuntimeError("i64 overflow");
         }
     }

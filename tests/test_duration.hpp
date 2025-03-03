@@ -16,10 +16,10 @@ auto should_construct = []() {
     auto d7 = util::Duration::ZERO;
     auto d8 = util::Duration::ofDays(2);
 
-    Assertions::assertEquals(4LL, d.toDays());
-    Assertions::assertEquals(96LL, d.toHours());
-    Assertions::assertEquals(5760LL, d.toMinutes());
-    Assertions::assertEquals(345600LL, d.getSeconds());
+    Assertions::assertEquals(4, d.toDays());
+    Assertions::assertEquals(96, d.toHours());
+    Assertions::assertEquals(5760, d.toMinutes());
+    Assertions::assertEquals(345600, d.getSeconds());
     Assertions::assertEquals(0, d.getNanos());
 
     Assertions::assertEquals("PT4D"_cs, d.__str__());
@@ -41,7 +41,7 @@ auto should_add = []() {
     auto res = d + d2;
 
     // Then
-    Assertions::assertEquals(49LL, res.toHours());
+    Assertions::assertEquals(49, res.toHours());
 };
 
 auto should_subtract = []() {
@@ -53,7 +53,7 @@ auto should_subtract = []() {
     auto res = d - d2;
 
     // Then
-    Assertions::assertEquals(1LL, res.toHours());
+    Assertions::assertEquals(1, res.toHours());
 };
 
 auto should_multiply = []() {
@@ -65,7 +65,7 @@ auto should_multiply = []() {
     auto res = d * scalar;
 
     // Then
-    Assertions::assertEquals(30LL, res.toMinutes());
+    Assertions::assertEquals(30, res.toMinutes());
 };
 
 void test_duration() {
