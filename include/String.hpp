@@ -11,8 +11,12 @@
 
 #include "CodePoint.hpp"
 #include "NoCopy.hpp"
+#include "Vector.hpp"
 
 namespace my {
+
+// class StringView;
+// class StringBuilder;
 
 /**
   * @brief 字符串管理器类，用于管理字符串的共享数据和编码信息
@@ -87,7 +91,11 @@ class String : public util::Sequence<String, util::CodePoint> {
       * @param manager 字符串管理器
       */
     String(util::CodePoint* codePoints, isize length, std::shared_ptr<StringManager> manager) :
-            length_(length), codePoints_(codePoints), manager_(std::move(manager)) {}
+            length_(length), codePoints_(codePoints), manager_(std::move(manager)) {
+        // for (isize i = 0; i < length_; ++i) {
+        //     byteLength_ += codePoints_[i].size();
+        // }
+    }
 
     /**
       * @brief 内部构造函数，用于根据编码创建字符串对象
@@ -101,6 +109,9 @@ class String : public util::Sequence<String, util::CodePoint> {
         }
         this->codePoints_ = manager_->sharedHead();
     }
+
+    friend class StringView;
+    friend class StringBuilder;
 
 public:
     constexpr static isize npos = -1LL; // 无效的索引位置
@@ -282,6 +293,9 @@ public:
       * @brief 获取字符串的字节长度
       * @return 字符串的字节长度
       */
+    // isize byteLength() const {
+    //     return byteLength_;
+    // }
     isize byteLength() const {
         isize length = 0LL;
         for (auto&& ch : *this) {
@@ -427,6 +441,14 @@ public:
         }
         return res;
     }
+
+    // inline StringView view() const {
+    //     return StringView(*this);
+    // }
+
+    // inline StringView view(isize start, isize end) const {
+    //     return StringView(codePoints_ + start, codePoints_ + end, manager_, encoding());
+    // }
 
     /**
       * @brief 去除字符串首尾的空白字符
@@ -725,7 +747,8 @@ private:
     }
 
 private:
-    isize length_;                           // 字符串的长度
+    isize length_; // 字符串的长度
+    isize byteLength_;                       // 字节长度
     util::CodePoint* codePoints_;            // 字符串的代码点数组
     std::shared_ptr<StringManager> manager_; // 字符串管理器
 };
@@ -740,6 +763,107 @@ fn operator""_s(const char* str, size_t length)->const String {
     return String{str, static_cast<isize>(length)};
 }
 
+/**
+ * @brief 轻量级字符串视图
+ * @class StringView
+ */
+class StringView : public Object<StringView> {
+    using self = StringView;
+    util::CodePoint* begin_;
+    util::CodePoint* end_;
+    std::shared_ptr<StringManager> manager_;
+    util::Encoding* encoding_;
+
+public:
+    StringView(const String& str) :
+            begin_(str.codePoints_),
+            end_(str.codePoints_ + str.size()),
+            manager_(str.manager_),
+            encoding_(str.encoding()) {}
+
+    StringView(util::CodePoint* begin, util::CodePoint* end,
+               std::shared_ptr<StringManager> manager, util::Encoding* enc) :
+            begin_(begin), end_(end), manager_(manager), encoding_(enc) {}
+
+    // 转换为 String（需要拷贝）
+    String toString() const {
+        return String(begin_, size(), manager_);
+    }
+
+    // 获取子视图
+    StringView substr(isize start, isize end) const {
+        start = std::max<isize>(0, start);
+        end = std::min<isize>(end, size());
+        return StringView(begin_ + start, begin_ + end, manager_, encoding_);
+    }
+
+    // 只读访问
+    const util::CodePoint& operator[](isize index) const {
+        return begin_[index];
+    }
+
+    isize size() const { return end_ - begin_; }
+    bool empty() const { return begin_ == end_; }
+
+    // 兼容 String 的查找方法
+    isize find(const util::CodePoint& cp) const {
+        for (auto it = begin_; it != end_; ++it) {
+            if (*it == cp) return it - begin_;
+        }
+        return String::npos;
+    }
+
+    // ... 其他只读方法（如 startsWith、endsWith）...
+};
+
+/**
+ * @brief 字符串构建器
+ * @class StringBuilder
+ */
+class StringBuilder : public Object<StringBuilder> {
+    util::Vector<util::CodePoint> buffer_;
+    util::Encoding* encoding_;
+
+public:
+    using self = StringBuilder;
+
+    explicit StringBuilder(util::Encoding* enc = util::encoding_map(util::UTF8)) :
+        encoding_(enc) {}
+
+    // 追加字符串
+    self& append(const String& str) {
+        if (str.encoding() != encoding_) {
+            throw std::runtime_error("Encoding mismatch");
+        }
+        for (isize i = 0; i < str.size(); ++i) {
+            buffer_.append(str.at(i));
+        }
+        return *this;
+    }
+
+    // 追加 C 字符串
+    self& append(const char* cstr) {
+        auto codePoints = util::getCodePoints(cstr, std::strlen(cstr), encoding_);
+        for (auto&& cp : codePoints) {
+            buffer_.append(cp);
+        }
+        return *this;
+    }
+
+    // 生成 String（转移数据）
+    String str() {
+        auto length = buffer_.size();
+        auto* codePoints = my_alloc<util::CodePoint>(length);
+        for (isize i = 0; i < length; ++i) {
+            my_construct(codePoints + i, std::move(buffer_[i]));
+        }
+        return String(codePoints, length, std::make_shared<StringManager>(length, codePoints, encoding_));
+    }
+
+    void clear() {
+        buffer_.clear();
+    }
+};
 } // namespace my
 
 #endif // STRING_HPP

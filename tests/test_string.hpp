@@ -234,6 +234,17 @@ auto should_remove_all = []() {
     Assertions::assertEquals("abc"_s, res);
 };
 
+auto should_append_string_by_string_builder = []() {
+    // Given
+    StringBuilder sb;
+
+    // When
+    sb.append("aaa").append("bbb").append("ccc");
+
+    // Then
+    Assertions::assertEquals("aaabbbccc"_cs, sb.str().__str__());
+};
+
 void test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -254,6 +265,7 @@ void test_string() {
     group.addTest("should_match_parentheses", should_match_parentheses);
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
+    group.addTest("should_append_string_by_string_builder", should_append_string_by_string_builder);
 
     group.startAll();
 }

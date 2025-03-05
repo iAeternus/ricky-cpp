@@ -58,6 +58,18 @@ auto should_add = []() {
     Assertions::assertEquals("aaabbb"_cs, res);
 };
 
+auto should_iterate = []() {
+    CString str = "abcdefg";
+
+    // When
+    for(auto&& c : str) {
+        c++;
+    }
+
+    // Then
+    Assertions::assertEquals("bcdefgh"_cs, str.__str__());
+};
+
 void test_cstring() {
     UnitTestGroup group{"test_cstring"};
 
@@ -65,6 +77,7 @@ void test_cstring() {
     group.addTest("should_hash", should_hash);
     group.addTest("should_compare", should_compare);
     group.addTest("should_add", should_add);
+    group.addTest("should_iterate", should_iterate);
 
     group.startAll();
 }

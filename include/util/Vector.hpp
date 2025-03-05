@@ -144,6 +144,10 @@ public:
         return size_ == 0;
     }
 
+    value_t* data() {
+        return data_;
+    }
+
     /**
      * @brief 访问首元素（非空时有效）
      * @return 首元素的引用

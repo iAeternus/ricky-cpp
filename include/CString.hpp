@@ -262,6 +262,199 @@ public:
 
     bool operator!=(const char* other) const { return !__equals__(other); }
 
+    /**
+     * @brief 迭代器支持
+     * @tparam IsConst 是否为常量迭代器
+     */
+    template <bool IsConst>
+    class Iterator {
+    public:
+        using self = Iterator<IsConst>;
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = std::conditional_t<IsConst, const char, char>;
+        using difference_type = std::ptrdiff_t;
+        using pointer = value_type*;
+        using const_pointer = const value_type*;
+        using reference = value_type&;
+        using const_reference = const value_type&;
+
+        /**
+         * @brief 构造一个迭代器
+         * @param current 当前位置指针
+         */
+        Iterator(pointer current) :
+                current_(current) {}
+
+        /**
+         * @brief 拷贝构造函数
+         * @param other 需要拷贝的迭代器
+         */
+        Iterator(const self& other) :
+                Iterator(other.current_) {}
+
+        /**
+         * @brief 拷贝赋值操作符
+         * @param other 需要拷贝的迭代器
+         * @return 返回自身引用
+         */
+        self& operator=(const self& other) {
+            this->current_ = other.current_;
+            return *this;
+        }
+
+        /**
+         * @brief 解引用运算符
+         * @return 返回当前元素的引用
+         * @note 如果迭代器无效（如超过范围），行为未定义
+         */
+        reference operator*() {
+            return *current_;
+        }
+
+        /**
+         * @brief 解引用运算符（const 版本）
+         * @return 返回当前元素的 const 引用
+         * @note 如果迭代器无效（如超过范围），行为未定义
+         */
+        const_reference operator*() const {
+            return *current_;
+        }
+
+        /**
+         * @brief 获取指向当前元素的指针
+         * @return 返回当前元素的指针
+         * @note 如果迭代器无效（如超过范围），行为未定义
+         */
+        pointer operator->() {
+            return current_;
+        }
+
+        /**
+         * @brief 获取指向当前元素的指针（const 版本）
+         * @return 返回当前元素的 const 指针
+         * @note 如果迭代器无效（如超过范围），行为未定义
+         */
+        const_pointer operator->() const {
+            return current_;
+        }
+
+        /**
+         * @brief 前置自增运算符
+         * 移动迭代器到下一个元素
+         * @return 返回自增后的迭代器
+         */
+        self& operator++() {
+            ++current_;
+            return *this;
+        }
+
+        /**
+         * @brief 后置自增运算符
+         * 移动迭代器到下一个元素
+         * @return 返回自增前的迭代器
+         */
+        self operator++(int) {
+            self tmp(*this);
+            ++tmp;
+            return tmp;
+        }
+
+        /**
+         * @brief 前置自减运算符
+         * 移动迭代器到上一个元素
+         * @return 返回自减后的迭代器
+         */
+        self& operator--() {
+            --current_;
+            return *this;
+        }
+
+        /**
+         * @brief 后置自减运算符
+         * 移动迭代器到上一个元素
+         * @return 返回自减前的迭代器
+         */
+        self operator--(int) {
+            self tmp(*this);
+            --tmp;
+            return tmp;
+        }
+
+        /**
+         * @brief 比较两个迭代器是否相等
+         * @param other 另一个迭代器
+         * @return 如果相等返回 true，否则返回 false
+         */
+        bool operator==(const self& other) const {
+            return __equals__(other);
+        }
+
+        /**
+         * @brief 比较两个迭代器是否不相等
+         * @param other 另一个迭代器
+         * @return 如果不相等返回 true，否则返回 false
+         */
+        bool operator!=(const self& other) const {
+            return !__equals__(other);
+        }
+
+        /**
+         * @brief 比较两个迭代器的内部状态是否相等
+         * @param other 另一个迭代器
+         * @return 如果内部状态相等返回 true，否则返回 false
+         */
+        bool __equals__(const self& other) const {
+            return this->current_ == other.current_;
+        }
+
+        /**
+         * @brief 比较两个迭代器的顺序
+         * @param other 另一个迭代器
+         * @return 返回一个整数值，表示两个迭代器的顺序
+         */
+        cmp_t __cmp__(const self& other) const {
+            return this->current_ - other.current_;
+        }
+
+    private:
+        pointer current_;
+    };
+
+    using iterator = Iterator<false>;
+    using const_iterator = Iterator<true>;
+
+    /**
+     * @brief 获取动态数组的起始迭代器
+     * @return 返回指向第一个元素的迭代器
+     */
+    iterator begin() {
+        return iterator(str_);
+    }
+
+    /**
+     * @brief 获取动态数组的起始迭代器（const 版本）
+     * @return 返回指向第一个元素的 const 迭代器
+     */
+    const_iterator begin() const {
+        return const_iterator(str_);
+    }
+
+    /**
+     * @brief 获取动态数组的末尾迭代器
+     * @return 返回指向最后一个元素之后的迭代器
+     */
+    iterator end() {
+        return iterator(str_ + len_);
+    }
+
+    /**
+     * @brief 获取动态数组的末尾迭代器（const 版本）
+     * @return 返回指向最后一个元素之后的 const 迭代器
+     */
+    const_iterator end() const {
+        return const_iterator(str_ + len_);
+    }
+
 private:
     char* str_; // 存储字符串的动态数组
     isize len_; // 字符串的长度
