@@ -92,7 +92,7 @@ void test_thread_pool() {
 
 i32 n; // count of tasks
 auto task = []() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(3));
 };
 
 auto speed_of_thread_pool = []() {
@@ -112,7 +112,7 @@ auto speed_of_sync = []() {
 void test_thread_pool_speed() {
     UnitTestGroup group{"test_thread_pool_speed"};
     group.setup([]() {
-        n = 1000;
+        n = 100;
     });
 
     group.addTest("speed_of_thread_pool", speed_of_thread_pool);

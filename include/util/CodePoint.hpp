@@ -8,7 +8,11 @@
 #define CODE_POINT_HPP
 
 #include "Encoding.hpp"
-#include "DynArray.hpp"
+#include "Vector.hpp"
+#include "Dict.hpp"
+
+#include <mutex>
+#include <shared_mutex>
 
 namespace my::util {
 
@@ -168,10 +172,67 @@ const Array<CodePoint> CodePoint::LOWER_CASE_LETTER = {'a', 'b', 'c', 'd', 'e', 
 const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 /**
+ * @brief 码点内存池
+ * @note 性能堪忧，是构造函数的一半，但可以节省内存
+ */
+class CodePointPool : public Object<CodePointPool> {
+    using self = CodePointPool;
+    using super = Object<self>;
+
+public:
+    static CodePointPool& instance() {
+        static std::once_flag once;
+        std::call_once(once, [] {
+            instance_ = new CodePointPool();
+        });
+        return *instance_;
+    }
+
+    std::shared_ptr<const CodePoint> get(char ch) {
+        hash_t hash = hash_t(ch);
+        return get_impl(hash, [ch]() { return std::make_shared<CodePoint>(ch); });
+    }
+
+    std::shared_ptr<const CodePoint> get(const char* str, Encoding* encoding) {
+        i8 codeSize = encoding->byte_size(str);
+        hash_t hash = bytes_hash(str, codeSize);
+        return get_impl(hash, [str, encoding]() { return std::make_shared<CodePoint>(str, encoding); });
+    }
+
+private:
+    CodePointPool() = default;
+
+    template <typename F>
+    std::shared_ptr<const CodePoint> get_impl(hash_t hash, F&& factory) {
+        std::shared_lock lock(mutex_);
+        if (pool_.contains(hash)) {
+            return pool_.get(hash);
+        }
+        lock.unlock();
+
+        std::unique_lock uniqueLock(mutex_);
+        if (pool_.contains(hash)) {
+            return pool_.get(hash);
+        }
+
+        auto cp = factory();
+        pool_.insert(hash, cp);
+        return cp;
+    }
+
+    static CodePointPool* instance_;
+
+    mutable std::shared_mutex mutex_;
+    Dict<hash_t, std::shared_ptr<const CodePoint>> pool_;
+};
+
+CodePointPool* CodePointPool::instance_ = nullptr;
+
+/**
  * @brief 获取字符串的所有码点
  */
-fn getCodePoints(const char* str, isize len, Encoding* encoding)->DynArray<CodePoint> {
-    DynArray<CodePoint> cps;
+fn getCodePoints(const char* str, isize len, Encoding* encoding)->Vector<CodePoint> {
+    Vector<CodePoint> cps;
     i32 i = 0;
     while (i < len) {
         cps.append(CodePoint{str + i, encoding});

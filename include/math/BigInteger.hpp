@@ -50,7 +50,7 @@ public:
         }
         if (n >= 0) {
             sign_ = true;
-        } else if (n == LONG_LONG_MIN) {
+        } else if (n == I64_MIN) {
             *this = "9223372036854775808";
             this->sign_ = false;
             return *this;
@@ -160,7 +160,7 @@ public:
         self ans;
         i32 carry = 0, aa, bb;
         isize aSize = a.num_.size(), bSize = b.num_.size();
-        isize maxSize = std::max(aSize, bSize);
+        isize maxSize = math::max(aSize, bSize);
         ans.num_.clear();
         for (isize i = 0; i < maxSize; ++i) {
             aa = aSize <= i ? 0 : a.num_[i];
@@ -212,7 +212,7 @@ public:
         self ans;
         i32 carry = 0, aa, bb;
         isize aSize = a.num_.size(), bSize = b.num_.size();
-        isize maxSize = std::max(aSize, bSize);
+        isize maxSize = math::max(aSize, bSize);
         ans.num_.clear();
         for (isize i = 0; i < maxSize; ++i) {
             aa = a.num_[i];

@@ -8,14 +8,14 @@
 namespace my::test::test_string {
 
 auto should_construct = []() {
-    String s = "abc";
+    util::String s = "abc";
     Assertions::assertEquals("abc"_cs, s.__str__());
 };
 
 auto should_add = []() {
     // Given
-    String s = "abc"_s;
-    String s2 = "bcd"_s;
+    util::String s = "abc"_s;
+    util::String s2 = "bcd"_s;
 
     // When
     s += s2;
@@ -28,7 +28,7 @@ auto should_add = []() {
 
 auto should_mul = []() {
     // Given
-    String s = "abc"_s;
+    util::String s = "abc"_s;
 
     // When
     s = s * 2;
@@ -40,7 +40,7 @@ auto should_mul = []() {
 
 auto should_split = []() {
     // Given
-    String s = "abcdef"_s;
+    util::String s = "abcdef"_s;
 
     // When
     auto res = s.split(1, 2);
@@ -56,7 +56,7 @@ auto should_split = []() {
 
 auto should_find = []() {
     // Given
-    String s = "abcdeff"_s;
+    util::String s = "abcdeff"_s;
 
     // When
     auto pos = s.find("def"_s);
@@ -66,12 +66,12 @@ auto should_find = []() {
     // Then
     Assertions::assertEquals(3, pos);
     Assertions::assertEquals(5, pos2);
-    Assertions::assertEquals(String::npos, pos3);
+    Assertions::assertEquals(util::String::npos, pos3);
 };
 
 auto should_find_all = []() {
     // Given
-    String s = "abcdefabc"_s;
+    util::String s = "abcdefabc"_s;
 
     // When
     auto poss = s.findAll("abc"_s);
@@ -83,7 +83,7 @@ auto should_find_all = []() {
 
 auto should_judge_starts_with = []() {
     // Given
-    String s = "abcdef"_s;
+    util::String s = "abcdef"_s;
 
     // When
     bool res = s.startsWith("abc"_s);
@@ -96,7 +96,7 @@ auto should_judge_starts_with = []() {
 
 auto should_judge_ends_with = []() {
     // Given
-    String s = "abcdef"_s;
+    util::String s = "abcdef"_s;
 
     // When
     bool res = s.endsWith("def"_s);
@@ -109,7 +109,7 @@ auto should_judge_ends_with = []() {
 
 auto should_get_upper = []() {
     // Given
-    String s = "abcDef"_s;
+    util::String s = "abcDef"_s;
 
     // When
     auto res = s.upper();
@@ -120,7 +120,7 @@ auto should_get_upper = []() {
 
 auto should_get_lower = []() {
     // Given
-    String s = "ABCdEF"_s;
+    util::String s = "ABCdEF"_s;
 
     // When
     auto res = s.lower();
@@ -131,7 +131,7 @@ auto should_get_lower = []() {
 
 auto should_trim = []() {
     // Given
-    String s = "   abcdef   "_s;
+    util::String s = "   abcdef   "_s;
 
     // When
     auto res = s.trim();
@@ -142,7 +142,7 @@ auto should_trim = []() {
 
 auto should_replace = []() {
     // Given
-    String s = "abcdefabc"_s;
+    util::String s = "abcdefabc"_s;
 
     // When
     auto res = s.replace("abc", "def");
@@ -153,11 +153,11 @@ auto should_replace = []() {
 
 auto should_maintain_encoding = []() {
     // Given
-    String s = "你好世界";
+    util::String s = "你好世界";
 
     // When
-    String s2 = s;
-    String s3 = s2.split(0);
+    util::String s2 = s;
+    util::String s3 = s2.split(0);
 
     // Then
     Assertions::assertEquals(s, s2);
@@ -184,7 +184,7 @@ auto should_maintain_encoding = []() {
 //     util::Array<int> arr = {1, 2, 3, 4, 5};
 
 //     // When
-//     String s = ", "_s.join(arr);
+//     util::String s = ", "_s.join(arr);
 
 //     // Then
 //     Assertions::assertEquals("1, 2, 3, 4, 5"_s, s);
@@ -192,7 +192,7 @@ auto should_maintain_encoding = []() {
 
 auto should_match_parentheses = []() {
     // Given
-    String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
+    util::String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
 
     // When
     auto res = s.match('{', '}');
@@ -205,10 +205,10 @@ auto should_match_parentheses = []() {
 
 auto should_compare = []() {
     // Given
-    String s = "abc";
-    String s2 = "abd";
-    String s3 = "abcc";
-    String s4 = "abc";
+    util::String s = "abc";
+    util::String s2 = "abd";
+    util::String s3 = "abcc";
+    util::String s4 = "abc";
 
     // When
     cmp_t res = s.__cmp__(s2);
@@ -225,7 +225,7 @@ auto should_compare = []() {
 
 auto should_remove_all = []() {
     // Given
-    String s = "   a  bc ";
+    util::String s = "   a  bc ";
 
     // When
     auto res = s.removeAll(' ');
@@ -236,10 +236,10 @@ auto should_remove_all = []() {
 
 auto should_append_string_by_string_builder = []() {
     // Given
-    StringBuilder sb;
+    util::StringBuilder sb;
 
     // When
-    sb.append("aaa").append("bbb").append("ccc");
+    sb.append("aaa").append("bbb"_s).append("ccc");
 
     // Then
     Assertions::assertEquals("aaabbbccc"_cs, sb.str().__str__());
@@ -266,6 +266,34 @@ void test_string() {
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
     group.addTest("should_append_string_by_string_builder", should_append_string_by_string_builder);
+
+    group.startAll();
+}
+
+constexpr i32 N = 1e6;
+
+auto speed_of_string_builder_append_string = []() {
+    util::StringBuilder sb;
+    for(auto i = 0; i < N; ++i) {
+        sb.append("abcdef");
+    }
+    auto str = sb.str();
+    Assertions::assertEquals(N * 6, str.size());
+};
+
+auto speed_of_std_string_splicing = []() {
+    std::string str;
+    for(auto i = 0; i < N; ++i) {
+        str += "abcdef";
+    }
+    Assertions::assertEquals(N * 6, str.length());
+};
+
+void test_string_builder_speed() {
+    UnitTestGroup group{"test_string_builder_speed"};
+
+    group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);
+    group.addTest("speed_of_std_string_splicing", speed_of_std_string_splicing);
 
     group.startAll();
 }

@@ -32,7 +32,7 @@ public:
      * @note 创建一个空向量，容量为0
      */
     Vector() :
-            size_(0), capacity_(DEFAULT_CAPACITY), data_(my_alloc<value_t >(capacity_)) {}
+            size_(0), capacity_(DEFAULT_CAPACITY), data_(my_alloc<value_t>(capacity_)) {}
 
     /**
      * @brief 构造指定大小的向量并用默认值填充
@@ -124,7 +124,9 @@ public:
      */
     ~Vector() {
         clear();
-        my_delloc(data_);
+        if (data_) {
+            my_delloc(data_);
+        }
         capacity_ = 0;
     }
 
@@ -355,26 +357,53 @@ public:
      */
     void resize(isize newCapacity) {
         if (newCapacity == capacity_) return;
-
         value_t* ptr = my_alloc<value_t>(newCapacity);
         isize minSize = math::min(size_, newCapacity);
 
-        isize i = 0;
-        try {
-            for (; i < minSize; ++i) {
-                my_construct(ptr + i, data_[i]);
+        if constexpr (std::is_trivially_copyable_v<value_t>) {
+            std::memcpy(ptr, data_, minSize * sizeof(value_t));
+        } else {
+            for (isize i = 0; i < minSize; ++i) {
+                new (ptr + i) value_t(std::move(data_[i])); // 移动构造
+                data_[i].~value_t();
             }
-        } catch (...) {
-            my_destroy(ptr, i);
-            my_delloc(ptr);
-            RuntimeError("");
         }
 
-        my_destroy(data_, size_);
         my_delloc(data_);
         data_ = ptr;
-        size_ = minSize;
         capacity_ = newCapacity;
+    }
+
+    /**
+     * @brief 转移内部数组所有权
+     * TODO 删除！
+     */
+    value_t* release() noexcept {
+        value_t* old_data = data_;
+        data_ = nullptr;
+        size_ = capacity_ = 0;
+        return old_data;
+    }
+
+    /**
+     * @brief 分离数组，返回数组指针和大小，并将数组置空
+     * @return 返回包含数组大小和指针的 Pair
+     * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
+     */
+    Pair<isize, value_t*> separate() {
+        auto res = Pair{size_, data_};
+        data_ = nullptr;
+        size_ = capacity_ = 0;
+        return res;
+    }
+
+    /**
+     * @brief 扩容
+     */
+    void reserve(isize new_capacity) {
+        if (new_capacity > capacity_) {
+            resize(new_capacity);
+        }
     }
 
     /**

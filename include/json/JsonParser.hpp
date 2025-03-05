@@ -40,7 +40,7 @@ public:
      * @return json字符串
      */
     static fn parse(const Json& json)->JsonType::JsonStr {
-        return String{json.__str__(), util::UTF8};
+        return util::String{json.__str__(), util::UTF8};
     }
 
 private:
@@ -66,7 +66,7 @@ private:
             match = jsonStr.split(0, jsonStr.split(1).find(util::CodePoint{'\"'}) + 2);
         } else {
             auto stopSignIdx = jsonStr.find(stopSign);
-            if (stopSign == String::npos) {
+            if (stopSign == util::String::npos) {
                 match = jsonStr;
             } else {
                 match = jsonStr.split(0, stopSignIdx);

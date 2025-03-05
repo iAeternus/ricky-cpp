@@ -5,6 +5,14 @@
  * @version 2.0 优化了测试模式宏定义
  * @file test_main.cpp
  */
+
+/**
+ * @brief 测试模式设置
+ * @note 置1 功能测试；置0 基准测试（运行时间较长）
+ */
+#define TEST_MODE 1
+
+#if TEST_MODE
 #include "test_test_utils.hpp"
 #include "test_cstring.hpp"
 #include "test_buffer.hpp"
@@ -40,16 +48,11 @@
 #include "test_tree.hpp"
 #include "test_sorted_dict.hpp"
 #include "test_vector.hpp"
-
+#else
 #include "test_speed.hpp"
+#endif
 
 using namespace my::test;
-
-/**
- * @brief 测试模式设置
- * @note 置1 功能测试；置0 基准测试（运行时间较长）
- */
-#define TEST_MODE 1
 
 int main() {
 #if TEST_MODE
