@@ -77,7 +77,7 @@ concept Comparable = requires(const T& one, const T& other) {
     ->std::convertible_to<cmp_t>;
 };
 
-template<typename T>
+template <typename T>
 concept Subtractble = requires(const T& one, const T& other) {
     { one - other }
     ->std::convertible_to<T>;
@@ -99,13 +99,19 @@ concept KeyType = Hashable<T> || Sortable<T>;
  * @brief 可断言约束概念
  */
 template <typename T>
-concept Assertable = Comparable<T> && MyPrintable<T>;
+concept Assertable = Comparable<T>&& MyPrintable<T>;
 
 /**
  * @brief 非类类型约束概念
  */
 template <typename T>
 concept NonClassType = !std::is_class<T>::value;
+
+/**
+ * @brief Data Type 约束概念
+ */
+template <typename T>
+concept DType = is_valid_dtype_v<T>;
 
 } // namespace my
 
