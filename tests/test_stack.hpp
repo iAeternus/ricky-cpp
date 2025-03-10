@@ -8,10 +8,10 @@ namespace my::test::test_stack {
 
 auto it_works = []() {
     util::Stack<i32> st;
-    Assertions::assertTrue(st.isEmpty());
+    Assertions::assertTrue(st.empty());
 
     st.push(1), st.push(2), st.push(3);
-    Assertions::assertFalse(st.isEmpty());
+    Assertions::assertFalse(st.empty());
     Assertions::assertEquals(3, st.size());
     Assertions::assertTrue(3, st.peek());
 
@@ -20,7 +20,7 @@ auto it_works = []() {
     Assertions::assertEquals(2, st.peek());
 
     st.pop(), st.pop();
-    Assertions::assertTrue(st.isEmpty());
+    Assertions::assertTrue(st.empty());
     Assertions::assertEquals(0, st.size());
 };
 

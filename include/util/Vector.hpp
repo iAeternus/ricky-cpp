@@ -252,6 +252,7 @@ public:
         for (isize i = index + 1; i < size_; ++i) {
             data_[i - 1] = std::move(data_[i]);
         }
+        my_destroy(data_ + index);
         --size_;
     }
 
@@ -372,17 +373,6 @@ public:
         my_delloc(data_);
         data_ = ptr;
         capacity_ = newCapacity;
-    }
-
-    /**
-     * @brief 转移内部数组所有权
-     * TODO 删除！
-     */
-    value_t* release() noexcept {
-        value_t* old_data = data_;
-        data_ = nullptr;
-        size_ = capacity_ = 0;
-        return old_data;
     }
 
     /**

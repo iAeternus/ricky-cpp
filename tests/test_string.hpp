@@ -34,7 +34,7 @@ auto should_mul = []() {
     s = s * 2;
 
     // Then
-    Assertions::assertEquals(6, i32(s.size()));
+    Assertions::assertEquals(6, s.size());
     Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
 };
 
@@ -48,7 +48,7 @@ auto should_split = []() {
     auto res3 = s.split(1, -1);
 
     // Then
-    Assertions::assertEquals(1, i32(res.size()));
+    Assertions::assertEquals(1, res.size());
     Assertions::assertEquals("b"_s, res);
     Assertions::assertEquals("def"_s, res2);
     Assertions::assertEquals("bcde"_s, res3);

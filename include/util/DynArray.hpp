@@ -34,7 +34,7 @@ class DynArray : public Sequence<DynArray<T>, T> {
     constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
 
     // 最小块大小，每个块的初始大小
-    constexpr static isize BASE_SIZE = 8ll;
+    constexpr static isize BASE_CAP = 8ll;
 
     // 不存在块时的特殊值
     constexpr static i32 BLOCK_NOT_EXISTS = -1;
@@ -544,7 +544,7 @@ public:
         self& operator+=(difference_type n) {
             if (n == 0) return *this;
 
-            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_SIZE + inblockIndex_ + n;
+            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_CAP + inblockIndex_ + n;
             i32 new_block = dynarray_->get_block_index(target + 1);
             isize new_inblock = dynarray_->get_inblock_index(target, new_block);
 
@@ -578,7 +578,7 @@ public:
         self& operator-=(difference_type n) {
             if (n == 0) return *this;
 
-            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_SIZE + inblockIndex_ - n;
+            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_CAP + inblockIndex_ - n;
             i32 new_block = dynarray_->get_block_index(target + 1);
             isize new_inblock = dynarray_->get_inblock_index(target, new_block);
 
@@ -718,10 +718,10 @@ private:
      * @note 时间复杂度为 O(log n)
      */
     i32 get_block_index(isize ith) const {
-        i32 l = 0, r = DYNARRAY_BLOCK_SIZE, mid;
+        i32 l = 0, r = DYNARRAY_BLOCK_SIZE;
         while (l < r) {
-            mid = l + ((r - l) >> 1);
-            if (ith <= (exp2[mid + 1] - 1) * BASE_SIZE) {
+            i32 mid = l + ((r - l) >> 1);
+            if (ith <= (exp2[mid + 1] - 1) * BASE_CAP) {
                 r = mid;
             } else {
                 l = mid + 1;
@@ -737,7 +737,7 @@ private:
      * @return 返回块内索引
      */
     isize get_inblock_index(isize ith, i32 blockIndex) const {
-        return ith - BASE_SIZE * (exp2[blockIndex] - 1) - 1;
+        return ith - BASE_CAP * (exp2[blockIndex] - 1) - 1;
     }
 
     /**
@@ -776,11 +776,11 @@ private:
         if (bbi == BLOCK_NOT_EXISTS || blocks_.at(bbi).full()) {
             // 如果最后一个块不存在或者已满，则需要创建新块并调整大小
             // 计算新块的大小：
-            // - 如果当前块不存在，初始大小为 BASE_SIZE
+            // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            isize newSize = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_SIZE, blocks_.at(bbi).size() << 1);
-            ++backBlockIndex_;            // 将最后一个块的索引递增，指向新块
-            back_block().resize(newSize); // 调整新块的大小
+            isize newCap = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
+            ++backBlockIndex_;           // 将最后一个块的索引递增，指向新块
+            back_block().resize(newCap); // 调整新块的大小
         }
     }
 

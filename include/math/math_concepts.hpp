@@ -1,6 +1,8 @@
 #ifndef MATH_CONCEPTS_HPP
 #define MATH_CONCEPTS_HPP
 
+#include "ricky.hpp"
+
 #include <concepts>
 
 namespace my::math {

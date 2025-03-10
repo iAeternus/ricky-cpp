@@ -23,7 +23,7 @@ public:
         return data_.size();
     }
 
-    bool isEmpty() const {
+    bool empty() const {
         return data_.empty();
     }
 
@@ -55,9 +55,8 @@ public:
      * @return 栈顶元素的引用
      */
     T& peek() {
-        if (isEmpty()) {
+        if (empty()) {
             ValueError("Stack is empty.");
-            return None<T>;
         }
         return data_.back();
     }
@@ -68,7 +67,7 @@ public:
      * @return 栈顶元素的引用
      */
     const T& peek() const {
-        if (isEmpty()) {
+        if (empty()) {
             ValueError("Stack is empty.");
             return None<T&>;
         }

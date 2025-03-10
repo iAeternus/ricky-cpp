@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <cassert>
 #include <typeinfo>
+#include <limits>
 
 namespace my {
 
@@ -86,11 +87,28 @@ using hash_t = u32; // hash type
 /**
  * @brief 类型范围
  */
-#define I32_MIN INT_MIN
-#define I32_MAX INT_MAX
-#define I64_MIN LONG_LONG_MIN
-#define I64_MAX LONG_LONG_MAX
-// TODO
+#define I8_MIN std::numeric_limits<i8>::min()
+#define I8_MAX std::numeric_limits<i8>::max()
+#define I16_MIN std::numeric_limits<i16>::min()
+#define I16_MAX std::numeric_limits<i16>::max()
+#define I32_MIN std::numeric_limits<i32>::min()
+#define I32_MAX std::numeric_limits<i32>::max()
+#define I64_MIN std::numeric_limits<i64>::min()
+#define I64_MAX std::numeric_limits<i64>::max()
+
+#define U8_MIN std::numeric_limits<u8>::min()
+#define U8_MAX std::numeric_limits<u8>::max()
+#define U16_MIN std::numeric_limits<u16>::min()
+#define U16_MAX std::numeric_limits<u16>::max()
+#define U32_MIN std::numeric_limits<u32>::min()
+#define U32_MAX std::numeric_limits<u32>::max()
+#define U64_MIN std::numeric_limits<u64>::min()
+#define U64_MAX std::numeric_limits<u64>::max()
+
+#define F32_MIN std::numeric_limits<f32>::min()
+#define F32_MAX std::numeric_limits<f32>::max()
+#define F64_MIN std::numeric_limits<f64>::min()
+#define F64_MAX std::numeric_limits<f64>::max()
 
 /**
  * @brief 空值, 不会被使用, 仅用于占位符

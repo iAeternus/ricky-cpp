@@ -660,6 +660,17 @@ public:
         return __str__().__hash__();
     }
 
+    cmp_t __cmp__(const self& other) const {
+        isize minSize = math::min(this->size(), other.size());
+        for (auto i = 0; i < minSize; ++i) {
+            auto cmp = this->at(i).__cmp__(other.at(i));
+            if (cmp != 0) {
+                return cmp;
+            }
+        }
+        return static_cast<isize>(this->size() - other.size());
+    }
+
 private:
     /**
      * @brief 获取去除首尾空白后的索引范围
@@ -781,7 +792,7 @@ public:
      */
     String str() {
         auto length = buffer_.size();
-        auto* codePoints = buffer_.release();
+        auto [size, codePoints] = buffer_.separate();
         return String(codePoints, length, std::make_shared<StringManager>(length, codePoints, encoding_));
     }
 

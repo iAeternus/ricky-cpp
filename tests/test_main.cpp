@@ -45,6 +45,7 @@
 #include "test_tree.hpp"
 #include "test_sorted_dict.hpp"
 #include "test_vector.hpp"
+#include "test_expression.hpp"
 #else
 #include "test_speed.hpp"
 #endif
@@ -88,6 +89,7 @@ int main() {
     test_tree::test_tree();
     test_sorted_dict::test_sorted_dict();
     test_vector::test_vector();
+    test_expression::test_expression();
 #else
     test_speed();
 #endif

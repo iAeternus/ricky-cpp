@@ -8,7 +8,7 @@
 #define MATRIX_HPP
 
 #include "math_utils.hpp"
-#include "DynArray.hpp"
+#include "Vector.hpp"
 
 namespace my::math {
 
@@ -590,7 +590,7 @@ private:
 public:
     class RowProxy {
     public:
-        RowProxy(util::DynArray<value_t>& data, isize start_col, isize cols) :
+        RowProxy(util::Vector<value_t>& data, isize start_col, isize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         value_t& operator[](isize j) {
@@ -602,14 +602,14 @@ public:
         }
 
     private:
-        util::DynArray<value_t>& data_;
+        util::Vector<value_t>& data_;
         isize start_col_;
         isize cols_;
     };
 
     class ConstRowProxy {
     public:
-        ConstRowProxy(const util::DynArray<value_t>& data, isize start_col, isize cols) :
+        ConstRowProxy(const util::Vector<value_t>& data, isize start_col, isize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         const value_t& operator[](isize j) const {
@@ -621,7 +621,7 @@ public:
         }
 
     private:
-        const util::DynArray<value_t>& data_;
+        const util::Vector<value_t>& data_;
         isize start_col_;
         isize cols_;
     };
@@ -629,7 +629,7 @@ public:
 private:
     isize rows_;                   // 行数
     isize cols_;                   // 列数
-    util::DynArray<value_t> data_; // 一维存储，提高空间局部性
+    util::Vector<value_t> data_; // 一维存储，提高空间局部性
 };
 
 } // namespace my::math

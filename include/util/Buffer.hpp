@@ -115,9 +115,10 @@ public:
     /**
      * @brief 重新分配内存
      */
-    void resize(isize newSize) {
+    void resize(isize newCap) {
+        if(newCap == capacity_) return;
         my_destroy(this);
-        my_construct(this, newSize);
+        my_construct(this, newCap);
     }
 
     value_t& at(isize index) {
