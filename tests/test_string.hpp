@@ -57,16 +57,19 @@ auto should_split = []() {
 auto should_find = []() {
     // Given
     util::String s = "abcdeff"_s;
+    util::String s2 = "caabaabaabaabaaaab"_s;
 
     // When
     auto pos = s.find("def"_s);
     auto pos2 = s.find('f');
     auto pos3 = s.find("abd"_s);
+    auto pos4 = s2.find("aabaabaaaa"_s);
 
     // Then
     Assertions::assertEquals(3, pos);
     Assertions::assertEquals(5, pos2);
     Assertions::assertEquals(util::String::npos, pos3);
+    Assertions::assertEquals(7, pos4);
 };
 
 auto should_find_all = []() {

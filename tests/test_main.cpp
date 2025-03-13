@@ -19,6 +19,7 @@
 #include "test_binary_utils.hpp"
 #include "test_dict.hpp"
 #include "test_random.hpp"
+#include "test_code_point.hpp"
 #include "test_string.hpp"
 #include "test_array.hpp"
 #include "test_thread_pool.hpp"
@@ -63,6 +64,7 @@ int main() {
     test_binary_utils::test_binary_utils();
     test_dict::test_dict();
     test_random::test_random();
+    test_code_point::test_code_point();
     test_string::test_string();
     test_array::test_array();
     test_thread_pool::test_thread_pool();

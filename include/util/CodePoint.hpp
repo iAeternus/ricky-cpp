@@ -161,6 +161,10 @@ public:
         return this->__cmp__(other) == 0;
     }
 
+    bool __equals__(u8 ch) const {
+        return static_cast<u8>(byteCode_[0]) == static_cast<u8>(ch);
+    }
+
 private:
     i8 codeSize_;    // 字节码长度
     char* byteCode_; // 字节码

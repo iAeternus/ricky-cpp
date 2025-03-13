@@ -346,36 +346,56 @@ public:
     }
 
     /**
-     * @brief 查找子字符串在字符串中的第一个位置
-     * @param pattern 要查找的子字符串
+     * @brief 查找模式串的第一个匹配位置
+     * @param pattern 模式串，长度为m
      * @param pos 起始查找位置（可选）
-     * @return 子字符串的位置，未找到返回 `npos`
+     * @return 模式串的第一个匹配位置，未找到返回 `npos`
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
     isize find(const self& pattern, isize pos = 0) const {
-        isize mSize = size(), p_size = pattern.size();
-        for (isize i = pos; i + p_size <= mSize; ++i) {
-            if (split(i, i + p_size) == pattern) {
-                return i;
+        isize mSize = size(), pSize = pattern.size();
+        auto next = get_next(pattern);
+        for (isize i = pos, j = 0; i < mSize; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && at(i) != pattern[j]) {
+                j = next[j - 1];
+            }
+            // 匹配，j前进
+            if (at(i) == pattern[j]) {
+                ++j;
+            }
+            // 模式串匹配完，返回文本串匹配起点
+            if (j == pSize) {
+                return i - pSize + 1;
             }
         }
         return npos;
     }
 
     /**
-    * @brief 查找所有出现的子字符串位置
-    * @param pattern 要查找的子字符串
-    * @return 子字符串的所有位置
-    */
+     * @brief 查找模式串的所有匹配位置
+     * @param pattern 模式串，长度为m
+     * @return 所有匹配位置
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
     util::Vector<isize> findAll(const self& pattern) const {
         util::Vector<isize> res;
-        isize pos = 0LL;
-        while (true) {
-            pos = find(pattern, pos);
-            if (pos == npos) {
-                break;
+        isize mSize = size(), pSize = pattern.size();
+        auto next = get_next(pattern);
+        for (isize i = 0, j = 0; i < mSize; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && at(i) != pattern[j]) {
+                j = next[j - 1];
             }
-            res.append(pos);
-            pos += pattern.size();
+            // 匹配，j前进
+            if (at(i) == pattern[j]) {
+                ++j;
+            }
+            // 模式串匹配完，收集文本串匹配起点
+            if (j == pSize) {
+                res.append(i - pSize + 1);
+                j = next[j - 1];
+            }
         }
         return res;
     }
@@ -570,12 +590,7 @@ public:
      * @return 替换后的新字符串
      */
     self replace(const self& old_, const self& new_) const {
-        util::Vector<isize> indices;
-        isize pos = 0LL;
-        while (pos = find(old_, pos), pos != npos) {
-            indices.append(pos);
-            pos += old_.size();
-        }
+        auto indices = findAll(old_);
 
         isize mSize = size();
         self result{mSize + indices.size() * (new_.size() - old_.size()), encoding()};
@@ -741,6 +756,29 @@ private:
     isize length_;                           // 字符串的长度
     util::CodePoint* codePoints_;            // 字符串的码点数组
     std::shared_ptr<StringManager> manager_; // 字符串管理器
+private:
+    /**
+     * @brief KMP辅助函数，求next数组
+     * @param pattern 模式串
+     * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
+     * @note 时间复杂度为 O(m)，m为模式串的长度
+     */
+    static util::Vector<isize> get_next(const self& pattern) {
+        auto pSize = pattern.size();
+        util::Vector<isize> next(pSize, 0);
+        for (isize i = 1, j = 0; i < pSize; ++i) {
+            // 失配，j按照next数组回跳
+            while (j > 0 && pattern[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            // 匹配，j前进
+            if (pattern[i] == pattern[j]) {
+                ++j;
+            }
+            next[i] = j;
+        }
+        return next;
+    }
 };
 
 /**
