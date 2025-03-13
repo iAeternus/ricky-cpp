@@ -239,10 +239,10 @@ auto should_append_string_by_string_builder = []() {
     util::StringBuilder sb;
 
     // When
-    sb.append("aaa").append("bbb"_s).append("ccc");
+    sb.append("aaa").append("bbb"_s).append("ccc").append("你好"_s);
 
     // Then
-    Assertions::assertEquals("aaabbbccc"_cs, sb.str().__str__());
+    Assertions::assertEquals("aaabbbccc你好"_cs, sb.str().__str__());
 };
 
 void test_string() {

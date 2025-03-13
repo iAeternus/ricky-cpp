@@ -3,6 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "DynArray.hpp"
+#include "Vector.hpp"
 
 namespace my::test::test_dynarray {
 
@@ -193,6 +194,13 @@ auto speed_of_dny_array_append_string = []() {
     }
 };
 
+auto speed_of_util_vector_append_string = []() {
+    util::Vector<std::string> d;
+    for (i32 i = 0; i < N; ++i) {
+        d.append("aaaaa");
+    }
+};
+
 auto speed_of_vector_push_back_string = []() {
     std::vector<std::string> v;
     for (i32 i = 0; i < N; ++i) {
@@ -202,6 +210,13 @@ auto speed_of_vector_push_back_string = []() {
 
 auto speed_of_dny_array_append_i32 = []() {
     util::DynArray<i32> d;
+    for (i32 i = 0; i < N; ++i) {
+        d.append(i);
+    }
+};
+
+auto speed_of_util_vector_append_i32 = []() {
+    util::Vector<i32> d;
     for (i32 i = 0; i < N; ++i) {
         d.append(i);
     }
@@ -218,8 +233,10 @@ void test_dynarray_speed() {
     UnitTestGroup group{"test_dynarray_speed"};
 
     group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);
+    group.addTest("speed_of_util_vector_append_string", speed_of_util_vector_append_string);
     group.addTest("speed_of_vector_push_back_string", speed_of_vector_push_back_string);
     group.addTest("speed_of_dny_array_append_i32", speed_of_dny_array_append_i32);
+    group.addTest("speed_of_util_vector_append_i32", speed_of_util_vector_append_i32);
     group.addTest("speed_of_vector_push_back_i32", speed_of_vector_push_back_i32);
 
     group.startAll();

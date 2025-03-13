@@ -366,8 +366,8 @@ public:
     * @param pattern 要查找的子字符串
     * @return 子字符串的所有位置
     */
-    util::Array<isize> findAll(const self& pattern) const {
-        util::DynArray<isize> res;
+    util::Vector<isize> findAll(const self& pattern) const {
+        util::Vector<isize> res;
         isize pos = 0LL;
         while (true) {
             pos = find(pattern, pos);
@@ -377,7 +377,7 @@ public:
             res.append(pos);
             pos += pattern.size();
         }
-        return res.toArray();
+        return res;
     }
 
     /**
@@ -570,7 +570,7 @@ public:
      * @return 替换后的新字符串
      */
     self replace(const self& old_, const self& new_) const {
-        util::DynArray<isize> indices;
+        util::Vector<isize> indices;
         isize pos = 0LL;
         while (pos = find(old_, pos), pos != npos) {
             indices.append(pos);

@@ -84,6 +84,13 @@ using cmp_t = i32;  // compare type
 using hash_t = u32; // hash type
 #endif
 
+#ifdef min
+#undef min
+#endif
+#ifdef max
+#undef max
+#endif
+
 /**
  * @brief 类型范围
  */

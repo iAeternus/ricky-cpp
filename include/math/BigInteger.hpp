@@ -7,6 +7,7 @@
 #ifndef BIG_INTEGER_HPP
 #define BIG_INTEGER_HPP
 
+#include "math_utils.hpp"
 #include "Vector.hpp"
 
 namespace my::math {
