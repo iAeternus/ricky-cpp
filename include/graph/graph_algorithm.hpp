@@ -15,10 +15,13 @@ namespace my::graph {
  * @brief 样板算法
  */
 template <typename V = f64, typename E = f64>
-auto fake_algorithm = [](const Graph<V, E>& g, util::DynArray<std::any>&& args) -> CString {
+auto fake_algorithm = [](const auto& g, auto&& args) -> CString {
     auto a = opt<i32>(args, 0);
     auto b = opt<i32>(args, 1);
     auto c = opt<i32>(args, 2);
+
+    auto edges = g.edges();
+    io::println(edges);
 
     return std::format("Fake algorithm. Args are {},{},{}", a, b, c);
 };

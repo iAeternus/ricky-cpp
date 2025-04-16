@@ -47,7 +47,7 @@ public:
         std::stringstream stream;
         printNode(root_, stream, "");
         return CString{stream.str()};
-    }
+    } 
 
 private:
     isize size_; // 节点个数

@@ -123,28 +123,28 @@ public:
 
     /**
      * @brief 调用算法插件
-     * @param ResultType 返回值类型，默认void
+     * @param RetType 返回值类型，默认void
      * @param name 插件名称，若不存在则抛出ValueError
      * @param args 插件入参包
      */
-    template <typename ResultType = void, typename... Args>
-    ResultType callAlgorithm(const CString& name, Args&&... args) {
+    template <typename RetType = void, typename... Args>
+    RetType callAlgorithm(const CString& name, Args&&... args) {
         std::shared_lock lock(algoMutex_); // 读锁
         if (!algorithms_.contains(name)) {
             ValueError(std::format("Algorithm[{}] not found.", name));
         }
         auto algorithm = algorithms_.get(name);
-        return std::any_cast<ResultType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
+        return std::any_cast<RetType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
     }
 
-    template <typename ResultType = void, typename... Args>
-    ResultType callAlgorithm(const CString& name, Args&&... args) const {
+    template <typename RetType = void, typename... Args>
+    RetType callAlgorithm(const CString& name, Args&&... args) const {
         std::shared_lock lock(algoMutex_); // 读锁
         if (!algorithms_.contains(name)) {
             ValueError(std::format("Algorithm[{}] not found.", name));
         }
         auto algorithm = algorithms_.get(name);
-        return std::any_cast<ResultType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
+        return std::any_cast<RetType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
     }
 
     CString __str__() const {

@@ -273,6 +273,14 @@ public:
     }
 
     /**
+     * @brief 判断字符串是否为空
+     * @return true=是 false=否
+     */
+    bool empty() const {
+        return length_ == 0;
+    }
+
+    /**
      * @brief 获取字符串的编码
      * @return 字符串的编码
      */
@@ -353,17 +361,15 @@ public:
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
     isize find(const self& pattern, isize pos = 0) const {
-        isize mSize = size(), pSize = pattern.size();
+        if (pattern.empty()) return npos;
+        auto mSize = size(), pSize = pattern.size();
         auto next = get_next(pattern);
         for (isize i = pos, j = 0; i < mSize; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && at(i) != pattern[j]) {
                 j = next[j - 1];
             }
-            // 匹配，j前进
-            if (at(i) == pattern[j]) {
-                ++j;
-            }
+            j += (at(i) == pattern[j]); // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
             if (j == pSize) {
                 return i - pSize + 1;
@@ -380,17 +386,15 @@ public:
      */
     util::Vector<isize> findAll(const self& pattern) const {
         util::Vector<isize> res;
-        isize mSize = size(), pSize = pattern.size();
+        if (pattern.empty()) return res;
+        auto mSize = size(), pSize = pattern.size();
         auto next = get_next(pattern);
         for (isize i = 0, j = 0; i < mSize; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && at(i) != pattern[j]) {
                 j = next[j - 1];
             }
-            // 匹配，j前进
-            if (at(i) == pattern[j]) {
-                ++j;
-            }
+            j += (at(i) == pattern[j]); // 匹配，j前进
             // 模式串匹配完，收集文本串匹配起点
             if (j == pSize) {
                 res.append(i - pSize + 1);
@@ -771,10 +775,7 @@ private:
             while (j > 0 && pattern[i] != pattern[j]) {
                 j = next[j - 1];
             }
-            // 匹配，j前进
-            if (pattern[i] == pattern[j]) {
-                ++j;
-            }
+            j += (pattern[i] == pattern[j]); // 匹配，j前进
             next[i] = j;
         }
         return next;

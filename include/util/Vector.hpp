@@ -521,7 +521,7 @@ public:
         self& operator--() {
             --currentIndex_;
             return *this;
-        }
+        }  
 
         /**
          * @brief 后置自减运算符
