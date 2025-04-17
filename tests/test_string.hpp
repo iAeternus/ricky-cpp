@@ -64,12 +64,14 @@ auto should_find = []() {
     auto pos2 = s.find('f');
     auto pos3 = s.find("abd"_s);
     auto pos4 = s2.find("aabaabaaaa"_s);
+    auto pos5 = s2.find(""_s);
 
     // Then
     Assertions::assertEquals(3, pos);
     Assertions::assertEquals(5, pos2);
     Assertions::assertEquals(util::String::npos, pos3);
     Assertions::assertEquals(7, pos4);
+    Assertions::assertEquals(util::String::npos, pos5);
 };
 
 auto should_find_all = []() {
