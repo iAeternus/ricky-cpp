@@ -21,12 +21,12 @@ static constexpr f64 GOLDEN_RATIO = 0.61803398874989484820; // 黄金分割比
 static constexpr i32 MOD = 1e9 + 7;                         // i32范围内的素数模数
 
 template <typename T>
-fn min(const T& a, const T& b)->const T& {
+fn min_(const T& a, const T& b)->const T& {
     return b < a ? b : a;
 }
 
 template <typename T>
-fn max(const T& a, const T& b)->const T& {
+fn max_(const T& a, const T& b)->const T& {
     return a < b ? b : a;
 }
 

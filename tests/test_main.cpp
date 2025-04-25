@@ -47,6 +47,7 @@
 #include "test_sorted_dict.hpp"
 #include "test_vector.hpp"
 #include "test_expression.hpp"
+#include "test_vector2.hpp"
 #else
 #include "test_speed.hpp"
 #endif
@@ -92,6 +93,7 @@ int main() {
     test_sorted_dict::test_sorted_dict();
     test_vector::test_vector();
     test_expression::test_expression();
+    test_vector2::test_vector2();
 #else
     test_speed();
 #endif

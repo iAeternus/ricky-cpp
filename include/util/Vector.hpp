@@ -359,7 +359,7 @@ public:
     void resize(isize newCapacity) {
         if (newCapacity == capacity_) return;
         value_t* ptr = my_alloc<value_t>(newCapacity);
-        isize minSize = math::min(size_, newCapacity);
+        isize minSize = math::min_(size_, newCapacity);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
             std::memcpy(ptr, data_, minSize * sizeof(value_t));

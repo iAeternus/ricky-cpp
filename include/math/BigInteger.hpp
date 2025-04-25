@@ -161,7 +161,7 @@ public:
         self ans;
         i32 carry = 0, aa, bb;
         isize aSize = a.num_.size(), bSize = b.num_.size();
-        isize maxSize = math::max(aSize, bSize);
+        isize maxSize = math::max_(aSize, bSize);
         ans.num_.clear();
         for (isize i = 0; i < maxSize; ++i) {
             aa = aSize <= i ? 0 : a.num_[i];
@@ -213,7 +213,7 @@ public:
         self ans;
         i32 carry = 0, aa, bb;
         isize aSize = a.num_.size(), bSize = b.num_.size();
-        isize maxSize = math::max(aSize, bSize);
+        isize maxSize = math::max_(aSize, bSize);
         ans.num_.clear();
         for (isize i = 0; i < maxSize; ++i) {
             aa = a.num_[i];

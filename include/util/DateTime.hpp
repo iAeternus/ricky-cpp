@@ -362,7 +362,7 @@ private:
     self adjustDay(i64 newYear, i32 newMonth) const {
         newYear = clampYear(newYear);
         newMonth = clampMonth(newMonth);
-        i32 newDay = math::min(day_, daysInMonth(newYear, newMonth));
+        i32 newDay = math::min_(day_, daysInMonth(newYear, newMonth));
         return self{static_cast<i32>(newYear), newMonth, newDay};
     }
 
