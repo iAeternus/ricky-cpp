@@ -79,11 +79,11 @@ auto should_compare = []() {
     f64 e = 1.000000001, f = 0.999999999; // 1e-9
 
     // When
-    i32 res = math::compare(a, b);
-    i32 res2 = math::compare(a, c);
-    i32 res3 = math::compare(a, d);
-    i32 res4 = math::compare(a, e);
-    i32 res5 = math::compare(a, f);
+    i32 res = math::fcmp(a, b);
+    i32 res2 = math::fcmp(a, c);
+    i32 res3 = math::fcmp(a, d);
+    i32 res4 = math::fcmp(a, e);
+    i32 res5 = math::fcmp(a, f);
 
     // Then
     Assertions::assertEquals(0, res);

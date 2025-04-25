@@ -98,7 +98,7 @@ fn pow(T a, T n, T p = MOD)->T {
  * @return a>b返回1，a<b返回-1，a=b返回0
  */
 template <FloatingPointType T>
-fn compare(const T& a, const T& b, T eps = EPS)->cmp_t {
+fn fcmp(const T& a, const T& b, T eps = EPS)->cmp_t {
     if (a - b >= eps) {
         return 1;
     } else if (b - a >= eps) {
@@ -114,7 +114,7 @@ fn compare(const T& a, const T& b, T eps = EPS)->cmp_t {
  */
 template <FloatingPointType T>
 fn isPositive(const T& num, T eps = EPS)->bool {
-    return compare(num, 0.0, eps) > 0;
+    return fcmp(num, 0.0, eps) > 0;
 }
 
 /**
@@ -123,7 +123,7 @@ fn isPositive(const T& num, T eps = EPS)->bool {
  */
 template <FloatingPointType T>
 fn isNegative(const T& num, T eps = EPS)->bool {
-    return compare(num, 0.0, eps) < 0;
+    return fcmp(num, 0.0, eps) < 0;
 }
 
 /**
@@ -132,7 +132,7 @@ fn isNegative(const T& num, T eps = EPS)->bool {
  */
 template <FloatingPointType T>
 fn isZero(const T& num, T eps = EPS)->bool {
-    return compare(num, 0.0, eps) == 0;
+    return fcmp(num, 0.0, eps) == 0;
 }
 
 /**
@@ -141,7 +141,7 @@ fn isZero(const T& num, T eps = EPS)->bool {
  */
 template <FloatingPointType T>
 fn isOne(const T& num, T eps = EPS)->bool {
-    return compare(num, 1.0, eps) == 0;
+    return fcmp(num, 1.0, eps) == 0;
 }
 
 /**

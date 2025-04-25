@@ -130,7 +130,7 @@ public:
     }
 
     bool __equals__(const self& other) const {
-        return compare(this->re_, other.re_) == 0 && compare(this->im_, other.im_) == 0;
+        return fcmp(this->re_, other.re_) == 0 && fcmp(this->im_, other.im_) == 0;
     }
 
 private:

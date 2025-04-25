@@ -64,7 +64,7 @@ auto should_register = []() {
 
         util::DynArray<i64> res;
         for (const auto& edge : g.edges()) {
-            if (math::compare(edge.w, min) > 0 && math::compare(edge.w, max) < 0) {
+            if (math::fcmp(edge.w, min) > 0 && math::fcmp(edge.w, max) < 0) {
                 res.append(edge.w);
             }
         }

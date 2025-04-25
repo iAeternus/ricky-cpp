@@ -553,9 +553,9 @@ public:
         }
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
-            if (compare(this->data_[i], other.data_[i]) > 0) {
+            if (fcmp(this->data_[i], other.data_[i]) > 0) {
                 return 1;
-            } else if (compare(this->data_[i], other.data_[i]) < 0) {
+            } else if (fcmp(this->data_[i], other.data_[i]) < 0) {
                 return -1;
             }
         }
@@ -627,8 +627,8 @@ public:
     };
 
 private:
-    isize rows_;                   // 行数
-    isize cols_;                   // 列数
+    isize rows_;                 // 行数
+    isize cols_;                 // 列数
     util::Vector<value_t> data_; // 一维存储，提高空间局部性
 };
 

@@ -27,7 +27,7 @@ struct Edge : public Object<Edge<E>> {
 
     cmp_t __cmp__(const self& other) const {
         if constexpr (math::FloatingPointType<E>) {
-            return math::compare(this->w, other.w);
+            return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<E>) {
             return this->w.__cmp__(other.w);
         } else {
@@ -103,7 +103,7 @@ struct Vertex : public Object<Vertex<V, E>> {
 
     cmp_t __cmp__(const self& other) const {
         if constexpr (math::FloatingPointType<V>) {
-            return math::compare(this->w, other.w);
+            return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<V>) {
             return this->w.__cmp__(other.w);
         } else {

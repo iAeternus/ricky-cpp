@@ -62,7 +62,7 @@ public:
     template <StdPrintable T, StdPrintable U>
     static void assertEquals(const T& expected, const U& actual, CString&& message = "") {
         if constexpr (is_same<T, f32, f64, f128>) {
-            if (math::compare(expected, actual) != 0) {
+            if (math::fcmp(expected, actual) != 0) {
                 fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
             }
         } else {
@@ -85,7 +85,7 @@ public:
     template <StdPrintable T, StdPrintable U>
     static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "") {
         if constexpr (is_same<T, f32, f64, f128>) {
-            if (math::compare(unexpected, actual) == 0) {
+            if (math::fcmp(unexpected, actual) == 0) {
                 fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
             }
         } else {
