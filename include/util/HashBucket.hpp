@@ -18,10 +18,9 @@ namespace my::util {
  */
 template <typename T>
 class HashBucket : public Object<HashBucket<T>> {
-    using Self = HashBucket<T>;
-
 public:
     using value_t = T;
+    using Self = HashBucket<value_t>;
 
     HashBucket() = default;
 
@@ -41,19 +40,19 @@ public:
      * @brief 尝试根据hash值获取元素
      * @return 返回指针，如果没有则返回nullptr
      */
-    virtual value_t* tryGet(hash_t hashVal) = 0;
+    virtual value_t* try_get(hash_t hash_val) = 0;
 
-    virtual const value_t* tryGet(hash_t hashVal) const = 0;
+    virtual const value_t* try_get(hash_t hash_val) const = 0;
 
     /**
      * @brief 根据hash值删除元素
      */
-    virtual void pop(hash_t hashVal) = 0;
+    virtual void pop(hash_t hash_val) = 0;
 
     /**
      * @brief 扩容
      */
-    virtual void expand(isize newCapacity) noexcept = 0;
+    virtual void expand(isize new_capacity) noexcept = 0;
 
     /**
      * @brief 清空hash桶
@@ -63,16 +62,16 @@ public:
     /**
      * @brief 将hash值转换为索引
      */
-    virtual isize hash2index(hash_t hashVal) const {
-        return hashVal % capacity();
+    virtual isize hash2index(hash_t hash_val) const {
+        return hash_val % capacity();
     }
 
     /**
      * @brief 判断是否存在
      * @return true=存在 false=不存在
      */
-    virtual bool contains(hash_t hashVal) const {
-        return tryGet(hashVal) != nullptr;
+    virtual bool contains(hash_t hash_val) const {
+        return try_get(hash_val) != nullptr;
     }
 };
 
@@ -88,41 +87,40 @@ public:
  */
 template <typename T>
 class RobinManager : public Object<RobinManager<T>> {
-    using Self = RobinManager<T>;
-
 public:
-    using value_t = T; // 值的类型
+    using value_t = T;
+    using Self = RobinManager<value_t>;
 
     /**
      * @brief 默认构造函数。
      * 初始化一个未被管理的管理器。
      */
     RobinManager() :
-            moveDist_(MOVED_NOTHING), hashVal_(0), value_() {}
+            move_dist_(MOVED_NOTHING), hash_val_(0), value_() {}
 
     /**
      * @brief 构造函数。
      * 初始化一个管理器，指定值、哈希值和移动距离。
      * @param value 要存储的值。
-     * @param hashVal 哈希值。
-     * @param moveDist 移动距离。
+     * @param hash_val 哈希值。
+     * @param move_dist 移动距离。
      */
-    RobinManager(const value_t& value, hash_t hashVal, u32 moveDist) :
-            moveDist_(moveDist), hashVal_(hashVal), value_(value) {}
+    RobinManager(const value_t& value, hash_t hash_val, u32 move_dist) :
+            move_dist_(move_dist), hash_val_(hash_val), value_(value) {}
 
     /**
      * @brief 拷贝构造函数。
      * @param other 需要拷贝的管理器。
      */
     RobinManager(const Self& other) :
-            moveDist_(other.moveDist_), hashVal_(other.hashVal_), value_(other.value_) {}
+            move_dist_(other.move_dist_), hash_val_(other.hash_val_), value_(other.value_) {}
 
     /**
      * @brief 移动构造函数。
      * @param other 需要移动的管理器。
      */
     RobinManager(Self&& other) noexcept :
-            moveDist_(other.moveDist_), hashVal_(other.hashVal_), value_(std::move(other.value_)) {
+            move_dist_(other.move_dist_), hash_val_(other.hash_val_), value_(std::move(other.value_)) {
         other.unmanage();
     }
 
@@ -134,8 +132,8 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        this->moveDist_ = other.moveDist_;
-        this->hashVal_ = other.hashVal_;
+        this->move_dist_ = other.move_dist_;
+        this->hash_val_ = other.hash_val_;
         this->value_ = other.value_;
         return *this;
     }
@@ -148,8 +146,8 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        this->moveDist_ = other.moveDist_;
-        this->hashVal_ = other.hashVal_;
+        this->move_dist_ = other.move_dist_;
+        this->hash_val_ = other.hash_val_;
         this->value_ = std::move(other.value_);
         other.unmanage();
         return *this;
@@ -175,32 +173,32 @@ public:
      * @brief 获取哈希值。
      * @return 返回哈希值。
      */
-    hash_t hashVal() const {
-        return hashVal_;
+    hash_t hash_val() const {
+        return hash_val_;
     }
 
     /**
      * @brief 判断当前管理器是否被管理。
      * @return 如果管理器被管理返回 true，否则返回 false。
      */
-    bool isManaged() const {
-        return moveDist_ != MOVED_NOTHING;
+    bool is_managed() const {
+        return move_dist_ != MOVED_NOTHING;
     }
 
     /**
      * @brief 取消管理当前管理器。
      */
     void unmanage() {
-        moveDist_ = MOVED_NOTHING;
+        move_dist_ = MOVED_NOTHING;
     }
 
     /**
      * @brief 判断哈希值是否相等。
-     * @param hashVal 需要比较的哈希值。
+     * @param hash_val 需要比较的哈希值。
      * @return 如果哈希值相等返回 true，否则返回 false。
      */
-    bool hashEqual(hash_t hashVal) const {
-        return this->hashVal_ == hashVal;
+    bool hash_eq(hash_t hash_val) const {
+        return this->hash_val_ == hash_val;
     }
 
     /**
@@ -208,17 +206,17 @@ public:
      * @param other 需要比较的管理器。
      * @return 如果当前管理器的移动距离更大返回 true，否则返回 false。
      */
-    bool moveGt(const Self& other) const {
-        return this->moveDist_ > other.moveDist_;
+    bool move_gt(const Self& other) const {
+        return this->move_dist_ > other.move_dist_;
     }
 
     /**
      * @brief 判断当前管理器的移动距离是否大于指定值。
-     * @param moveDist 需要比较的移动距离。
+     * @param move_dist 需要比较的移动距离。
      * @return 如果当前管理器的移动距离更大返回 true，否则返回 false。
      */
-    bool moveGt(int moveDist) const {
-        return this->moveDist_ > moveDist;
+    bool move_gt(int move_dist) const {
+        return this->move_dist_ > move_dist;
     }
 
     /**
@@ -226,25 +224,25 @@ public:
      * @param other 需要比较的管理器。
      * @return 如果当前管理器的移动距离小于或等于另一个管理器返回 true，否则返回 false。
      */
-    bool moveLe(const Self& other) const {
-        return this->moveDist_ <= other.moveDist_;
+    bool move_le(const Self& other) const {
+        return this->move_dist_ <= other.move_dist_;
     }
 
     /**
      * @brief 判断当前管理器的移动距离是否小于或等于指定值。
-     * @param moveDist 需要比较的移动距离。
+     * @param move_dist 需要比较的移动距离。
      * @return 如果当前管理器的移动距离小于或等于指定值返回 true，否则返回 false。
      */
-    bool moveLe(int moveDist) const {
-        return this->moveDist_ <= moveDist;
+    bool move_le(int move_dist) const {
+        return this->move_dist_ <= move_dist;
     }
 
     /**
      * @brief 增加当前管理器的移动距离。
      * @param d 增加的距离，默认为 1。
      */
-    void addMoveDist(int d = 1) {
-        moveDist_ += d;
+    void add_move_dist(int d = 1) {
+        move_dist_ += d;
     }
 
     /**
@@ -252,15 +250,15 @@ public:
      * @param other 需要交换的管理器。
      */
     void swap(Self& other) {
-        std::swap(this->moveDist_, other.moveDist_);
-        std::swap(this->hashVal_, other.hashVal_);
+        std::swap(this->move_dist_, other.move_dist_);
+        std::swap(this->hash_val_, other.hash_val_);
         std::swap(this->value_, other.value_);
     }
 
 private:
-    int moveDist_;   // 目标桶与实际存放桶之间的距离
-    hash_t hashVal_; // 哈希值
-    value_t value_;  // 维护的值
+    int move_dist_;   // 目标桶与实际存放桶之间的距离
+    hash_t hash_val_; // 哈希值
+    value_t value_;   // 维护的值
 
     constexpr static int MOVED_NOTHING = INT_MAX; // 表示未被管理的特殊值
 };
@@ -276,33 +274,32 @@ private:
  */
 template <typename T>
 class RobinHashBucket : public HashBucket<T> {
-    using Self = RobinHashBucket<T>;
-    using Super = HashBucket<T>;
-
 public:
-    using value_t = T;                 // 值的类型
-    using manager_t = RobinManager<T>; // 管理器类型
+    using value_t = T;
+    using Self = RobinHashBucket<value_t>;
+    using Super = HashBucket<value_t>;
+    using manager_t = RobinManager<value_t>;
 
     /**
      * @brief 默认构造函数。
      * 初始化一个空哈希桶。
      */
     RobinHashBucket(isize size = 0) :
-            robinManagers_(size) {}
+            robin_managers_(size) {}
 
     /**
      * @brief 拷贝构造函数。
      * @param other 需要拷贝的哈希桶。
      */
     RobinHashBucket(const Self& other) :
-            robinManagers_(other.robinManagers_) {}
+            robin_managers_(other.robin_managers_) {}
 
     /**
      * @brief 移动构造函数。
      * @param other 需要移动的哈希桶。
      */
     RobinHashBucket(Self&& other) noexcept :
-            robinManagers_(std::move(other.robinManagers_)) {}
+            robin_managers_(std::move(other.robin_managers_)) {}
 
     /**
      * @brief 拷贝赋值操作符。
@@ -312,7 +309,7 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        this->robinManagers_ = other.robinManagers_;
+        this->robin_managers_ = other.robin_managers_;
         return *this;
     }
 
@@ -324,7 +321,7 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        this->robinManagers_ = std::move(other.robinManagers_);
+        this->robin_managers_ = std::move(other.robin_managers_);
         return *this;
     }
 
@@ -333,7 +330,7 @@ public:
      * @return 返回哈希桶的容量。
      */
     isize capacity() const override {
-        return robinManagers_.size();
+        return robin_managers_.size();
     }
 
     /**
@@ -349,15 +346,15 @@ public:
      * 1. 找到相同的hash值, 返回该管理器地址
      * 2. 找到距离最近的空闲管理器, 返回该管理器地址
      * 3. 没有空闲且相同hash值的管理器，返回nullptr
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回管理器地址，如果没有找到返回 nullptr。
      */
-    manager_t* tryGetManager(hash_t hashVal) {
+    manager_t* try_get_manager(hash_t hash_val) {
         isize m_capacity = capacity();
-        isize idx = Super::hash2index(hashVal);
+        isize idx = Super::hash2index(hash_val);
         for (isize i = 0; i < m_capacity; ++i) {
-            auto& manager = robinManagers_.at((idx + i) % m_capacity);
-            if (!manager.isManaged() || manager.hashEqual(hashVal)) {
+            auto& manager = robin_managers_.at((idx + i) % m_capacity);
+            if (!manager.is_managed() || manager.hash_eq(hash_val)) {
                 return &manager;
             }
         }
@@ -369,15 +366,15 @@ public:
      * 1. 找到相同的hash值, 返回该管理器地址
      * 2. 找到距离最近的空闲管理器, 返回该管理器地址
      * 3. 没有空闲且相同hash值的管理器，返回nullptr
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回常量管理器地址，如果没有找到返回 nullptr。
      */
-    const manager_t* tryGetManager(hash_t hashVal) const {
+    const manager_t* try_get_manager(hash_t hash_val) const {
         isize m_capacity = capacity();
-        isize idx = Super::hash2index(hashVal);
+        isize idx = Super::hash2index(hash_val);
         for (isize i = 0; i < m_capacity; ++i) {
-            const auto& manager = robinManagers_.at((idx + i) % m_capacity);
-            if (!manager.isManaged() || manager.hashEqual(hashVal)) {
+            const auto& manager = robin_managers_.at((idx + i) % m_capacity);
+            if (!manager.is_managed() || manager.hash_eq(hash_val)) {
                 return &manager;
             }
         }
@@ -386,12 +383,12 @@ public:
 
     /**
      * @brief 根据哈希值获取对应的值。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回值的指针，如果没有找到返回 nullptr。
      */
-    value_t* tryGet(hash_t hashVal) override {
-        auto* manager = tryGetManager(hashVal);
-        if (manager == nullptr || !manager->isManaged()) {
+    value_t* try_get(hash_t hash_val) override {
+        auto* manager = try_get_manager(hash_val);
+        if (manager == nullptr || !manager->is_managed()) {
             return nullptr;
         }
         return &manager->value();
@@ -399,12 +396,12 @@ public:
 
     /**
      * @brief 根据哈希值获取对应的值（常量版本）。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回值的常量指针，如果没有找到返回 nullptr。
      */
-    const value_t* tryGet(hash_t hashVal) const override {
-        auto* manager = tryGetManager(hashVal);
-        if (manager == nullptr || !manager->isManaged()) {
+    const value_t* try_get(hash_t hash_val) const override {
+        auto* manager = try_get_manager(hash_val);
+        if (manager == nullptr || !manager->is_managed()) {
             return nullptr;
         }
         return &manager->value();
@@ -412,26 +409,26 @@ public:
 
     /**
      * @brief 根据哈希值删除对应的键值对。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      */
-    void pop(hash_t hashVal) override {
+    void pop(hash_t hash_val) override {
         isize m_capacity = capacity();
-        auto* manager = tryGetManager(hashVal);
-        if (manager == nullptr || !manager->isManaged()) {
+        auto* manager = try_get_manager(hash_val);
+        if (manager == nullptr || !manager->is_managed()) {
             return;
         }
 
-        isize curIdx = std::distance(&robinManagers_.at(0), manager);
+        isize cur_idx = std::distance(&robin_managers_.at(0), manager);
         while (true) {
-            isize nextIdx = (curIdx + 1) % m_capacity;
-            auto& curManager = robinManagers_.at(curIdx);
-            auto& nextManager = robinManagers_.at(nextIdx);
-            if (!nextManager.isManaged() || nextManager.moveLe(0)) {
-                curManager.unmanage();
+            isize next_idx = (cur_idx + 1) % m_capacity;
+            auto& cur_manager = robin_managers_.at(cur_idx);
+            auto& next_manager = robin_managers_.at(next_idx);
+            if (!next_manager.is_managed() || next_manager.move_le(0)) {
+                cur_manager.unmanage();
                 break;
             }
-            curManager = std::move(nextManager);
-            ++curIdx;
+            cur_manager = std::move(next_manager);
+            ++cur_idx;
         }
     }
 
@@ -439,25 +436,25 @@ public:
      * @brief 在给定哈希值位置设置值，新设置的值会优先放在目标桶上。
      * @tparam V 值的类型。
      * @param value 值。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回设置值的指针。
      */
     template <typename V>
-    value_t* setValue(V&& value, hash_t hashVal) {
-        manager_t valueManager{std::forward<V>(value), hashVal, 0};
+    value_t* set_value(V&& value, hash_t hash_val) {
+        manager_t value_manager{std::forward<V>(value), hash_val, 0};
         isize m_capacity = capacity();
-        isize idx = Super::hash2index(hashVal);
+        isize idx = Super::hash2index(hash_val);
         for (isize i = 0; i < m_capacity; ++i) {
-            auto& manager = robinManagers_.at((idx + i) % m_capacity);
-            if (!manager.isManaged()) {
-                manager = std::move(valueManager);
+            auto& manager = robin_managers_.at((idx + i) % m_capacity);
+            if (!manager.is_managed()) {
+                manager = std::move(value_manager);
                 return &manager.value();
             }
 
-            if (valueManager.moveGt(manager)) {
-                valueManager.swap(manager);
+            if (value_manager.move_gt(manager)) {
+                value_manager.swap(manager);
             }
-            valueManager.addMoveDist();
+            value_manager.add_move_dist();
         }
         RuntimeError("RobinHashBucket set_value failed, bucket is full");
         return nullptr;
@@ -465,14 +462,14 @@ public:
 
     /**
      * @brief 扩展哈希桶的大小。
-     * @param newCapacity 新的容量。
+     * @param new_capacity 新的容量。
      */
-    void expand(isize newCapacity) noexcept override {
-        Array<manager_t> tmpManager{std::move(robinManagers_)};
-        robinManagers_.resize(newCapacity);
-        for (auto&& manager : tmpManager) {
-            if (manager.isManaged()) {
-                setValue(manager.value(), manager.hashVal());
+    void expand(isize new_capacity) noexcept override {
+        Array<manager_t> tmp_manager{std::move(robin_managers_)};
+        robin_managers_.resize(new_capacity);
+        for (auto&& manager : tmp_manager) {
+            if (manager.is_managed()) {
+                set_value(manager.value(), manager.hash_val());
             }
         }
     }
@@ -481,14 +478,14 @@ public:
      * @brief 清空哈希桶。
      */
     void clear() override {
-        robinManagers_.resize(0);
+        robin_managers_.resize(0);
     }
 
     template <bool IsConst>
     class RobinHashBucketIterator : public Object<RobinHashBucketIterator<IsConst>> {
+    public:
         using Self = RobinHashBucketIterator<IsConst>;
 
-    public:
         using container_t = std::conditional_t<IsConst, const Array<manager_t>, Array<manager_t>>;
         using iterator_category = std::forward_iterator_tag;
         using value_type = std::conditional_t<IsConst, const value_t, value_t>;
@@ -500,18 +497,18 @@ public:
 
         /**
          * @brief 构造一个迭代器。
-         * @param bucketPtr 指向哈希桶的指针。
+         * @param bucket_ptr 指向哈希桶的指针。
          * @param index 初始索引。
          */
-        RobinHashBucketIterator(container_t* bucketPtr = nullptr, isize index = 0) :
-                bucketPtr_(bucketPtr), index_(index) {}
+        RobinHashBucketIterator(container_t* bucket_ptr = nullptr, isize index = 0) :
+                bucket_ptr_(bucket_ptr), index_(index) {}
 
         /**
          * @brief 拷贝构造函数。
          * @param other 需要拷贝的迭代器。
          */
         RobinHashBucketIterator(const Self& other) :
-                bucketPtr_(other.bucketPtr_), index_(other.index_) {}
+                bucket_ptr_(other.bucket_ptr_), index_(other.index_) {}
 
         /**
          * @brief 拷贝赋值操作符。
@@ -521,7 +518,7 @@ public:
         Self& operator=(const Self& other) {
             if (this == &other) return *this;
 
-            this->bucketPtr_ = other.bucketPtr_;
+            this->bucket_ptr_ = other.bucket_ptr_;
             this->index_ = other.index_;
             return *this;
         }
@@ -531,7 +528,7 @@ public:
          * @return 返回当前值的引用。
          */
         reference operator*() {
-            return bucketPtr_->at(index_).value();
+            return bucket_ptr_->at(index_).value();
         }
 
         /**
@@ -539,7 +536,7 @@ public:
          * @return 返回当前值的常量引用。
          */
         const_reference operator*() const {
-            return bucketPtr_->at(index_).value();
+            return bucket_ptr_->at(index_).value();
         }
 
         /**
@@ -547,7 +544,7 @@ public:
          * @return 返回当前值的指针。
          */
         pointer operator->() {
-            return &bucketPtr_->at(index_).value();
+            return &bucket_ptr_->at(index_).value();
         }
 
         /**
@@ -555,7 +552,7 @@ public:
          * @return 返回当前值的常量指针。
          */
         const_pointer operator->() const {
-            return &bucketPtr_->at(index_).value();
+            return &bucket_ptr_->at(index_).value();
         }
 
         /**
@@ -565,8 +562,8 @@ public:
          */
         Self& operator++() {
             ++index_;
-            isize m_size = bucketPtr_->size();
-            while (index_ < m_size && !bucketPtr_->at(index_).isManaged()) {
+            isize m_size = bucket_ptr_->size();
+            while (index_ < m_size && !bucket_ptr_->at(index_).is_managed()) {
                 ++index_;
             }
             return *this;
@@ -589,11 +586,11 @@ public:
          * @return 如果相等返回 true，否则返回 false。
          */
         bool __equals__(const Self& other) const {
-            return this->bucketPtr_ == other.bucketPtr_ && this->index_ == other.index_;
+            return this->bucket_ptr_ == other.bucket_ptr_ && this->index_ == other.index_;
         }
 
     private:
-        container_t* bucketPtr_;
+        container_t* bucket_ptr_;
         isize index_;
     };
 
@@ -607,8 +604,8 @@ public:
     iterator begin() {
         isize m_capacity = capacity();
         for (isize i = 0; i < m_capacity; ++i) {
-            if (robinManagers_.at(i).isManaged()) {
-                return iterator{&robinManagers_, i};
+            if (robin_managers_.at(i).is_managed()) {
+                return iterator{&robin_managers_, i};
             }
         }
         return end();
@@ -621,8 +618,8 @@ public:
     const_iterator begin() const {
         isize m_capacity = capacity();
         for (isize i = 0; i < m_capacity; ++i) {
-            if (robinManagers_.at(i).isManaged()) {
-                return const_iterator{&robinManagers_, i};
+            if (robin_managers_.at(i).is_managed()) {
+                return const_iterator{&robin_managers_, i};
             }
         }
         return end();
@@ -633,7 +630,7 @@ public:
      * @return 返回末尾迭代器。
      */
     iterator end() {
-        return iterator{&robinManagers_, capacity()};
+        return iterator{&robin_managers_, capacity()};
     }
 
     /**
@@ -641,11 +638,11 @@ public:
      * @return 返回末尾迭代器。
      */
     const_iterator end() const {
-        return const_iterator{&robinManagers_, capacity()};
+        return const_iterator{&robin_managers_, capacity()};
     }
 
 private:
-    Array<manager_t> robinManagers_;
+    Array<manager_t> robin_managers_;
 };
 
 } // namespace my::util

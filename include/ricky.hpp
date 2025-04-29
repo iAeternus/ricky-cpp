@@ -26,6 +26,13 @@ namespace my {
 #define fr(R) inline R
 
 /**
+ * @brief rust-like `let` 关键字
+ * @note 规范：
+ * 仅可用于局部变量创建
+ */
+#define let auto
+
+/**
  * @brief 获取类型名
  */
 #define dtype(T) typeid(T).name()

@@ -7,7 +7,8 @@
 #ifndef RANDOM_HPP
 #define RANDOM_HPP
 
-#include "DynArray.hpp"
+// #include "DynArray.hpp"
+#include "Vec.hpp"
 
 #include <random>
 #include <limits>
@@ -18,10 +19,10 @@
 namespace my::util {
 
 class Random : public Object<Random> {
+public:
     using Self = Random;
     using Super = Object<Self>;
 
-public:
     static Random& instance() {
         static std::once_flag once;
         std::call_once(once, [] {
@@ -53,7 +54,7 @@ public:
     /**
      * @brief 生成指定长度的随机字符串
      */
-    CString nextStr(isize len) {
+    CString next_str(isize len) {
         static const CString characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_cs;
         CString result(len);
         std::uniform_int_distribution<isize> distribution(0, characters.size() - 1);
@@ -67,55 +68,55 @@ public:
 
     /**
      * @brief 生成n个和为定值sum的均匀分布非负整数
+     * @note TODO n 与 sum 接近时存在死循环bug
      */
-    DynArray<i32> generate_uniform_sum_numbers(i32 n, i32 sum) {
+    Vec<i32> generate_uniform_sum_numbers(i32 n, i32 sum) {
+        Vec<i32> numbers;
         if (n <= 0 || sum < 0) {
-            return {};
+            return numbers;
         }
 
-        std::vector<i32> numbers;
-
         if (sum == 0) {
-            numbers.resize(n, 0);
+            numbers.resize(n);
             return numbers;
         }
         if (n == 1) {
-            numbers.push_back(sum);
+            numbers.append(sum);
             return numbers;
         }
 
         // 总元素数为 sum + n - 1（包括隔板和球）
         i32 total_elements = sum + n - 1;
-        std::vector<i32> elements;
+        Vec<i32> elements;
 
         // 创建数组 [1, 2, ..., total_elements]
         for (i32 i = 1; i <= total_elements; ++i) {
-            elements.push_back(i);
+            elements.append(i);
         }
 
         std::shuffle(elements.begin(), elements.end(), generator_);
 
         // 选择前 n-1 个元素作为隔板位置
-        std::vector<i32> partitions;
+        Vec<i32> partitions;
         for (i32 i = 0; i < n - 1; ++i) {
-            partitions.push_back(elements[i]);
+            partitions.append(elements[i]);
         }
 
         // 排序隔板位置
         std::sort(partitions.begin(), partitions.end());
 
         // 添加前导0和后导sum + n
-        std::vector<i32> board = {0};
-        board.insert(board.end(), partitions.begin(), partitions.end());
-        board.push_back(sum + n);
+        Vec<i32> board = {0};
+        board.extend(partitions);
+        board.append(sum + n);
 
         // 计算相邻元素的差值，并减去1得到最终结果
         for (size_t i = 1; i < board.size(); ++i) {
             i32 diff = board[i] - board[i - 1];
-            numbers.push_back(diff - 1);
+            numbers.append(diff - 1);
         }
 
-        return DynArray<i32>(numbers);
+        return numbers;
     }
 
 private:

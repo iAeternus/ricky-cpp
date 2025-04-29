@@ -45,8 +45,8 @@ concept BiTreeNodeType = requires(T a, const T& b, T&& c) {
 template <typename T>
 class TreeNode : public Object<TreeNode<T>> {
 public:
-    using Self = TreeNode<T>;
     using value_t = T;
+    using Self = TreeNode<value_t>;
     using Callback = std::function<void(const value_t&)>;
 
     value_t value_;            // 节点值
@@ -80,19 +80,19 @@ public:
     /**
      * @brief 遍历本节点之下的所有子节点，按照先序遍历排列
      */
-    void forEach(Callback callback) const {
+    void for_each(Callback callback) const {
         callback(this->value_);
         for (const auto& child : children_) {
-            child->forEach(callback);
+            child->for_each(callback);
         }
     }
 
     /**
      * @brief 遍历本节点之下的所有子节点，按照后序遍历排列
      */
-    void forEachRev(Callback callback) const {
+    void for_each_rev(Callback callback) const {
         for (const auto& child : children_) {
-            child->forEachRev(callback);
+            child->for_each_rev(callback);
         }
         callback(this->value_);
     }
@@ -100,7 +100,7 @@ public:
     /**
      * @brief 遍历本节点以上的所有祖先节点
      */
-    void forEachParent(Callback callback) const {
+    void for_each_parent(Callback callback) const {
         const Self* p = this;
         while (p != nullptr && p != p->parent_) {
             callback(p->value_);
@@ -130,8 +130,8 @@ private:
 template <typename T>
 class BiTreeNode : public Object<BiTreeNode<T>> {
 public:
-    using Self = BiTreeNode<T>;
     using value_t = T;
+    using Self = BiTreeNode<value_t>;
     using Callback = std::function<void(const value_t&)>;
 
     value_t value_; // 值
@@ -168,25 +168,25 @@ public:
     /**
      * @brief 遍历本节点之下的所有子节点，按照先序遍历排列
      */
-    void forEach(Callback callback) const {
+    void for_each(Callback callback) const {
         callback(this->value_);
-        if (lchild_) lchild_->forEach(callback);
-        if (rchild_) rchild_->forEach(callback);
+        if (lchild_) lchild_->for_each(callback);
+        if (rchild_) rchild_->for_each(callback);
     }
 
     /**
      * @brief 遍历本节点之下的所有子节点，按照后序遍历排列
      */
-    void forEachRev(Callback callback) const {
-        if (lchild_) lchild_->forEachRev(callback);
-        if (rchild_) rchild_->forEachRev(callback);
+    void for_each_rev(Callback callback) const {
+        if (lchild_) lchild_->for_each_rev(callback);
+        if (rchild_) rchild_->for_each_rev(callback);
         callback(this->value_);
     }
 
     /**
      * @brief 遍历本节点以上的所有祖先节点
      */
-    void forEachParent(Callback callback) const {
+    void for_each_parent(Callback callback) const {
         const Self* p = this;
         while (p != nullptr && p != p->parent_) {
             callback(p->value_);
@@ -222,9 +222,9 @@ enum Color {
 template <Sortable K, typename V>
 class RBTreeNode : public Object<RBTreeNode<K, V>> {
 public:
-    using Self = RBTreeNode<K, V>;
     using key_t = K;
     using value_t = V;
+    using Self = RBTreeNode<key_t, value_t>;
     using Callback = std::function<void(const KeyValueView<key_t, value_t>&)>;
 
     key_t key_;     // 键

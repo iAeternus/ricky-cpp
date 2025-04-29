@@ -92,7 +92,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 判断两节点是否连接
      * @return true=是 false=否
      */
-    bool isConnected(i64 end) const {
+    bool is_connected(i64 end) const {
         for (const auto& edge : edges) {
             if (edge.end == end) {
                 return true;

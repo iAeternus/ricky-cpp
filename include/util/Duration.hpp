@@ -1,5 +1,6 @@
 /**
  * @brief 时间间隔
+ * @note 此文件参考java，故使用java命名风格
  * @author Ricky
  * @date 2025/2/3
  * @version 2.0

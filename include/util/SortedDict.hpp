@@ -35,7 +35,7 @@ public:
     }
 
     void clear() {
-        destroyNode(root_);
+        destroy_node(root_);
         root_ = NIL;
         size_ = 0;
     }
@@ -45,7 +45,7 @@ public:
             return "(empty dict)"_cs;
         }
         std::stringstream stream;
-        printNode(root_, stream, "");
+        print_node(root_, stream, "");
         return CString{stream.str()};
     }
 
@@ -58,18 +58,18 @@ private:
     static inline Node* NIL = new Node(key_t{}, value_t{}, BLACK);
 
 private:
-    static void destroyNode(Node* root) {
+    static void destroy_node(Node* root) {
         if (root == NIL) return;
-        destroyNode(root->lchild_);
-        destroyNode(root->rchild_);
+        destroy_node(root->lchild_);
+        destroy_node(root->rchild_);
         my_destroy(root);
     }
 
-    static void printNode(const Node* root, std::stringstream& stream, const CString& prefix) {
+    static void print_node(const Node* root, std::stringstream& stream, const CString& prefix) {
         if (root == NIL) return;
         stream << prefix.data() << "+-- " << root->__str__().data();
-        printNode(root->lchild_, stream, prefix + "|   ");
-        printNode(root->rchild_, stream, prefix + "|   ");
+        print_node(root->lchild_, stream, prefix + "|   ");
+        print_node(root->rchild_, stream, prefix + "|   ");
     }
 };
 

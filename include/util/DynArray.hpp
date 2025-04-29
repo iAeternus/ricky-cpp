@@ -27,9 +27,6 @@ namespace my::util {
  */
 template <typename T>
 class DynArray : public Sequence<DynArray<T>, T> {
-    using Self = DynArray<T>;
-    using Super = Sequence<DynArray<T>, T>;
-
     // 动态数组块的数量，用于管理分块存储
     constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
 
@@ -41,13 +38,15 @@ class DynArray : public Sequence<DynArray<T>, T> {
 
 public:
     using value_t = T;
+    using Self = DynArray<value_t>;
+    using Super = Sequence<DynArray<value_t>, value_t>;
 
     /**
      * @brief 默认构造函数
      * 初始化为空的动态数组，无元素
      */
     DynArray() :
-            size_(0), backBlockIndex_(BLOCK_NOT_EXISTS), blocks_(DYNARRAY_BLOCK_SIZE, 0) {}
+            size_(0), back_block_index_(BLOCK_NOT_EXISTS), blocks_(DYNARRAY_BLOCK_SIZE, 0) {}
 
     /**
      * @brief 构造指定大小的动态数组，并用指定的元素进行填充
@@ -63,11 +62,11 @@ public:
 
     /**
      * @brief 使用初始化列表构造动态数组
-     * @param init 初始化列表，包含数组的初始元素
+     * @param init_list 初始化列表，包含数组的初始元素
      */
-    DynArray(std::initializer_list<value_t>&& init) :
+    DynArray(std::initializer_list<value_t>&& init_list) :
             DynArray() {
-        for (auto& item : init) {
+        for (auto& item : init_list) {
             append(std::forward<decltype(item)>(item));
         }
     }
@@ -101,9 +100,9 @@ public:
      * @param other 需要移动的动态数组
      */
     DynArray(Self&& other) noexcept :
-            size_(other.size_), backBlockIndex_(other.backBlockIndex_), blocks_(std::move(other.blocks_)) {
+            size_(other.size_), back_block_index_(other.back_block_index_), blocks_(std::move(other.blocks_)) {
         other.size_ = 0;
-        other.backBlockIndex_ = BLOCK_NOT_EXISTS;
+        other.back_block_index_ = BLOCK_NOT_EXISTS;
     }
 
     /**
@@ -115,7 +114,7 @@ public:
         if (this == &other) return *this;
 
         this->size_ = other.size_;
-        this->backBlockIndex_ = other.backBlockIndex_;
+        this->back_block_index_ = other.back_block_index_;
         this->blocks_ = other.blocks_;
         return *this;
     }
@@ -129,11 +128,11 @@ public:
         if (this == &other) return *this;
 
         this->size_ = other.size_;
-        this->backBlockIndex_ = other.backBlockIndex_;
+        this->back_block_index_ = other.back_block_index_;
         this->blocks_ = std::move(other.blocks_);
 
         other.size_ = 0;
-        other.backBlockIndex_ = BLOCK_NOT_EXISTS;
+        other.back_block_index_ = BLOCK_NOT_EXISTS;
 
         return *this;
     }
@@ -183,7 +182,7 @@ public:
      * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     value_t& back() {
-        return blocks_.at(backBlockIndex_).back();
+        return blocks_.at(back_block_index_).back();
     }
 
     /**
@@ -192,31 +191,31 @@ public:
      * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     const value_t& back() const {
-        return blocks_.at(backBlockIndex_).back();
+        return blocks_.at(back_block_index_).back();
     }
 
     /**
      * @brief 通过索引访问元素（非 const 版本）
-     * @param index 元素的索引，从 0 开始
+     * @param idx 元素的索引，从 0 开始
      * @return 返回指定索引处的元素的引用
      * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    value_t& at(isize index) {
-        i32 blockIndex = get_block_index(index + 1);
-        isize inblockIndex = get_inblock_index(index + 1, blockIndex);
-        return blocks_.at(blockIndex).at(inblockIndex);
+    value_t& at(isize idx) {
+        i32 block_idx = get_block_idx(idx + 1);
+        isize inblock_idx = get_inblock_idx(idx + 1, block_idx);
+        return blocks_.at(block_idx).at(inblock_idx);
     }
 
     /**
      * @brief 通过索引访问元素（const 版本）
-     * @param index 元素的索引，从 0 开始
+     * @param idx 元素的索引，从 0 开始
      * @return 返回指定索引处的元素的 const 引用
      * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    const value_t& at(isize index) const {
-        i32 blockIndex = get_block_index(index + 1);
-        isize inblockIndex = get_inblock_index(index + 1, blockIndex);
-        return blocks_.at(blockIndex).at(inblockIndex);
+    const value_t& at(isize idx) const {
+        i32 block_idx = get_block_idx(idx + 1);
+        isize inblock_idx = get_inblock_idx(idx + 1, block_idx);
+        return blocks_.at(block_idx).at(inblock_idx);
     }
 
     /**
@@ -241,7 +240,7 @@ public:
      */
     value_t& append(const value_t& item) {
         try_wakeup();
-        auto& res = back_block().append(item);
+        auto& res = get_back_block().append(item);
         ++size_;
         return res;
     }
@@ -254,7 +253,7 @@ public:
     template <typename U>
     value_t& append(U&& item) {
         try_wakeup();
-        auto& res = back_block().append(std::forward<U>(item));
+        auto& res = get_back_block().append(std::forward<U>(item));
         ++size_;
         return res;
     }
@@ -262,36 +261,36 @@ public:
     /**
      * @brief 在指定位置插入元素
      * @tparam U 可转发类型
-     * @param index 插入位置，从0开始
+     * @param idx 插入位置，从0开始
      * @param item 要插入的元素
      */
     template <typename U>
-    void insert(isize index, U&& item) {
-        if (index < 0 || index > size_) return;
+    void insert(isize idx, U&& item) {
+        if (idx < 0 || idx > size_) return;
 
         append(std::forward<U>(item));
-        for (isize i = size() - 1; i > index; --i) {
+        for (isize i = size() - 1; i > idx; --i) {
             std::swap(at(i), at(i - 1));
         }
     }
 
     /**
      * @brief 移除指定位置的元素
-     * @param index 移除位置，从 0 开始，默认移除最后一个元素
+     * @param idx 移除位置，从 0 开始，默认移除最后一个元素
      */
-    void pop(isize index = -1) {
+    void pop(isize idx = -1) {
         if (empty()) return;
 
-        index = neg_index(index, size_);
-        for (isize i = index + 1; i < size_; ++i) {
+        idx = neg_index(idx, size_);
+        for (isize i = idx + 1; i < size_; ++i) {
             at(i - 1) = std::move(at(i));
         }
 
-        auto& backBlock = back_block();
-        if (backBlock.size() == 1) {
+        auto& back_block = get_back_block();
+        if (back_block.size() == 1) {
             pop_back_block();
         } else {
-            backBlock.pop_back();
+            back_block.pop_back();
         }
         --size_;
     }
@@ -308,7 +307,7 @@ public:
             block.resize(0);
         }
         size_ = 0;
-        backBlockIndex_ = BLOCK_NOT_EXISTS;
+        back_block_index_ = BLOCK_NOT_EXISTS;
     }
 
     /**
@@ -408,9 +407,9 @@ public:
      */
     template <bool IsConst>
     class Iterator : public Object<Iterator<IsConst>> {
+    public:
         using Self = Iterator<IsConst>;
 
-    public:
         using container_t = std::conditional_t<IsConst, const DynArray<value_t>, DynArray<value_t>>;
         using iterator_category = std::random_access_iterator_tag;
         using value_type = std::conditional_t<IsConst, const value_t, value_t>;
@@ -423,18 +422,18 @@ public:
         /**
          * @brief 构造一个迭代器
          * @param dynarray 指向动态数组的指针
-         * @param blockIndex 块索引
-         * @param inblockIndex 块内索引
+         * @param block_idx 块索引
+         * @param inblock_idx 块内索引
          */
-        Iterator(container_t* dynarray = nullptr, isize blockIndex = 0, isize inblockIndex = 0) :
-                blockIndex_(blockIndex), inblockIndex_(inblockIndex), dynarray_(dynarray) {}
+        Iterator(container_t* dynarray = nullptr, isize block_idx = 0, isize inblock_idx = 0) :
+                block_idx_(block_idx), inblock_idx_(inblock_idx), dynarray_(dynarray) {}
 
         /**
          * @brief 拷贝构造函数
          * @param other 需要拷贝的迭代器
          */
         Iterator(const Self& other) :
-                Iterator(other.dynarray_, other.blockIndex_, other.inblockIndex_) {}
+                Iterator(other.dynarray_, other.block_idx_, other.inblock_idx_) {}
 
         /**
          * @brief 拷贝赋值操作符
@@ -442,8 +441,8 @@ public:
          * @return 返回自身引用
          */
         Self& operator=(const Self& other) {
-            this->blockIndex_ = other.blockIndex_;
-            this->inblockIndex_ = other.inblockIndex_;
+            this->block_idx_ = other.block_idx_;
+            this->inblock_idx_ = other.inblock_idx_;
             this->dynarray_ = other.dynarray_;
             return *this;
         }
@@ -454,7 +453,7 @@ public:
          * @note 如果迭代器无效（如超过范围），行为未定义
          */
         reference operator*() {
-            return dynarray_->blocks_.at(blockIndex_).at(inblockIndex_);
+            return dynarray_->blocks_.at(block_idx_).at(inblock_idx_);
         }
 
         /**
@@ -463,7 +462,7 @@ public:
          * @note 如果迭代器无效（如超过范围），行为未定义
          */
         const_reference operator*() const {
-            return dynarray_->blocks_.at(blockIndex_).at(inblockIndex_);
+            return dynarray_->blocks_.at(block_idx_).at(inblock_idx_);
         }
 
         /**
@@ -472,7 +471,7 @@ public:
          * @note 如果迭代器无效（如超过范围），行为未定义
          */
         pointer operator->() {
-            return &dynarray_->blocks_.at(blockIndex_).at(inblockIndex_);
+            return &dynarray_->blocks_.at(block_idx_).at(inblock_idx_);
         }
 
         /**
@@ -481,7 +480,7 @@ public:
          * @note 如果迭代器无效（如超过范围），行为未定义
          */
         const_pointer operator->() const {
-            return &dynarray_->blocks_.at(blockIndex_).at(inblockIndex_);
+            return &dynarray_->blocks_.at(block_idx_).at(inblock_idx_);
         }
 
         /**
@@ -490,12 +489,12 @@ public:
          * @return 返回自增后的迭代器
          */
         Self& operator++() {
-            if (inblockIndex_ == dynarray_->blocks_.at(blockIndex_).size() - 1) {
-                ++blockIndex_;
-                inblockIndex_ = 0;
+            if (inblock_idx_ == dynarray_->blocks_.at(block_idx_).size() - 1) {
+                ++block_idx_;
+                inblock_idx_ = 0;
                 return *this;
             }
-            ++inblockIndex_;
+            ++inblock_idx_;
             return *this;
         }
 
@@ -516,12 +515,12 @@ public:
          * @return 返回自减后的迭代器
          */
         Self& operator--() {
-            if (dynarray_->blocks_.at(blockIndex_).size() == 0) {
-                --blockIndex_;
-                inblockIndex_ = dynarray_->blocks_.at(blockIndex_).size() - 1;
+            if (dynarray_->blocks_.at(block_idx_).size() == 0) {
+                --block_idx_;
+                inblock_idx_ = dynarray_->blocks_.at(block_idx_).size() - 1;
                 return *this;
             }
-            --inblockIndex_;
+            --inblock_idx_;
             return *this;
         }
 
@@ -544,17 +543,17 @@ public:
         Self& operator+=(difference_type n) {
             if (n == 0) return *this;
 
-            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_CAP + inblockIndex_ + n;
-            i32 new_block = dynarray_->get_block_index(target + 1);
-            isize new_inblock = dynarray_->get_inblock_index(target, new_block);
+            isize target = (block_idx_ * exp2[block_idx_ + 1] - 1) * BASE_CAP + inblock_idx_ + n;
+            i32 new_block = dynarray_->get_block_idx(target + 1);
+            isize new_inblock = dynarray_->get_inblock_idx(target, new_block);
 
             if (new_block >= dynarray_->blocks_.size()) {
                 new_block = dynarray_->blocks_.size() - 1;
                 new_inblock = dynarray_->blocks_.at(new_block).size();
             }
 
-            blockIndex_ = new_block;
-            inblockIndex_ = new_inblock < dynarray_->blocks_.at(new_block).size() ? new_inblock : dynarray_->blocks_.at(new_block).size();
+            block_idx_ = new_block;
+            inblock_idx_ = new_inblock < dynarray_->blocks_.at(new_block).size() ? new_inblock : dynarray_->blocks_.at(new_block).size();
 
             return *this;
         }
@@ -578,9 +577,9 @@ public:
         Self& operator-=(difference_type n) {
             if (n == 0) return *this;
 
-            isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_CAP + inblockIndex_ - n;
-            i32 new_block = dynarray_->get_block_index(target + 1);
-            isize new_inblock = dynarray_->get_inblock_index(target, new_block);
+            isize target = (block_idx_ * exp2[block_idx_ + 1] - 1) * BASE_CAP + inblock_idx_ - n;
+            i32 new_block = dynarray_->get_block_idx(target + 1);
+            isize new_inblock = dynarray_->get_inblock_idx(target, new_block);
 
             if (new_block < 0) {
                 new_block = 0;
@@ -588,11 +587,11 @@ public:
             }
 
             if (new_block < dynarray_->blocks_.size()) {
-                inblockIndex_ = new_inblock;
-                blockIndex_ = new_block;
+                inblock_idx_ = new_inblock;
+                block_idx_ = new_block;
             } else {
-                blockIndex_ = dynarray_->blocks_.size() - 1;
-                inblockIndex_ = dynarray_->blocks_.at(blockIndex_).size();
+                block_idx_ = dynarray_->blocks_.size() - 1;
+                inblock_idx_ = dynarray_->blocks_.at(block_idx_).size();
             }
 
             return *this;
@@ -620,14 +619,14 @@ public:
                 RuntimeError("Iterator not belong to the same container.");
             }
 
-            if (this->blockIndex_ == other.blockIndex_) {
-                return this->inblockIndex_ - other.inblockIndex_;
+            if (this->block_idx_ == other.block_idx_) {
+                return this->inblock_idx_ - other.inblock_idx_;
             }
-            difference_type diff = this->dynarray_->blocks_.at(other.blockIndex_).size() - other.inblockIndex_;
-            for (isize i = other.blockIndex_ + 1; i < this->blockIndex_; ++i) {
+            difference_type diff = this->dynarray_->blocks_.at(other.block_idx_).size() - other.inblock_idx_;
+            for (isize i = other.block_idx_ + 1; i < this->block_idx_; ++i) {
                 diff += this->dynarray_->blocks_.at(i).size();
             }
-            return diff + this->inblockIndex_;
+            return diff + this->inblock_idx_;
         }
 
         /**
@@ -654,7 +653,7 @@ public:
          * @return 如果内部状态相等返回 true，否则返回 false
          */
         bool __equals__(const Self& other) const {
-            return this->blockIndex_ == other.blockIndex_ && this->inblockIndex_ == other.inblockIndex_ && this->dynarray_ == other.dynarray_;
+            return this->block_idx_ == other.block_idx_ && this->inblock_idx_ == other.inblock_idx_ && this->dynarray_ == other.dynarray_;
         }
 
         /**
@@ -663,15 +662,15 @@ public:
          * @return 返回一个整数值，表示两个迭代器的顺序
          */
         cmp_t __cmp__(const Self& other) const {
-            if (this->blockIndex_ != other.blockIndex_) {
-                return this->blockIndex_ - other.blockIndex_;
+            if (this->block_idx_ != other.block_idx_) {
+                return this->block_idx_ - other.block_idx_;
             }
-            return this->inblockIndex_ - other.inblockIndex_;
+            return this->inblock_idx_ - other.inblock_idx_;
         }
 
     private:
-        isize blockIndex_;      // 当前块索引
-        isize inblockIndex_;    // 当前块内的索引
+        isize block_idx_;       // 当前块索引
+        isize inblock_idx_;     // 当前块内的索引
         container_t* dynarray_; // 当前指向当前动态数组的指针
     };
 
@@ -717,7 +716,7 @@ private:
      * @return 返回块索引
      * @note 时间复杂度为 O(log n)
      */
-    i32 get_block_index(isize ith) const {
+    i32 get_block_idx(isize ith) const {
         i32 l = 0, r = DYNARRAY_BLOCK_SIZE;
         while (l < r) {
             i32 mid = l + ((r - l) >> 1);
@@ -733,11 +732,11 @@ private:
     /**
      * @brief 获取第 ith 个元素在块内的索引
      * @param ith 元素在动态数组中的序号（从 1 开始）
-     * @param blockIndex 块索引
+     * @param block_idx 块索引
      * @return 返回块内索引
      */
-    isize get_inblock_index(isize ith, i32 blockIndex) const {
-        return ith - BASE_CAP * (exp2[blockIndex] - 1) - 1;
+    isize get_inblock_idx(isize ith, i32 block_idx) const {
+        return ith - BASE_CAP * (exp2[block_idx] - 1) - 1;
     }
 
     /**
@@ -745,7 +744,7 @@ private:
      * @return 返回最后一个块的索引，如果没有块返回 -1
      */
     i32 back_block_index() const {
-        return backBlockIndex_;
+        return back_block_index_;
     }
 
     /**
@@ -753,7 +752,7 @@ private:
      * @return 返回指向最后一个块的引用
      * @note 如果没有块，行为未定义
      */
-    Buffer<T>& back_block() {
+    Buffer<T>& get_back_block() {
         return blocks_.at(back_block_index());
     }
 
@@ -761,8 +760,8 @@ private:
      * @brief 移除最后一个块
      */
     void pop_back_block() {
-        back_block().resize(0);
-        --backBlockIndex_;
+        get_back_block().resize(0);
+        --back_block_index_;
     }
 
     /**
@@ -778,15 +777,15 @@ private:
             // 计算新块的大小：
             // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            isize newCap = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
-            ++backBlockIndex_;           // 将最后一个块的索引递增，指向新块
-            back_block().resize(newCap); // 调整新块的大小
+            isize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
+            ++back_block_index_;               // 将最后一个块的索引递增，指向新块
+            get_back_block().resize(new_capacity); // 调整新块的大小
         }
     }
 
 private:
     isize size_;                    // 元素个数
-    i32 backBlockIndex_;            // 最后一个块的索引
+    i32 back_block_index_;          // 最后一个块的索引
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
 
@@ -794,20 +793,20 @@ private:
  * @brief 从动态数组中选择指定类型的参数
  * @tparam T 目标类型
  * @param args 动态数组
- * @param index 参数索引
+ * @param idx 参数索引
  * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
  */
 template <typename T>
-fn opt(const DynArray<std::any>& args, isize index)->T {
-    if (index < 0 || index >= args.size()) {
+fn opt(const DynArray<std::any>& args, isize idx)->T {
+    if (idx < 0 || idx >= args.size()) {
         ValueError("Index out of range in opt function.");
         return None<T>;
     }
 
     try {
-        return std::any_cast<T>(args.at(index));
+        return std::any_cast<T>(args.at(idx));
     } catch (const std::bad_any_cast& e) {
-        ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[index].type().name()));
+        ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
         return None<T>;
     }
 }

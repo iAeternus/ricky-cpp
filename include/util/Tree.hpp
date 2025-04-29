@@ -16,9 +16,8 @@ namespace my::util {
 
 template <TreeNodeType Node, typename C = Creator<Node>>
 class TreeImpl : public Object<TreeImpl<Node, C>> {
-    using Self = TreeImpl<Node, C>;
-
 public:
+    using Self = TreeImpl<Node, C>;
     using value_t = typename Node::value_t;
     using Callback = typename Node::Callback;
 
@@ -39,12 +38,12 @@ public:
     }
 
     void clear() {
-        destroyNode(root_);
+        destroy_node(root_);
         size_ = 0;
     }
 
     template <typename... Args>
-    Node* setRoot(Args&&... args) {
+    Node* set_root(Args&&... args) {
         root_ = creator_(std::forward<Args>(args)...);
         root_->parent_ = root_;
         size_ = 1;
@@ -52,7 +51,7 @@ public:
     }
 
     template <typename... Args>
-    Node* addChild(Node* parent, Args&&... args) {
+    Node* add_child(Node* parent, Args&&... args) {
         Node* child = creator_(std::forward<Args>(args)...);
         child->parent_ = parent;
         parent->children_.append(std::move(child));
@@ -60,7 +59,7 @@ public:
         return child;
     }
 
-    void removeChild(Node* parent, isize idx = -1) {
+    void remove_child(Node* parent, isize idx = -1) {
         if (parent == nullptr || parent->children_.empty()) return;
         parent->children_.pop(idx);
         --size_;
@@ -71,7 +70,7 @@ public:
      * @param callback 回调函数，用于处理每个节点的值
      */
     void dfs(Callback callback) const {
-        root_->forEach(callback);
+        root_->for_each(callback);
     }
 
     /**
@@ -107,10 +106,10 @@ private:
     C creator_;  // 节点创建管理器
 
 private:
-    void destroyNode(Node* root) {
+    void destroy_node(Node* root) {
         if (root == nullptr) return;
         for (auto* child : root->children_) {
-            destroyNode(child);
+            destroy_node(child);
         }
         my_destroy(root);
     }

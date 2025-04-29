@@ -35,8 +35,8 @@ auto should_get_or_default = []() {
 
     // When
     i32 res1 = d.get(1);
-    auto& res2 = d.getOrDefault(2, 0);
-    auto& res3 = d.getOrDefault(6, 0);
+    auto& res2 = d.get_or_default(2, 0);
+    auto& res3 = d.get_or_default(6, 0);
 
     // Then
     Assertions::assertEquals(res1, 1);
@@ -49,13 +49,13 @@ auto should_set_default = []() {
     util::Dict<i32, i32> d;
 
     // When
-    d.setdefault(1, 1);
+    d.set_default(1, 1);
 
     // Then
     Assertions::assertEquals(1, d.get(1));
 
     // When
-    d.setdefault(1, 2);
+    d.set_default(1, 2);
 
     // Then
     Assertions::assertEquals(1, d.get(1));

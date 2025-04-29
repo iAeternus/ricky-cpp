@@ -8,12 +8,12 @@ namespace my::test::test_tree {
 
 auto it_works = []() {
     util::Tree<i32> t;
-    auto* root = t.setRoot(1);
+    auto* root = t.set_root(1);
 
-    t.addChild(root, 2);
-    t.addChild(root, 3);
-    t.addChild(t.root(), 4);
-    t.addChild(root->children_[0], 5);
+    t.add_child(root, 2);
+    t.add_child(root, 3);
+    t.add_child(t.root(), 4);
+    t.add_child(root->children_[0], 5);
 
     io::println(t);
 };
@@ -21,11 +21,11 @@ auto it_works = []() {
 auto should_dfs = []() {
     // Given
     util::Tree<i32> t;
-    t.setRoot(1);
-    t.addChild(t.root(), 2);
-    t.addChild(t.root(), 3);
-    t.addChild(t.root(), 4);
-    t.addChild(t.root()->children_[0], 5);
+    t.set_root(1);
+    t.add_child(t.root(), 2);
+    t.add_child(t.root(), 3);
+    t.add_child(t.root(), 4);
+    t.add_child(t.root()->children_[0], 5);
     util::DynArray<i32> res;
 
     // When
@@ -40,11 +40,11 @@ auto should_dfs = []() {
 auto should_bfs = []() {
     // Given
     util::Tree<i32> t;
-    t.setRoot(1);
-    t.addChild(t.root(), 2);
-    t.addChild(t.root(), 3);
-    t.addChild(t.root(), 4);
-    t.addChild(t.root()->children_[0], 5);
+    t.set_root(1);
+    t.add_child(t.root(), 2);
+    t.add_child(t.root(), 3);
+    t.add_child(t.root(), 4);
+    t.add_child(t.root()->children_[0], 5);
     util::DynArray<i32> res;
 
     // When

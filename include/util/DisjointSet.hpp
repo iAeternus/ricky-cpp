@@ -13,8 +13,6 @@ namespace my::util {
 
 template <typename T>
 class DisjointSet : public Object<DisjointSet<T>> {
-    using Self = DisjointSet<T>;
-
     /**
      * @brief 并查集节点
      */
@@ -33,23 +31,24 @@ class DisjointSet : public Object<DisjointSet<T>> {
 
 public:
     using value_t = T;
+    using Self = DisjointSet<value_t>;
 
     DisjointSet(const DynArray<value_t>& arr) :
-            nodes(arr.size()) {
+            nodes_(arr.size()) {
         for (auto&& item : arr) {
-            nodes.insert(item, new Node{item});
+            nodes_.insert(item, new Node{item});
         }
     }
 
-    DisjointSet(std::initializer_list<value_t>&& initList) :
-            DisjointSet(initList) {}
+    DisjointSet(std::initializer_list<value_t>&& init_list) :
+            DisjointSet(init_list) {}
 
     /**
      * @brief 添加元素
      */
     void add(const value_t& elem) {
-        if (!nodes.contains(elem)) {
-            nodes.insert(elem, new Node{elem});
+        if (!nodes_.contains(elem)) {
+            nodes_.insert(elem, new Node{elem});
         }
     }
 
@@ -58,7 +57,7 @@ public:
      * @return 返回该元素对应的组长，可能返回本身
      */
     value_t find(const value_t& elem) const {
-        auto* cur = nodes.get(elem);
+        auto* cur = nodes_.get(elem);
         while (cur != cur->parent) {
             cur->parent = cur->parent->parent;
             cur = cur->parent;
@@ -70,7 +69,7 @@ public:
      * @brief 判断两个元素是否属于同一组下
      * @return true=是 false=否
      */
-    bool isConnected(const value_t& elem1, const value_t& elem2) {
+    bool is_connected(const value_t& elem1, const value_t& elem2) {
         return find(elem1) == find(elem2);
     }
 
@@ -81,8 +80,8 @@ public:
         auto t1 = find(elem1);
         auto t2 = find(elem2);
         if (t1 == t2) return;
-        auto* n1 = nodes.get(t1);
-        auto* n2 = nodes.get(t2);
+        auto* n1 = nodes_.get(t1);
+        auto* n2 = nodes_.get(t2);
         if (n1->rank > n2->rank) {
             n2->parent = n1;
             n1->rank += n2->rank;
@@ -96,8 +95,8 @@ public:
      * @brief 获取秩
      * @return 秩，若节点不存在返回-1
      */
-    i32 getRank(const value_t& elem) {
-        auto* n = nodes.get(elem);
+    i32 rank(const value_t& elem) {
+        auto* n = nodes_.get(elem);
         if (n == nullptr) {
             return -1;
         }
@@ -106,14 +105,14 @@ public:
 
     CString __str__() const {
         Dict<value_t, DynArray<value_t>> sets;
-        for (const auto& elem : nodes.keys()) {
+        for (const auto& elem : nodes_.keys()) {
             sets[find(elem)].append(elem);
         }
         return sets.__str__();
     }
 
 private:
-    Dict<value_t, Node*> nodes; // 节点集 元素->元素对应的节点
+    Dict<value_t, Node*> nodes_; // 节点集 元素->元素对应的节点
 };
 
 } // namespace my::util

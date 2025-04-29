@@ -26,16 +26,16 @@ constexpr i32 N = 1e6;
 
 auto speed_of_code_point_pool_create = []() {
     util::DynArray<util::CodePoint> cps;
-    for(auto i = 0; i < N; ++i) {
-        cps.append(*(util::CodePointPool::instance().get(util::Random::instance().nextStr(1), util::encoding_map(util::UTF8))));
+    for (auto i = 0; i < N; ++i) {
+        cps.append(*(util::CodePointPool::instance().get(util::Random::instance().next_str(1), util::encoding_map(util::UTF8))));
     }
     Assertions::assertEquals(N, cps.size());
 };
 
 auto speed_of_original_code_point_create = []() {
     util::DynArray<util::CodePoint> cps;
-    for(auto i = 0; i < N; ++i) {
-        cps.append(util::CodePoint(util::Random::instance().nextStr(1), util::encoding_map(util::UTF8)));
+    for (auto i = 0; i < N; ++i) {
+        cps.append(util::CodePoint(util::Random::instance().next_str(1), util::encoding_map(util::UTF8)));
     }
     Assertions::assertEquals(N, cps.size());
 };

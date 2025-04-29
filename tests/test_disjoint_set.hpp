@@ -25,12 +25,12 @@ auto should_merge_and_find = []() {
     ds.merge(1, 5);
     io::println(ds.__str__());
 
-    Assertions::assertTrue(ds.isConnected(1, 5));
-    Assertions::assertTrue(ds.isConnected(1, 6));
-    Assertions::assertFalse(ds.isConnected(1, 8));
+    Assertions::assertTrue(ds.is_connected(1, 5));
+    Assertions::assertTrue(ds.is_connected(1, 6));
+    Assertions::assertFalse(ds.is_connected(1, 8));
 
     for (i32 i = 1; i <= 10; ++i) {
-        io::print(ds.getRank(i));
+        io::print(ds.rank(i));
     }
     io::println();
 };

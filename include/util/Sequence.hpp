@@ -13,24 +13,25 @@ namespace my::util {
 
 /**
  * 需要子类实现 size() 和 at()
+ * @tparam D 实现类类型
+ * @tparam T 元素类型
  */
 template <typename D, typename T>
 class Sequence : public Object<Sequence<D, T>> {
 public:
-    using Self = Sequence<D, T>;
-    using Super = Object<Sequence<D, T>>;
-
-public:
     using value_t = T;
+    using Self = Sequence<D, value_t>;
+    using Super = Object<Sequence<D, value_t>>;
+
     using iterator = IndexIterator<false, Self, value_t>;
     using const_iterator = IndexIterator<true, Self, value_t>;
 
-    value_t& at(isize index) {
-        return static_cast<D*>(this)->at(index);
+    value_t& at(isize idx) {
+        return static_cast<D*>(this)->at(idx);
     }
 
-    const value_t& at(isize index) const {
-        return static_cast<const D*>(this)->at(index);
+    const value_t& at(isize idx) const {
+        return static_cast<const D*>(this)->at(idx);
     }
 
     isize size() const {
@@ -73,12 +74,12 @@ public:
         return const_iterator(this, size());
     }
 
-    value_t& operator[](isize index) {
-        return at(neg_index(index, size()));
+    value_t& operator[](isize idx) {
+        return at(neg_index(idx, size()));
     }
 
-    const value_t& operator[](isize index) const {
-        return at(neg_index(index, size()));
+    const value_t& operator[](isize idx) const {
+        return at(neg_index(idx, size()));
     }
 
     bool contains(const value_t& v) const {

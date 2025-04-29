@@ -31,28 +31,27 @@ class String;
  */
 template <Hashable K, typename V, typename Bucket = RobinHashBucket<V>>
 class Dict : Object<Dict<K, V, Bucket>> {
-    using Self = Dict<K, V, Bucket>;
-
 public:
     using key_t = K;         // 键的类型
     using value_t = V;       // 值的类型
     using bucket_t = Bucket; // 桶的类型
+    using Self = Dict<key_t, value_t, bucket_t>;
 
     /**
      * @brief 默认构造函数。
      * 初始化一个空字典，使用指定的桶大小（默认为 MIN_BUCKET_SIZE）。
-     * @param bucketSize 桶的初始大小。
+     * @param bucket_size 桶的初始大小。
      */
-    Dict(isize bucketSize = MIN_BUCKET_SIZE) :
-            bucket_(bucketSize), keys_() {}
+    Dict(isize bucket_size = MIN_BUCKET_SIZE) :
+            bucket_(bucket_size), keys_() {}
 
     /**
      * @brief 使用初始化列表构造字典。
-     * @param initList 初始化列表，包含键值对。
+     * @param init_list 初始化列表，包含键值对。
      */
-    Dict(std::initializer_list<Pair<key_t, value_t>>&& initList) :
-            Dict(roundup2(initList.size() / MAX_LOAD_FACTOR)) {
-        for (auto&& [key, val] : initList) {
+    Dict(std::initializer_list<Pair<key_t, value_t>>&& init_list) :
+            Dict(roundup2(init_list.size() / MAX_LOAD_FACTOR)) {
+        for (auto&& [key, val] : init_list) {
             insert(key, val);
         }
     }
@@ -122,7 +121,7 @@ public:
      * @brief 获取负载因子（键值对的数量除以桶的容量）。
      * @return 返回负载因子。
      */
-    f64 loadFactor() const {
+    f64 load_factor() const {
         return 1.0 * size() / capacity();
     }
 
@@ -158,8 +157,8 @@ public:
      * @return 返回对应值的引用。
      */
     value_t& get(const key_t& key) {
-        auto hashVal = my_hash(key);
-        auto* value = get_impl(hashVal);
+        auto hash_val = my_hash(key);
+        auto* value = get_impl(hash_val);
         if (value == nullptr) {
             KeyError(std::format("Key '{}' not found in dict", key));
             return None<value_t>;
@@ -196,13 +195,13 @@ public:
      * @brief 获取指定键对应的值，默认值。
      * 如果键不存在，返回默认值。
      * @param key 键。
-     * @param defaultValue 默认值。
+     * @param default_val 默认值。
      * @return 返回对应值的引用或默认值。
      */
-    value_t& getOrDefault(const key_t& key, value_t& defaultValue) {
+    value_t& get_or_default(const key_t& key, value_t& default_val) {
         auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
-            return defaultValue;
+            return default_val;
         }
         return *value;
     }
@@ -211,13 +210,13 @@ public:
      * @brief 获取指定键对应的值，默认值（常量版本）。
      * 如果键不存在，返回默认值。
      * @param key 键。
-     * @param defaultValue 默认值。
+     * @param default_val 默认值。
      * @return 返回对应值的常量引用或默认值。
      */
-    const value_t& getOrDefault(const key_t& key, const value_t& defaultValue) const {
+    const value_t& get_or_default(const key_t& key, const value_t& default_val) const {
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
-            return defaultValue;
+            return default_val;
         }
         return *value;
     }
@@ -228,24 +227,24 @@ public:
      * @return 返回对应值的引用。
      */
     value_t& operator[](const key_t& key) {
-        auto hashVal = my_hash(key);
-        if (!contains_hash_val(hashVal)) {
-            insert_impl(key, value_t{}, hashVal);
+        auto hash_val = my_hash(key);
+        if (!contains_hash_val(hash_val)) {
+            insert_impl(key, value_t{}, hash_val);
         }
-        return *get_impl(hashVal);
+        return *get_impl(hash_val);
     }
 
     /**
      * @brief 如果键不存在，设置默认值。
      * @param key 键。
-     * @param defaultValue 默认值。
+     * @param default_val 默认值。
      * @return 本字典对象的引用。
      */
     template <typename _V>
-    Self& setdefault(const key_t& key, _V&& defaultValue) {
-        auto hashVal = my_hash(key);
-        if (!contains_hash_val(hashVal)) {
-            insert_impl(key, std::forward<_V>(defaultValue), hashVal);
+    Self& set_default(const key_t& key, _V&& default_val) {
+        auto hash_val = my_hash(key);
+        if (!contains_hash_val(hash_val)) {
+            insert_impl(key, std::forward<_V>(default_val), hash_val);
         }
         return *this;
     }
@@ -258,28 +257,28 @@ public:
      */
     template <typename _K, typename _V>
     value_t& insert(_K&& key, _V&& value) {
-        auto hashVal = my_hash(key);
-        auto* m_value = get_impl(hashVal);
+        auto hash_val = my_hash(key);
+        auto* m_value = get_impl(hash_val);
         if (m_value) {
             return *m_value = std::forward<_V>(value);
         }
-        return insert_impl(std::forward<_K>(key), std::forward<_V>(value), hashVal);
+        return insert_impl(std::forward<_K>(key), std::forward<_V>(value), hash_val);
     }
 
     /**
      * @brief 向字典中插入键值对，如果键已存在，则覆盖原有值（提供哈希值版本）。
      * @param key 键。
      * @param value 值。
-     * @param hashVal 键的哈希值。
+     * @param hash_val 键的哈希值。
      * @return 返回插入或更新后的值的引用。
      */
     template <typename _K, typename _V>
-    value_t& insert(_K&& key, _V&& value, hash_t hashVal) {
-        auto* m_value = get_impl(hashVal);
+    value_t& insert(_K&& key, _V&& value, hash_t hash_val) {
+        auto* m_value = get_impl(hash_val);
         if (m_value) {
             return *m_value = std::forward<_V>(value);
         }
-        return insert_impl(std::forward<_K>(key), std::forward<_V>(value), hashVal);
+        return insert_impl(std::forward<_K>(key), std::forward<_V>(value), hash_val);
     }
 
     /**
@@ -301,9 +300,9 @@ public:
      */
     Self& update(Self&& other) {
         for (auto& key : other.keys_) {
-            auto hashVal = my_hash(key);
-            auto& value = *other.get_impl(hashVal);
-            insert(std::move(key), std::move(value), hashVal);
+            auto hash_val = my_hash(key);
+            auto& value = *other.get_impl(hash_val);
+            insert(std::move(key), std::move(value), hash_val);
         }
         return *this;
     }
@@ -313,8 +312,8 @@ public:
      * @param key 键。
      */
     void pop(const key_t& key) {
-        auto hashVal = my_hash(key);
-        bucket_.pop(hashVal);
+        auto hash_val = my_hash(key);
+        bucket_.pop(hash_val);
         keys_.pop(keys_.find(key));
     }
 
@@ -536,10 +535,10 @@ public:
      * @brief 字典迭代器类。
      */
     class DictIterator : public Object<DictIterator> {
+    public:
         using Self = DictIterator;
         using Super = Object<Self>;
 
-    public:
         using iterator_category = std::random_access_iterator_tag; // 迭代器类别为随机访问迭代器
         using value_type = KeyValueView<key_t, value_t>;           // 值的类型
         using difference_type = std::ptrdiff_t;                    // 差值类型
@@ -768,11 +767,11 @@ public:
 private:
     /**
      * @brief 检查哈希值对应的键值对是否存在。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 如果存在返回 true，否则返回 false。
      */
-    bool contains_hash_val(hash_t hashVal) const {
-        return bucket_.contains(hashVal);
+    bool contains_hash_val(hash_t hash_val) const {
+        return bucket_.contains(hash_val);
     }
 
     /**
@@ -792,16 +791,16 @@ private:
      * @tparam _V 值的类型。
      * @param key 键。
      * @param value 值。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回插入值的引用。
      */
     template <typename _K, typename _V>
-    value_t& insert_impl(_K&& key, _V&& value, hash_t hashVal) {
-        if (loadFactor() >= MAX_LOAD_FACTOR) {
+    value_t& insert_impl(_K&& key, _V&& value, hash_t hash_val) {
+        if (load_factor() >= MAX_LOAD_FACTOR) {
             expand();
         }
 
-        value_t& v = *bucket_.setValue(std::forward<_V>(value), hashVal);
+        value_t& v = *bucket_.set_value(std::forward<_V>(value), hash_val);
         keys_.append(std::forward<_K>(key));
         return v;
     }
@@ -822,20 +821,20 @@ private:
 
     /**
      * @brief 根据哈希值获取值。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回值的指针。
      */
-    value_t* get_impl(hash_t hashVal) {
-        return bucket_.tryGet(hashVal);
+    value_t* get_impl(hash_t hash_val) {
+        return bucket_.try_get(hash_val);
     }
 
     /**
      * @brief 根据哈希值获取值（常量版本）。
-     * @param hashVal 哈希值。
+     * @param hash_val 哈希值。
      * @return 返回值的常量指针。
      */
-    const value_t* get_impl(hash_t hashVal) const {
-        return bucket_.tryGet(hashVal);
+    const value_t* get_impl(hash_t hash_val) const {
+        return bucket_.try_get(hash_val);
     }
 
 private:

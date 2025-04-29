@@ -20,9 +20,8 @@ namespace my::util {
  */
 template <ChainNodeType Node, typename C = Creator<Node>>
 class ChainQueue {
-    using Self = ChainQueue<Node, C>;
-
 public:
+    using Self = ChainQueue<Node, C>;
     using value_t = typename Node::value_t;
 
     /**
@@ -79,10 +78,10 @@ public:
      */
     template <typename... Args>
     void push(Args&&... args) {
-        auto* newNode = creator_(std::forward<Args>(args)...);
-        newNode->next_ = tail_->next_;
-        tail_->next_ = newNode;
-        tail_ = newNode;
+        auto* new_node = creator_(std::forward<Args>(args)...);
+        new_node->next_ = tail_->next_;
+        tail_->next_ = new_node;
+        tail_ = new_node;
         ++size_;
     }
 

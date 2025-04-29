@@ -16,11 +16,11 @@ namespace my::util {
 
 template <typename T>
 class Buffer : public Sequence<Buffer<T>, T> {
-    using Self = Buffer<T>;
-    using Super = Sequence<Buffer<T>, T>;
-
 public:
     using value_t = T;
+    using Self = Buffer<value_t>;
+    using Super = Sequence<Buffer<value_t>, value_t>;
+    
     using iterator = Super::iterator;
     using const_iterator = Super::const_iterator;
 
@@ -115,10 +115,10 @@ public:
     /**
      * @brief 重新分配内存
      */
-    void resize(isize newCap) {
-        if (newCap == capacity_) return;
+    void resize(isize new_capacity) {
+        if (new_capacity == capacity_) return;
         my_destroy(this);
-        my_construct(this, newCap);
+        my_construct(this, new_capacity);
     }
 
     value_t& at(isize index) {

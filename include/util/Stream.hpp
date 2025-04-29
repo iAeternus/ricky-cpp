@@ -72,7 +72,7 @@ public:
      * @brief 终止操作：遍历元素
      */
     template <typename Action>
-    void forEach(Action&& action) && {
+    void for_each(Action&& action) && {
         for (auto&& elem : static_cast<D&>(*this).generator()) {
             action(std::forward<decltype(elem)>(elem));
         }

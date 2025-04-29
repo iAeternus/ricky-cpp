@@ -529,7 +529,7 @@ fn i2c(int ch)->char {
  */
 template <>
 struct std::formatter<my::CString> : std::formatter<const char*> {
-    auto format(const my::CString& value, auto& ctx) const {
+    fn format(const my::CString& value, auto& ctx) const {
         return std::formatter<const char*>::format(value.data(), ctx);
     }
 };

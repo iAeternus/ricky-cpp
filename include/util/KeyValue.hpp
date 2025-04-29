@@ -16,11 +16,10 @@ namespace my::util {
  */
 template <KeyType K, typename V>
 class KeyValueView : Object<KeyValueView<K, V>> {
-    using Self = KeyValueView<K, V>;
-
 public:
     using key_t = K;
     using value_t = V;
+    using Self = KeyValueView<key_t, value_t>;
 
     KeyValueView(const key_t* key = nullptr, const value_t* value = nullptr) :
             key_(key), value_(value) {}

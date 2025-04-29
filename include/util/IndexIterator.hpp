@@ -13,10 +13,10 @@ namespace my::util {
 
 template <bool IsConst, typename C, typename V>
 class IndexIterator : public Object<IndexIterator<IsConst, C, V>> {
+public:
     using Super = Object<IndexIterator>;
     using Self = IndexIterator;
 
-public:
     using container_t = std::conditional_t<IsConst, const C, C>;
     using iterator_category = std::random_access_iterator_tag;
     using value_type = std::conditional_t<IsConst, const V, V>;

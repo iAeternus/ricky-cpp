@@ -18,7 +18,7 @@ auto should_generate_random = []() {
     io::println(std::format("i64: {}", util::Random::instance().next<i64>()));
     io::println(std::format("f32: {}", util::Random::instance().next<f32>()));
     io::println(std::format("f64: {}", util::Random::instance().next<f64>()));
-    io::println(std::format("CString: {}", util::Random::instance().nextStr(6)));
+    io::println(std::format("CString: {}", util::Random::instance().next_str(6)));
 };
 
 auto should_generate_uniform_sum_numbers = []() {
