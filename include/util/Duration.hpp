@@ -30,7 +30,7 @@ public:
      * @example Duration::ofDays(5) 创建 5 天的时间间隔
      */
     static self ofDays(i64 days) {
-        return self{math::multiplyExact(days, 86400LL), 0};
+        return self{math::mul_exact(days, 86400LL), 0};
     }
 
     /**
@@ -41,7 +41,7 @@ public:
      * @example Duration::ofHours(3) 创建 3 小时的时间间隔
      */
     static self ofHours(i64 hours) {
-        return self{math::multiplyExact(hours, 3600LL), 0};
+        return self{math::mul_exact(hours, 3600LL), 0};
     }
 
     /**
@@ -52,7 +52,7 @@ public:
      * @example Duration::ofMinutes(45) 创建 45 分钟的时间间隔
      */
     static self ofMinutes(i64 minutes) {
-        return self{math::multiplyExact(minutes, 60LL), 0};
+        return self{math::mul_exact(minutes, 60LL), 0};
     }
 
     /**
@@ -282,7 +282,7 @@ private:
      * @return 总纳秒数
      */
     i64 toNanos() const {
-        return math::addExact(seconds_ * NANOS_PER_SECOND, nanos_);
+        return math::add_exact(seconds_ * NANOS_PER_SECOND, nanos_);
     }
 };
 

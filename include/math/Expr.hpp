@@ -29,25 +29,25 @@ struct Token : public Object<Token> {
         UNARY_OP     // 一元操作符（如负号）
     };
 
-    struct OpProperty {
-        i32 prec;        // 优先级
-        bool rightAssoc; // 是否右结合
+    struct OpProp {
+        i32 prec;         // 优先级
+        bool right_assoc; // 是否右结合
     };
 
-    Type type;           // 标记类型
-    std::string opValue; // 操作符值
-    f64 numValue;        // 数字值
+    Type type;            // 标记类型
+    std::string op_value; // 操作符值
+    f64 num_value;        // 数字值
 
     Token(Type type, const std::string& value = "", f64 num = 0.0) :
-            type(type), opValue(value), numValue(num) {}
+            type(type), op_value(value), num_value(num) {}
 
     /**
      * @brief 获取操作符属性（优先级和结合性）
      *
-     * @return OpProperty 操作符属性
+     * @return OpProp 操作符属性
      */
-    OpProperty getOpProperty() const {
-        static const util::Dict<std::string, OpProperty> opMap = {
+    OpProp get_op_prop() const {
+        static const util::Dict<std::string, OpProp> op_mp = {
             {"+", {2, false}}, // 加法
             {"-", {2, false}}, // 减法
             {"*", {3, false}}, // 乘法
@@ -56,19 +56,19 @@ struct Token : public Object<Token> {
             {"^", {4, true}},  // 幂运算（右结合）
             {"u-", {5, true}}  // 一元负号（右结合）
         };
-        return opMap.get(opValue);
+        return op_mp.get(op_value);
     }
 
     CString __str__() const {
         std::stringstream stream;
-        if (opValue.empty()) {
-            if (opValue == "u-") {
+        if (op_value.empty()) {
+            if (op_value == "u-") {
                 stream << '-';
             } else {
-                stream << numValue;
+                stream << num_value;
             }
         } else {
-            stream << opValue;
+            stream << op_value;
         }
         return CString{stream.str()};
     }
@@ -90,7 +90,7 @@ public:
             });
 
             tokenize(filtered);
-            this->valid_ = checkBrackets();
+            this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
             RuntimeError(std::format("Tokenization error: {}", std::string(ex.what())));
         }
@@ -99,14 +99,14 @@ public:
     /**
      * @brief 检查表达式是否有效
      */
-    bool isValid() const {
+    bool is_valid() const {
         return valid_;
     }
 
     /**
      * @brief 转为后缀表达式
      */
-    util::Vector<Token> toPostfix() const {
+    util::Vector<Token> to_post() const {
         if (!valid_) RuntimeError("Invalid expression");
         return in2post();
     }
@@ -116,7 +116,7 @@ public:
      */
     f64 eval() const {
         if (!valid_) RuntimeError("Invalid expression");
-        return evalPostfix(in2post());
+        return eval_post(in2post());
     }
 
     CString __str__() const {
@@ -133,49 +133,49 @@ private:
      */
     void tokenize(const std::string& expr) {
         tokens_.clear();
-        std::string numStr;
-        auto handleNumber = [&]() {
-            if (numStr.empty()) return;
-            checkNumber(numStr);
-            tokens_.append(Token::NUMBER, "", std::stod(numStr));
-            numStr.clear();
+        std::string num_str;
+        auto handle_num = [&]() {
+            if (num_str.empty()) return;
+            check_num(num_str);
+            tokens_.append(Token::NUMBER, "", std::stod(num_str));
+            num_str.clear();
         };
 
         for (const auto& c : expr) {
             if (std::isdigit(c) || c == '.') {
-                numStr += c;
+                num_str += c;
             } else {
-                handleNumber();
-                if (isUnaryNegSign(c)) {
+                handle_num();
+                if (is_unary_neg_sign(c)) {
                     tokens_.append(Token::UNARY_OP, "u-");
                 } else if (c == '(') {
                     tokens_.append(Token::LEFT_PAREN, "(");
                 } else if (c == ')') {
                     tokens_.append(Token::RIGHT_PAREN, ")");
-                } else if (isOperator(c)) {
+                } else if (is_op(c)) {
                     tokens_.append(Token::OPERATOR, std::string(1, c));
                 } else if (!std::isspace(c)) {
                     RuntimeError(std::format("Invalid character: {}", c));
                 }
             }
         }
-        handleNumber();
+        handle_num();
     }
 
     /**
      * @brief 校验数字格式
      */
-    void checkNumber(const std::string& num) {
+    void check_num(const std::string& num) {
         if (num.empty()) return;
 
-        auto dotPos = num.find('.');
-        if (dotPos != std::string::npos) {
+        auto dot_pos = num.find('.');
+        if (dot_pos != std::string::npos) {
             // 还有其他小数点
-            if (num.find('.', dotPos + 1) != std::string::npos) {
+            if (num.find('.', dot_pos + 1) != std::string::npos) {
                 RuntimeError(std::format("Invalid number (multiple dots): {}", num));
             }
             // 小数点在开头或结尾
-            if (dotPos == 0 || dotPos == num.length() - 1) {
+            if (dot_pos == 0 || dot_pos == num.length() - 1) {
                 RuntimeError(std::format("Invalid number (misplaced dot): {}", num));
             }
         }
@@ -187,14 +187,14 @@ private:
     /**
      * @brief 判断是否为一元负号
      */
-    bool isUnaryNegSign(char c) const {
+    bool is_unary_neg_sign(char c) const {
         return c == '-' && (tokens_.empty() || tokens_.back().type == Token::LEFT_PAREN || tokens_.back().type == Token::OPERATOR || tokens_.back().type == Token::UNARY_OP);
     }
 
     /**
      * @brief 判断是否为操作符
      */
-    bool isOperator(char c) const {
+    bool is_op(char c) const {
         static const std::string ops("+-*/%^");
         return ops.find(c) != std::string::npos;
     }
@@ -202,7 +202,7 @@ private:
     /**
      * @brief 判断括号是否匹配
      */
-    bool checkBrackets() const {
+    bool check_brackets() const {
         std::stack<Token> st;
         for (const auto& token : tokens_) {
             if (token.type == Token::LEFT_PAREN) {
@@ -222,7 +222,7 @@ private:
      */
     util::Vector<Token> in2post() const {
         util::Vector<Token> ans;
-        std::stack<Token> opSt;
+        std::stack<Token> op_st;
 
         for (const auto& token : tokens_) {
             switch (token.type) {
@@ -230,23 +230,23 @@ private:
                 ans.append(token);
                 break;
             case Token::LEFT_PAREN:
-                opSt.push(token);
+                op_st.push(token);
                 break;
             case Token::RIGHT_PAREN:
-                while (!opSt.empty() && opSt.top().type != Token::LEFT_PAREN) {
-                    ans.append(opSt.top());
-                    opSt.pop();
+                while (!op_st.empty() && op_st.top().type != Token::LEFT_PAREN) {
+                    ans.append(op_st.top());
+                    op_st.pop();
                 }
-                if (opSt.empty()) RuntimeError("Mismatched parentheses");
-                opSt.pop(); // pop左括号
+                if (op_st.empty()) RuntimeError("Mismatched parentheses");
+                op_st.pop(); // pop左括号
                 break;
             case Token::OPERATOR:
             case Token::UNARY_OP:
-                while (!opSt.empty() && opSt.top().type != Token::LEFT_PAREN && shouldPop(token, opSt.top())) {
-                    ans.append(opSt.top());
-                    opSt.pop(); // TODO 用 util::Stack 这里段错误
+                while (!op_st.empty() && op_st.top().type != Token::LEFT_PAREN && should_pop(token, op_st.top())) {
+                    ans.append(op_st.top());
+                    op_st.pop(); // TODO 用 util::Stack 这里段错误
                 }
-                opSt.push(token); // 当前操作符入栈
+                op_st.push(token); // 当前操作符入栈
                 break;
             default:
                 RuntimeError("Unexpected token type");
@@ -254,12 +254,12 @@ private:
         }
 
         // 处理剩下的操作符
-        while (!opSt.empty()) {
-            if (opSt.top().type == Token::LEFT_PAREN) {
+        while (!op_st.empty()) {
+            if (op_st.top().type == Token::LEFT_PAREN) {
                 RuntimeError("Mismatched parentheses");
             }
-            ans.append(opSt.top());
-            opSt.pop();
+            ans.append(op_st.top());
+            op_st.pop();
         }
 
         return ans;
@@ -269,27 +269,27 @@ private:
      * @brief 判断是否需要弹出操作符
      * @note 当遇到操作符时，对于左结合操作符，需要弹出所有优先级小于等于当前操作符的操作符；对于右操作符是小于
      */
-    bool shouldPop(const Token& cur, const Token& stackTop) const {
-        auto curProp = cur.getOpProperty();
-        auto stackProp = stackTop.getOpProperty();
+    bool should_pop(const Token& cur, const Token& stack_top) const {
+        auto cur_prop = cur.get_op_prop();
+        auto top_prop = stack_top.get_op_prop();
 
-        if (curProp.rightAssoc) {
-            return curProp.prec < stackProp.prec;
+        if (cur_prop.right_assoc) {
+            return cur_prop.prec < top_prop.prec;
         } else {
-            return curProp.prec <= stackProp.prec;
+            return cur_prop.prec <= top_prop.prec;
         }
     }
 
     /**
      * @brief 后缀表达式求值
      */
-    f64 evalPostfix(const util::Vector<Token>& postfix) const {
+    f64 eval_post(const util::Vector<Token>& post) const {
         std::stack<f64> st;
         f64 a, b, x;
-        for (const auto& token : postfix) {
+        for (const auto& token : post) {
             switch (token.type) {
             case Token::NUMBER:
-                st.push(token.numValue);
+                st.push(token.num_value);
                 break;
             case Token::OPERATOR:
                 if (st.size() < 2) RuntimeError("Insufficient operands");
@@ -297,12 +297,12 @@ private:
                 st.pop();
                 a = st.top();
                 st.pop();
-                st.push(evalOperator(a, b, token.opValue));
+                st.push(eval_op(a, b, token.op_value));
                 break;
             case Token::UNARY_OP:
                 x = st.top();
                 st.pop();
-                st.push(evalUnaryOp(x, token.opValue));
+                st.push(eval_unary_op(x, token.op_value));
                 break;
             default:
                 RuntimeError("Unexpected token in postfix");
@@ -312,7 +312,7 @@ private:
         return st.top();
     }
 
-    static f64 evalOperator(f64 a, f64 b, const std::string& op) {
+    static f64 eval_op(f64 a, f64 b, const std::string& op) {
         if (op == "+") {
             return a + b;
         } else if (op == "-") {
@@ -320,7 +320,7 @@ private:
         } else if (op == "*") {
             return a * b;
         } else if (op == "/") {
-            if (isZero(b)) {
+            if (is_zero(b)) {
                 RuntimeError("Divide by zero");
             }
             return a / b;
@@ -334,7 +334,7 @@ private:
         }
     }
 
-    static f64 evalUnaryOp(f64 x, const std::string& op) {
+    static f64 eval_unary_op(f64 x, const std::string& op) {
         if (op == "u-") {
             return -x;
         } else {

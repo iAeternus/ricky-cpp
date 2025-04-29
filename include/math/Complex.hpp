@@ -13,9 +13,8 @@
 namespace my::math {
 
 class Complex : public Object<Complex> {
-    using self = Complex;
-
 public:
+    using self = Complex;
     const static self ZERO;
 
     Complex(f64 re_ = 0.0, f64 im_ = 0.0) :
@@ -38,21 +37,21 @@ public:
         return im_;
     }
 
-    f64 normSqr() const {
+    f64 modulus_sqr() const {
         return re_ * re_ + im_ * im_;
     }
 
     /**
      * @brief 计算模长
      */
-    f64 norm() const {
-        return std::sqrt(normSqr());
+    f64 modulus() const {
+        return std::sqrt(modulus_sqr());
     }
 
     /**
      * @brief 计算俯角，单位：弧度
      */
-    f64 arg() const {
+    f64 angle() const {
         return std::atan2(im_, re_);
     }
 
@@ -92,7 +91,7 @@ public:
     }
 
     friend self operator/(const self& a, const self& b) {
-        f64 bNormSqr = b.normSqr();
+        f64 bNormSqr = b.modulus_sqr();
         return self{(a.re_ * b.re_ + a.im_ * b.im_) / bNormSqr,
                     (a.im_ * b.re_ - a.re_ * b.im_) / bNormSqr};
     }
@@ -104,18 +103,18 @@ public:
 
     CString __str__() const {
         std::stringstream stream;
-        if (isZero(re_) && isZero(im_)) {
+        if (is_zero(re_) && is_zero(im_)) {
             return CString{"0"};
         }
 
-        if (!isZero(re_)) {
+        if (!is_zero(re_)) {
             stream << re_;
         }
-        if (!isZero(im_)) {
-            if (!isZero(re_) && isPositive(im_)) {
+        if (!is_zero(im_)) {
+            if (!is_zero(re_) && is_pos(im_)) {
                 stream << '+';
             }
-            if (!isOne(im_)) {
+            if (!is_one(im_)) {
                 stream << im_;
             }
             stream << 'i';
@@ -136,63 +135,63 @@ public:
 private:
     void parse(const util::String& str) {
         isize i = 0LL;
-        auto trimStr = str.removeAll(' ');
-        isize tSize = trimStr.size();
-        if (i < tSize && trimStr[i] == '+') {
+        auto trim_str = str.removeAll(' ');
+        isize t_size = trim_str.size();
+        if (i < t_size && trim_str[i] == '+') {
             ++i;
-            re_ = parseNumber(trimStr, i);
-        } else if (i < tSize && trimStr[i] == '-') {
+            re_ = parse_num(trim_str, i);
+        } else if (i < t_size && trim_str[i] == '-') {
             ++i;
-            re_ = -parseNumber(trimStr, i);
+            re_ = -parse_num(trim_str, i);
         } else {
-            re_ = peekReal(trimStr) ? parseNumber(trimStr, i) : 0.0;
+            re_ = peek_real(trim_str) ? parse_num(trim_str, i) : 0.0;
         }
 
-        if (i < trimStr.size() && trimStr[i] == '+') {
+        if (i < trim_str.size() && trim_str[i] == '+') {
             ++i;
-            im_ = parseNumber(trimStr, i);
-        } else if (i < trimStr.size() && trimStr[i] == '-') {
+            im_ = parse_num(trim_str, i);
+        } else if (i < trim_str.size() && trim_str[i] == '-') {
             ++i;
-            im_ = -parseNumber(trimStr, i);
+            im_ = -parse_num(trim_str, i);
         } else {
-            im_ = peekImag(trimStr, i) ? parseNumber(trimStr, i) : 0.0;
+            im_ = peek_imag(trim_str, i) ? parse_num(trim_str, i) : 0.0;
         }
-        if (i < trimStr.size() && isImagSign(trimStr[i])) {
+        if (i < trim_str.size() && is_imag_sign(trim_str[i])) {
             ++i;
         }
-        if (i != trimStr.size()) {
+        if (i != trim_str.size()) {
             ValueError("Invalid complex number format");
         }
     }
 
-    static bool isImagSign(const util::CodePoint& ch) {
+    static bool is_imag_sign(const util::CodePoint& ch) {
         return ch == 'i' || ch == 'I';
     }
 
-    static f64 parseNumber(const util::String& str, isize& i) {
-        if (isImagSign(str[i])) {
+    static f64 parse_num(const util::String& str, isize& i) {
+        if (is_imag_sign(str[i])) {
             return 1.0;
         }
-        std::string number;
+        std::string num;
         while (i < str.size() && (std::isdigit(str[i]) || str[i] == '.')) {
-            number += str[i++];
+            num += str[i++];
         }
-        if (number.empty()) {
+        if (num.empty()) {
             ValueError("Invalid number format");
             return None<f64>;
         }
-        return std::stod(number);
+        return std::stod(num);
     }
 
     /**
      * 从第一个数字起探测是否有实部，不会检查字符是否是数字
      */
-    static bool peekReal(const util::String& str) {
-        isize mSize = str.size();
-        for (isize i = 0; i < mSize; ++i) {
+    static bool peek_real(const util::String& str) {
+        isize m_size = str.size();
+        for (isize i = 0; i < m_size; ++i) {
             if (str[i] == '+' || str[i] == '-') {
                 return true;
-            } else if (isImagSign(str[i])) {
+            } else if (is_imag_sign(str[i])) {
                 return false;
             }
         }
@@ -202,10 +201,10 @@ private:
     /**
      * 从i起探测是否有虚部，不会检查字符是否是数字
      */
-    static bool peekImag(const util::String& str, isize i) {
-        isize mSize = str.size();
-        for (isize j = i; j < mSize; ++j) {
-            if (isImagSign(str[j])) {
+    static bool peek_imag(const util::String& str, isize i) {
+        isize m_size = str.size();
+        for (isize j = i; j < m_size; ++j) {
+            if (is_imag_sign(str[j])) {
                 return true;
             }
         }

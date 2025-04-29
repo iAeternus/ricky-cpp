@@ -57,9 +57,9 @@ auto should_judge_odd = []() {
     math::BigInteger bi3 = math::BigInteger::ZERO;
 
     // When
-    bool res = bi.isOdd();
-    bool res2 = bi2.isOdd();
-    bool res3 = bi3.isOdd();
+    bool res = bi.is_odd();
+    bool res2 = bi2.is_odd();
+    bool res3 = bi3.is_odd();
 
     // Then
     Assertions::assertFalse(res);

@@ -73,7 +73,7 @@ public:
      */
     self unit() const {
         f64 len = length();
-        if(isZero(len)) {
+        if (is_zero(len)) {
             return self{0, 0};
         }
         return self{x_ / len, y_ / len};
@@ -84,7 +84,7 @@ public:
      */
     self norm() const {
         f64 len = length();
-        if(isZero(len)) {
+        if (is_zero(len)) {
             return self{0, 0};
         }
         return self{-y_ / len, x_ / len};

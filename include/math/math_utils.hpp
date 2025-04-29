@@ -113,7 +113,7 @@ fn fcmp(const T& a, const T& b, T eps = EPS)->cmp_t {
  * @return true=是 false=否
  */
 template <FloatingPointType T>
-fn isPositive(const T& num, T eps = EPS)->bool {
+fn is_pos(const T& num, T eps = EPS)->bool {
     return fcmp(num, 0.0, eps) > 0;
 }
 
@@ -122,7 +122,7 @@ fn isPositive(const T& num, T eps = EPS)->bool {
  * @return true=是 false=否
  */
 template <FloatingPointType T>
-fn isNegative(const T& num, T eps = EPS)->bool {
+fn is_neg(const T& num, T eps = EPS)->bool {
     return fcmp(num, 0.0, eps) < 0;
 }
 
@@ -131,7 +131,7 @@ fn isNegative(const T& num, T eps = EPS)->bool {
  * @return true=是 false=否
  */
 template <FloatingPointType T>
-fn isZero(const T& num, T eps = EPS)->bool {
+fn is_zero(const T& num, T eps = EPS)->bool {
     return fcmp(num, 0.0, eps) == 0;
 }
 
@@ -140,7 +140,7 @@ fn isZero(const T& num, T eps = EPS)->bool {
  * @return true=是 false=否
  */
 template <FloatingPointType T>
-fn isOne(const T& num, T eps = EPS)->bool {
+fn is_one(const T& num, T eps = EPS)->bool {
     return fcmp(num, 1.0, eps) == 0;
 }
 
@@ -148,7 +148,7 @@ fn isOne(const T& num, T eps = EPS)->bool {
  * @brief 倒数
  */
 fn reciprocal(f64 num)->f64 {
-    if (isZero(num)) {
+    if (is_zero(num)) {
         ValueError("Divided by 0.");
         return None<f64>;
     }
@@ -159,8 +159,8 @@ fn reciprocal(f64 num)->f64 {
  * @brief 处理 -0 问题
  */
 template <FloatingPointType T>
-fn correctFloat(const T& num)->T {
-    if (isZero(num)) {
+fn correct_float(const T& num)->T {
+    if (is_zero(num)) {
         return 0.0;
     }
     return num;
@@ -169,7 +169,7 @@ fn correctFloat(const T& num)->T {
 /**
  * @brief 相加并校验是否溢出，若溢出抛出RuntimeError
  */
-fn addExact(i64 x, i64 y)->i64 {
+fn add_exact(i64 x, i64 y)->i64 {
     i64 r = x + y;
     // HD 2-12 Overflow iff both arguments have the opposite sign of the result
     if (((x ^ r) & (y ^ r)) < 0) {
@@ -181,7 +181,7 @@ fn addExact(i64 x, i64 y)->i64 {
 /**
  * @brief 相减并校验是否溢出，若溢出抛出RuntimeError
  */
-fn subtractExact(i64 x, i64 y)->i64 {
+fn sub_exact(i64 x, i64 y)->i64 {
     i64 r = x - y;
     // HD 2-12 Overflow iff the arguments have different signs and
     // the sign of the result is different from the sign of x
@@ -194,7 +194,7 @@ fn subtractExact(i64 x, i64 y)->i64 {
 /**
  * @brief 相乘并校验是否溢出，若溢出抛出RuntimeError
  */
-fn multiplyExact(i32 x, i32 y)->i32 {
+fn mul_exact(i32 x, i32 y)->i32 {
     i64 r = i64(x) * i64(y);
     if (i32(r) != r) {
         RuntimeError("i32 overflow");
@@ -202,7 +202,7 @@ fn multiplyExact(i32 x, i32 y)->i32 {
     return i32(r);
 }
 
-fn multiplyExact(i64 x, i64 y)->i64 {
+fn mul_exact(i64 x, i64 y)->i64 {
     i64 r = x * y;
     i64 ax = std::abs(x);
     i64 ay = std::abs(y);

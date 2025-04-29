@@ -13,9 +13,8 @@
 namespace my::math {
 
 class BigInteger : public Object<BigInteger> {
-    using self = BigInteger;
-
 public:
+    using self = BigInteger;
     const static self ZERO;
     const static self ONE;
 
@@ -63,7 +62,7 @@ public:
             num_.append(n % BASE);
             n /= BASE;
         }
-        calcLength();
+        calc_len();
         return *this;
     }
 
@@ -87,7 +86,7 @@ public:
         if ((len - stop) % WIDTH != 0) {
             num_.append(tmp);
         }
-        calcLength();
+        calc_len();
         return *this;
     }
 
@@ -111,7 +110,7 @@ public:
      * @brief 判断是否为奇数
      * @return true=是 false=否
      */
-    bool isOdd() const {
+    bool is_odd() const {
         return num_.front() & 1;
     }
 
@@ -119,14 +118,14 @@ public:
      * @brief 判断是否为偶数
      * @return true=是 false=否
      */
-    bool isEven() const {
-        return !isOdd();
+    bool is_even() const {
+        return !is_odd();
     }
 
     /**
      * @brief 左移n位，低位补0
      */
-    self leftShift(isize n) const {
+    self left_shift(isize n) const {
         isize tmp = n % WIDTH;
         self ans;
         ans.length_ = n + 1;
@@ -160,19 +159,19 @@ public:
         }
         self ans;
         i32 carry = 0, aa, bb;
-        isize aSize = a.num_.size(), bSize = b.num_.size();
-        isize maxSize = math::max_(aSize, bSize);
+        isize a_size = a.num_.size(), b_size = b.num_.size();
+        isize max_size = math::max_(a_size, b_size);
         ans.num_.clear();
-        for (isize i = 0; i < maxSize; ++i) {
-            aa = aSize <= i ? 0 : a.num_[i];
-            bb = bSize <= i ? 0 : b.num_[i];
+        for (isize i = 0; i < max_size; ++i) {
+            aa = a_size <= i ? 0 : a.num_[i];
+            bb = b_size <= i ? 0 : b.num_[i];
             ans.num_.append((aa + bb + carry) % BASE);
             carry = (aa + bb + carry) / BASE;
         }
         if (carry > 0) {
             ans.num_.append(carry);
         }
-        ans.calcLength();
+        ans.calc_len();
         return ans;
     }
 
@@ -212,16 +211,16 @@ public:
         }
         self ans;
         i32 carry = 0, aa, bb;
-        isize aSize = a.num_.size(), bSize = b.num_.size();
-        isize maxSize = math::max_(aSize, bSize);
+        isize a_size = a.num_.size(), b_size = b.num_.size();
+        isize max_size = math::max_(a_size, b_size);
         ans.num_.clear();
-        for (isize i = 0; i < maxSize; ++i) {
+        for (isize i = 0; i < max_size; ++i) {
             aa = a.num_[i];
-            bb = bSize <= i ? 0 : b.num_[i];
+            bb = b_size <= i ? 0 : b.num_[i];
             ans.num_.append((aa - bb - carry + BASE) % BASE);
             carry = aa < bb + carry ? 1 : 0;
         }
-        ans.calcLength();
+        ans.calc_len();
         return ans;
     }
 
@@ -242,10 +241,10 @@ public:
     }
 
     friend self operator*(const self& a, const self& b) {
-        isize aSize = a.num_.size(), bSize = b.num_.size();
+        isize a_size = a.num_.size(), b_size = b.num_.size();
         util::DynArray<i64> res;
-        for (isize i = 0; i < aSize; ++i) {
-            for (isize j = 0; j < bSize; ++j) {
+        for (isize i = 0; i < a_size; ++i) {
+            for (isize j = 0; j < b_size; ++j) {
                 i64 tmp = i64(a.num_[i]) * i64(b.num_[j]);
                 i + j < res.size() ? res[i + j] += tmp : res.append(tmp);
             }
@@ -266,7 +265,7 @@ public:
         if (carry > 0) {
             ans.num_.append(carry);
         }
-        ans.calcLength();
+        ans.calc_len();
         return ans;
     }
 
@@ -288,7 +287,7 @@ public:
         self tmp;
         isize lenDiff = aa.length_ - bb.length_;
         for (isize i = 0; i <= lenDiff; ++i) {
-            tmp = bb.leftShift(lenDiff - i);
+            tmp = bb.left_shift(lenDiff - i);
             while (aa >= tmp) {
                 ++str[i];
                 aa -= tmp;
@@ -320,7 +319,7 @@ public:
     friend self operator^(self base, self exp) {
         self ans{ONE};
         for (; exp; exp /= 2, base *= base) {
-            if (exp.isOdd()) {
+            if (exp.is_odd()) {
                 ans *= base;
             }
         }
@@ -376,8 +375,8 @@ public:
             } else if (this->length_ > other.length_) {
                 return 1;
             } else {
-                isize aSize = this->num_.size();
-                for (isize i = aSize - 1; i >= 0; --i) {
+                isize a_size = this->num_.size();
+                for (isize i = a_size - 1; i >= 0; --i) {
                     if (this->num_[i] < other.num_[i]) {
                         return -1;
                     } else if (this->num_[i] > other.num_[i]) {
@@ -395,7 +394,7 @@ private:
     /**
      * @brief 移除前导0
      */
-    void cutLeadingZero() {
+    void cut_leading_zero() {
         while (num_.back() == 0 && num_.size() != 1) {
             num_.pop();
         }
@@ -404,8 +403,8 @@ private:
     /**
      * @brief 计算长度，每4字节存8个10进制位
      */
-    void calcLength() {
-        cutLeadingZero();
+    void calc_len() {
+        cut_leading_zero();
         i32 tmp = num_.back();
         if (tmp == 0) {
             length_ = 1;
@@ -419,8 +418,8 @@ private:
     }
 
 private:
-    bool sign_;               // true=正数 false=负数
-    isize length_;            // 十进制位数
+    bool sign_;             // true=正数 false=负数
+    isize length_;          // 十进制位数
     util::Vector<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
 
     static const i32 BASE = 100000000;

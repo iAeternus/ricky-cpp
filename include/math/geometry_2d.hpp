@@ -15,42 +15,42 @@ namespace my::math {
 /**
  * @brief 计算两向量点积
  */
-fn dot(const Vector2& a, const Vector2& b) -> f64 {
+fn dot(const Vector2& a, const Vector2& b)->f64 {
     return a.x() * b.x() + a.y() * b.y();
 }
 
 /**
  * @brief 计算两向量夹角余弦
  */
-fn cos(const Vector2& a, const Vector2& b) -> f64 {
+fn cos(const Vector2& a, const Vector2& b)->f64 {
     return dot(a, b) / a.length() / b.length();
 }
 
 /**
  * @brief 计算两向量夹角，单位：弧度
  */
-fn angle(const Vector2& a, const Vector2& b) -> f64 {
+fn angle(const Vector2& a, const Vector2& b)->f64 {
     return std::acos(cos(a, b));
 }
 
 /**
  * @brief 计算两向量叉积
  */
-fn cross(const Vector2& a, const Vector2& b) -> f64 {
+fn cross(const Vector2& a, const Vector2& b)->f64 {
     return a.x() * b.y() - a.y() * b.x();
 }
 
 /**
  * @brief 计算三角形有向面积 A = 1/2 * (u x v)
  */
-fn area(const Point2& a, const Point2& b, const Point2& c) -> f64 {
+fn area(const Point2& a, const Point2& b, const Point2& c)->f64 {
     return cross(b - a, c - a) / 2.0;
 }
 
 /**
  * @brief 计算两直线交点
  */
-fn line_intersection(const Line& a, const Line& b) -> Point2 {
+fn line_intersection(const Line& a, const Line& b)->Point2 {
     auto u = a.p() - b.p();
     auto t = cross(b.s(), u) / cross(a.s(), b.s());
     return a.p() + a.s() * t;
@@ -59,7 +59,7 @@ fn line_intersection(const Line& a, const Line& b) -> Point2 {
 /**
  * @brief 计算点p到直线AB距离
  */
-fn distance(const Point2& p, const Point2& a, const Point2& b) -> f64 {
+fn distance(const Point2& p, const Point2& a, const Point2& b)->f64 {
     auto v1 = b - a, v2 = p - a;
     return std::fabs(cross(v1, v2) / v1.length());
 }
@@ -68,14 +68,14 @@ fn distance(const Point2& p, const Point2& a, const Point2& b) -> f64 {
  * @brief 计算点p到线段AB距离
  */
 auto distance_to_seg(const Point2& p, const Point2& a, const Point2& b) -> f64 {
-    if(a.__equals__(b)) {
+    if (a.__equals__(b)) {
         return (a - p).length();
     }
 
     auto v1 = b - a, v2 = p - a, v3 = p - b;
-    if(isNegative(dot(v1, v2))) {
+    if (is_neg(dot(v1, v2))) {
         return v2.length();
-    } else if(isPositive(dot(v1, v3))) {
+    } else if (is_pos(dot(v1, v3))) {
         return v3.length();
     } else {
         return distance(p, a, b);
@@ -85,12 +85,10 @@ auto distance_to_seg(const Point2& p, const Point2& a, const Point2& b) -> f64 {
 /**
  * @brief 计算点p在直线AB上的投影点
  */
-fn projection(const Point2& p, const Point2& a, const Point2& b) -> Point2 {
+fn projection(const Point2& p, const Point2& a, const Point2& b)->Point2 {
     auto v = b - a;
     return a + v * (dot(v, p - a) / dot(v, v));
 }
-
-
 
 } // namespace my::math
 

@@ -27,23 +27,23 @@ auto should_construct = []() {
     Assertions::assertEquals("i"_cs, c9.__str__());
 };
 
-auto should_calculate_norm = []() {
+auto should_calc_modulus = []() {
     // Given
     math::Complex a = "3 + 4i";
 
     // When
-    f64 res = a.norm();
+    f64 res = a.modulus();
 
     // Then
     Assertions::assertEquals(5.0, res);
 };
 
-auto should_calculate_arg = []() {
+auto should_calc_arg = []() {
     // Given
     math::Complex a = "3 + 4i";
 
     // When
-    f64 res = a.arg();
+    f64 res = a.angle();
 
     // Then
     Assertions::assertEquals(0.9272952180016122, res);
@@ -105,8 +105,8 @@ void test_complex() {
     UnitTestGroup group{"test_complex"};
 
     group.addTest("should_construct", should_construct);
-    group.addTest("should_calculate_norm", should_calculate_norm);
-    group.addTest("should_calculate_arg", should_calculate_arg);
+    group.addTest("should_calc_modulus", should_calc_modulus);
+    group.addTest("should_calc_arg", should_calc_arg);
     group.addTest("should_add", should_add);
     group.addTest("should_subtract", should_subtract);
     group.addTest("should_multiply", should_multiply);

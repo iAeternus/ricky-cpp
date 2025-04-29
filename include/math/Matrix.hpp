@@ -440,7 +440,7 @@ public:
                     }
                 }
             }
-            p = correctFloat(p);
+            p = correct_float(p);
             if (m.swapRow(k, is)) f = -f;
             if (m.swapCol(k, js)) f = -f;
             ans *= m[k][k];
@@ -475,7 +475,7 @@ public:
                     }
                 }
             }
-            if (isZero(p)) return ans;
+            if (is_zero(p)) return ans;
             ++ans;
             m.swapRow(k, is);
             m.swapCol(k, js);
@@ -575,7 +575,7 @@ private:
      * @brief 校验高斯-约当消元法的主元，不能为0
      */
     static void checkPivot(value_t pivot) {
-        if (isZero(pivot)) {
+        if (is_zero(pivot)) {
             ValueError("Pivot entries cannot be 0.");
         }
     }
@@ -583,7 +583,7 @@ private:
     void correct() {
         isize size = data_.size();
         for (isize i = 0; i < size; ++i) {
-            data_[i] = correctFloat(data_[i]);
+            data_[i] = correct_float(data_[i]);
         }
     }
 

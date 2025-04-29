@@ -169,7 +169,7 @@ public:
      * @return 新的日期对象
      */
     self plusWeeks(i64 weeks) const {
-        return plusDays(math::multiplyExact(weeks, 7LL));
+        return plusDays(math::mul_exact(weeks, 7LL));
     }
 
     /**
@@ -205,7 +205,7 @@ public:
      * @return 新的日期对象
      */
     self minusWeeks(i64 weeks) const {
-        return minusDays(math::multiplyExact(weeks, 7LL));
+        return minusDays(math::mul_exact(weeks, 7LL));
     }
 
     /**
