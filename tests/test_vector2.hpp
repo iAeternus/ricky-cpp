@@ -103,9 +103,10 @@ void test_vector2() {
 
     group.addTest("it_works", it_works);
     group.addTest("should_calc_pa", should_calc_pa);
-    group.addTest("should_calc_norm", should_calc_length);
+    group.addTest("should_calc_length", should_calc_length);
     group.addTest("should_rotate", should_rotate);
     group.addTest("should_calc_unit", should_calc_unit);
+    group.addTest("should_calc_norm", should_calc_length);
 
     group.startAll();
 }

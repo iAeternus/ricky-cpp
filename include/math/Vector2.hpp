@@ -1,3 +1,9 @@
+/**
+ * @brief 2维向量
+ * @author Ricky
+ * @date 2025/4/25
+ * @version 1.0
+ */
 #ifndef VECTOR2_HPP
 #define VECTOR2_HPP
 
@@ -59,7 +65,7 @@ public:
      * @brief 逆时针旋转 rad 弧度
      */
     self rotate(double rad) const {
-        return self{x_ * cos(rad) - y_ * sin(rad), x_ * sin(rad) + y_ * cos(rad)};
+        return self{x_ * std::cos(rad) - y_ * std::sin(rad), x_ * std::sin(rad) + y_ * std::cos(rad)};
     }
 
     /**

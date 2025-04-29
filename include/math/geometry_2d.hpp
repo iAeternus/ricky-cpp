@@ -8,6 +8,7 @@
 #define GEOMETRY_2D_HPP
 
 #include "Vector2.hpp"
+#include "Line.hpp"
 
 namespace my::math {
 
@@ -45,6 +46,51 @@ fn cross(const Vector2& a, const Vector2& b) -> f64 {
 fn area(const Point2& a, const Point2& b, const Point2& c) -> f64 {
     return cross(b - a, c - a) / 2.0;
 }
+
+/**
+ * @brief 计算两直线交点
+ */
+fn line_intersection(const Line& a, const Line& b) -> Point2 {
+    auto u = a.p() - b.p();
+    auto t = cross(b.s(), u) / cross(a.s(), b.s());
+    return a.p() + a.s() * t;
+}
+
+/**
+ * @brief 计算点p到直线AB距离
+ */
+fn distance(const Point2& p, const Point2& a, const Point2& b) -> f64 {
+    auto v1 = b - a, v2 = p - a;
+    return std::fabs(cross(v1, v2) / v1.length());
+}
+
+/**
+ * @brief 计算点p到线段AB距离
+ */
+auto distance_to_seg(const Point2& p, const Point2& a, const Point2& b) -> f64 {
+    if(a.__equals__(b)) {
+        return (a - p).length();
+    }
+
+    auto v1 = b - a, v2 = p - a, v3 = p - b;
+    if(isNegative(dot(v1, v2))) {
+        return v2.length();
+    } else if(isPositive(dot(v1, v3))) {
+        return v3.length();
+    } else {
+        return distance(p, a, b);
+    }
+}
+
+/**
+ * @brief 计算点p在直线AB上的投影点
+ */
+fn projection(const Point2& p, const Point2& a, const Point2& b) -> Point2 {
+    auto v = b - a;
+    return a + v * (dot(v, p - a) / dot(v, v));
+}
+
+
 
 } // namespace my::math
 

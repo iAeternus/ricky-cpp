@@ -17,10 +17,10 @@ namespace my {
 /**
  * @brief 根对象（CRTP基类）
  */
-template <typename Derived>
+template <typename D>
 class Object {
 public:
-    using MyObjectDerived = Derived;
+    using derived_obj = D;
 
     /**
      * 计算hash编码
@@ -34,7 +34,7 @@ public:
      * @brief 比较两个对象
      * @return 返回值大于0为大于，小于0为小于，等于0为等于
      */
-    cmp_t __cmp__(const Derived& other) const {
+    cmp_t __cmp__(const D& other) const {
         return static_cast<cmp_t>(this) - static_cast<cmp_t>(&other);
     }
 
@@ -42,21 +42,21 @@ public:
      * @brief 判断两个对象是否相等
      * @return true=相等 false=不相等
      */
-    bool __equals__(const Derived& other) const {
-        return static_cast<const Derived*>(this)->__cmp__(other) == 0;
+    bool __equals__(const D& other) const {
+        return static_cast<const D*>(this)->__cmp__(other) == 0;
     }
 
     /**
      * @brief 转换为 字符串 类型
      */
     CString __str__() const {
-        std::string typeName = dtype(Derived);
-        i32 len = typeName.size() + 22; // TODO ??
+        std::string type_name = dtype(D);
+        i32 len = type_name.size() + 22; // TODO ??
         CString s(len);
 #ifdef _MSC_VER
-        sprintf_s(s.data(), len, "<%s 0x%p>", typeName.c_str(), static_cast<const void*>(this));
+        sprintf_s(s.data(), len, "<%s 0x%p>", type_name.c_str(), static_cast<const void*>(this));
 #else
-        std::sprintf(s.data(), "<%s %p>", typeName.c_str(), static_cast<const void*>(this));
+        std::sprintf(s.data(), "<%s %p>", type_name.c_str(), static_cast<const void*>(this));
 #endif
         return s;
     }
@@ -68,8 +68,8 @@ public:
  */
 template <typename T>
 concept MyObject = requires(T& t) {
-    typename T::MyObjectDerived;
-} && is_instance<T, Object<typename T::MyObjectDerived>>;
+    typename T::derived_obj;
+} &&is_instance<T, Object<typename T::derived_obj>>;
 
 template <MyObject T>
 std::ostream& operator<<(std::ostream& out, const T& obj) {
@@ -78,8 +78,9 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
 }
 
 template <typename T>
-    requires(Not<Printable<T>>)
-std::ostream& operator<<(std::ostream& out, const T& obj) {
+requires(Not<Printable<T>>)
+    std::ostream&
+    operator<<(std::ostream& out, const T& obj) {
     out << '<' << dtype(T) << " 0x" << std::hex << &obj << '>';
     return out;
 }

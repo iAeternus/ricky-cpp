@@ -16,7 +16,7 @@
 
 namespace my::util {
 
-template <typename Derived, typename T>
+template <typename D, typename T>
 class Stream;
 
 template <typename T>
@@ -31,7 +31,7 @@ class MapStream;
 /**
  * @brief 流CRTP基类
  */
-template <typename Derived, typename T>
+template <typename D, typename T>
 class Stream {
 public:
     using value_t = T;
@@ -41,8 +41,8 @@ public:
      */
     template <typename Pred>
     auto filter(Pred&& pred) && {
-        return FilterStream<Derived, Pred, value_t>(
-            std::move(static_cast<Derived&>(*this)),
+        return FilterStream<D, Pred, value_t>(
+            std::move(static_cast<D&>(*this)),
             std::forward<Pred>(pred));
     }
 
@@ -52,8 +52,8 @@ public:
     template <typename Mapper>
     auto map(Mapper&& func) && {
         using RetType = std::invoke_result_t<Mapper, value_t>;
-        return MapStream<Derived, Mapper, RetType>(
-            std::move(static_cast<Derived&>(*this)),
+        return MapStream<D, Mapper, RetType>(
+            std::move(static_cast<D&>(*this)),
             std::forward<Mapper>(func));
     }
 
@@ -62,7 +62,7 @@ public:
      */
     auto collect() && -> util::DynArray<value_t> {
         util::DynArray<value_t> result;
-        for (auto&& elem : static_cast<Derived&>(*this).generator()) {
+        for (auto&& elem : static_cast<D&>(*this).generator()) {
             result.append(std::forward<decltype(elem)>(elem));
         }
         return result;
@@ -73,7 +73,7 @@ public:
      */
     template <typename Action>
     void forEach(Action&& action) && {
-        for (auto&& elem : static_cast<Derived&>(*this).generator()) {
+        for (auto&& elem : static_cast<D&>(*this).generator()) {
             action(std::forward<decltype(elem)>(elem));
         }
     }

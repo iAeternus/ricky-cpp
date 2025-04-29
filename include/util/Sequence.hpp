@@ -14,11 +14,11 @@ namespace my::util {
 /**
  * 需要子类实现 size() 和 at()
  */
-template <typename Derived, typename T>
-class Sequence : public Object<Sequence<Derived, T>> {
+template <typename D, typename T>
+class Sequence : public Object<Sequence<D, T>> {
 public:
-    using self = Sequence<Derived, T>;
-    using super = Object<Sequence<Derived, T>>;
+    using self = Sequence<D, T>;
+    using super = Object<Sequence<D, T>>;
 
 public:
     using value_t = T;
@@ -26,18 +26,18 @@ public:
     using const_iterator = IndexIterator<true, self, value_t>;
 
     value_t& at(isize index) {
-        return static_cast<Derived*>(this)->at(index);
+        return static_cast<D*>(this)->at(index);
     }
 
     const value_t& at(isize index) const {
-        return static_cast<const Derived*>(this)->at(index);
+        return static_cast<const D*>(this)->at(index);
     }
 
     isize size() const {
-        return static_cast<const Derived*>(this)->size();
+        return static_cast<const D*>(this)->size();
     }
 
-    cmp_t __cmp__(const Derived& other) const {
+    cmp_t __cmp__(const D& other) const {
         auto m_it = begin(), m_end = end();
         auto o_it = other.begin(), o_end = other.end();
         while (m_it != m_end && o_it != o_end) {
@@ -50,11 +50,11 @@ public:
         return 0;
     }
 
-    bool __equals__(const Derived& other) const {
+    bool __equals__(const D& other) const {
         if (size() != other.size()) {
             return false;
         }
-        return static_cast<const Derived*>(this)->__cmp__(other) == 0;
+        return static_cast<const D*>(this)->__cmp__(other) == 0;
     }
 
     iterator begin() {

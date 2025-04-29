@@ -2,15 +2,15 @@
 #define TEST_EXPRESSION_HPP
 
 #include "ricky_test.hpp"
-#include "Expression.hpp"
+#include "Expr.hpp"
 
-namespace my::test::test_expression {
+namespace my::test::test_expr {
 
 auto it_works = []() {
-    math::Expression expr = "3 + 4*2/(1-5)^2"_expr;
-    math::Expression expr2 = "2^3^2"_expr;
-    math::Expression expr3 = "-5%3"_expr;
-    math::Expression expr4 = "3.5 + 4.2*(2-5.1)/2"_expr;
+    math::Expr expr = "3 + 4*2/(1-5)^2"_expr;
+    math::Expr expr2 = "2^3^2"_expr;
+    math::Expr expr3 = "-5%3"_expr;
+    math::Expr expr4 = "3.5 + 4.2*(2-5.1)/2"_expr;
 
     Assertions::assertEquals("[3,+,4,*,2,/,(,1,-,5,),^,2]"_cs, expr.__str__());
     Assertions::assertEquals("[2,^,3,^,2]"_cs, expr2.__str__());
@@ -28,14 +28,14 @@ auto it_works = []() {
     Assertions::assertEquals(3.5 + 4.2 * (2 - 5.1) / 2, expr4.eval());
 };
 
-void test_expression() {
-    UnitTestGroup group{"test_expression"};
+void test_expr() {
+    UnitTestGroup group{"test_expr"};
 
     group.addTest("it_works", it_works);
 
     group.startAll();
 }
 
-} // namespace my::test::test_expression
+} // namespace my::test::test_expr
 
 #endif // TEST_EXPRESSION_HPP

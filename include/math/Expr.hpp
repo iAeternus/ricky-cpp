@@ -4,8 +4,8 @@
  * @date 2025/3/8
  * @version 1.0
  */
-#ifndef EXPRESSION_HPP
-#define EXPRESSION_HPP
+#ifndef EXPR_HPP
+#define EXPR_HPP
 
 #include "math_utils.hpp"
 #include "Vector.hpp"
@@ -77,11 +77,11 @@ struct Token : public Object<Token> {
 /**
  * @brief 表达式
  */
-class Expression : public Object<Expression> {
+class Expr : public Object<Expr> {
 public:
-    using self = Expression;
+    using self = Expr;
 
-    Expression(const std::string& expr) :
+    Expr(const std::string& expr) :
             valid_(false) {
         try {
             std::string filtered;
@@ -346,8 +346,8 @@ private:
 
 } // namespace my::math
 
-fn operator""_expr(const char* str, size_t len)->my::math::Expression {
-    return my::math::Expression(std::string(str));
+fn operator""_expr(const char* str, size_t len)->my::math::Expr {
+    return my::math::Expr(std::string(str));
 }
 
-#endif // EXPRESSION_HPP
+#endif // EXPR_HPP

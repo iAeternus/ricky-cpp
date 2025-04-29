@@ -20,9 +20,8 @@ namespace my::util {
  *        支持日期的创建、调整、运算、转换等操作
  */
 class Date : public Object<Date> {
-    using self = Date; // 自引用类型，方便内部使用
-
 public:
+    using self = Date;
     static const self MIN;   // 最小可能日期（-999999999-01-01）
     static const self MAX;   // 最大可能日期（999999999-12-31）
     static const self EPOCH; // 基准日期（1970-01-01）
@@ -149,7 +148,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持加减月份
+     * @brief 日期运算方法，加减月份
      * @param months 月份数
      * @return 新的日期对象
      */
@@ -165,7 +164,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持加减周数
+     * @brief 日期运算方法，加减周数
      * @param weeks 周数
      * @return 新的日期对象
      */
@@ -174,7 +173,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持加减天数
+     * @brief 日期运算方法，加减天数
      * @param days 天数
      * @return 新的日期对象
      */
@@ -183,7 +182,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持减年份
+     * @brief 日期运算方法，减年份
      * @param years 年份数
      * @return 新的日期对象
      */
@@ -192,7 +191,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持减月份数
+     * @brief 日期运算方法，减月份数
      * @param months 月份数
      * @return 新的日期对象
      */
@@ -201,7 +200,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持减周数
+     * @brief 日期运算方法，减周数
      * @param weeks 周数
      * @return 新的日期对象
      */
@@ -210,7 +209,7 @@ public:
     }
 
     /**
-     * @brief 日期运算方法，支持减天数
+     * @brief 日期运算方法，减天数
      * @param days 天数
      * @return 新的日期对象
      */
@@ -443,9 +442,8 @@ const Date Date::EPOCH{1970, 1, 1};
  *        支持时间的创建、调整、运算、转换等操作
  */
 class Time : public Object<Time> {
-    using self = Time; // 自引用类型，方便内部使用
-
 public:
+    using self = Time;
     static const self MIN;      // 最小可能时间（00:00:00.000）
     static const self MAX;      // 最大可能时间（23:59:59.999999999）
     static const self MIDNIGHT; // 午夜（00:00）
@@ -556,7 +554,7 @@ public:
     i32 nano() const { return nano_; }
 
     /**
-     * @brief 时间运算方法，支持加小时
+     * @brief 时间运算方法，加小时
      * @param hours 小时数
      * @return 新的时间对象
      */
@@ -569,7 +567,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持加分
+     * @brief 时间运算方法，加分
      * @param minutes 分钟数
      * @return 新的时间对象
      */
@@ -588,7 +586,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持加秒
+     * @brief 时间运算方法，加秒
      * @param seconds 秒数
      * @return 新的时间对象
      */
@@ -608,7 +606,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持加纳秒
+     * @brief 时间运算方法，加纳秒
      * @param nanos 纳秒数
      * @return 新的时间对象
      */
@@ -629,7 +627,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持减小时
+     * @brief 时间运算方法，减小时
      * @param hours 小时数
      * @return 新的时间对象
      */
@@ -638,7 +636,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持减分
+     * @brief 时间运算方法，减分
      * @param minutes 分钟数
      * @return 新的时间对象
      */
@@ -647,7 +645,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持减秒
+     * @brief 时间运算方法，减秒
      * @param seconds 秒数
      * @return 新的时间对象
      */
@@ -656,7 +654,7 @@ public:
     }
 
     /**
-     * @brief 时间运算方法，支持减纳秒
+     * @brief 时间运算方法，减纳秒
      * @param nanos 纳秒数
      * @return 新的时间对象
      */
@@ -820,9 +818,9 @@ const Time Time::NOON{12, 0};
  *        支持日期时间的创建、调整、运算、转换等操作
  */
 class DateTime : public Object<DateTime> {
-    using self = DateTime; // 自引用类型，方便内部使用
-
 public:
+    using self = DateTime;
+
     /**
      * @brief 创建指定日期和时间的日期时间对象
      * @param year 年份
@@ -1030,7 +1028,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加年份
+     * @brief 日期时间运算方法，加年份
      * @param years 年份数
      * @return 新的日期时间对象
      */
@@ -1039,7 +1037,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加月份数
+     * @brief 日期时间运算方法，加月份数
      * @param months 月份数
      * @return 新的日期时间对象
      */
@@ -1048,7 +1046,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加周数
+     * @brief 日期时间运算方法，加周数
      * @param weeks 周数
      * @return 新的日期时间对象
      */
@@ -1057,7 +1055,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加天数
+     * @brief 日期时间运算方法，加天数
      * @param days 天数
      * @return 新的日期时间对象
      */
@@ -1066,7 +1064,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加小时
+     * @brief 日期时间运算方法，加小时
      * @param hours 小时数
      * @return 新的日期时间对象
      */
@@ -1075,7 +1073,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加分
+     * @brief 日期时间运算方法，加分
      * @param minutes 分钟数
      * @return 新的日期时间对象
      */
@@ -1084,7 +1082,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加秒
+     * @brief 日期时间运算方法，加秒
      * @param seconds 秒数
      * @return 新的日期时间对象
      */
@@ -1093,7 +1091,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持加纳秒
+     * @brief 日期时间运算方法，加纳秒
      * @param nanos 纳秒数
      * @return 新的日期时间对象
      */
@@ -1102,7 +1100,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减年份
+     * @brief 日期时间运算方法，减年份
      * @param years 年份数
      * @return 新的日期时间对象
      */
@@ -1111,7 +1109,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减月份数
+     * @brief 日期时间运算方法，减月份数
      * @param months 月份数
      * @return 新的日期时间对象
      */
@@ -1120,7 +1118,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减周数
+     * @brief 日期时间运算方法，减周数
      * @param weeks 周数
      * @return 新的日期时间对象
      */
@@ -1129,7 +1127,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减天数
+     * @brief 日期时间运算方法，减天数
      * @param days 天数
      * @return 新的日期时间对象
      */
@@ -1138,7 +1136,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减小时
+     * @brief 日期时间运算方法，减小时
      * @param hours 小时数
      * @return 新的日期时间对象
      */
@@ -1147,7 +1145,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减分
+     * @brief 日期时间运算方法，减分
      * @param minutes 分钟数
      * @return 新的日期时间对象
      */
@@ -1156,7 +1154,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减秒
+     * @brief 日期时间运算方法，减秒
      * @param seconds 秒数
      * @return 新的日期时间对象
      */
@@ -1165,7 +1163,7 @@ public:
     }
 
     /**
-     * @brief 日期时间运算方法，支持减纳秒
+     * @brief 日期时间运算方法，减纳秒
      * @param nanos 纳秒数
      * @return 新的日期时间对象
      */
