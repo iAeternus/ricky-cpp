@@ -24,7 +24,7 @@ namespace my::graph {
  */
 template <typename V = f64, typename E = f64>
 class Graph : public Object<Graph<V, E>> {
-    using self = Graph<V, E>;
+    using Self = Graph<V, E>;
 
 public:
     explicit Graph(bool isDirected = true) :

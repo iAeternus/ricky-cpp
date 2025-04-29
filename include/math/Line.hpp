@@ -13,7 +13,7 @@ namespace my::math {
 
 class Line : public Object<Line> {
 public:
-    using self = Line;
+    using Self = Line;
 
     Line(const Point2& p, const Vector2& s) :
             p_(p), s_(s), ang_(std::atan2(s.y(), s.x())) {}
@@ -22,7 +22,7 @@ public:
     fn s() const { return s_; }
     fn ang() const { return ang_; }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         return fcmp(ang_, other.ang_);
     }
 

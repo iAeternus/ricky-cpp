@@ -31,7 +31,7 @@ class String;
  */
 template <Hashable K, typename V, typename Bucket = RobinHashBucket<V>>
 class Dict : Object<Dict<K, V, Bucket>> {
-    using self = Dict<K, V, Bucket>;
+    using Self = Dict<K, V, Bucket>;
 
 public:
     using key_t = K;         // 键的类型
@@ -61,14 +61,14 @@ public:
      * @brief 拷贝构造函数。
      * @param other 需要拷贝的字典。
      */
-    Dict(const self& other) :
+    Dict(const Self& other) :
             bucket_(other.bucket_), keys_(other.keys_) {}
 
     /**
      * @brief 移动构造函数。
      * @param other 需要移动的字典。
      */
-    Dict(self&& other) noexcept :
+    Dict(Self&& other) noexcept :
             bucket_(std::move(other.bucket_)), keys_(std::move(other.keys_)) {}
 
     /**
@@ -76,7 +76,7 @@ public:
      * @param other 需要拷贝的字典。
      * @return 本字典对象的引用。
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         this->bucket_ = other.bucket_;
@@ -89,7 +89,7 @@ public:
      * @param other 需要移动的字典。
      * @return 本字典对象的引用。
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->bucket_ = std::move(other.bucket_);
@@ -242,7 +242,7 @@ public:
      * @return 本字典对象的引用。
      */
     template <typename _V>
-    self& setdefault(const key_t& key, _V&& defaultValue) {
+    Self& setdefault(const key_t& key, _V&& defaultValue) {
         auto hashVal = my_hash(key);
         if (!contains_hash_val(hashVal)) {
             insert_impl(key, std::forward<_V>(defaultValue), hashVal);
@@ -287,7 +287,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& update(const self& other) {
+    Self& update(const Self& other) {
         for (auto&& kv : other) {
             insert(kv.key(), kv.value());
         }
@@ -299,7 +299,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& update(self&& other) {
+    Self& update(Self&& other) {
         for (auto& key : other.keys_) {
             auto hashVal = my_hash(key);
             auto& value = *other.get_impl(hashVal);
@@ -331,11 +331,11 @@ public:
      * @param other 另一个字典。
      * @return 返回两个字典的交集。
      */
-    self operator&(const self& other) const {
+    Self operator&(const Self& other) const {
         if (this == &other) return *this;
         if (this->size() > other.size()) return other & *this;
 
-        self res{std::min(this->capacity(), other.capacity())};
+        Self res{std::min(this->capacity(), other.capacity())};
         for (auto&& kv : *this) {
             if (other.contains(kv.key())) {
                 res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
@@ -349,7 +349,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& operator&=(const self& other) {
+    Self& operator&=(const Self& other) {
         if (this == &other) return *this;
         *this = *this & other;
         return *this;
@@ -360,11 +360,11 @@ public:
      * @param other 另一个字典。
      * @return 返回两个字典的并集。
      */
-    self operator|(const self& other) const {
+    Self operator|(const Self& other) const {
         if (this == &other) return *this;
         if (this->size() > other.size()) return other | *this;
 
-        self res{static_cast<isize>((this->size() + other.size()) / MAX_LOAD_FACTOR)};
+        Self res{static_cast<isize>((this->size() + other.size()) / MAX_LOAD_FACTOR)};
         for (auto&& kv : *this) {
             res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
         }
@@ -379,7 +379,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& operator|=(const self& other) {
+    Self& operator|=(const Self& other) {
         if (this == &other) return *this;
 
         for (auto&& kv : other) {
@@ -393,7 +393,7 @@ public:
      * @param other 另一个字典。
      * @return 返回两个字典的并集。
      */
-    self operator+(const self& other) const {
+    Self operator+(const Self& other) const {
         return *this | other;
     }
 
@@ -402,7 +402,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& operator+=(const self& other) {
+    Self& operator+=(const Self& other) {
         return *this |= other;
     }
 
@@ -411,11 +411,11 @@ public:
      * @param other 另一个字典。
      * @return 返回两个字典的相对补集。
      */
-    self operator^(const self& other) const {
-        if (this == &other) return self{};
+    Self operator^(const Self& other) const {
+        if (this == &other) return Self{};
         if (this->size() > other.size()) return other ^ *this;
 
-        self res{std::min(this->capacity(), other.capacity())};
+        Self res{std::min(this->capacity(), other.capacity())};
         for (auto&& kv : *this) {
             if (!other.contains(kv.key())) {
                 res.insert(kv.key(), kv.value());
@@ -434,7 +434,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& operator^=(const self& other) {
+    Self& operator^=(const Self& other) {
         if (this == &other) {
             this->clear();
             return *this;
@@ -454,10 +454,10 @@ public:
      * @param other 另一个字典。
      * @return 返回两个字典的差集。
      */
-    self operator-(const self& other) const {
-        if (this == &other) return self{};
+    Self operator-(const Self& other) const {
+        if (this == &other) return Self{};
 
-        self res{capacity()};
+        Self res{capacity()};
         for (auto&& kv : *this) {
             if (!other.contains(kv.key())) {
                 res.insert_impl(kv.key(), kv.value(), my_hash(kv.key()));
@@ -471,7 +471,7 @@ public:
      * @param other 另一个字典。
      * @return 本字典对象的引用。
      */
-    self& operator-=(const self& other) {
+    Self& operator-=(const Self& other) {
         if (this == &other) {
             this->clear();
             return *this;
@@ -487,7 +487,7 @@ public:
      * @param other 另一个字典。
      * @return 如果相等返回 true，否则返回 false。
      */
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         if (this->size() != other.size()) return false;
 
         for (auto&& kv : *this) {
@@ -536,8 +536,8 @@ public:
      * @brief 字典迭代器类。
      */
     class DictIterator : public Object<DictIterator> {
-        using self = DictIterator;
-        using super = Object<self>;
+        using Self = DictIterator;
+        using Super = Object<Self>;
 
     public:
         using iterator_category = std::random_access_iterator_tag; // 迭代器类别为随机访问迭代器
@@ -568,14 +568,14 @@ public:
          * @brief 拷贝构造函数。
          * @param other 需要拷贝的字典迭代器。
          */
-        DictIterator(const self& other) = default;
+        DictIterator(const Self& other) = default;
 
         /**
          * @brief 拷贝赋值操作符。
          * @param other 需要拷贝的字典迭代器。
          * @return 返回本迭代器对象的引用。
          */
-        self& operator=(const self& other) = default;
+        Self& operator=(const Self& other) = default;
 
         /**
          * @brief 解引用运算符。
@@ -598,7 +598,7 @@ public:
          * 移动迭代器到下一个键值对。
          * @return 返回自增后的迭代器。
          */
-        self& operator++() {
+        Self& operator++() {
             update_kv(1);
             return *this;
         }
@@ -608,8 +608,8 @@ public:
          * 移动迭代器到下一个键值对。
          * @return 返回自增前的迭代器。
          */
-        self operator++(int) {
-            self tmp = *this;
+        Self operator++(int) {
+            Self tmp = *this;
             update_kv(1);
             return tmp;
         }
@@ -619,7 +619,7 @@ public:
          * 移动迭代器到上一个键值对。
          * @return 返回自减后的迭代器。
          */
-        self& operator--() {
+        Self& operator--() {
             update_kv(-1);
             return *this;
         }
@@ -629,8 +629,8 @@ public:
          * 移动迭代器到上一个键值对。
          * @return 返回自减前的迭代器。
          */
-        self operator--(int) {
-            self tmp = *this;
+        Self operator--(int) {
+            Self tmp = *this;
             update_kv(-1);
             return tmp;
         }
@@ -640,7 +640,7 @@ public:
          * @param n 需要跳过的键值对数量。
          * @return 返回自身引用。
          */
-        self& operator+=(difference_type n) {
+        Self& operator+=(difference_type n) {
             update_kv(n);
             return *this;
         }
@@ -650,7 +650,7 @@ public:
          * @param n 需要回退的键值对数量。
          * @return 返回自身引用。
          */
-        self& operator-=(difference_type n) {
+        Self& operator-=(difference_type n) {
             update_kv(-n);
             return *this;
         }
@@ -660,8 +660,8 @@ public:
          * @param n 需要跳过的键值对数量。
          * @return 返回新迭代器。
          */
-        self operator+(difference_type n) const {
-            return self(dict_, index_ + n);
+        Self operator+(difference_type n) const {
+            return Self(dict_, index_ + n);
         }
 
         /**
@@ -669,8 +669,8 @@ public:
          * @param n 需要回退的键值对数量。
          * @return 返回新迭代器。
          */
-        self operator-(difference_type n) const {
-            return self(dict_, index_ - n);
+        Self operator-(difference_type n) const {
+            return Self(dict_, index_ - n);
         }
 
         /**
@@ -678,7 +678,7 @@ public:
          * @param other 另一个迭代器。
          * @return 返回两个迭代器之间的差值。
          */
-        difference_type operator-(const self& other) const {
+        difference_type operator-(const Self& other) const {
             return index_ - other.index_;
         }
 
@@ -687,7 +687,7 @@ public:
          * @param other 另一个迭代器。
          * @return 如果相等返回 true，否则返回 false。
          */
-        bool __equals__(const self& other) const {
+        bool __equals__(const Self& other) const {
             return dict_ == other.dict_ && index_ == other.index_;
         }
 
@@ -696,7 +696,7 @@ public:
          * @param other 另一个迭代器。
          * @return 如果相等返回 true，否则返回 false。
          */
-        bool operator==(const self& other) const {
+        bool operator==(const Self& other) const {
             return this->__equals__(other);
         }
 
@@ -705,7 +705,7 @@ public:
          * @param other 另一个迭代器。
          * @return 如果不相等返回 true，否则返回 false。
          */
-        bool operator!=(const self& other) const {
+        bool operator!=(const Self& other) const {
             return !this->__equals__(other);
         }
 

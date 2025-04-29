@@ -119,7 +119,7 @@ private:
     static fn parseNum(JsonType::JsonStr& jsonStr)->Json {
         bool isFloat = false;
         for (auto c : jsonStr) {
-            if (!c.isDigit()) {
+            if (!c.is_digit()) {
                 if (c == util::CodePoint{'.'} && !isFloat) {
                     isFloat = true;
                 } else {
@@ -152,7 +152,7 @@ private:
     }
 
     static fn parseSimple(JsonType::JsonStr& jsonStr)->Json {
-        if (jsonStr[0].isDigit()) {
+        if (jsonStr[0].is_digit()) {
             return parseNum(jsonStr); // num
         } else if (jsonStr[0] == util::CodePoint{'n'}) {
             return parseNull(jsonStr); // null

@@ -17,13 +17,13 @@ namespace my::util {
 template <typename D, typename T>
 class Sequence : public Object<Sequence<D, T>> {
 public:
-    using self = Sequence<D, T>;
-    using super = Object<Sequence<D, T>>;
+    using Self = Sequence<D, T>;
+    using Super = Object<Sequence<D, T>>;
 
 public:
     using value_t = T;
-    using iterator = IndexIterator<false, self, value_t>;
-    using const_iterator = IndexIterator<true, self, value_t>;
+    using iterator = IndexIterator<false, Self, value_t>;
+    using const_iterator = IndexIterator<true, Self, value_t>;
 
     value_t& at(isize index) {
         return static_cast<D*>(this)->at(index);

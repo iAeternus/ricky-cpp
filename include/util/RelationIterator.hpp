@@ -35,11 +35,11 @@ public:
 
 /**
  * @brief 自增
- */                                                           
+ */
 template <std::input_or_output_iterator I>
 class SelfAddMove : public BaseIterMove<I> {
-    using self = SelfAddMove;
-    using super = BaseIterMove<I>;
+    using Self = SelfAddMove;
+    using Super = BaseIterMove<I>;
 
 public:
     using iterator = I;
@@ -63,8 +63,8 @@ public:
 
 template <typename IterMove>
 class RelationIterator : public Object<RelationIterator<IterMove>> {
-    using self = RelationIterator<IterMove>;
-    using super = Object<self>;
+    using Self = RelationIterator<IterMove>;
+    using Super = Object<Self>;
 
 public:
     using iterator = typename IterMove::iterator;
@@ -83,19 +83,19 @@ public:
     RelationIterator(const iterator& iter) :
             iter_(iter) {}
 
-    RelationIterator(const self& other) :
+    RelationIterator(const Self& other) :
             iter_(other.iter_) {}
 
-    RelationIterator(self&& other) noexcept :
+    RelationIterator(Self&& other) noexcept :
             iter_(std::move(other.iter_)) {}
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
         this->iter_ = other.iter_;
         return *this;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
         this->iter_ = std::move(other.iter_);
         return *this;
@@ -117,37 +117,37 @@ public:
         return &(*iter_);
     }
 
-    self& operator++() {
+    Self& operator++() {
         move_t::next(iter_);
         return *this;
     }
 
-    self operator++(int) {
+    Self operator++(int) {
         iterator tmp(this);
         ++*this;
-        return self{tmp};
+        return Self{tmp};
     }
 
-    self& operator--() {
+    Self& operator--() {
         move_t::prev(iter_);
         return *this;
     }
 
-    self operator-(int) {
+    Self operator-(int) {
         iterator tmp(this);
         --*this;
-        return self{tmp};
+        return Self{tmp};
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return iter_ == other.iter_;
     }
 
-    bool operator==(const self& other) const {
+    bool operator==(const Self& other) const {
         return __equals__(other);
     }
 
-    bool operator!=(const self& other) const {
+    bool operator!=(const Self& other) const {
         return !__equals__(other);
     }
 

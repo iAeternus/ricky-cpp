@@ -15,7 +15,7 @@
 namespace my::io {
 
 class Log : public Object<Log> {
-    using self = Log;
+    using Self = Log;
 
 public:
     /**

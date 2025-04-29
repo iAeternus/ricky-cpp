@@ -13,8 +13,8 @@ namespace my::util {
 
 template <bool IsConst, typename C, typename V>
 class IndexIterator : public Object<IndexIterator<IsConst, C, V>> {
-    using super = Object<IndexIterator>;
-    using self = IndexIterator;
+    using Super = Object<IndexIterator>;
+    using Self = IndexIterator;
 
 public:
     using container_t = std::conditional_t<IsConst, const C, C>;
@@ -29,10 +29,10 @@ public:
     IndexIterator(container_t* container = nullptr, isize index = 0) :
             container_(container), index_(index) {}
 
-    IndexIterator(const self& other) :
+    IndexIterator(const Self& other) :
             IndexIterator(other.container_, other.index_) {}
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this != &other) {
             this->container_ = other.container_;
             this->index_ = other.index_;
@@ -56,59 +56,59 @@ public:
         return &container_->operator[](index_);
     }
 
-    self& operator++() {
+    Self& operator++() {
         ++index_;
         return *this;
     }
 
-    self operator++(int) {
-        self tmp(*this);
+    Self operator++(int) {
+        Self tmp(*this);
         ++index_;
         return tmp;
     }
 
-    self& operator--() {
+    Self& operator--() {
         --index_;
         return *this;
     }
 
-    self operator--(int) {
-        self tmp(*this);
+    Self operator--(int) {
+        Self tmp(*this);
         --index_;
         return tmp;
     }
 
-    self operator+(difference_type n) const {
-        return self(container_, index_ + n);
+    Self operator+(difference_type n) const {
+        return Self(container_, index_ + n);
     }
 
-    self operator-(difference_type n) const {
-        return self(container_, index_ - n);
+    Self operator-(difference_type n) const {
+        return Self(container_, index_ - n);
     }
 
-    self& operator+=(difference_type n) {
+    Self& operator+=(difference_type n) {
         index_ += n;
         return *this;
     }
 
-    self& operator-=(difference_type n) {
+    Self& operator-=(difference_type n) {
         index_ -= n;
         return *this;
     }
 
-    difference_type operator-(const self& other) const {
+    difference_type operator-(const Self& other) const {
         return index_ - other.index_;
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return container_ == other.container_ && index_ == other.index_;
     }
 
-    bool operator==(const self& other) const {
+    bool operator==(const Self& other) const {
         return __equals__(other);
     }
 
-    bool operator!=(const self& other) const {
+    bool operator!=(const Self& other) const {
         return !__equals__(other);
     }
 

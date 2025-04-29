@@ -45,7 +45,7 @@
 #include "test_log.hpp"
 #include "test_tree.hpp"
 #include "test_sorted_dict.hpp"
-#include "test_vector.hpp"
+#include "test_vec.hpp"
 #include "test_expr.hpp"
 #include "test_vector2.hpp"
 #include "test_geometry_2d.hpp"
@@ -92,7 +92,7 @@ int main() {
     test_log::test_log();
     test_tree::test_tree();
     test_sorted_dict::test_sorted_dict();
-    test_vector::test_vector();
+    test_vec::test_vec();
     test_expr::test_expr();
     test_vector2::test_vector2();
     test_geometry_2d::test_geometry_2d();

@@ -17,19 +17,19 @@ class String;
 
 template <typename S, typename T>
 class Pair : public Object<Pair<S, T>> {
-    using self = Pair<S, T>;
+    using Self = Pair<S, T>;
 
 public:
     Pair(S first, T second) :
             first_(std::move(first)), second_(std::move(second)) {}
 
-    Pair(self&& other) noexcept :
+    Pair(Self&& other) noexcept :
             first_(std::move(other.first_)), second_(std::move(other.second_)) {}
 
-    Pair(const self& other) :
+    Pair(const Self& other) :
             first_(other.first_), second_(other.second_) {}
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         first_ = std::move(other.first_);
@@ -37,7 +37,7 @@ public:
         return *this;
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         first_ = other.first_;

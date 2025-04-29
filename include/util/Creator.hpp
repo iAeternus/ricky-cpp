@@ -14,31 +14,32 @@ namespace my::util {
 
 template <typename T>
 class Creator : public Object<Creator<T>> {
-    using self = Creator<T>;
-    using super = Object<self>;
-
 public:
+    using value_t = T;
+    using Self = Creator<value_t>;
+    using Super = Object<Self>;
+
     Creator() = default;
 
-    Creator(const self& other) = delete;
+    Creator(const Self& other) = delete;
 
-    self& operator=(const self& other) = delete;
+    Self& operator=(const Self& other) = delete;
 
-    Creator(self&& other) noexcept :
-            createdValues_(std::move(other.createdValues_)) {}
+    Creator(Self&& other) noexcept :
+            created_values_(std::move(other.created_values_)) {}
 
-    self& operator=(self&& other) noexcept {
-        this->createdValues_ = std::move(other.createdValues_);
+    Self& operator=(Self&& other) noexcept {
+        this->created_values_ = std::move(other.created_values_);
         return *this;
     }
 
     template <typename... Args>
-    T* operator()(Args&&... args) {
-        return &createdValues_.append(T{std::forward<Args>(args)...});
+    value_t* operator()(Args&&... args) {
+        return &created_values_.append(value_t{std::forward<Args>(args)...});
     }
 
 private:
-    DynArray<T> createdValues_;
+    DynArray<value_t> created_values_;
 };
 
 } // namespace my::util

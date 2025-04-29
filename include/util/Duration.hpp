@@ -17,10 +17,10 @@ namespace my::util {
  *        支持多种时间单位的创建、运算、转换和比较。
  */
 class Duration : public Object<Duration> {
-    using self = Duration;
+    using Self = Duration;
 
 public:
-    const static self ZERO; // 零时间间隔的常量对象
+    const static Self ZERO; // 零时间间隔的常量对象
 
     /**
      * @brief 创建以天为单位的时间间隔对象。
@@ -29,8 +29,8 @@ public:
      * @note 不允许传入受不同类型溢出影响的值
      * @example Duration::ofDays(5) 创建 5 天的时间间隔
      */
-    static self ofDays(i64 days) {
-        return self{math::mul_exact(days, 86400LL), 0};
+    static Self ofDays(i64 days) {
+        return Self{math::mul_exact(days, 86400LL), 0};
     }
 
     /**
@@ -40,8 +40,8 @@ public:
      * @note 不允许传入受不同类型溢出影响的值
      * @example Duration::ofHours(3) 创建 3 小时的时间间隔
      */
-    static self ofHours(i64 hours) {
-        return self{math::mul_exact(hours, 3600LL), 0};
+    static Self ofHours(i64 hours) {
+        return Self{math::mul_exact(hours, 3600LL), 0};
     }
 
     /**
@@ -51,8 +51,8 @@ public:
      * @note 不允许传入受不同类型溢出影响的值
      * @example Duration::ofMinutes(45) 创建 45 分钟的时间间隔
      */
-    static self ofMinutes(i64 minutes) {
-        return self{math::mul_exact(minutes, 60LL), 0};
+    static Self ofMinutes(i64 minutes) {
+        return Self{math::mul_exact(minutes, 60LL), 0};
     }
 
     /**
@@ -63,9 +63,9 @@ public:
      * @exception ValueError 若纳秒超出范围
      * @example Duration::ofSeconds(10, 500000000) 创建 10.5 秒的时间间隔
      */
-    static self ofSeconds(i64 seconds_, i32 nanos_ = 0) {
+    static Self ofSeconds(i64 seconds_, i32 nanos_ = 0) {
         validateNanos(nanos_);
-        return self{seconds_, nanos_};
+        return Self{seconds_, nanos_};
     }
 
     /**
@@ -75,14 +75,14 @@ public:
      * @note 负数的处理可能正确，也可能不正确
      * @example Duration::ofMillis(1500) 创建 1.5 秒的时间间隔
      */
-    static self ofMillis(i64 millis) {
+    static Self ofMillis(i64 millis) {
         i64 seconds = millis / 1000;
         i32 milliRem = static_cast<i32>(millis % 1000);
         if (milliRem < 0) {
             milliRem += 1000;
             seconds -= 1;
         }
-        return self{seconds, milliRem * 1'000'000};
+        return Self{seconds, milliRem * 1'000'000};
     }
 
     /**
@@ -92,14 +92,14 @@ public:
      * @exception ValueError 若纳秒超出范围
      * @example Duration::ofNanos(500000000) 创建 0.5 秒的时间间隔
      */
-    static self ofNanos(i64 nanos_) {
+    static Self ofNanos(i64 nanos_) {
         i64 seconds = nanos_ / NANOS_PER_SECOND;
         i32 nanoRem = static_cast<i32>(nanos_ % NANOS_PER_SECOND);
         if (nanoRem < 0) {
             nanoRem += NANOS_PER_SECOND;
             seconds -= 1;
         }
-        return self{seconds, nanoRem};
+        return Self{seconds, nanoRem};
     }
 
     /**
@@ -107,11 +107,11 @@ public:
      * @param other 另一个时间间隔对象
      * @return 加法结果的时间间隔对象（*this + other）
      */
-    self operator+(const self& other) const {
+    Self operator+(const Self& other) const {
         i64 sec = seconds_ + other.seconds_;
         i32 nano = nanos_ + other.nanos_;
         adjustCarry(sec, nano);
-        return self{sec, nano};
+        return Self{sec, nano};
     }
 
     /**
@@ -119,11 +119,11 @@ public:
      * @param other 另一个时间间隔对象
      * @return 减法结果的时间间隔对象（*this - other）
      */
-    self operator-(const self& other) const {
+    Self operator-(const Self& other) const {
         i64 sec = seconds_ - other.seconds_;
         i32 nano = nanos_ - other.nanos_;
         adjustBorrow(sec, nano);
-        return self{sec, nano};
+        return Self{sec, nano};
     }
 
     /**
@@ -131,7 +131,7 @@ public:
      * @param scalar 标量
      * @return 乘法结果的时间间隔对象（*this * scalar）
      */
-    self operator*(i64 scalar) const {
+    Self operator*(i64 scalar) const {
         i64 totalNanos = toNanos() * scalar;
         return ofNanos(totalNanos);
     }
@@ -142,10 +142,10 @@ public:
      * @return 除法结果的时间间隔对象（*this / divisor）
      * @exception RuntimeError 除数为零
      */
-    self operator/(i64 divisor) const {
+    Self operator/(i64 divisor) const {
         if (divisor == 0) {
             RuntimeError("Division by zero");
-            return None<self>;
+            return None<Self>;
         }
         i64 totalNanos = toNanos();
         return ofNanos(totalNanos / divisor);
@@ -190,7 +190,7 @@ public:
      * @param other 另一个时间间隔对象
      * @return 比较结果（-1、0、1），0 表示相等
      */
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         if (seconds_ != other.seconds_)
             return seconds_ - other.seconds_;
         return nanos_ - other.nanos_;

@@ -10,17 +10,17 @@
 namespace my {
 
 struct NoCopy {
-    using self = NoCopy;
+    using Self = NoCopy;
 
     NoCopy() = default;
 
-    NoCopy(const self& other) = delete;
+    NoCopy(const Self& other) = delete;
 
-    NoCopy(self&& other) noexcept = delete;
+    NoCopy(Self&& other) noexcept = delete;
 
-    self& operator=(const self& other) = delete;
+    Self& operator=(const Self& other) = delete;
 
-    self& operator=(self& other) noexcept = delete;
+    Self& operator=(Self& other) noexcept = delete;
 
     ~NoCopy() = default;
 };

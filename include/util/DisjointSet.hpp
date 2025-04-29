@@ -13,7 +13,7 @@ namespace my::util {
 
 template <typename T>
 class DisjointSet : public Object<DisjointSet<T>> {
-    using self = DisjointSet<T>;
+    using Self = DisjointSet<T>;
 
     /**
      * @brief 并查集节点

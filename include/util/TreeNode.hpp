@@ -45,30 +45,30 @@ concept BiTreeNodeType = requires(T a, const T& b, T&& c) {
 template <typename T>
 class TreeNode : public Object<TreeNode<T>> {
 public:
-    using self = TreeNode<T>;
+    using Self = TreeNode<T>;
     using value_t = T;
     using Callback = std::function<void(const value_t&)>;
 
     value_t value_;            // 节点值
-    self* parent_;             // 指向父节点的指针，定义根节点的父指针指向自身
-    DynArray<self*> children_; // 指向子节点的指针集合
+    Self* parent_;             // 指向父节点的指针，定义根节点的父指针指向自身
+    DynArray<Self*> children_; // 指向子节点的指针集合
 
-    explicit TreeNode(const value_t& value = value_t{}, self* parent = nullptr) :
+    explicit TreeNode(const value_t& value = value_t{}, Self* parent = nullptr) :
             value_(value), parent_(parent) {
         if (parent == nullptr) {
             parent_ = this; // 根节点指向自身
         }
     }
 
-    TreeNode(const self&) = delete;
-    self& operator=(const self&) = delete;
+    TreeNode(const Self&) = delete;
+    Self& operator=(const Self&) = delete;
 
-    TreeNode(self&& other) noexcept :
+    TreeNode(Self&& other) noexcept :
             value_(std::move(other.value_)), parent_(other.parent_), children_(std::move(other.children_)) {
         other.parent_ = nullptr;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->value_ = std::move(other.value_);
@@ -101,7 +101,7 @@ public:
      * @brief 遍历本节点以上的所有祖先节点
      */
     void forEachParent(Callback callback) const {
-        const self* p = this;
+        const Self* p = this;
         while (p != nullptr && p != p->parent_) {
             callback(p->value_);
             p = p->parent_;
@@ -130,31 +130,31 @@ private:
 template <typename T>
 class BiTreeNode : public Object<BiTreeNode<T>> {
 public:
-    using self = BiTreeNode<T>;
+    using Self = BiTreeNode<T>;
     using value_t = T;
     using Callback = std::function<void(const value_t&)>;
 
     value_t value_; // 值
-    self* lchild_;  // 指向左孩子的指针
-    self* rchild_;  // 指向右孩子的指针
-    self* parent_;  // 指向父节点的指针，定义根节点的父指针指向自身
+    Self* lchild_;  // 指向左孩子的指针
+    Self* rchild_;  // 指向右孩子的指针
+    Self* parent_;  // 指向父节点的指针，定义根节点的父指针指向自身
 
-    explicit BiTreeNode(value_t value = value_t{}, self* parent = nullptr) :
+    explicit BiTreeNode(value_t value = value_t{}, Self* parent = nullptr) :
             value_(value), lchild_(nullptr), rchild_(nullptr), parent_(parent) {
         if (parent == nullptr) {
             parent_ = this; // 根节点指向自身
         }
     }
 
-    BiTreeNode(const self&) = delete;
-    self& operator=(const self&) = delete;
+    BiTreeNode(const Self&) = delete;
+    Self& operator=(const Self&) = delete;
 
-    BiTreeNode(self&& other) noexcept :
+    BiTreeNode(Self&& other) noexcept :
             value_(std::move(other.value)), lchild_(other.lchild_), rchild_(other.rchild_), parent_(other.parent_) {
         other.lchild_ = other.rchild_ = other.parent_ = nullptr;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->value_ = std::move(other.value_);
@@ -187,7 +187,7 @@ public:
      * @brief 遍历本节点以上的所有祖先节点
      */
     void forEachParent(Callback callback) const {
-        const self* p = this;
+        const Self* p = this;
         while (p != nullptr && p != p->parent_) {
             callback(p->value_);
             p = p->parent_;
@@ -222,7 +222,7 @@ enum Color {
 template <Sortable K, typename V>
 class RBTreeNode : public Object<RBTreeNode<K, V>> {
 public:
-    using self = RBTreeNode<K, V>;
+    using Self = RBTreeNode<K, V>;
     using key_t = K;
     using value_t = V;
     using Callback = std::function<void(const KeyValueView<key_t, value_t>&)>;
@@ -230,21 +230,21 @@ public:
     key_t key_;     // 键
     value_t value_; // 值
     Color color_;   // 颜色
-    self* lchild_;  // 指向左孩子的指针
-    self* rchild_;  // 指向右孩子的指针
-    self* parent_;  // 指向父节点的指针，定义根节点的父指针指向NIL
+    Self* lchild_;  // 指向左孩子的指针
+    Self* rchild_;  // 指向右孩子的指针
+    Self* parent_;  // 指向父节点的指针，定义根节点的父指针指向NIL
 
     explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, Color color = RED,
-                        self* lchild = nullptr, self* rchild = nullptr, self* parent = nullptr) :
+                        Self* lchild = nullptr, Self* rchild = nullptr, Self* parent = nullptr) :
             key_(key), value_(value), color_(color), lchild_(lchild), rchild_(rchild), parent_(parent) {}
 
     explicit RBTreeNode(key_t&& key, value_t&& value, Color color = RED) :
             key_(std::move(key)), value_(std::move(value)), color_(color), lchild_(nullptr), rchild_(nullptr), parent_(nullptr) {}
 
-    RBTreeNode(const self&) = delete;
-    self& operator=(const self&) = delete;
+    RBTreeNode(const Self&) = delete;
+    Self& operator=(const Self&) = delete;
 
-    RBTreeNode(self&& other) noexcept :
+    RBTreeNode(Self&& other) noexcept :
             color_(other.color_),
             key_(std::move(other.key_)),
             value_(std::move(other.value)),
@@ -254,7 +254,7 @@ public:
         other.lchild_ = other.rchild_ = other.parent_ = nullptr;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->color_ = other.color_;
@@ -267,7 +267,7 @@ public:
         return *this;
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         if constexpr (Comparable<key_t>) {
             return this->key_.__cmp__(other.key_);
         } else if constexpr (Subtractble<key_t>) {

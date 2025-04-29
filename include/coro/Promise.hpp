@@ -15,8 +15,8 @@ namespace my::coro {
 
 template <typename T>
 struct PromiseImpl : public Object<PromiseImpl<T>> {
-    using self = PromiseImpl<T>;
-    using co_type = std::coroutine_handle<self>;
+    using Self = PromiseImpl<T>;
+    using co_type = std::coroutine_handle<Self>;
 
     /**
      * @brief 启动时挂起
@@ -54,9 +54,9 @@ struct PromiseImpl : public Object<PromiseImpl<T>> {
 
 template <>
 struct PromiseImpl<void> : public Object<PromiseImpl<void>> {
-    using self = PromiseImpl<void>;
+    using Self = PromiseImpl<void>;
 
-    using co_type = std::coroutine_handle<self>;
+    using co_type = std::coroutine_handle<Self>;
 
     std::suspend_always initial_suspend() const noexcept { return {}; }
 
@@ -73,11 +73,11 @@ struct PromiseImpl<void> : public Object<PromiseImpl<void>> {
 
 template <typename T = void>
 struct Promise : public PromiseImpl<T> {
-    using self = Promise<T>;
+    using Self = Promise<T>;
 
-    using super = PromiseImpl<T>;
+    using Super = PromiseImpl<T>;
 
-    using co_type = std::coroutine_handle<self>;
+    using co_type = std::coroutine_handle<Self>;
 
     CoroAwaiter final_suspend() const noexcept { return CoroAwaiter(previous_coro_); }
 

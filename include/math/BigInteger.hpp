@@ -8,15 +8,15 @@
 #define BIG_INTEGER_HPP
 
 #include "math_utils.hpp"
-#include "Vector.hpp"
+#include "Vec.hpp"
 
 namespace my::math {
 
 class BigInteger : public Object<BigInteger> {
 public:
-    using self = BigInteger;
-    const static self ZERO;
-    const static self ONE;
+    using Self = BigInteger;
+    const static Self ZERO;
+    const static Self ONE;
 
     BigInteger(i32 n = 0) {
         *this = n;
@@ -34,16 +34,16 @@ public:
         *this = str;
     }
 
-    BigInteger(const self& other) {
+    BigInteger(const Self& other) {
         *this = other;
     }
 
-    self& operator=(i32 n) {
+    Self& operator=(i32 n) {
         *this = i64(n);
         return *this;
     }
 
-    self& operator=(i64 n) {
+    Self& operator=(i64 n) {
         num_.clear();
         if (n == 0) {
             num_.append(0);
@@ -66,7 +66,7 @@ public:
         return *this;
     }
 
-    self& operator=(const char* str) {
+    Self& operator=(const char* str) {
         isize len = strlen(str), stop = 0LL;
         i32 tmp = 0, ten = 1;
         num_.clear();
@@ -90,12 +90,12 @@ public:
         return *this;
     }
 
-    self& operator=(const CString& str) {
+    Self& operator=(const CString& str) {
         *this = str.data();
         return *this;
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         this->sign_ = other.sign_;
         this->length_ = other.length_;
         this->num_ = other.num_;
@@ -125,9 +125,9 @@ public:
     /**
      * @brief 左移n位，低位补0
      */
-    self left_shift(isize n) const {
+    Self left_shift(isize n) const {
         isize tmp = n % WIDTH;
-        self ans;
+        Self ans;
         ans.length_ = n + 1;
         n /= WIDTH;
         while (ans.num_.size() <= n) {
@@ -140,24 +140,24 @@ public:
         return ans * (*this);
     }
 
-    self abs() const {
-        self ans{*this};
+    Self abs() const {
+        Self ans{*this};
         ans.sign_ = true;
         return ans;
     }
 
-    const self& operator+() const {
+    const Self& operator+() const {
         return *this;
     }
 
-    friend self operator+(const self& a, const self& b) {
+    friend Self operator+(const Self& a, const Self& b) {
         if (!b.sign_) {
             return a - (-b);
         }
         if (!a.sign_) {
             return b - (-a);
         }
-        self ans;
+        Self ans;
         i32 carry = 0, aa, bb;
         isize a_size = a.num_.size(), b_size = b.num_.size();
         isize max_size = math::max_(a_size, b_size);
@@ -175,31 +175,31 @@ public:
         return ans;
     }
 
-    self& operator+=(const self& other) {
+    Self& operator+=(const Self& other) {
         *this = *this + other;
         return *this;
     }
 
-    self& operator++() {
+    Self& operator++() {
         *this = *this + 1;
         return *this;
     }
 
-    self operator++(int) {
-        self ans{*this};
+    Self operator++(int) {
+        Self ans{*this};
         ++*this;
         return ans;
     }
 
-    self operator-() const {
-        self ans{*this};
+    Self operator-() const {
+        Self ans{*this};
         if (ans != 0) {
             ans.sign_ = !ans.sign_;
         }
         return ans;
     }
 
-    friend self operator-(const self& a, const self& b) {
+    friend Self operator-(const Self& a, const Self& b) {
         if (!b.sign_) {
             return a + (-b);
         }
@@ -209,7 +209,7 @@ public:
         if (a < b) {
             return -(b - a);
         }
-        self ans;
+        Self ans;
         i32 carry = 0, aa, bb;
         isize a_size = a.num_.size(), b_size = b.num_.size();
         isize max_size = math::max_(a_size, b_size);
@@ -224,23 +224,23 @@ public:
         return ans;
     }
 
-    self& operator-=(const self& other) {
+    Self& operator-=(const Self& other) {
         *this = *this - other;
         return *this;
     }
 
-    self& operator--() {
+    Self& operator--() {
         *this = *this - 1;
         return *this;
     }
 
-    self operator--(int) {
-        self ans{*this};
+    Self operator--(int) {
+        Self ans{*this};
         --*this;
         return ans;
     }
 
-    friend self operator*(const self& a, const self& b) {
+    friend Self operator*(const Self& a, const Self& b) {
         isize a_size = a.num_.size(), b_size = b.num_.size();
         util::DynArray<i64> res;
         for (isize i = 0; i < a_size; ++i) {
@@ -252,7 +252,7 @@ public:
         while (res.back() == 0 && res.size() != 1) {
             res.pop();
         }
-        self ans;
+        Self ans;
         ans.sign_ = a.sign_ == b.sign_ || (res.size() == 1 && res[0] == 0);
         ans.num_.clear();
         isize resSize = res.size();
@@ -269,22 +269,22 @@ public:
         return ans;
     }
 
-    self& operator*=(const self& other) {
+    Self& operator*=(const Self& other) {
         *this = *this * other;
         return *this;
     }
 
-    friend self operator/(const self& a, const self& b) {
+    friend Self operator/(const Self& a, const Self& b) {
         if (b == 0) {
             ValueError("Divide by 0");
         }
-        self aa{a.abs()}, bb{b.abs()};
+        Self aa{a.abs()}, bb{b.abs()};
         if (aa < bb) {
             return 0;
         }
         CString str(aa.size() + 1);
         std::memset(str.data(), 0, str.size());
-        self tmp;
+        Self tmp;
         isize lenDiff = aa.length_ - bb.length_;
         for (isize i = 0; i <= lenDiff; ++i) {
             tmp = bb.left_shift(lenDiff - i);
@@ -294,21 +294,21 @@ public:
             }
             str[i] = i2c(str[i]);
         }
-        self ans{str};
+        Self ans{str};
         ans.sign_ = a.sign_ == b.sign_ || ans == 0;
         return ans;
     }
 
-    self operator/=(const self& other) {
+    Self operator/=(const Self& other) {
         *this = *this / other;
         return *this;
     }
 
-    friend self operator%(const self& a, const self& b) {
+    friend Self operator%(const Self& a, const Self& b) {
         return a - a / b * b;
     }
 
-    self& operator%=(const self& other) {
+    Self& operator%=(const Self& other) {
         *this = *this % other;
         return *this;
     }
@@ -316,8 +316,8 @@ public:
     /**
      * @brief 幂运算，base^exp
      */
-    friend self operator^(self base, self exp) {
-        self ans{ONE};
+    friend Self operator^(Self base, Self exp) {
+        Self ans{ONE};
         for (; exp; exp /= 2, base *= base) {
             if (exp.is_odd()) {
                 ans *= base;
@@ -326,11 +326,11 @@ public:
         return ans;
     }
 
-    friend bool operator==(const self& a, const self& b) {
+    friend bool operator==(const Self& a, const Self& b) {
         return a.__equals__(b);
     }
 
-    friend bool operator!=(const self& a, const self& b) {
+    friend bool operator!=(const Self& a, const Self& b) {
         return !a.__equals__(b);
     }
 
@@ -364,7 +364,7 @@ public:
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         if (this->sign_ && !other.sign_) {
             return 1;
         } else if (!this->sign_ && other.sign_) {
@@ -418,9 +418,9 @@ private:
     }
 
 private:
-    bool sign_;             // true=正数 false=负数
-    isize length_;          // 十进制位数
-    util::Vector<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
+    bool sign_;          // true=正数 false=负数
+    isize length_;       // 十进制位数
+    util::Vec<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
 
     static const i32 BASE = 100000000;
     static const i32 WIDTH = 8;

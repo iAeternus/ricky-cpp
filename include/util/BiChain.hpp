@@ -19,41 +19,40 @@ class BiChainIterator;
  */
 template <BiChainNodeType BiNode, typename C = Creator<BiNode>>
 class BiChain : public Chain<BiNode, C> {
-    using self = BiChain<BiNode, C>;
-    using super = Chain<BiNode, C>;
-
 public:
+    using Self = BiChain<BiNode, C>;
+    using Super = Chain<BiNode, C>;
     friend class BiChainIterator<BiNode>;
 
     BiChain() :
-            super() {}
+            Super() {}
 
     template <typename... Args>
     void append(Args&&... args) {
-        auto* newNode = super::creator_(std::forward<Args>(args)...);
+        auto* new_node = Super::creator_(std::forward<Args>(args)...);
 
-        if (super::size_ == 0) {
-            super::head_ = newNode;
+        if (Super::size_ == 0) {
+            Super::head_ = new_node;
         } else {
-            super::tail_->next_ = newNode;
-            newNode->prev_ = super::tail_;
+            Super::tail_->next_ = new_node;
+            new_node->prev_ = Super::tail_;
         }
-        super::tail_ = newNode;
-        ++super::size_;
+        Super::tail_ = new_node;
+        ++Super::size_;
     }
 
     template <typename... Args>
     void prepend(Args&&... args) {
-        auto* newNode = super::creator_(std::forward<Args>(args)...);
+        auto* new_node = Super::creator_(std::forward<Args>(args)...);
 
-        if (super::size_ == 0) {
-            super::tail_ = newNode;
+        if (Super::size_ == 0) {
+            Super::tail_ = new_node;
         } else {
-            super::head_->prev_ = newNode;
-            newNode->next_ = super::head_;
+            Super::head_->prev_ = new_node;
+            new_node->next_ = Super::head_;
         }
-        super::head_ = newNode;
-        ++super::size_;
+        Super::head_ = new_node;
+        ++Super::size_;
     }
 
     CString __str__() const {
@@ -76,25 +75,25 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
 
     iterator begin() const {
-        return iterator{super::head_};
+        return iterator{Super::head_};
     }
 
     iterator end() const {
-        if (!super::tail_) {
+        if (!Super::tail_) {
             return iterator{nullptr};
         }
-        return iterator{super::tail_->next_};
+        return iterator{Super::tail_->next_};
     }
 
     reverse_iterator rbegin() const {
-        return reverse_iterator{super::tail_};
+        return reverse_iterator{Super::tail_};
     }
 
     reverse_iterator rend() const {
-        if (!super::head_) {
+        if (!Super::head_) {
             return reverse_iterator{nullptr};
         }
-        return reverse_iterator{super::head_->prev_};
+        return reverse_iterator{Super::head_->prev_};
     }
 };
 
@@ -103,8 +102,8 @@ public:
  */
 template <BiChainNodeType BiNode>
 class BiChainIterator : public ChainIterator<BiNode> {
-    using self = BiChainIterator<BiNode>;
-    using super = ChainIterator<BiNode>;
+    using Self = BiChainIterator<BiNode>;
+    using Super = ChainIterator<BiNode>;
 
 public:
     // using iterator_category = std::bidirectional_iterator_tag;
@@ -116,31 +115,31 @@ public:
     // using const_reference = const value_type&;
 
     BiChainIterator(BiNode* node = nullptr) :
-            super(node) {}
+            Super(node) {}
 
-    BiChainIterator(const self& other) :
-            super(other) {}
+    BiChainIterator(const Self& other) :
+            Super(other) {}
 
-    self& operator--() {
-        super::current_ = super::current_->prev_;
+    Self& operator--() {
+        Super::current_ = Super::current_->prev_;
         return *this;
     }
 
-    self operator--(int) {
-        self tmp{super::current_};
+    Self operator--(int) {
+        Self tmp{Super::current_};
         --tmp;
         return tmp;
     }
 
-    cmp_t __cmp__(const self& other) const {
-        return super::current_ - other.current_;
+    cmp_t __cmp__(const Self& other) const {
+        return Super::current_ - other.current_;
     }
 
-    bool operator==(const self& other) const {
+    bool operator==(const Self& other) const {
         return !this->__cmp__(other);
     }
 
-    bool operator!=(const self& other) const {
+    bool operator!=(const Self& other) const {
         return this->__cmp__(other);
     }
 };

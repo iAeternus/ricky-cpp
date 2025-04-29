@@ -14,8 +14,8 @@ namespace my::math {
 
 class Complex : public Object<Complex> {
 public:
-    using self = Complex;
-    const static self ZERO;
+    using Self = Complex;
+    const static Self ZERO;
 
     Complex(f64 re_ = 0.0, f64 im_ = 0.0) :
             re_(re_), im_(im_) {}
@@ -24,7 +24,7 @@ public:
         *this = str;
     }
 
-    self& operator=(const char* str) {
+    Self& operator=(const char* str) {
         parse(util::String{str});
         return *this;
     }
@@ -58,45 +58,45 @@ public:
     /**
      * @brief 共轭复数
      */
-    self conj() const {
-        return self{re_, -im_};
+    Self conj() const {
+        return Self{re_, -im_};
     }
 
-    friend self operator+(const self& a, const self& b) {
-        return self{a.re_ + b.re_, a.im_ + b.im_};
+    friend Self operator+(const Self& a, const Self& b) {
+        return Self{a.re_ + b.re_, a.im_ + b.im_};
     }
 
-    self& operator+=(const self& other) {
+    Self& operator+=(const Self& other) {
         *this = *this + other;
         return *this;
     }
 
-    friend self operator-(const self& a, const self& b) {
-        return self{a.re_ - b.re_, a.im_ - b.im_};
+    friend Self operator-(const Self& a, const Self& b) {
+        return Self{a.re_ - b.re_, a.im_ - b.im_};
     }
 
-    self& operator-=(const self& other) {
+    Self& operator-=(const Self& other) {
         *this = *this - other;
         return *this;
     }
 
-    friend self operator*(const self& a, const self& b) {
-        return self{a.re_ * b.re_ - a.im_ * b.im_,
+    friend Self operator*(const Self& a, const Self& b) {
+        return Self{a.re_ * b.re_ - a.im_ * b.im_,
                     a.im_ * b.re_ + a.re_ * b.im_};
     }
 
-    self& operator*=(const self& other) {
+    Self& operator*=(const Self& other) {
         *this = *this * other;
         return *this;
     }
 
-    friend self operator/(const self& a, const self& b) {
+    friend Self operator/(const Self& a, const Self& b) {
         f64 bNormSqr = b.modulus_sqr();
-        return self{(a.re_ * b.re_ + a.im_ * b.im_) / bNormSqr,
+        return Self{(a.re_ * b.re_ + a.im_ * b.im_) / bNormSqr,
                     (a.im_ * b.re_ - a.re_ * b.im_) / bNormSqr};
     }
 
-    self& operator/=(const self& other) {
+    Self& operator/=(const Self& other) {
         *this = *this / other;
         return *this;
     }
@@ -122,20 +122,20 @@ public:
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         (void)other;
         RuntimeError("Complex numbers cannot compare sizes");
         return None<cmp_t>;
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return fcmp(this->re_, other.re_) == 0 && fcmp(this->im_, other.im_) == 0;
     }
 
 private:
     void parse(const util::String& str) {
         isize i = 0LL;
-        auto trim_str = str.removeAll(' ');
+        auto trim_str = str.remove_all(' ');
         isize t_size = trim_str.size();
         if (i < t_size && trim_str[i] == '+') {
             ++i;

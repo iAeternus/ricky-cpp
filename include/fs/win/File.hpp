@@ -13,7 +13,7 @@
 namespace my::fs::win {
 
 class File : public Object<File>, public NoCopy {
-    using self = File;
+    using Self = File;
 
 public:
     File(const char* filename, CString mode) {
@@ -46,7 +46,7 @@ public:
         }
     }
 
-    File(self&& other) noexcept :
+    File(Self&& other) noexcept :
             fh_(other.fh_) {
         other.fh_ = nullptr;
     }

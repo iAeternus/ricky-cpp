@@ -14,15 +14,15 @@ namespace my::math {
 
 class Vector2 : public Object<Vector2> {
 public:
-    using self = Vector2;
+    using Self = Vector2;
 
     Vector2(f64 x, f64 y) :
             x_(x), y_(y) {}
 
-    Vector2(const self& other) :
+    Vector2(const Self& other) :
             x_(other.x_), y_(other.y_) {}
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (*this == other) return *this;
         this->x_ = other.x_;
         this->y_ = other.y_;
@@ -37,12 +37,12 @@ public:
         return y_;
     }
 
-    fn x(f64 x)->self& {
+    fn x(f64 x)->Self& {
         this->x_ = x;
         return *this;
     }
 
-    fn y(f64 y)->self& {
+    fn y(f64 y)->Self& {
         this->y_ = y;
         return *this;
     }
@@ -64,61 +64,61 @@ public:
     /**
      * @brief 逆时针旋转 rad 弧度
      */
-    self rotate(double rad) const {
-        return self{x_ * std::cos(rad) - y_ * std::sin(rad), x_ * std::sin(rad) + y_ * std::cos(rad)};
+    Self rotate(double rad) const {
+        return Self{x_ * std::cos(rad) - y_ * std::sin(rad), x_ * std::sin(rad) + y_ * std::cos(rad)};
     }
 
     /**
      * @brief 计算单位向量
      */
-    self unit() const {
+    Self unit() const {
         f64 len = length();
         if (is_zero(len)) {
-            return self{0, 0};
+            return Self{0, 0};
         }
-        return self{x_ / len, y_ / len};
+        return Self{x_ / len, y_ / len};
     }
 
     /**
      * @brief 计算单位法向量
      */
-    self norm() const {
+    Self norm() const {
         f64 len = length();
         if (is_zero(len)) {
-            return self{0, 0};
+            return Self{0, 0};
         }
-        return self{-y_ / len, x_ / len};
+        return Self{-y_ / len, x_ / len};
     }
 
-    friend self operator+(const self& a, const self& b) {
-        return self{a.x_ + b.x_, a.y_ + b.y_};
+    friend Self operator+(const Self& a, const Self& b) {
+        return Self{a.x_ + b.x_, a.y_ + b.y_};
     }
 
-    self& operator+=(const self& other) {
+    Self& operator+=(const Self& other) {
         this->x_ += other.x_;
         this->y_ += other.y_;
         return *this;
     }
 
-    friend self operator-(const self& a, const self& b) {
-        return self{a.x_ - b.x_, a.y_ - b.y_};
+    friend Self operator-(const Self& a, const Self& b) {
+        return Self{a.x_ - b.x_, a.y_ - b.y_};
     }
 
-    self& operator-=(const self& other) {
+    Self& operator-=(const Self& other) {
         this->x_ -= other.x_;
         this->y_ -= other.y_;
         return *this;
     }
 
-    friend self operator*(f64 p, const self& v) {
-        return self{v.x_ * p, v.y_ * p};
+    friend Self operator*(f64 p, const Self& v) {
+        return Self{v.x_ * p, v.y_ * p};
     }
 
-    friend self operator*(const self& v, f64 p) {
-        return self{v.x_ * p, v.y_ * p};
+    friend Self operator*(const Self& v, f64 p) {
+        return Self{v.x_ * p, v.y_ * p};
     }
 
-    self& operator*=(f64 p) {
+    Self& operator*=(f64 p) {
         this->x_ *= p;
         this->y_ *= p;
         return *this;
@@ -130,13 +130,13 @@ public:
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         auto x_cmp = fcmp(x_, other.x_);
         if (x_cmp != 0) return x_cmp;
         return fcmp(y_, other.y_);
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return fcmp(x_, other.x_) == 0 && fcmp(y_, other.y_) == 0;
     }
 

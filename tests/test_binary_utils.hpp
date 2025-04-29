@@ -22,7 +22,7 @@ auto should_cal_lowbit_index = []() {
     u32 x = 0b10110010U;
 
     // When
-    auto res = util::lowbit_index(x);
+    auto res = util::lowbit_idx(x);
 
     // Then
     Assertions::assertEquals(1U, res);
@@ -33,7 +33,7 @@ auto should_cal_highbit_index = []() {
     u32 x = 0b10110010U;
 
     // When
-    auto res = util::highbit_index(x);
+    auto res = util::highbit_idx(x);
 
     // Then
     Assertions::assertEquals(7U, res);

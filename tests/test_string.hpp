@@ -79,7 +79,7 @@ auto should_find_all = []() {
     util::String s = "abcdefabc"_s;
 
     // When
-    auto poss = s.findAll("abc"_s);
+    auto poss = s.find_all("abc"_s);
 
     // Then
     Assertions::assertEquals(2, poss.size());
@@ -91,8 +91,8 @@ auto should_judge_starts_with = []() {
     util::String s = "abcdef"_s;
 
     // When
-    bool res = s.startsWith("abc"_s);
-    bool res2 = s.startsWith("abd"_s);
+    bool res = s.starts_with("abc"_s);
+    bool res2 = s.starts_with("abd"_s);
 
     // Then
     Assertions::assertTrue(res);
@@ -104,8 +104,8 @@ auto should_judge_ends_with = []() {
     util::String s = "abcdef"_s;
 
     // When
-    bool res = s.endsWith("def"_s);
-    bool res2 = s.endsWith("deg"_s);
+    bool res = s.ends_with("def"_s);
+    bool res2 = s.ends_with("deg"_s);
 
     // Then
     Assertions::assertTrue(res);
@@ -233,7 +233,7 @@ auto should_remove_all = []() {
     util::String s = "   a  bc ";
 
     // When
-    auto res = s.removeAll(' ');
+    auto res = s.remove_all(' ');
 
     // Then
     Assertions::assertEquals("abc"_s, res);
@@ -279,7 +279,7 @@ constexpr i32 N = 1e6;
 
 auto speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
-    for(auto i = 0; i < N; ++i) {
+    for (auto i = 0; i < N; ++i) {
         sb.append("abcdef");
     }
     auto str = sb.str();
@@ -288,7 +288,7 @@ auto speed_of_string_builder_append_string = []() {
 
 auto speed_of_std_string_splicing = []() {
     std::string str;
-    for(auto i = 0; i < N; ++i) {
+    for (auto i = 0; i < N; ++i) {
         str += "abcdef";
     }
     Assertions::assertEquals(N * 6, str.length());

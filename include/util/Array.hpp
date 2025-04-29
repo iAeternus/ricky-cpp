@@ -27,11 +27,10 @@ namespace my::util {
  */
 template <typename T>
 class Array : public Sequence<Array<T>, T> {
-    using self = Array<T>;
-    using super = Sequence<Array<T>, T>;
-
 public:
     using value_t = T;
+    using Self = Array<value_t>;
+    using Super = Sequence<Array<value_t>, value_t>;
 
     /**
      * @brief 构造一个指定大小的静态数组，并初始化所有元素
@@ -49,12 +48,12 @@ public:
 
     /**
      * @brief 使用初始化列表构造静态数组
-     * @param initList 初始化列表，包含数组的初始元素
+     * @param init_list 初始化列表，包含数组的初始元素
      */
-    Array(std::initializer_list<T>&& initList) :
-            size_(initList.size()), arr_(my_alloc<T>(size_)) {
+    Array(std::initializer_list<T>&& init_list) :
+            size_(init_list.size()), arr_(my_alloc<T>(size_)) {
         isize idx = 0;
-        for (const T& item : initList) {
+        for (const T& item : init_list) {
             my_construct(data() + idx++, item);
         }
     }
@@ -63,7 +62,7 @@ public:
      * @brief 拷贝构造函数
      * @param other 需要拷贝的静态数组
      */
-    Array(const self& other) :
+    Array(const Self& other) :
             size_(other.size_), arr_(my_alloc<T>(size_)) {
         for (isize i = 0; i < size_; ++i) {
             my_construct(data() + i, other.data()[i]);
@@ -74,7 +73,7 @@ public:
      * @brief 移动构造函数
      * @param other 需要移动的静态数组
      */
-    Array(self&& other) noexcept :
+    Array(Self&& other) noexcept :
             size_(other.size_), arr_(other.arr_) {
         other.size_ = 0;
         other.arr_ = nullptr;
@@ -85,7 +84,7 @@ public:
      * @param other 需要拷贝的静态数组
      * @return 本静态数组对象的引用
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         my_destroy(arr_, size_);
@@ -98,7 +97,7 @@ public:
      * @param other 需要移动的静态数组
      * @return 本静态数组对象的引用
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         my_destroy(arr_, size_);
@@ -194,14 +193,14 @@ public:
     /**
      * @brief 重新分配内存，不保留原有数据
      * @tparam Args 用于初始化数组元素的参数
-     * @param newSize 新的数组大小
+     * @param new_size 新的数组大小
      * @param args 用于初始化新数组的参数
      * @note 调用此方法会销毁原数组中的所有元素并释放内存
      */
     template <typename... Args>
-    void resize(isize newSize, const Args&... args) {
+    void resize(isize new_size, const Args&... args) {
         my_destroy(this);
-        my_construct(this, newSize, args...);
+        my_construct(this, new_size, args...);
     }
 
     /**
@@ -256,8 +255,8 @@ public:
     }
 
     class RangeIterator : public Object<RangeIterator> {
-        using self = RangeIterator;
-        using super = Object<self>;
+        using Self = RangeIterator;
+        using Super = Object<Self>;
 
     public:
         using iterator_category = std::bidirectional_iterator_tag;
@@ -280,7 +279,7 @@ public:
          * @brief 拷贝构造函数
          * @param other 需要拷贝的范围迭代器
          */
-        RangeIterator(const self& other) :
+        RangeIterator(const Self& other) :
                 current_(other.current_), step_(other.step_) {}
 
         /**
@@ -320,7 +319,7 @@ public:
          * 将当前值增加步长
          * @return 返回自增后的迭代器
          */
-        self& operator++() {
+        Self& operator++() {
             current_ += step_;
             return *this;
         }
@@ -330,8 +329,8 @@ public:
          * 将当前值增加步长，并返回自增前的迭代器
          * @return 返回自增前的迭代器
          */
-        self operator++(int) {
-            self tmp(*this);
+        Self operator++(int) {
+            Self tmp(*this);
             ++tmp;
             return tmp;
         }
@@ -341,7 +340,7 @@ public:
          * 将当前值减少步长
          * @return 返回自减后的迭代器
          */
-        self& operator--() {
+        Self& operator--() {
             current_ -= step_;
             return *this;
         }
@@ -351,8 +350,8 @@ public:
          * 将当前值减少步长，并返回自减前的迭代器
          * @return 返回自减前的迭代器
          */
-        self operator--(int) {
-            self tmp(*this);
+        Self operator--(int) {
+            Self tmp(*this);
             --tmp;
             return tmp;
         }
@@ -362,7 +361,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果相等返回 true，否则返回 false
          */
-        bool __equals__(const self& other) const {
+        bool __equals__(const Self& other) const {
             return current_ == other.current_;
         }
 

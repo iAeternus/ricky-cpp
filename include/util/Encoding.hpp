@@ -21,10 +21,10 @@ static const CString GB2312 = "gb2312";
  * @brief 字符编码接口
  */
 class Encoding : Object<Encoding> {
-    using self = Encoding;
-    using super = Object<self>;
-
 public:
+    using Self = Encoding;
+    using Super = Object<Self>;
+
     virtual ~Encoding() = default;
 
     /**
@@ -46,17 +46,17 @@ public:
  * @brief ASCII
  */
 class ASCIIEncoding : public Encoding {
-    using self = ASCIIEncoding;
-    using super = Encoding;
-
 public:
+    using Self = ASCIIEncoding;
+    using Super = Encoding;
+
     i32 byte_size(const char* data) const override {
-        (void)data; // 告诉编译器可能不使用data
+        (void)data; // cheer the compiler
         return 1;
     }
 
-    self* clone() const override {
-        return new self{};
+    Self* clone() const override {
+        return new Self{};
     }
 
     CString __str__() const override {
@@ -68,10 +68,10 @@ public:
  * @brief utf-8
  */
 class UTF8Encoding : public Encoding {
-    using self = UTF8Encoding;
-    using super = Encoding;
-
 public:
+    using Self = UTF8Encoding;
+    using Super = Encoding;
+
     i32 byte_size(const char* data) const override {
         if ((data[0] & 0x80) == 0) {
             return 1; // 以0    开头（0xxxxxxx），1字节编码
@@ -87,8 +87,8 @@ public:
         return 0;
     }
 
-    self* clone() const override {
-        return new self{};
+    Self* clone() const override {
+        return new Self{};
     }
 
     CString __str__() const override {
@@ -100,10 +100,10 @@ public:
  * @brief utf-16
  */
 class UTF16Encoding : public Encoding {
-    using self = UTF16Encoding;
-    using super = Encoding;
-
 public:
+    using Self = UTF16Encoding;
+    using Super = Encoding;
+
     i32 byte_size(const char* data) const override {
         if ((data[0] & 0xFC) == 0xD8) {
             return 4; // 以110110开头（110110xx 110111xx），4字节编码
@@ -112,8 +112,8 @@ public:
         }
     }
 
-    self* clone() const override {
-        return new self{};
+    Self* clone() const override {
+        return new Self{};
     }
 
     CString __str__() const override {
@@ -125,17 +125,17 @@ public:
  * @brief utf-32
  */
 class UTF32Encoding : public Encoding {
-    using self = UTF32Encoding;
-    using super = Encoding;
-
 public:
+    using Self = UTF32Encoding;
+    using Super = Encoding;
+
     i32 byte_size(const char* data) const override {
-        (void)data; // 告诉编译器可能不使用data
+        (void)data;
         return 4;
     }
 
-    self* clone() const override {
-        return new self{};
+    Self* clone() const override {
+        return new Self{};
     }
 
     CString __str__() const override {
@@ -147,17 +147,17 @@ public:
  * @brief gb2312，暂未实现
  */
 class GB2312Encoding : public Encoding {
-    using self = GB2312Encoding;
-    using super = Encoding;
-
 public:
+    using Self = GB2312Encoding;
+    using Super = Encoding;
+
     i32 byte_size(const char* data) const override {
-        (void)data; // 告诉编译器可能不使用data
+        (void)data;
         return 0;
     }
 
-    self* clone() const override {
-        return new self{};
+    Self* clone() const override {
+        return new Self{};
     }
 
     CString __str__() const override {

@@ -3,7 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "DynArray.hpp"
-#include "Vector.hpp"
+#include "Vec.hpp"
 
 namespace my::test::test_dynarray {
 
@@ -106,7 +106,7 @@ auto should_to_array = []() {
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
     // When
-    auto arr = d.toArray();
+    auto arr = d.to_array();
 
     // Then
     Assertions::assertEquals(5, i32(arr.size()));
@@ -195,7 +195,7 @@ auto speed_of_dny_array_append_string = []() {
 };
 
 auto speed_of_util_vector_append_string = []() {
-    util::Vector<std::string> d;
+    util::Vec<std::string> d;
     for (i32 i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
@@ -216,7 +216,7 @@ auto speed_of_dny_array_append_i32 = []() {
 };
 
 auto speed_of_util_vector_append_i32 = []() {
-    util::Vector<i32> d;
+    util::Vec<i32> d;
     for (i32 i = 0; i < N; ++i) {
         d.append(i);
     }

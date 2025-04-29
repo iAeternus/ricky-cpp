@@ -18,7 +18,7 @@ namespace my::util {
  */
 template <typename T>
 class HashBucket : public Object<HashBucket<T>> {
-    using self = HashBucket<T>;
+    using Self = HashBucket<T>;
 
 public:
     using value_t = T;
@@ -35,7 +35,7 @@ public:
     /**
      * @brief 克隆自身
      */
-    virtual self* clone() const = 0;
+    virtual Self* clone() const = 0;
 
     /**
      * @brief 尝试根据hash值获取元素
@@ -88,7 +88,7 @@ public:
  */
 template <typename T>
 class RobinManager : public Object<RobinManager<T>> {
-    using self = RobinManager<T>;
+    using Self = RobinManager<T>;
 
 public:
     using value_t = T; // 值的类型
@@ -114,14 +114,14 @@ public:
      * @brief 拷贝构造函数。
      * @param other 需要拷贝的管理器。
      */
-    RobinManager(const self& other) :
+    RobinManager(const Self& other) :
             moveDist_(other.moveDist_), hashVal_(other.hashVal_), value_(other.value_) {}
 
     /**
      * @brief 移动构造函数。
      * @param other 需要移动的管理器。
      */
-    RobinManager(self&& other) noexcept :
+    RobinManager(Self&& other) noexcept :
             moveDist_(other.moveDist_), hashVal_(other.hashVal_), value_(std::move(other.value_)) {
         other.unmanage();
     }
@@ -131,7 +131,7 @@ public:
      * @param other 需要拷贝的管理器。
      * @return 本管理器对象的引用。
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         this->moveDist_ = other.moveDist_;
@@ -145,7 +145,7 @@ public:
      * @param other 需要移动的管理器。
      * @return 本管理器对象的引用。
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->moveDist_ = other.moveDist_;
@@ -208,7 +208,7 @@ public:
      * @param other 需要比较的管理器。
      * @return 如果当前管理器的移动距离更大返回 true，否则返回 false。
      */
-    bool moveGt(const self& other) const {
+    bool moveGt(const Self& other) const {
         return this->moveDist_ > other.moveDist_;
     }
 
@@ -226,7 +226,7 @@ public:
      * @param other 需要比较的管理器。
      * @return 如果当前管理器的移动距离小于或等于另一个管理器返回 true，否则返回 false。
      */
-    bool moveLe(const self& other) const {
+    bool moveLe(const Self& other) const {
         return this->moveDist_ <= other.moveDist_;
     }
 
@@ -251,7 +251,7 @@ public:
      * @brief 与另一个管理器交换数据。
      * @param other 需要交换的管理器。
      */
-    void swap(self& other) {
+    void swap(Self& other) {
         std::swap(this->moveDist_, other.moveDist_);
         std::swap(this->hashVal_, other.hashVal_);
         std::swap(this->value_, other.value_);
@@ -276,8 +276,8 @@ private:
  */
 template <typename T>
 class RobinHashBucket : public HashBucket<T> {
-    using self = RobinHashBucket<T>;
-    using super = HashBucket<T>;
+    using Self = RobinHashBucket<T>;
+    using Super = HashBucket<T>;
 
 public:
     using value_t = T;                 // 值的类型
@@ -294,14 +294,14 @@ public:
      * @brief 拷贝构造函数。
      * @param other 需要拷贝的哈希桶。
      */
-    RobinHashBucket(const self& other) :
+    RobinHashBucket(const Self& other) :
             robinManagers_(other.robinManagers_) {}
 
     /**
      * @brief 移动构造函数。
      * @param other 需要移动的哈希桶。
      */
-    RobinHashBucket(self&& other) noexcept :
+    RobinHashBucket(Self&& other) noexcept :
             robinManagers_(std::move(other.robinManagers_)) {}
 
     /**
@@ -309,7 +309,7 @@ public:
      * @param other 需要拷贝的哈希桶。
      * @return 本哈希桶对象的引用。
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         this->robinManagers_ = other.robinManagers_;
@@ -321,7 +321,7 @@ public:
      * @param other 需要移动的哈希桶。
      * @return 本哈希桶对象的引用。
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->robinManagers_ = std::move(other.robinManagers_);
@@ -340,8 +340,8 @@ public:
      * @brief 克隆当前哈希桶。
      * @return 返回克隆后的哈希桶指针。
      */
-    virtual self* clone() const override {
-        return new self(*this);
+    virtual Self* clone() const override {
+        return new Self(*this);
     }
 
     /**
@@ -354,7 +354,7 @@ public:
      */
     manager_t* tryGetManager(hash_t hashVal) {
         isize m_capacity = capacity();
-        isize idx = super::hash2index(hashVal);
+        isize idx = Super::hash2index(hashVal);
         for (isize i = 0; i < m_capacity; ++i) {
             auto& manager = robinManagers_.at((idx + i) % m_capacity);
             if (!manager.isManaged() || manager.hashEqual(hashVal)) {
@@ -374,7 +374,7 @@ public:
      */
     const manager_t* tryGetManager(hash_t hashVal) const {
         isize m_capacity = capacity();
-        isize idx = super::hash2index(hashVal);
+        isize idx = Super::hash2index(hashVal);
         for (isize i = 0; i < m_capacity; ++i) {
             const auto& manager = robinManagers_.at((idx + i) % m_capacity);
             if (!manager.isManaged() || manager.hashEqual(hashVal)) {
@@ -446,7 +446,7 @@ public:
     value_t* setValue(V&& value, hash_t hashVal) {
         manager_t valueManager{std::forward<V>(value), hashVal, 0};
         isize m_capacity = capacity();
-        isize idx = super::hash2index(hashVal);
+        isize idx = Super::hash2index(hashVal);
         for (isize i = 0; i < m_capacity; ++i) {
             auto& manager = robinManagers_.at((idx + i) % m_capacity);
             if (!manager.isManaged()) {
@@ -486,7 +486,7 @@ public:
 
     template <bool IsConst>
     class RobinHashBucketIterator : public Object<RobinHashBucketIterator<IsConst>> {
-        using self = RobinHashBucketIterator<IsConst>;
+        using Self = RobinHashBucketIterator<IsConst>;
 
     public:
         using container_t = std::conditional_t<IsConst, const Array<manager_t>, Array<manager_t>>;
@@ -510,7 +510,7 @@ public:
          * @brief 拷贝构造函数。
          * @param other 需要拷贝的迭代器。
          */
-        RobinHashBucketIterator(const self& other) :
+        RobinHashBucketIterator(const Self& other) :
                 bucketPtr_(other.bucketPtr_), index_(other.index_) {}
 
         /**
@@ -518,7 +518,7 @@ public:
          * @param other 需要拷贝的迭代器。
          * @return 返回本迭代器对象的引用。
          */
-        self& operator=(const self& other) {
+        Self& operator=(const Self& other) {
             if (this == &other) return *this;
 
             this->bucketPtr_ = other.bucketPtr_;
@@ -563,7 +563,7 @@ public:
          * 移动迭代器到下一个有效的键值对。
          * @return 返回自增后的迭代器。
          */
-        self& operator++() {
+        Self& operator++() {
             ++index_;
             isize m_size = bucketPtr_->size();
             while (index_ < m_size && !bucketPtr_->at(index_).isManaged()) {
@@ -577,8 +577,8 @@ public:
          * 移动迭代器到下一个有效的键值对。
          * @return 返回自增前的迭代器。
          */
-        self operator++(int) {
-            self tmp{*this};
+        Self operator++(int) {
+            Self tmp{*this};
             ++tmp;
             return tmp;
         }
@@ -588,7 +588,7 @@ public:
          * @param other 另一个迭代器。
          * @return 如果相等返回 true，否则返回 false。
          */
-        bool __equals__(const self& other) const {
+        bool __equals__(const Self& other) const {
             return this->bucketPtr_ == other.bucketPtr_ && this->index_ == other.index_;
         }
 

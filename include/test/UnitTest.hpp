@@ -24,7 +24,7 @@ static io::ColorPrinter test_failed{stdout, io::Color::RED};
  * 单元测试类
  */
 class UnitTest : public Object<UnitTest> {
-    using self = UnitTest;
+    using Self = UnitTest;
 
 public:
     UnitTest(const CString& displayName, const std::function<void(void)>& testCase) :

@@ -93,7 +93,7 @@ constexpr fn lowbit(const B& x)->B {
  * @brief 计算x的二进制表示中最低位的1的索引，索引从0开始
  */
 template <typename B>
-constexpr fn lowbit_index(const B& x)->B {
+constexpr fn lowbit_idx(const B& x)->B {
     B l{};
     while ((x >> l & 1) == 0) {
         ++l;
@@ -105,7 +105,7 @@ constexpr fn lowbit_index(const B& x)->B {
  * @brief 计算x的二进制表示中最高位的1的索引，索引从0开始
  */
 template <typename B>
-constexpr fn highbit_index(const B& x)->B {
+constexpr fn highbit_idx(const B& x)->B {
     B l{};
     while (x >> l) {
         ++l;

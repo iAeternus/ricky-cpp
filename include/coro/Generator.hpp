@@ -18,7 +18,7 @@ namespace my::coro {
 
 template <typename T>
 class Generator : public Object<Generator<T>>, public NoCopy {
-    using self = Generator<T>;
+    using Self = Generator<T>;
     static_assert(std::is_default_constructible_v<T>, "Generator requires default constructible result type");
     static_assert(!std::is_const_v<T>, "Generator result type cannot be const");
 
@@ -27,8 +27,8 @@ public:
     using co_handle = std::coroutine_handle<promise_type>;
 
     struct promise_type : public PromiseImpl<T> {
-        self get_return_object() noexcept {
-            return self(co_handle::from_promise(*this));
+        Self get_return_object() noexcept {
+            return Self(co_handle::from_promise(*this));
         }
 
         void unhandled_exception() noexcept {
@@ -41,10 +41,10 @@ public:
     explicit Generator(co_handle handle) noexcept :
             handle_(handle) {}
 
-    Generator(self&& other) noexcept :
+    Generator(Self&& other) noexcept :
             handle_(std::exchange(other.handle_, nullptr)) {}
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this != &other) {
             if (handle_) handle_.destroy();
             handle_ = std::exchange(other.handle_, nullptr);
@@ -58,7 +58,7 @@ public:
 
     class Iterator {
     public:
-        using self = Iterator;
+        using Self = Iterator;
         using iterator_category = std::input_iterator_tag;
         using value_type = T;
         using difference_type = std::ptrdiff_t;
@@ -68,7 +68,7 @@ public:
         explicit Iterator(co_handle handle = nullptr) :
                 handle_(handle) {}
 
-        self& operator++() {
+        Self& operator++() {
             if (!valid_handle()) return *this;
 
             handle_.resume();
@@ -79,8 +79,8 @@ public:
             return *this;
         }
 
-        self operator++(int) {
-            self tmp(*this);
+        Self operator++(int) {
+            Self tmp(*this);
             ++tmp;
             return tmp;
         }
@@ -89,7 +89,7 @@ public:
             return handle_.promise().value_;
         }
 
-        bool operator==(const self& rhs) const noexcept {
+        bool operator==(const Self& rhs) const noexcept {
             return handle_ == rhs.handle_;
         }
 

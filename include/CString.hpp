@@ -21,8 +21,8 @@ namespace my {
  */
 class CString {
 public:
-    using self = CString;
-    
+    using Self = CString;
+
     /**
      * @brief 默认构造函数，创建一个空字符串
      */
@@ -75,14 +75,14 @@ public:
      * @brief 拷贝构造函数
      * @param other 要拷贝的 CString 对象
      */
-    CString(const self& other) :
+    CString(const Self& other) :
             CString(other.data(), other.size()) {}
 
     /**
      * @brief 移动构造函数
      * @param other 要移动的 CString 对象
      */
-    CString(self&& other) noexcept :
+    CString(Self&& other) noexcept :
             str_(other.str_), len_(other.len_) {
         other.str_ = nullptr;
         other.len_ = 0;
@@ -93,7 +93,7 @@ public:
      * @param other 要赋值的 CString 对象
      * @return 自身的引用
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         my_delloc(str_);
@@ -105,11 +105,11 @@ public:
      * @param other 要赋值的 CString 对象
      * @return 自身的引用
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         my_delloc(str_);
-        return *my_construct(this, std::forward<self>(other));
+        return *my_construct(this, std::forward<Self>(other));
     }
 
     /**
@@ -191,7 +191,7 @@ public:
      * @param other 要拼接的 CString 对象
      * @return 拼接后的新字符串
      */
-    self operator+(const self& other) const {
+    Self operator+(const Self& other) const {
         isize mSize = this->size(), oSize = other.size();
         CString res{mSize + oSize};
         for (isize i = 0; i < mSize; ++i) {
@@ -224,7 +224,7 @@ public:
      * @param other 要比较的字符串
      * @return 比较结果
      */
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         return std::strcmp(data(), other.data());
     }
 
@@ -233,7 +233,7 @@ public:
      * @param other 要比较的字符串
      * @return 是否相等
      */
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return __cmp__(other) == 0;
     }
 
@@ -246,17 +246,17 @@ public:
         return std::strcmp(data(), other) == 0;
     }
 
-    bool operator>(const self& other) const { return __cmp__(other) > 0; }
+    bool operator>(const Self& other) const { return __cmp__(other) > 0; }
 
-    bool operator<(const self& other) const { return __cmp__(other) < 0; }
+    bool operator<(const Self& other) const { return __cmp__(other) < 0; }
 
-    bool operator>=(const self& other) const { return __cmp__(other) >= 0; }
+    bool operator>=(const Self& other) const { return __cmp__(other) >= 0; }
 
-    bool operator<=(const self& other) const { return __cmp__(other) <= 0; }
+    bool operator<=(const Self& other) const { return __cmp__(other) <= 0; }
 
-    bool operator==(const self& other) const { return __cmp__(other) == 0; }
+    bool operator==(const Self& other) const { return __cmp__(other) == 0; }
 
-    bool operator!=(const self& other) const { return __cmp__(other) != 0; }
+    bool operator!=(const Self& other) const { return __cmp__(other) != 0; }
 
     bool operator==(const char* other) const { return __equals__(other); }
 
@@ -269,7 +269,7 @@ public:
     template <bool IsConst>
     class Iterator {
     public:
-        using self = Iterator<IsConst>;
+        using Self = Iterator<IsConst>;
         using iterator_category = std::random_access_iterator_tag;
         using value_type = std::conditional_t<IsConst, const char, char>;
         using difference_type = std::ptrdiff_t;
@@ -289,7 +289,7 @@ public:
          * @brief 拷贝构造函数
          * @param other 需要拷贝的迭代器
          */
-        Iterator(const self& other) :
+        Iterator(const Self& other) :
                 Iterator(other.current_) {}
 
         /**
@@ -297,7 +297,7 @@ public:
          * @param other 需要拷贝的迭代器
          * @return 返回自身引用
          */
-        self& operator=(const self& other) {
+        Self& operator=(const Self& other) {
             this->current_ = other.current_;
             return *this;
         }
@@ -343,7 +343,7 @@ public:
          * 移动迭代器到下一个元素
          * @return 返回自增后的迭代器
          */
-        self& operator++() {
+        Self& operator++() {
             ++current_;
             return *this;
         }
@@ -353,8 +353,8 @@ public:
          * 移动迭代器到下一个元素
          * @return 返回自增前的迭代器
          */
-        self operator++(int) {
-            self tmp(*this);
+        Self operator++(int) {
+            Self tmp(*this);
             ++tmp;
             return tmp;
         }
@@ -364,7 +364,7 @@ public:
          * 移动迭代器到上一个元素
          * @return 返回自减后的迭代器
          */
-        self& operator--() {
+        Self& operator--() {
             --current_;
             return *this;
         }
@@ -374,8 +374,8 @@ public:
          * 移动迭代器到上一个元素
          * @return 返回自减前的迭代器
          */
-        self operator--(int) {
-            self tmp(*this);
+        Self operator--(int) {
+            Self tmp(*this);
             --tmp;
             return tmp;
         }
@@ -385,7 +385,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果相等返回 true，否则返回 false
          */
-        bool operator==(const self& other) const {
+        bool operator==(const Self& other) const {
             return __equals__(other);
         }
 
@@ -394,7 +394,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果不相等返回 true，否则返回 false
          */
-        bool operator!=(const self& other) const {
+        bool operator!=(const Self& other) const {
             return !__equals__(other);
         }
 
@@ -403,7 +403,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果内部状态相等返回 true，否则返回 false
          */
-        bool __equals__(const self& other) const {
+        bool __equals__(const Self& other) const {
             return this->current_ == other.current_;
         }
 
@@ -412,7 +412,7 @@ public:
          * @param other 另一个迭代器
          * @return 返回一个整数值，表示两个迭代器的顺序
          */
-        cmp_t __cmp__(const self& other) const {
+        cmp_t __cmp__(const Self& other) const {
             return this->current_ - other.current_;
         }
 

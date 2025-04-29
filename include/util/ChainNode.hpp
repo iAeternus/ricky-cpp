@@ -43,30 +43,29 @@ concept BiChainNodeType = ChainNodeType<T>&& requires(T a) {
  */
 template <typename T>
 class ChainNode : public Object<ChainNode<T>> {
-    using self = ChainNode<T>;
-    using super = Object<self>;
-
 public:
     using value_t = T;
+    using Self = ChainNode<value_t>;
+    using Super = Object<Self>;
 
-    ChainNode(const value_t& value = {}, self* next = nullptr) :
+    ChainNode(const value_t& value = {}, Self* next = nullptr) :
             value_(value), next_(next) {}
 
-    ChainNode(const self& other) :
+    ChainNode(const Self& other) :
             value_(other.value_), next_(other.next_) {}
 
-    ChainNode(self&& other) noexcept :
+    ChainNode(Self&& other) noexcept :
             value_(std::move(other.value_)), next_(other.next_) {
         other.next_ = nullptr;
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         this->value_ = other.value_;
         this->next_ = nullptr;
         return *this;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         this->value_ = std::move(other.value_);
         this->next_ = other.next_;
         other.next_ = nullptr;
@@ -79,20 +78,20 @@ public:
         return CString(stream.str());
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return this->value_ == other.value_;
     }
 
-    bool operator==(const self& other) const {
+    bool operator==(const Self& other) const {
         return this->__equals__(other);
     }
 
-    bool operator!=(const self& other) const {
+    bool operator!=(const Self& other) const {
         return !this->__equals__(other);
     }
 
     value_t value_;
-    self* next_;
+    Self* next_;
 };
 
 /**
@@ -100,30 +99,29 @@ public:
  */
 template <typename T>
 class BiChainNode : public Object<BiChainNode<T>> {
-    using self = BiChainNode<T>;
-    using super = Object<self>;
-
 public:
     using value_t = T;
+    using Self = BiChainNode<value_t>;
+    using Super = Object<Self>;
 
     BiChainNode(const value_t& value = {}) :
             value_(value), next_(nullptr), prev_(nullptr) {}
 
-    BiChainNode(const self& other) :
+    BiChainNode(const Self& other) :
             value_(other.value_), next_(nullptr), prev_(nullptr) {}
 
-    BiChainNode(self&& other) noexcept :
+    BiChainNode(Self&& other) noexcept :
             value_(std::move(other.value_)), next_(other.next_), prev_(other.prev_) {
         other.next_ = other.prev_ = nullptr;
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         this->value_ = other.value_;
         this->next_ = this->prev_ = nullptr;
         return *this;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         this->value_ = std::move(other.value_);
         this->next_ = other.next_;
         this->prev_ = other.prev_;
@@ -137,20 +135,20 @@ public:
         return CString{stream.str()};
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return this->value_ == other.value_;
     }
 
-    bool operator==(const self& other) const {
+    bool operator==(const Self& other) const {
         return this->__equals__(other);
     }
 
-    bool operator!=(const self& other) const {
+    bool operator!=(const Self& other) const {
         return !this->__equals__(other);
     }
 
     value_t value_;
-    self *next_, *prev_;
+    Self *next_, *prev_;
 };
 
 } // namespace my::util

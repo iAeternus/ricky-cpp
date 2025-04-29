@@ -20,7 +20,7 @@ namespace my::util {
  */
 template <ChainNodeType Node, typename C = Creator<Node>>
 class ChainQueue {
-    using self = ChainQueue<Node, C>;
+    using Self = ChainQueue<Node, C>;
 
 public:
     using value_t = typename Node::value_t;

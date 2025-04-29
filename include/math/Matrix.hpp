@@ -8,7 +8,7 @@
 #define MATRIX_HPP
 
 #include "math_utils.hpp"
-#include "Vector.hpp"
+#include "Vec.hpp"
 
 namespace my::math {
 
@@ -20,7 +20,7 @@ class Matrix;
  */
 template <typename E>
 class MatrixView : public Object<MatrixView<E>> {
-    using self = MatrixView<E>;
+    using Self = MatrixView<E>;
 
 public:
     using value_t = E;
@@ -85,7 +85,7 @@ private:
  */
 template <typename E>
 class Matrix : public Object<Matrix<E>> {
-    using self = Matrix<E>;
+    using Self = Matrix<E>;
 
 public:
     using value_t = E;
@@ -137,7 +137,7 @@ public:
         return rows_ == cols_;
     }
 
-    bool shapeEquals(const self& other) const {
+    bool shapeEquals(const Self& other) const {
         return this->rows_ == other.rows_ && this->cols_ == other.cols_;
     }
 
@@ -202,8 +202,8 @@ public:
         }
     }
 
-    self clone() const {
-        self ans(this->rows_, this->cols_);
+    Self clone() const {
+        Self ans(this->rows_, this->cols_);
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i];
@@ -211,12 +211,12 @@ public:
         return ans;
     }
 
-    friend self operator+(const self& a, const self& b) {
+    friend Self operator+(const Self& a, const Self& b) {
         if (!a.shapeEquals(b)) {
             ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
-            return None<self>;
+            return None<Self>;
         }
-        self ans(a.rows_, a.cols_);
+        Self ans(a.rows_, a.cols_);
         isize size = ans.data_.size();
         for (isize i = 0; i < size; ++i) {
             ans.data_[i] = a.data_[i] + b.data_[i];
@@ -224,11 +224,11 @@ public:
         return ans;
     }
 
-    self& operator+=(const self& other) {
+    Self& operator+=(const Self& other) {
         if (!this->shapeEquals(other)) {
             ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.",
                                    this->rows_, this->cols_, other.rows_, other.cols_));
-            return None<self>;
+            return None<Self>;
         }
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
@@ -237,12 +237,12 @@ public:
         return *this;
     }
 
-    friend self operator-(const self& a, const self& b) {
+    friend Self operator-(const Self& a, const Self& b) {
         if (!a.shapeEquals(b)) {
             ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
-            return None<self>;
+            return None<Self>;
         }
-        self ans(a.rows_, a.cols_);
+        Self ans(a.rows_, a.cols_);
         isize size = ans.data_.size();
         for (isize i = 0; i < size; ++i) {
             ans.data_[i] = a.data_[i] - b.data_[i];
@@ -250,11 +250,11 @@ public:
         return ans;
     }
 
-    self& operator-=(const self& other) {
+    Self& operator-=(const Self& other) {
         if (!this->shapeEquals(other)) {
             ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.",
                                    this->rows_, this->cols_, other.rows_, other.cols_));
-            return None<self>;
+            return None<Self>;
         }
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
@@ -263,12 +263,12 @@ public:
         return *this;
     }
 
-    friend self operator*(const self& a, const self& b) {
+    friend Self operator*(const Self& a, const Self& b) {
         if (a.cols_ != b.rows_) {
             ValueError("To be multiplied, the cols of matrix A must equals to the rows of matrix B.");
-            return None<self>;
+            return None<Self>;
         }
-        self result(a.rows_, b.cols_);
+        Self result(a.rows_, b.cols_);
         for (isize i = 0; i < a.rows_; ++i) {
             for (isize k = 0; k < a.cols_; ++k) {
                 auto a_ik = a(i, k);
@@ -280,7 +280,7 @@ public:
         return result;
     }
 
-    self& operator*=(const self& other) {
+    Self& operator*=(const Self& other) {
         *this = *this * other;
         return *this;
     }
@@ -288,13 +288,13 @@ public:
     /**
      * @brief 点乘
      */
-    self dot(const self& other) const {
+    Self dot(const Self& other) const {
         if (!this->shapeEquals(other)) {
             ValueError(std::format("Cannot dot a ({}x{}) matrix and a ({}x{}) matrix.",
                                    this->rows_, this->cols_, other.rows_, other.cols_));
-            return None<self>;
+            return None<Self>;
         }
-        self ans(this->rows_, this->cols_);
+        Self ans(this->rows_, this->cols_);
         isize size = ans.data_.size();
         for (isize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i] * other.data_[i];
@@ -302,8 +302,8 @@ public:
         return ans;
     }
 
-    self dot(value_t value) const {
-        self ans(rows_, cols_);
+    Self dot(value_t value) const {
+        Self ans(rows_, cols_);
         isize size = ans.data_.size();
         for (isize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i] * value;
@@ -314,8 +314,8 @@ public:
     /**
      * @brief 求转置
      */
-    self T() const {
-        self ans(cols_, rows_);
+    Self T() const {
+        Self ans(cols_, rows_);
         for (isize i = 0; i < rows_; ++i) {
             for (isize j = 0; j < cols_; ++j) {
                 ans(j, i) = this->at_impl(i, j);
@@ -363,14 +363,14 @@ public:
     /**
      * @brief 求逆
      */
-    self inv() const {
+    Self inv() const {
         if (!isSquare()) {
             ValueError("Only square matrices are LU decomposition.");
-            return None<self>;
+            return None<Self>;
         }
 
         value_t p, d;
-        self ans = this->clone();
+        Self ans = this->clone();
         util::Array<isize> is(rows_); // 记录行交换
         util::Array<isize> js(cols_); // 记录列交换
         for (isize k = 0; k < rows_; ++k) {
@@ -426,7 +426,7 @@ public:
 
         value_t d, p;
         isize is, js;
-        self m = this->clone();
+        Self m = this->clone();
         value_t f = 1.0, ans = 1.0; // 符号因子，行列式值
         for (isize k = 0; k < rows_ - 1; ++k) {
             p = 0.0;
@@ -461,7 +461,7 @@ public:
     i32 rank() const {
         i32 ans = 0;
         value_t d, p;
-        self m = this->clone();
+        Self m = this->clone();
         isize n = std::min(rows_, cols_), is, js;
         for (int k = 0; k < n; ++k) {
             p = 0.0;
@@ -493,13 +493,13 @@ public:
      * @brief LU分解。使用高斯-约当消元
      * @return pair的first为L，second为U
      */
-    Pair<self, self> LU() const {
+    Pair<Self, Self> LU() const {
         if (!isSquare()) {
             ValueError("Only square matrices are LU decomposition.");
-            return None<Pair<self, self>>;
+            return None<Pair<Self, Self>>;
         }
 
-        self q = this->clone();
+        Self q = this->clone();
         for (isize k = 0; k < q.rows_ - 1; ++k) {
             checkPivot(q[k][k]);
             for (isize i = k + 1; i < rows_; ++i) {
@@ -510,7 +510,7 @@ public:
             }
         }
 
-        self l(rows_, cols_), u(rows_, cols_);
+        Self l(rows_, cols_), u(rows_, cols_);
         for (isize i = 0; i < rows_; ++i) {
             for (isize j = 0; j < i; ++j) {
                 l[i][j] = q[i][j];
@@ -546,7 +546,7 @@ public:
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         if (!this->shapeEquals(other)) {
             ValueError("Only matrices of the same dimension are comparable");
             return None<cmp_t>;
@@ -590,7 +590,7 @@ private:
 public:
     class RowProxy {
     public:
-        RowProxy(util::Vector<value_t>& data, isize start_col, isize cols) :
+        RowProxy(util::Vec<value_t>& data, isize start_col, isize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         value_t& operator[](isize j) {
@@ -602,14 +602,14 @@ public:
         }
 
     private:
-        util::Vector<value_t>& data_;
+        util::Vec<value_t>& data_;
         isize start_col_;
         isize cols_;
     };
 
     class ConstRowProxy {
     public:
-        ConstRowProxy(const util::Vector<value_t>& data, isize start_col, isize cols) :
+        ConstRowProxy(const util::Vec<value_t>& data, isize start_col, isize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         const value_t& operator[](isize j) const {
@@ -621,15 +621,15 @@ public:
         }
 
     private:
-        const util::Vector<value_t>& data_;
+        const util::Vec<value_t>& data_;
         isize start_col_;
         isize cols_;
     };
 
 private:
-    isize rows_;                 // 行数
-    isize cols_;                 // 列数
-    util::Vector<value_t> data_; // 一维存储，提高空间局部性
+    isize rows_;              // 行数
+    isize cols_;              // 列数
+    util::Vec<value_t> data_; // 一维存储，提高空间局部性
 };
 
 } // namespace my::math

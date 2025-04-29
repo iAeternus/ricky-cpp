@@ -52,7 +52,7 @@ auto should_to_array = []() {
     c.append(5);
 
     // When
-    auto arr = c.toArray();
+    auto arr = c.to_array();
 
     // Then
     Assertions::assertEquals(5, i32(arr.size()));

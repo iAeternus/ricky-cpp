@@ -18,8 +18,8 @@
 namespace my::util {
 
 class Random : public Object<Random> {
-    using self = Random;
-    using super = Object<self>;
+    using Self = Random;
+    using Super = Object<Self>;
 
 public:
     static Random& instance() {

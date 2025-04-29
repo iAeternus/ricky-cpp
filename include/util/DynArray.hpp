@@ -27,8 +27,8 @@ namespace my::util {
  */
 template <typename T>
 class DynArray : public Sequence<DynArray<T>, T> {
-    using self = DynArray<T>;
-    using super = Sequence<DynArray<T>, T>;
+    using Self = DynArray<T>;
+    using Super = Sequence<DynArray<T>, T>;
 
     // 动态数组块的数量，用于管理分块存储
     constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
@@ -89,7 +89,7 @@ public:
      * @brief 拷贝构造函数
      * @param other 需要拷贝的动态数组
      */
-    DynArray(const self& other) :
+    DynArray(const Self& other) :
             DynArray() {
         for (const auto& item : other) {
             append(item);
@@ -100,7 +100,7 @@ public:
      * @brief 移动构造函数
      * @param other 需要移动的动态数组
      */
-    DynArray(self&& other) noexcept :
+    DynArray(Self&& other) noexcept :
             size_(other.size_), backBlockIndex_(other.backBlockIndex_), blocks_(std::move(other.blocks_)) {
         other.size_ = 0;
         other.backBlockIndex_ = BLOCK_NOT_EXISTS;
@@ -111,7 +111,7 @@ public:
      * @param other 需要拷贝的动态数组
      * @return 返回拷贝后的动态数组
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         this->size_ = other.size_;
@@ -125,7 +125,7 @@ public:
      * @param other 需要移动的动态数组
      * @return 返回移动后的动态数组
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->size_ = other.size_;
@@ -315,7 +315,7 @@ public:
      * @brief 转换为 Array，复制元素
      * @return 返回包含所有元素的 Array
      */
-    Array<value_t> toArray() const {
+    Array<value_t> to_array() const {
         Array<value_t> arr(size_);
         for (isize i = 0; i < size_; ++i) {
             arr.at(i) = at(i);
@@ -328,7 +328,7 @@ public:
      * @return 返回包含所有元素的 Array
      * @note 转换后原动态数组将被清空
      */
-    Array<value_t> toArray() {
+    Array<value_t> to_array() {
         Array<value_t> arr(size_);
         for (isize i = 0; i < size_; ++i) {
             arr.at(i) = std::move(at(i));
@@ -344,7 +344,7 @@ public:
      * @return 返回自身引用
      */
     template <Iterable I>
-    self& extend(I&& other) {
+    Self& extend(I&& other) {
         for (auto&& item : other) {
             append(std::forward<decltype(item)>(item));
         }
@@ -356,8 +356,8 @@ public:
      * @param other 另一个动态数组
      * @return 返回拼接后的新动态数组
      */
-    self operator+(const self& other) {
-        return self(*this).extend(other);
+    Self operator+(const Self& other) {
+        return Self(*this).extend(other);
     }
 
     /**
@@ -365,8 +365,8 @@ public:
      * @param other 另一个动态数组的右值引用
      * @return 返回拼接后的新动态数组
      */
-    self operator+(self&& other) {
-        return self(*this).extend(std::forward<self>(other));
+    Self operator+(Self&& other) {
+        return Self(*this).extend(std::forward<Self>(other));
     }
 
     /**
@@ -374,7 +374,7 @@ public:
      * @param other 另一个动态数组
      * @return 返回自身引用
      */
-    self& operator+=(const self& other) {
+    Self& operator+=(const Self& other) {
         return extend(other);
     }
 
@@ -383,8 +383,8 @@ public:
      * @param other 另一个动态数组的右值引用
      * @return 返回自身引用
      */
-    self& operator+=(self&& other) {
-        return extend(std::forward<self>(other));
+    Self& operator+=(Self&& other) {
+        return extend(std::forward<Self>(other));
     }
 
     /**
@@ -408,7 +408,7 @@ public:
      */
     template <bool IsConst>
     class Iterator : public Object<Iterator<IsConst>> {
-        using self = Iterator<IsConst>;
+        using Self = Iterator<IsConst>;
 
     public:
         using container_t = std::conditional_t<IsConst, const DynArray<value_t>, DynArray<value_t>>;
@@ -433,7 +433,7 @@ public:
          * @brief 拷贝构造函数
          * @param other 需要拷贝的迭代器
          */
-        Iterator(const self& other) :
+        Iterator(const Self& other) :
                 Iterator(other.dynarray_, other.blockIndex_, other.inblockIndex_) {}
 
         /**
@@ -441,7 +441,7 @@ public:
          * @param other 需要拷贝的迭代器
          * @return 返回自身引用
          */
-        self& operator=(const self& other) {
+        Self& operator=(const Self& other) {
             this->blockIndex_ = other.blockIndex_;
             this->inblockIndex_ = other.inblockIndex_;
             this->dynarray_ = other.dynarray_;
@@ -489,7 +489,7 @@ public:
          * 移动迭代器到下一个元素
          * @return 返回自增后的迭代器
          */
-        self& operator++() {
+        Self& operator++() {
             if (inblockIndex_ == dynarray_->blocks_.at(blockIndex_).size() - 1) {
                 ++blockIndex_;
                 inblockIndex_ = 0;
@@ -504,8 +504,8 @@ public:
          * 移动迭代器到下一个元素
          * @return 返回自增前的迭代器
          */
-        self operator++(int) {
-            self tmp(*this);
+        Self operator++(int) {
+            Self tmp(*this);
             ++tmp;
             return tmp;
         }
@@ -515,7 +515,7 @@ public:
          * 移动迭代器到上一个元素
          * @return 返回自减后的迭代器
          */
-        self& operator--() {
+        Self& operator--() {
             if (dynarray_->blocks_.at(blockIndex_).size() == 0) {
                 --blockIndex_;
                 inblockIndex_ = dynarray_->blocks_.at(blockIndex_).size() - 1;
@@ -530,8 +530,8 @@ public:
          * 移动迭代器到上一个元素
          * @return 返回自减前的迭代器
          */
-        self operator--(int) {
-            self tmp(*this);
+        Self operator--(int) {
+            Self tmp(*this);
             --tmp;
             return tmp;
         }
@@ -541,7 +541,7 @@ public:
          * @param n 需要跳过的元素数量
          * @return 返回自身引用
          */
-        self& operator+=(difference_type n) {
+        Self& operator+=(difference_type n) {
             if (n == 0) return *this;
 
             isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_CAP + inblockIndex_ + n;
@@ -564,8 +564,8 @@ public:
          * @param n 需要跳过的元素数量
          * @return 返回新的迭代器
          */
-        self operator+(difference_type n) const {
-            self tmp(*this);
+        Self operator+(difference_type n) const {
+            Self tmp(*this);
             tmp += n;
             return tmp;
         }
@@ -575,7 +575,7 @@ public:
          * @param n 需要回退的元素数量
          * @return 返回自身引用
          */
-        self& operator-=(difference_type n) {
+        Self& operator-=(difference_type n) {
             if (n == 0) return *this;
 
             isize target = (blockIndex_ * exp2[blockIndex_ + 1] - 1) * BASE_CAP + inblockIndex_ - n;
@@ -603,8 +603,8 @@ public:
          * @param n 需要回退的元素数量
          * @return 返回新的迭代器
          */
-        self operator-(difference_type n) const {
-            self tmp(*this);
+        Self operator-(difference_type n) const {
+            Self tmp(*this);
             tmp -= n;
             return tmp;
         }
@@ -614,7 +614,7 @@ public:
          * @param other 另一个迭代器
          * @return 返回两个迭代器之间的元素数量差
          */
-        difference_type operator-(const self& other) const {
+        difference_type operator-(const Self& other) const {
             if (this->__cmp__(other) < 0) return -(other - *this);
             if (this->dynarray_ != other.dynarray_) {
                 RuntimeError("Iterator not belong to the same container.");
@@ -635,7 +635,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果相等返回 true，否则返回 false
          */
-        bool operator==(const self& other) const {
+        bool operator==(const Self& other) const {
             return __equals__(other);
         }
 
@@ -644,7 +644,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果不相等返回 true，否则返回 false
          */
-        bool operator!=(const self& other) const {
+        bool operator!=(const Self& other) const {
             return !__equals__(other);
         }
 
@@ -653,7 +653,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果内部状态相等返回 true，否则返回 false
          */
-        bool __equals__(const self& other) const {
+        bool __equals__(const Self& other) const {
             return this->blockIndex_ == other.blockIndex_ && this->inblockIndex_ == other.inblockIndex_ && this->dynarray_ == other.dynarray_;
         }
 
@@ -662,7 +662,7 @@ public:
          * @param other 另一个迭代器
          * @return 返回一个整数值，表示两个迭代器的顺序
          */
-        cmp_t __cmp__(const self& other) const {
+        cmp_t __cmp__(const Self& other) const {
             if (this->blockIndex_ != other.blockIndex_) {
                 return this->blockIndex_ - other.blockIndex_;
             }

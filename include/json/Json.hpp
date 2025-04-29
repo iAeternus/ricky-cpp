@@ -12,7 +12,7 @@
 namespace my::json {
 
 class Json : public Object<Json> {
-    using self = Json;
+    using Self = Json;
 
 public:
     Json() :
@@ -22,7 +22,7 @@ public:
     Json(T&& item) :
             jsonType_(GetJsonTypeIDStrict<T>::ID), jsonItem_(new T(std::forward<T>(item))) {}
 
-    Json(const self& other) :
+    Json(const Self& other) :
             jsonType_(other.jsonType_) {
         switch (jsonType_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
@@ -51,7 +51,7 @@ public:
         }
     }
 
-    Json(self&& other) noexcept :
+    Json(Self&& other) noexcept :
             jsonType_(other.jsonType_), jsonItem_(other.jsonItem_) {
         other.jsonType_ = GetJsonTypeIDStrict<JsonType::JsonNull>::ID;
         other.jsonItem_ = nullptr;
@@ -61,7 +61,7 @@ public:
         release();
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         release();
@@ -95,7 +95,7 @@ public:
         return *this;
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         release();
@@ -107,7 +107,7 @@ public:
         return *this;
     }
 
-    void swap(self& other) noexcept {
+    void swap(Self& other) noexcept {
         std::swap(this->jsonType_, other.jsonType_);
         std::swap(this->jsonItem_, other.jsonItem_);
     }
@@ -184,18 +184,18 @@ public:
     /**
      * @brief 键访问，需要当前Json对象为JsonDict类型
      */
-    self& operator[](const JsonType::JsonStr& key) {
+    Self& operator[](const JsonType::JsonStr& key) {
         return transform<JsonType::JsonDict>().get(key);
     }
 
-    const self& operator[](const JsonType::JsonStr& key) const {
+    const Self& operator[](const JsonType::JsonStr& key) const {
         return transform<JsonType::JsonDict>().get(key);
     }
 
     /**
      * @brief 尾部添加一个Json对象，需要当前Json对象为JsonArray类型
      */
-    self& append(const self& json) {
+    Self& append(const Self& json) {
         transform<JsonType::JsonArray>().append(json);
         return *this;
     }
@@ -204,11 +204,11 @@ public:
      * @brief 下标访问，需要当前Json对象为JsonArray类型
      * @param index 索引，从0开始
      */
-    self& operator[](isize index) {
+    Self& operator[](isize index) {
         return transform<JsonType::JsonArray>()[index];
     }
 
-    const self& operator[](isize index) const {
+    const Self& operator[](isize index) const {
         return transform<JsonType::JsonArray>()[index];
     }
 

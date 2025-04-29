@@ -16,13 +16,13 @@ namespace my::util {
 
 template <typename T>
 class Buffer : public Sequence<Buffer<T>, T> {
-    using self = Buffer<T>;
-    using super = Sequence<Buffer<T>, T>;
+    using Self = Buffer<T>;
+    using Super = Sequence<Buffer<T>, T>;
 
 public:
     using value_t = T;
-    using iterator = super::iterator;
-    using const_iterator = super::const_iterator;
+    using iterator = Super::iterator;
+    using const_iterator = Super::const_iterator;
 
     Buffer() :
             size_(0), capacity_(0), buffer_(nullptr) {}
@@ -43,13 +43,13 @@ public:
         other.buffer_ = nullptr;
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
         my_destroy(this);
         return *my_construct(this, other);
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
         my_destroy(this);
         return *my_construct(this, std::move(other));
@@ -116,7 +116,7 @@ public:
      * @brief 重新分配内存
      */
     void resize(isize newCap) {
-        if(newCap == capacity_) return;
+        if (newCap == capacity_) return;
         my_destroy(this);
         my_construct(this, newCap);
     }
@@ -132,7 +132,7 @@ public:
     /**
      * @brief 转换为Array，拷贝
      */
-    Array<value_t> toArray() const {
+    Array<value_t> to_array() const {
         Array<value_t> arr(size_);
         for (isize i = 0; i < size_; ++i) {
             arr[i] = at(i);
@@ -143,7 +143,7 @@ public:
     /**
      * @brief 转换为Array，移动
      */
-    Array<value_t> toArray() {
+    Array<value_t> to_array() {
         Array<value_t> arr(size_);
         for (isize i = 0; i < size_; ++i) {
             arr[i] = std::move(at(i));

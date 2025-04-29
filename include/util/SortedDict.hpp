@@ -18,7 +18,7 @@ namespace my::util {
 template <BiTreeNodeType Node, typename C = Creator<Node>>
 class RBTree : public Object<RBTree<Node, C>> {
 public:
-    using self = RBTree<Node, C>;
+    using Self = RBTree<Node, C>;
     using key_t = typename Node::key_t;
     using value_t = typename Node::value_t;
 
@@ -47,7 +47,7 @@ public:
         std::stringstream stream;
         printNode(root_, stream, "");
         return CString{stream.str()};
-    } 
+    }
 
 private:
     isize size_; // 节点个数

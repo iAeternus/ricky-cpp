@@ -71,8 +71,7 @@ protected:
     }
 
     template <typename T>
-        requires std::is_integral_v<T>
-    void __print__(const T& obj) const {
+    requires std::is_integral_v<T> void __print__(const T& obj) const {
         if constexpr (std::is_signed_v<T>) {
             std::fprintf(outputFile_, "%lld", static_cast<long long>(obj));
         } else {
@@ -81,8 +80,7 @@ protected:
     }
 
     template <typename T>
-        requires std::is_floating_point_v<T>
-    void __print__(const T& obj) const {
+    requires std::is_floating_point_v<T> void __print__(const T& obj) const {
         if constexpr (std::is_same_v<T, f32>) {
             std::fprintf(outputFile_, "%f", obj);
         } else if constexpr (std::is_same_v<T, f64>) {
@@ -93,8 +91,7 @@ protected:
     }
 
     template <typename T>
-        requires std::is_pointer_v<T>
-    void __print__(const T obj) const {
+    requires std::is_pointer_v<T> void __print__(const T obj) const {
         std::fprintf(outputFile_, "0x%p", static_cast<void*>(obj));
     }
 
@@ -133,7 +130,7 @@ public:
 };
 
 class ColorPrinter : public Printer {
-    using super = Printer;
+    using Super = Printer;
 
 public:
     ColorPrinter(std::FILE* filePtr, CString color = Color::WHITE) :
@@ -142,16 +139,16 @@ public:
     template <Printable T, Printable... Args>
     void operator()(const T& obj, const Args&... args) const {
         opencolor();
-        super::operator()(obj, args...);
+        Super::operator()(obj, args...);
         closecolor();
     }
 
     void opencolor() const {
-        super::__print__(color_);
+        Super::__print__(color_);
     }
 
     void closecolor() const {
-        super::__print__(Color::CLOSE);
+        Super::__print__(Color::CLOSE);
     }
 
     void setcolor(CString color) {

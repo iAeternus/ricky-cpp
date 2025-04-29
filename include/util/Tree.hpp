@@ -16,7 +16,7 @@ namespace my::util {
 
 template <TreeNodeType Node, typename C = Creator<Node>>
 class TreeImpl : public Object<TreeImpl<Node, C>> {
-    using self = TreeImpl<Node, C>;
+    using Self = TreeImpl<Node, C>;
 
 public:
     using value_t = typename Node::value_t;
@@ -109,7 +109,7 @@ private:
 private:
     void destroyNode(Node* root) {
         if (root == nullptr) return;
-        for(auto* child : root->children_) {
+        for (auto* child : root->children_) {
             destroyNode(child);
         }
         my_destroy(root);

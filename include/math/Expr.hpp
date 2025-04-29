@@ -8,7 +8,7 @@
 #define EXPR_HPP
 
 #include "math_utils.hpp"
-#include "Vector.hpp"
+#include "Vec.hpp"
 #include "Dict.hpp"
 // #include "Stack.hpp"
 
@@ -79,7 +79,7 @@ struct Token : public Object<Token> {
  */
 class Expr : public Object<Expr> {
 public:
-    using self = Expr;
+    using Self = Expr;
 
     Expr(const std::string& expr) :
             valid_(false) {
@@ -106,7 +106,7 @@ public:
     /**
      * @brief 转为后缀表达式
      */
-    util::Vector<Token> to_post() const {
+    util::Vec<Token> to_post() const {
         if (!valid_) RuntimeError("Invalid expression");
         return in2post();
     }
@@ -124,8 +124,8 @@ public:
     }
 
 private:
-    util::Vector<Token> tokens_; // 表达式标记
-    bool valid_;                 // 表达式是否有效
+    util::Vec<Token> tokens_; // 表达式标记
+    bool valid_;              // 表达式是否有效
 
 private:
     /**
@@ -220,8 +220,8 @@ private:
     /**
      * @brief 前缀表达式转后缀表达式
      */
-    util::Vector<Token> in2post() const {
-        util::Vector<Token> ans;
+    util::Vec<Token> in2post() const {
+        util::Vec<Token> ans;
         std::stack<Token> op_st;
 
         for (const auto& token : tokens_) {
@@ -283,7 +283,7 @@ private:
     /**
      * @brief 后缀表达式求值
      */
-    f64 eval_post(const util::Vector<Token>& post) const {
+    f64 eval_post(const util::Vec<Token>& post) const {
         std::stack<f64> st;
         f64 a, b, x;
         for (const auto& token : post) {

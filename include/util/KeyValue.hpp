@@ -16,7 +16,7 @@ namespace my::util {
  */
 template <KeyType K, typename V>
 class KeyValueView : Object<KeyValueView<K, V>> {
-    using self = KeyValueView<K, V>;
+    using Self = KeyValueView<K, V>;
 
 public:
     using key_t = K;
@@ -25,11 +25,11 @@ public:
     KeyValueView(const key_t* key = nullptr, const value_t* value = nullptr) :
             key_(key), value_(value) {}
 
-    KeyValueView(const self& other) = default;
+    KeyValueView(const Self& other) = default;
 
-    self& operator=(const self& other) = default;
+    Self& operator=(const Self& other) = default;
 
-    self& set(const key_t* key, const value_t* value) {
+    Self& set(const key_t* key, const value_t* value) {
         this->key_ = key;
         this->value_ = value;
         return *this;

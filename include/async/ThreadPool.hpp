@@ -33,7 +33,7 @@ struct StopFlag {
  * @brief 线程池
  */
 class ThreadPool : public Object<ThreadPool>, public NoCopy {
-    using self = ThreadPool;
+    using Self = ThreadPool;
 
 public:
     using Task = std::function<void(void)>;

@@ -20,12 +20,11 @@ class ChainIterator;
  */
 template <ChainNodeType Node, typename C = Creator<Node>>
 class Chain : public Object<Chain<Node, C>> {
-    using self = Chain<Node, C>;
-    using super = Object<self>;
-
 public:
-    friend class ChainIterator<Node>;
+    using Self = Chain<Node, C>;
+    using Super = Object<Self>;
     using value_t = typename Node::value_t;
+    friend class ChainIterator<Node>;
 
     Chain() :
             head_(nullptr), tail_(nullptr), size_(0) {}
@@ -43,8 +42,8 @@ public:
     }
 
     bool contains(const Node& node) const {
-        for (const auto& current : *this) {
-            if (current == node.value_) {
+        for (const auto& cur : *this) {
+            if (cur == node.value_) {
                 return true;
             }
         }
@@ -53,24 +52,24 @@ public:
 
     template <typename... Args>
     void append(Args&&... args) {
-        auto* newNode = creator_(std::forward<Args>(args)...);
+        auto* new_node = creator_(std::forward<Args>(args)...);
 
         if (size_ == 0) {
-            head_ = newNode;
+            head_ = new_node;
         } else {
-            tail_->next_ = newNode;
+            tail_->next_ = new_node;
         }
-        tail_ = newNode;
+        tail_ = new_node;
         ++size_;
     }
 
     void clear() {
-        auto* current = head_;
-        Node* nextNode = nullptr;
-        while (current) {
-            nextNode = current->next_;
-            my_destroy(current);
-            current = nextNode;
+        auto* cur = head_;
+        Node* next_node = nullptr;
+        while (cur) {
+            next_node = cur->next_;
+            my_destroy(cur);
+            cur = next_node;
         }
         head_ = tail_ = nullptr;
         size_ = 0;
@@ -79,31 +78,31 @@ public:
     value_t& operator[](isize index) {
         index = neg_index(index, size_);
 
-        auto* current = head_;
+        auto* cur = head_;
         while (index--) {
-            current = current->next_;
+            cur = cur->next_;
         }
-        return current->value_;
+        return cur->value_;
     }
 
     const value_t& operator[](isize index) const {
         index = neg_index(index, size_);
 
-        auto* current = head_;
+        auto* cur = head_;
         while (index--) {
-            current = current->next_;
+            cur = cur->next_;
         }
-        return current->value_;
+        return cur->value_;
     }
 
     /**
      * @brief 转换为Array，拷贝
      */
-    Array<value_t> toArray() const {
+    Array<value_t> to_array() const {
         Array<value_t> arr(size_);
         isize pos = 0;
-        for (const auto& current : *this) {
-            arr[pos++] = current;
+        for (const auto& cur : *this) {
+            arr[pos++] = cur;
         }
         return arr;
     }
@@ -111,11 +110,11 @@ public:
     /**
      * @brief 转换为Array，移动
      */
-    Array<value_t> toArray() {
+    Array<value_t> to_array() {
         Array<value_t> arr(size_);
         isize pos = 0;
-        for (auto&& current : *this) {
-            arr[pos++] = std::forward<value_t>(current);
+        for (auto&& cur : *this) {
+            arr[pos++] = std::forward<value_t>(cur);
         }
         clear();
         return arr;
@@ -125,13 +124,13 @@ public:
         std::stringstream stream;
         stream << "<Chain> [";
         bool first = true;
-        for (const auto& current : *this) {
+        for (const auto& cur : *this) {
             if (first) {
                 first = false;
             } else {
                 stream << "->";
             }
-            stream << current;
+            stream << cur;
         }
         stream << ']';
         return CString{stream.str()};
@@ -161,7 +160,7 @@ protected:
  */
 template <ChainNodeType Node>
 class ChainIterator : public Object<ChainIterator<Node>> {
-    using self = ChainIterator<Node>;
+    using Self = ChainIterator<Node>;
 
 public:
     using iterator_category = std::bidirectional_iterator_tag;
@@ -175,7 +174,7 @@ public:
     ChainIterator(Node* node = nullptr) :
             current_(node) {}
 
-    ChainIterator(const self& other) :
+    ChainIterator(const Self& other) :
             current_(other.current_) {}
 
     reference operator*() {
@@ -194,26 +193,26 @@ public:
         return &current_->value_;
     }
 
-    self& operator++() {
+    Self& operator++() {
         current_ = current_->next_;
         return *this;
     }
 
-    self operator++(int) {
-        self tmp{current_};
+    Self operator++(int) {
+        Self tmp{current_};
         ++tmp;
         return tmp;
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         return this->current_ - other.current_;
     }
 
-    bool operator==(const self& other) const {
+    bool operator==(const Self& other) const {
         return !this->__cmp__(other);
     }
 
-    bool operator!=(const self& other) const {
+    bool operator!=(const Self& other) const {
         return this->__cmp__(other);
     }
 

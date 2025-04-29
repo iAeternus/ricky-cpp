@@ -8,7 +8,7 @@
 #define CODE_POINT_HPP
 
 #include "Encoding.hpp"
-#include "Vector.hpp"
+#include "Vec.hpp"
 #include "Dict.hpp"
 
 #include <mutex>
@@ -17,124 +17,124 @@
 namespace my::util {
 
 class CodePoint : public Object<CodePoint> {
-    using self = CodePoint;
-    using super = Object<self>;
-
 public:
+    using Self = CodePoint;
+    using Super = Object<Self>;
+
     static const Array<CodePoint> BLANK;
     static const Array<CodePoint> DIGIT;
     static const Array<CodePoint> LOWER_CASE_LETTER;
     static const Array<CodePoint> UPPER_CASE_LETTER;
 
     CodePoint() :
-            codeSize_(0), byteCode_(nullptr) {}
+            code_size_(0), byte_code_(nullptr) {}
 
     CodePoint(char ch) :
-            codeSize_(sizeof(char)), byteCode_(my_alloc<char>(codeSize_)) {
-        byteCode_[0] = ch;
+            code_size_(sizeof(char)), byte_code_(my_alloc<char>(code_size_)) {
+        byte_code_[0] = ch;
     }
 
     CodePoint(const char* str, Encoding* encoding) :
-            codeSize_(encoding->byte_size(str)), byteCode_(my_alloc<char>(codeSize_)) {
-        std::memcpy(data(), str, codeSize_);
+            code_size_(encoding->byte_size(str)), byte_code_(my_alloc<char>(code_size_)) {
+        std::memcpy(data(), str, code_size_);
     }
 
-    CodePoint(const self& other) :
-            codeSize_(other.codeSize_), byteCode_(my_alloc<char>(this->codeSize_)) {
-        std::memcpy(this->data(), other.data(), this->codeSize_);
+    CodePoint(const Self& other) :
+            code_size_(other.code_size_), byte_code_(my_alloc<char>(this->code_size_)) {
+        std::memcpy(this->data(), other.data(), this->code_size_);
     }
 
-    CodePoint(self&& other) noexcept :
-            codeSize_(other.codeSize_), byteCode_(other.byteCode_) {
-        other.codeSize_ = 0;
-        other.byteCode_ = nullptr;
+    CodePoint(Self&& other) noexcept :
+            code_size_(other.code_size_), byte_code_(other.byte_code_) {
+        other.code_size_ = 0;
+        other.byte_code_ = nullptr;
     }
 
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        my_destroy(byteCode_);
+        my_destroy(byte_code_);
         return *my_construct(this, other);
     }
 
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        my_destroy(byteCode_);
+        my_destroy(byte_code_);
         return *my_construct(this, std::move(other));
     }
 
-    self& operator=(char ch) {
-        my_destroy(byteCode_);
-        this->codeSize_ = sizeof(char);
-        this->byteCode_ = my_alloc<char>(codeSize_);
-        byteCode_[0] = ch;
+    Self& operator=(char ch) {
+        my_destroy(byte_code_);
+        this->code_size_ = sizeof(char);
+        this->byte_code_ = my_alloc<char>(code_size_);
+        byte_code_[0] = ch;
         return *this;
     }
 
     ~CodePoint() {
-        codeSize_ = 0;
-        my_delloc(byteCode_);
+        code_size_ = 0;
+        my_delloc(byte_code_);
     }
 
     /**
      * @brief 返回字节码
      */
     char* data() noexcept {
-        return byteCode_;
+        return byte_code_;
     }
 
     const char* data() const noexcept {
-        return byteCode_;
+        return byte_code_;
     }
 
     /**
      * @brief 字节码长度
      */
     isize size() const noexcept {
-        return isize(codeSize_);
+        return isize(code_size_);
     }
 
     operator char() const {
-        return byteCode_[0];
+        return byte_code_[0];
     }
 
-    bool isAscii() const {
-        return u32(byteCode_[0]) < 0x80;
+    bool is_ascii() const {
+        return u32(byte_code_[0]) < 0x80;
     }
 
-    bool isBlank() const {
-        return isAscii() && BLANK.contains(*this);
+    bool is_blank() const {
+        return is_ascii() && BLANK.contains(*this);
     }
 
-    bool isAlpha() const {
-        return isAscii() && (UPPER_CASE_LETTER.contains(*this) || LOWER_CASE_LETTER.contains(*this));
+    bool is_alpha() const {
+        return is_ascii() && (UPPER_CASE_LETTER.contains(*this) || LOWER_CASE_LETTER.contains(*this));
     }
 
-    bool isDigit() const {
-        return isAscii() && DIGIT.contains(*this);
+    bool is_digit() const {
+        return is_ascii() && DIGIT.contains(*this);
     }
 
-    bool isUpper() const {
-        return isAscii() && UPPER_CASE_LETTER.contains(*this);
+    bool is_upper() const {
+        return is_ascii() && UPPER_CASE_LETTER.contains(*this);
     }
 
-    bool isLower() const {
-        return isAscii() && LOWER_CASE_LETTER.contains(*this);
+    bool is_lower() const {
+        return is_ascii() && LOWER_CASE_LETTER.contains(*this);
     }
 
-    self upper() const {
-        if (isAscii()) {
-            return self{static_cast<char>(std::toupper(byteCode_[0]))};
+    Self upper() const {
+        if (is_ascii()) {
+            return Self{static_cast<char>(std::toupper(byte_code_[0]))};
         } else {
             io::my_error("Not supported yet.");
             return *this;
         }
     }
 
-    self lower() const {
-        if (isAscii()) {
-            return self{static_cast<char>(std::tolower(byteCode_[0]))};
+    Self lower() const {
+        if (is_ascii()) {
+            return Self{static_cast<char>(std::tolower(byte_code_[0]))};
         } else {
             io::my_error("Not supported yet.");
             return *this;
@@ -149,7 +149,7 @@ public:
         return bytes_hash(data(), size());
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         isize m_size = this->size(), o_size = other.size();
         if (m_size != o_size) {
             return m_size - o_size;
@@ -157,17 +157,17 @@ public:
         return std::memcmp(this->data(), other.data(), m_size);
     }
 
-    bool __equals__(const self& other) const {
+    bool __equals__(const Self& other) const {
         return this->__cmp__(other) == 0;
     }
 
     bool __equals__(u8 ch) const {
-        return static_cast<u8>(byteCode_[0]) == static_cast<u8>(ch);
+        return static_cast<u8>(byte_code_[0]) == static_cast<u8>(ch);
     }
 
 private:
-    i8 codeSize_;    // 字节码长度
-    char* byteCode_; // 字节码
+    i8 code_size_;    // 字节码长度
+    char* byte_code_; // 字节码
 };
 
 const Array<CodePoint> CodePoint::BLANK = {' ', '\0', '\t', '\n', '\r', '\v', '\f'};
@@ -180,10 +180,10 @@ const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 
  * @note 性能堪忧，是构造函数的一半，但可以节省内存
  */
 class CodePointPool : public Object<CodePointPool> {
-    using self = CodePointPool;
-    using super = Object<self>;
-
 public:
+    using Self = CodePointPool;
+    using Super = Object<Self>;
+
     static CodePointPool& instance() {
         static std::once_flag once;
         std::call_once(once, [] {
@@ -214,7 +214,7 @@ private:
         }
         lock.unlock();
 
-        std::unique_lock uniqueLock(mutex_);
+        std::unique_lock unique_lock(mutex_);
         if (pool_.contains(hash)) {
             return pool_.get(hash);
         }
@@ -235,8 +235,8 @@ CodePointPool* CodePointPool::instance_ = nullptr;
 /**
  * @brief 获取字符串的所有码点
  */
-fn getCodePoints(const char* str, isize len, Encoding* encoding)->Vector<CodePoint> {
-    Vector<CodePoint> cps;
+fn getCodePoints(const char* str, isize len, Encoding* encoding)->Vec<CodePoint> {
+    Vec<CodePoint> cps;
     i32 i = 0;
     while (i < len) {
         cps.append(CodePoint{str + i, encoding});

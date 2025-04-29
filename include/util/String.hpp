@@ -11,7 +11,7 @@
 
 #include "CodePoint.hpp"
 #include "NoCopy.hpp"
-#include "Vector.hpp"
+#include "Vec.hpp"
 
 namespace my::util {
 
@@ -20,23 +20,23 @@ namespace my::util {
  */
 class StringManager : public Object<StringManager>, public NoCopy {
 public:
-    using self = StringManager;
+    using Self = StringManager;
 
     /**
      * @brief 构造函数
      * @param length 字符串的长度
-     * @param sharedHead 共享的码点数组
+     * @param shared_head 共享的码点数组
      * @param encoding 字符串的编码
      */
-    StringManager(isize length, util::CodePoint* sharedHead, util::Encoding* encoding) :
-            length_(length), sharedHead_(sharedHead), encoding_(encoding) {}
+    StringManager(isize length, util::CodePoint* shared_head, util::Encoding* encoding) :
+            length_(length), shared_head_(shared_head), encoding_(encoding) {}
 
     /**
      * @brief 析构函数，释放共享的码点数组
      */
     ~StringManager() {
-        my_destroy(sharedHead_, length_);
-        my_delloc(sharedHead_);
+        my_destroy(shared_head_, length_);
+        my_delloc(shared_head_);
         length_ = 0;
     }
 
@@ -44,8 +44,8 @@ public:
      * @brief 获取共享的码点数组
      * @return 共享的码点数组
      */
-    util::CodePoint* sharedHead() const {
-        return sharedHead_;
+    util::CodePoint* shared_head() const {
+        return shared_head_;
     }
 
     /**
@@ -59,19 +59,19 @@ public:
     /**
      * @brief 重置字符串管理器
      * @param length 新的字符串长度
-     * @param sharedHead 新的共享码点数组
+     * @param shared_head 新的共享码点数组
      */
-    void reset(isize length, util::CodePoint* sharedHead) {
-        my_destroy(sharedHead_, length_);
-        my_delloc(sharedHead_);
-        this->sharedHead_ = sharedHead;
+    void reset(isize length, util::CodePoint* shared_head) {
+        my_destroy(shared_head_, length_);
+        my_delloc(shared_head_);
+        this->shared_head_ = shared_head;
         this->length_ = length;
     }
 
 private:
-    isize length_;                // 字符串的长度
-    util::CodePoint* sharedHead_; // 共享的码点数组
-    util::Encoding* encoding_;    // 字符串的编码
+    isize length_;                 // 字符串的长度
+    util::CodePoint* shared_head_; // 共享的码点数组
+    util::Encoding* encoding_;     // 字符串的编码
 };
 
 /**
@@ -82,12 +82,12 @@ class String : public util::Sequence<String, util::CodePoint> {
 
     /**
      * @brief 内部构造函数，用于创建字符串对象
-     * @param codePoints 字符串的码点数组
+     * @param code_points 字符串的码点数组
      * @param length 字符串的长度
      * @param manager 字符串管理器
      */
-    String(util::CodePoint* codePoints, isize length, std::shared_ptr<StringManager> manager) :
-            length_(length), codePoints_(codePoints), manager_(std::move(manager)) {}
+    String(util::CodePoint* code_points, isize length, std::shared_ptr<StringManager> manager) :
+            length_(length), code_points_(code_points), manager_(std::move(manager)) {}
 
     /**
      * @brief 内部构造函数，用于根据编码创建字符串对象
@@ -97,14 +97,15 @@ class String : public util::Sequence<String, util::CodePoint> {
     String(isize length, util::Encoding* encoding) :
             String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<util::CodePoint>(length), encoding)) {
         for (isize i = 0; i < length_; ++i) {
-            my_construct(manager_->sharedHead() + i);
+            my_construct(manager_->shared_head() + i);
         }
-        this->codePoints_ = manager_->sharedHead();
+        this->code_points_ = manager_->shared_head();
     }
 
 public:
-    using self = String;
-    using super = util::Sequence<self, util::CodePoint>;
+    using Self = String;
+    using Super = util::Sequence<Self, util::CodePoint>;
+
     static constexpr isize npos = -1LL; // 无效的索引位置
 
     /**
@@ -125,8 +126,8 @@ public:
         length = ifelse(length > 0, length, std::strlen(str));
         auto [size, arr] = getCodePoints(str, length, manager_->encoding()).separate();
         this->length_ = size;
-        this->codePoints_ = arr;
-        this->manager_->reset(length_, codePoints_);
+        this->code_points_ = arr;
+        this->manager_->reset(length_, code_points_);
     }
 
     /**
@@ -141,7 +142,7 @@ public:
      * @brief 拷贝构造函数
      * @param other 要拷贝的字符串对象
      */
-    String(const self& other) :
+    String(const Self& other) :
             String(other.size(), other.encoding()) {
         for (isize i = 0; i < length_; ++i) {
             at(i) = other.at(i);
@@ -152,8 +153,8 @@ public:
      * @brief 移动构造函数
      * @param other 要移动的字符串对象
      */
-    String(self&& other) noexcept :
-            String(other.codePoints_, other.length_, other.manager_) {}
+    String(Self&& other) noexcept :
+            String(other.code_points_, other.length_, other.manager_) {}
 
     /**
      * @brief 默认析构函数
@@ -165,7 +166,7 @@ public:
      * @param other 要赋值的字符串对象
      * @return 自身的引用
      */
-    self& operator=(const self& other) {
+    Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
         my_destroy(&manager_);
@@ -177,7 +178,7 @@ public:
      * @param other 要赋值的字符串对象
      * @return 自身的引用
      */
-    self& operator=(self&& other) noexcept {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         my_destroy(&manager_);
@@ -189,14 +190,14 @@ public:
      * @param other 要拼接的字符串对象
      * @return 拼接后的新字符串
      */
-    self operator+(const self& other) const {
-        isize mSize = this->size(), oSize = other.size();
-        self res{mSize + oSize, this->encoding()};
-        for (isize i = 0; i < mSize; ++i) {
+    Self operator+(const Self& other) const {
+        isize m_size = this->size(), o_size = other.size();
+        Self res{m_size + o_size, this->encoding()};
+        for (isize i = 0; i < m_size; ++i) {
             res.at(i) = this->at(i);
         }
-        for (isize i = 0; i < oSize; ++i) {
-            res.at(mSize + i) = other.at(i);
+        for (isize i = 0; i < o_size; ++i) {
+            res.at(m_size + i) = other.at(i);
         }
         return res;
     }
@@ -206,8 +207,8 @@ public:
      * @param other 要拼接的字符串对象
      * @return 自身的引用
      */
-    self& operator+=(const self& other) {
-        self res = *this + other;
+    Self& operator+=(const Self& other) {
+        Self res = *this + other;
         *this = std::move(res);
         return *this;
     }
@@ -217,11 +218,11 @@ public:
      * @param n 复制的份数
      * @return 复制后的新字符串
      */
-    self operator*(isize n) {
-        isize pos = 0, mSize = size();
-        self res{mSize * n, encoding()};
+    Self operator*(isize n) {
+        isize pos = 0, m_size = size();
+        Self res{m_size * n, encoding()};
         while (n--) {
-            for (isize i = 0; i < mSize; ++i) {
+            for (isize i = 0; i < m_size; ++i) {
                 res.at(pos++) = at(i);
             }
         }
@@ -234,7 +235,7 @@ public:
      * @return 索引位置的码点
      */
     util::CodePoint& at(isize index) {
-        return codePoints_[index];
+        return code_points_[index];
     }
 
     /**
@@ -243,7 +244,7 @@ public:
      * @return 索引位置的码点
      */
     const util::CodePoint& at(isize index) const {
-        return codePoints_[index];
+        return code_points_[index];
     }
 
     /**
@@ -292,7 +293,7 @@ public:
      * @brief 获取字符串的字节长度
      * @return 字符串的字节长度
      */
-    isize byteLength() const {
+    isize byte_length() const {
         isize length = 0;
         for (auto&& ch : *this) {
             length += ch.size();
@@ -306,11 +307,11 @@ public:
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-    self split(isize start, isize end) {
-        isize mSize = size();
-        start = neg_index(start, mSize);
-        end = neg_index(end, mSize);
-        return self{codePoints_ + start, end - start, manager_};
+    Self split(isize start, isize end) {
+        isize m_size = size();
+        start = neg_index(start, m_size);
+        end = neg_index(end, m_size);
+        return Self{code_points_ + start, end - start, manager_};
     }
 
     /**
@@ -319,11 +320,11 @@ public:
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-    const self split(isize start, isize end) const {
-        isize mSize = size();
-        start = neg_index(start, mSize);
-        end = neg_index(end, mSize);
-        return self{codePoints_ + start, end - start, manager_};
+    const Self split(isize start, isize end) const {
+        isize m_size = size();
+        start = neg_index(start, m_size);
+        end = neg_index(end, m_size);
+        return Self{code_points_ + start, end - start, manager_};
     }
 
     /**
@@ -331,7 +332,7 @@ public:
      * @param start 起始索引
      * @return 子字符串
      */
-    self split(isize start) {
+    Self split(isize start) {
         return split(start, size());
     }
 
@@ -340,7 +341,7 @@ public:
      * @param start 起始索引
      * @return 子字符串
      */
-    const self split(isize start) const {
+    const Self split(isize start) const {
         return split(start, size());
     }
 
@@ -350,7 +351,7 @@ public:
      * @return 字符的位置，未找到返回 `npos`
      */
     isize find(const util::CodePoint& c) const {
-        return super::find(c);
+        return Super::find(c);
     }
 
     /**
@@ -360,19 +361,19 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    isize find(const self& pattern, isize pos = 0) const {
+    isize find(const Self& pattern, isize pos = 0) const {
         if (pattern.empty()) return npos;
-        auto mSize = size(), pSize = pattern.size();
+        auto m_size = size(), p_size = pattern.size();
         auto next = get_next(pattern);
-        for (isize i = pos, j = 0; i < mSize; ++i) {
+        for (isize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && at(i) != pattern[j]) {
                 j = next[j - 1];
             }
             j += (at(i) == pattern[j]); // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
-            if (j == pSize) {
-                return i - pSize + 1;
+            if (j == p_size) {
+                return i - p_size + 1;
             }
         }
         return npos;
@@ -384,20 +385,20 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    util::Vector<isize> findAll(const self& pattern) const {
-        util::Vector<isize> res;
+    util::Vec<isize> find_all(const Self& pattern) const {
+        util::Vec<isize> res;
         if (pattern.empty()) return res;
-        auto mSize = size(), pSize = pattern.size();
+        auto m_size = size(), p_size = pattern.size();
         auto next = get_next(pattern);
-        for (isize i = 0, j = 0; i < mSize; ++i) {
+        for (isize i = 0, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && at(i) != pattern[j]) {
                 j = next[j - 1];
             }
             j += (at(i) == pattern[j]); // 匹配，j前进
             // 模式串匹配完，收集文本串匹配起点
-            if (j == pSize) {
-                res.append(i - pSize + 1);
+            if (j == p_size) {
+                res.append(i - p_size + 1);
                 j = next[j - 1];
             }
         }
@@ -409,7 +410,7 @@ public:
      * @param prefix 要检查的子字符串
      * @return 是否以指定子字符串开头
      */
-    bool startsWith(const self& prefix) const {
+    bool starts_with(const Self& prefix) const {
         if (size() < prefix.size()) {
             return false;
         }
@@ -421,7 +422,7 @@ public:
      * @param suffix 要检查的子字符串
      * @return 是否以指定子字符串结尾
      */
-    bool endsWith(const self& suffix) const {
+    bool ends_with(const Self& suffix) const {
         if (size() < suffix.size()) {
             return false;
         }
@@ -432,10 +433,10 @@ public:
      * @brief 将字符串转换为全大写
      * @return 全大写的字符串
      */
-    self upper() const {
-        self res{*this};
-        isize mSize = size();
-        for (isize i = 0; i < mSize; ++i) {
+    Self upper() const {
+        Self res{*this};
+        isize m_size = size();
+        for (isize i = 0; i < m_size; ++i) {
             res.at(i) = res.at(i).upper();
         }
         return res;
@@ -445,10 +446,10 @@ public:
      * @brief 将字符串转换为全小写
      * @return 全小写的字符串
      */
-    self lower() const {
-        self res{*this};
-        isize mSize = size();
-        for (isize i = 0; i < mSize; ++i) {
+    Self lower() const {
+        Self res{*this};
+        isize m_size = size();
+        for (isize i = 0; i < m_size; ++i) {
             res.at(i) = res.at(i).lower();
         }
         return res;
@@ -458,7 +459,7 @@ public:
      * @brief 去除字符串首尾的空白字符
      * @return 去除空白后的字符串
      */
-    self trim() {
+    Self trim() {
         auto [l, r] = get_trim_index();
         return split(l, r);
     }
@@ -467,7 +468,7 @@ public:
      * @brief 去除字符串首尾的空白字符（常量版本）
      * @return 去除空白后的字符串
      */
-    const self trim() const {
+    const Self trim() const {
         auto [l, r] = get_trim_index();
         return split(l, r);
     }
@@ -476,7 +477,7 @@ public:
      * @brief 去除字符串首部的空白字符
      * @return 去除首部空白后的字符串
      */
-    self ltrim() {
+    Self ltrim() {
         return split(get_ltrim_index());
     }
 
@@ -484,7 +485,7 @@ public:
      * @brief 去除字符串首部的空白字符（常量版本）
      * @return 去除首部空白后的字符串
      */
-    const self ltrim() const {
+    const Self ltrim() const {
         return split(get_ltrim_index());
     }
 
@@ -492,7 +493,7 @@ public:
      * @brief 去除字符串尾部的空白字符
      * @return 去除尾部空白后的字符串
      */
-    self rtrim() {
+    Self rtrim() {
         return split(get_rtrim_index());
     }
 
@@ -500,7 +501,7 @@ public:
      * @brief 去除字符串尾部的空白字符（常量版本）
      * @return 去除尾部空白后的字符串
      */
-    const self rtrim() const {
+    const Self rtrim() const {
         return split(get_rtrim_index());
     }
 
@@ -509,7 +510,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    self trim(const self& pattern) {
+    Self trim(const Self& pattern) {
         auto [l, r] = get_trim_index(pattern);
         return split(l, r);
     }
@@ -519,7 +520,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    const self trim(const self& pattern) const {
+    const Self trim(const Self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return split(l, r);
     }
@@ -529,7 +530,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    self ltrim(const self& pattern) {
+    Self ltrim(const Self& pattern) {
         return split(get_ltrim_index(pattern));
     }
 
@@ -538,7 +539,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    const self ltrim(const self& pattern) const {
+    const Self ltrim(const Self& pattern) const {
         return split(get_ltrim_index(pattern));
     }
 
@@ -547,7 +548,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    self rtrim(const self& pattern) {
+    Self rtrim(const Self& pattern) {
         return split(get_rtrim_index(pattern));
     }
 
@@ -556,7 +557,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    const self rtrim(const self& pattern) const {
+    const Self rtrim(const Self& pattern) const {
         return split(get_rtrim_index(pattern));
     }
 
@@ -566,14 +567,14 @@ public:
     //  * @return 连接后的字符串
     //  */
     // template <Iterable I>
-    // self join(const I& iter) const {
+    // Self join(const I& iter) const {
     //     isize newLength = 0LL, pos = 0LL;
     //     for (auto&& elem : iter) {
     //         newLength = elem.size() + length_;
     //     }
     //     newLength = math::max<isize>(0LL, newLength - length_);
 
-    //     self result{newLength, encoding()};
+    //     Self result{newLength, encoding()};
     //     for (auto&& elem : iter) {
     //         for (isize i = 0, eSize = elem.size(); i < eSize; ++i) {
     //             result.at(pos++) = elem.at(i);
@@ -593,20 +594,20 @@ public:
      * @param new_ 替换的新字符串
      * @return 替换后的新字符串
      */
-    self replace(const self& old_, const self& new_) const {
-        auto indices = findAll(old_);
+    Self replace(const Self& old_, const Self& new_) const {
+        auto indices = find_all(old_);
 
-        isize mSize = size();
-        self result{mSize + indices.size() * (new_.size() - old_.size()), encoding()};
-        for (isize i = 0, j = 0, k = 0; i < mSize; ++i) {
+        isize m_size = size();
+        Self result{m_size + indices.size() * (new_.size() - old_.size()), encoding()};
+        for (isize i = 0, j = 0, k = 0; i < m_size; ++i) {
             if (j < indices.size() && i == indices[j]) {
                 for (auto&& c : new_) {
-                    result.codePoints_[k++] = c;
+                    result.code_points_[k++] = c;
                 }
                 i += old_.size() - 1;
                 ++j;
             } else {
-                result.codePoints_[k++] = at(i);
+                result.code_points_[k++] = at(i);
             }
         }
         return result;
@@ -618,21 +619,21 @@ public:
      * @param right 右字符
      * @return 包含两个字符的子字符串
      */
-    self match(const util::CodePoint& left, const util::CodePoint& right) const {
+    Self match(const util::CodePoint& left, const util::CodePoint& right) const {
         isize l = find(left);
         if (l == npos) {
             return "";
         }
 
-        isize matchCount = 1;
-        for (isize r = l + 1, mSize = size(); r < mSize; ++r) {
+        isize match_cnt = 1;
+        for (isize r = l + 1, m_size = size(); r < m_size; ++r) {
             if (at(r) == right) {
-                --matchCount;
+                --match_cnt;
             } else if (at(r) == left) {
-                ++matchCount;
+                ++match_cnt;
             }
 
-            if (matchCount == 0) {
+            if (match_cnt == 0) {
                 return split(l, r + 1);
             }
         }
@@ -645,15 +646,15 @@ public:
      * @param codePoint 要删除的字符
      * @return 删除后的字符串
      */
-    self removeAll(util::CodePoint&& codePoint) const {
-        isize mSize = size();
+    Self remove_all(util::CodePoint&& codePoint) const {
+        isize m_size = size();
         std::stringstream stream;
-        for (isize i = 0; i < mSize; ++i) {
+        for (isize i = 0; i < m_size; ++i) {
             if (at(i) != codePoint) {
                 stream << at(i);
             }
         }
-        return self{stream.str().data()};
+        return Self{stream.str().data()};
     }
 
     /**
@@ -661,7 +662,7 @@ public:
      * @return C 风格字符串
      */
     CString __str__() const {
-        CString res{byteLength()};
+        CString res{byte_length()};
         isize pos = 0;
         for (auto&& ch : *this) {
             isize ch_size = ch.size();
@@ -679,9 +680,9 @@ public:
         return __str__().__hash__();
     }
 
-    cmp_t __cmp__(const self& other) const {
-        isize minSize = math::min_(this->size(), other.size());
-        for (auto i = 0; i < minSize; ++i) {
+    cmp_t __cmp__(const Self& other) const {
+        isize min_size = math::min_(this->size(), other.size());
+        for (auto i = 0; i < min_size; ++i) {
             auto cmp = this->at(i).__cmp__(other.at(i));
             if (cmp != 0) {
                 return cmp;
@@ -697,8 +698,8 @@ private:
      */
     std::pair<isize, isize> get_trim_index() const {
         isize l = 0, r = size();
-        while (l < r && at(l).isBlank()) ++l;
-        while (l < r && at(r - 1).isBlank()) --r;
+        while (l < r && at(l).is_blank()) ++l;
+        while (l < r && at(r - 1).is_blank()) --r;
         return std::make_pair(l, r);
     }
 
@@ -707,7 +708,7 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    std::pair<isize, isize> get_trim_index(const self& pattern) const {
+    std::pair<isize, isize> get_trim_index(const Self& pattern) const {
         isize l = 0, r = size(), p_size = pattern.size();
         while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
@@ -720,7 +721,7 @@ private:
      */
     isize get_ltrim_index() const {
         isize l = 0, r = size();
-        while (l < r && at(l).isBlank()) ++l;
+        while (l < r && at(l).is_blank()) ++l;
         return l;
     }
 
@@ -729,7 +730,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除首部模式后的索引
      */
-    isize get_ltrim_index(const self& pattern) const {
+    isize get_ltrim_index(const Self& pattern) const {
         isize l = 0, r = size(), p_size = pattern.size();
         while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
         return l;
@@ -741,7 +742,7 @@ private:
      */
     isize get_rtrim_index() const {
         isize l = 0, r = size();
-        while (l < r && at(r - 1).isBlank()) --r;
+        while (l < r && at(r - 1).is_blank()) --r;
         return r;
     }
 
@@ -750,7 +751,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除尾部模式后的索引
      */
-    isize get_rtrim_index(const self& pattern) const {
+    isize get_rtrim_index(const Self& pattern) const {
         isize l = 0, r = size(), p_size = pattern.size();
         while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
         return r;
@@ -758,7 +759,7 @@ private:
 
 private:
     isize length_;                           // 字符串的长度
-    util::CodePoint* codePoints_;            // 字符串的码点数组
+    util::CodePoint* code_points_;           // 字符串的码点数组
     std::shared_ptr<StringManager> manager_; // 字符串管理器
 private:
     /**
@@ -767,10 +768,10 @@ private:
      * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
-    static util::Vector<isize> get_next(const self& pattern) {
-        auto pSize = pattern.size();
-        util::Vector<isize> next(pSize, 0);
-        for (isize i = 1, j = 0; i < pSize; ++i) {
+    static util::Vec<isize> get_next(const Self& pattern) {
+        auto p_size = pattern.size();
+        util::Vec<isize> next(p_size, 0);
+        for (isize i = 1, j = 0; i < p_size; ++i) {
             // 失配，j按照next数组回跳
             while (j > 0 && pattern[i] != pattern[j]) {
                 j = next[j - 1];
@@ -788,7 +789,7 @@ private:
  */
 class StringBuilder : public Object<StringBuilder> {
 public:
-    using self = StringBuilder;
+    using Self = StringBuilder;
 
     /**
      * @brief 默认构造函数
@@ -800,7 +801,7 @@ public:
      * @brief 追加字符串
      * @note 允许链式调用
      */
-    self& append(const String& str) {
+    Self& append(const String& str) {
         if (str.encoding() != encoding_) {
             EncodingError("Encoding mismatch");
         }
@@ -814,7 +815,7 @@ public:
      * @brief 追加 C 字符串
      * @note 允许链式调用
      */
-    self& append(const char* cstr) {
+    Self& append(const char* cstr) {
         isize len = std::strlen(cstr);
         isize i = 0;
         while (i < len) {
@@ -831,8 +832,8 @@ public:
      */
     String str() {
         auto length = buffer_.size();
-        auto [size, codePoints] = buffer_.separate();
-        return String(codePoints, length, std::make_shared<StringManager>(length, codePoints, encoding_));
+        auto [size, code_points] = buffer_.separate();
+        return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding_));
     }
 
     /**
@@ -843,8 +844,8 @@ public:
     }
 
 private:
-    util::Vector<util::CodePoint> buffer_; // 缓冲区
-    util::Encoding* encoding_;             // 字符串编码
+    util::Vec<util::CodePoint> buffer_; // 缓冲区
+    util::Encoding* encoding_;          // 字符串编码
 };
 
 } // namespace my::util

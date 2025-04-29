@@ -20,12 +20,12 @@ struct Edge : public Object<Edge<E>> {
     i64 end; // 终点ID
     E w;     // 边权
 
-    using self = Edge<E>;
+    using Self = Edge<E>;
 
     Edge(i64 end, const E& w = E{}) :
             end(end), w(w) {}
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         if constexpr (math::FloatingPointType<E>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<E>) {
@@ -45,7 +45,7 @@ struct Vertex : public Object<Vertex<V, E>> {
     V w;                           // 点权
     util::DynArray<Edge<E>> edges; // 该节点对应的边。如果为有向图，则代表以这个节点为起点的边
 
-    using self = Vertex<V, E>;
+    using Self = Vertex<V, E>;
 
     Vertex() = default;
 
@@ -101,7 +101,7 @@ struct Vertex : public Object<Vertex<V, E>> {
         return false;
     }
 
-    cmp_t __cmp__(const self& other) const {
+    cmp_t __cmp__(const Self& other) const {
         if constexpr (math::FloatingPointType<V>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<V>) {
