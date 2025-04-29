@@ -69,7 +69,7 @@ public:
 template <typename T>
 concept MyObject = requires(T& t) {
     typename T::derived_obj;
-} &&is_instance<T, Object<typename T::derived_obj>>;
+} && is_instance<T, Object<typename T::derived_obj>>;
 
 template <MyObject T>
 std::ostream& operator<<(std::ostream& out, const T& obj) {
@@ -77,10 +77,8 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
     return out;
 }
 
-template <typename T>
-requires(Not<Printable<T>>)
-    std::ostream&
-    operator<<(std::ostream& out, const T& obj) {
+template <typename T> requires(Not<Printable<T>>)
+std::ostream& operator<<(std::ostream& out, const T& obj) {
     out << '<' << dtype(T) << " 0x" << std::hex << &obj << '>';
     return out;
 }
