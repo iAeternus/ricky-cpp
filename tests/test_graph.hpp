@@ -11,54 +11,54 @@ auto should_create_graph = []() {
     graph::Graph<char> g;
 
     // When
-    g.addVertex(1, 'a');
-    g.addVertex(2, 'b');
-    g.addVertex(3, 'c');
-    g.addVertex(4, 'd');
-    g.addVertex(5, 'e');
-    g.addVertex(6, 'f');
-    g.addEdge(1, 2, 1);
-    g.addEdge(1, 3, 7);
-    g.addEdge(2, 1, 15);
-    g.addEdge(2, 3, 2);
-    g.addEdge(2, 4, 5);
-    g.addEdge(3, 4, 1);
-    g.addEdge(3, 5, -5);
-    g.addEdge(4, 6, 4);
-    g.addEdge(5, 4, 15);
-    g.addEdge(5, 6, 20);
+    g.add_vertex(1, 'a');
+    g.add_vertex(2, 'b');
+    g.add_vertex(3, 'c');
+    g.add_vertex(4, 'd');
+    g.add_vertex(5, 'e');
+    g.add_vertex(6, 'f');
+    g.add_edge(1, 2, 1);
+    g.add_edge(1, 3, 7);
+    g.add_edge(2, 1, 15);
+    g.add_edge(2, 3, 2);
+    g.add_edge(2, 4, 5);
+    g.add_edge(3, 4, 1);
+    g.add_edge(3, 5, -5);
+    g.add_edge(4, 6, 4);
+    g.add_edge(5, 4, 15);
+    g.add_edge(5, 6, 20);
 
     // Then
-    Assertions::assertTrue(g.isDirected());
-    Assertions::assertEquals(6, g.vertexCount());
-    Assertions::assertEquals(10, g.edgeCount());
-    Assertions::assertEquals(2, g.edgeCount(1));
-    Assertions::assertEquals(-1, g.edgeCount(7));
+    Assertions::assertTrue(g.is_directed());
+    Assertions::assertEquals(6, g.vertex_cnt());
+    Assertions::assertEquals(10, g.edge_cnt());
+    Assertions::assertEquals(2, g.edge_cnt(1));
+    Assertions::assertEquals(-1, g.edge_cnt(7));
     io::print(g);
 };
 
 auto should_register = []() {
     // Given
     graph::Graph<char> g;
-    g.addVertex(1, 'a');
-    g.addVertex(2, 'b');
-    g.addVertex(3, 'c');
-    g.addVertex(4, 'd');
-    g.addVertex(5, 'e');
-    g.addVertex(6, 'f');
-    g.addEdge(1, 2, 1);
-    g.addEdge(1, 3, 7);
-    g.addEdge(2, 1, 15);
-    g.addEdge(2, 3, 2);
-    g.addEdge(2, 4, 5);
-    g.addEdge(3, 4, 1);
-    g.addEdge(3, 5, -5);
-    g.addEdge(4, 6, 4);
-    g.addEdge(5, 4, 15);
-    g.addEdge(5, 6, 20);
+    g.add_vertex(1, 'a');
+    g.add_vertex(2, 'b');
+    g.add_vertex(3, 'c');
+    g.add_vertex(4, 'd');
+    g.add_vertex(5, 'e');
+    g.add_vertex(6, 'f');
+    g.add_edge(1, 2, 1);
+    g.add_edge(1, 3, 7);
+    g.add_edge(2, 1, 15);
+    g.add_edge(2, 3, 2);
+    g.add_edge(2, 4, 5);
+    g.add_edge(3, 4, 1);
+    g.add_edge(3, 5, -5);
+    g.add_edge(4, 6, 4);
+    g.add_edge(5, 4, 15);
+    g.add_edge(5, 6, 20);
 
     // When
-    g.registerAlgorithm("filter_edge", [](const auto& g, auto&& args) -> util::DynArray<i64> {
+    g.register_algo("filter_edge", [](const auto& g, auto&& args) -> util::DynArray<i64> {
         f64 min = opt<f64>(args, 0);
         f64 max = opt<f64>(args, 1);
 
@@ -72,7 +72,7 @@ auto should_register = []() {
     });
 
     // When
-    auto res = g.callAlgorithm<util::DynArray<i64>>("filter_edge", 5.0, 25.0);
+    auto res = g.call_algo<util::DynArray<i64>>("filter_edge", 5.0, 25.0);
 
     // Then
     Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());

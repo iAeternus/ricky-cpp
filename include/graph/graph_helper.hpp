@@ -55,7 +55,7 @@ struct Vertex : public Object<Vertex<V, E>> {
     /**
      * @brief 获取出度
      */
-    isize outDegree() const {
+    isize out_deg() const {
         return edges.size();
     }
 

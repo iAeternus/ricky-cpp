@@ -9,15 +9,15 @@ namespace my::test::test_graph_algorithm {
 auto test_fake_algorithm = []() {
     // Given
     graph::Graph g;
-    g.registerAlgorithm("fake_algorithm", graph::fake_algorithm<f64, f64>);
-    
+    g.register_algo("fake_algorithm", graph::fake_algorithm<f64, f64>);
+
     // When
-    auto res = g.callAlgorithm<CString>("fake_algorithm", 1, 2, 3);
+    auto res = g.call_algo<CString>("fake_algorithm", 1, 2, 3);
 
     // Then
     Assertions::assertEquals("Fake algorithm. Args are 1,2,3"_cs, res);
 };
- 
+
 void test_graph_algorithm() {
     UnitTestGroup group{"test_graph_algorithm"};
 

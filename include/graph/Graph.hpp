@@ -24,37 +24,37 @@ namespace my::graph {
  */
 template <typename V = f64, typename E = f64>
 class Graph : public Object<Graph<V, E>> {
+public:
     using Self = Graph<V, E>;
 
-public:
-    explicit Graph(bool isDirected = true) :
-            isDirected_(isDirected) {}
+    explicit Graph(bool is_directed = true) :
+            is_directed_(is_directed) {}
 
-    isize vertexCount() const {
+    isize vertex_cnt() const {
         return vertices_.size();
     }
 
-    isize edgeCount() const {
-        return edgeCount_;
+    isize edge_cnt() const {
+        return edge_cnt_;
     }
 
     /**
      * @brief 获取从ID节点出发的边的数量
      * @return 若节点不存在，则返回-1
      */
-    isize edgeCount(i64 id) const {
+    isize edge_cnt(i64 id) const {
         if (!vertices_.contains(id)) {
             return -1;
         }
-        return vertices_.get(id).outDegree();
+        return vertices_.get(id).out_deg();
     }
 
     /**
      * @brief 判断是否为有向图
      * @return true=是 false=否
      */
-    bool isDirected() const {
-        return isDirected_;
+    bool is_directed() const {
+        return is_directed_;
     }
 
     /**
@@ -81,7 +81,7 @@ public:
      * @brief 添加节点，若节点已存在，则什么都不做
      * @return true=节点不存在 false=节点已存在
      */
-    bool addVertex(i64 id, const V& weight = V{}) {
+    bool add_vertex(i64 id, const V& weight = V{}) {
         if (vertices_.contains(id)) {
             return false;
         }
@@ -93,17 +93,17 @@ public:
      * @brief 添加边，若某一点不存在，则抛出异常，若边已存在，则什么都不做
      * @return true=边不存在 false=边已存在
      */
-    bool addEdge(i64 from, i64 to, const E& weight = E{}) {
+    bool add_edge(i64 from, i64 to, const E& weight = E{}) {
         if (!vertices_.contains(from) || !vertices_.contains(to)) {
             ValueError(std::format("Node from[{}] or to[{}] does not exist.", from, to));
             return None<bool>;
         }
         auto tag = vertices_.get(from).connect(to, weight);
-        ++edgeCount_;
+        ++edge_cnt_;
 
-        if (!isDirected_) {
+        if (!is_directed_) {
             vertices_.get(to).connect(from, weight);
-            ++edgeCount_;
+            ++edge_cnt_;
         }
         return tag;
     }
@@ -114,8 +114,8 @@ public:
      * @param func 函数，例如 [](auto& g, auto&& args) {}
      */
     template <typename Func>
-    void registerAlgorithm(const CString& name, Func&& func) {
-        std::unique_lock lock(algoMutex_); // 写锁
+    void register_algo(const CString& name, Func&& func) {
+        std::unique_lock lock(algo_mutex_); // 写锁
         algorithms_.insert(name, [func = std::forward<Func>(func)](const Graph& g, util::DynArray<std::any> args) -> std::any {
             return func(g, std::move(args));
         });
@@ -128,8 +128,8 @@ public:
      * @param args 插件入参包
      */
     template <typename RetType = void, typename... Args>
-    RetType callAlgorithm(const CString& name, Args&&... args) {
-        std::shared_lock lock(algoMutex_); // 读锁
+    RetType call_algo(const CString& name, Args&&... args) {
+        std::shared_lock lock(algo_mutex_); // 读锁
         if (!algorithms_.contains(name)) {
             ValueError(std::format("Algorithm[{}] not found.", name));
         }
@@ -138,8 +138,8 @@ public:
     }
 
     template <typename RetType = void, typename... Args>
-    RetType callAlgorithm(const CString& name, Args&&... args) const {
-        std::shared_lock lock(algoMutex_); // 读锁
+    RetType call_algo(const CString& name, Args&&... args) const {
+        std::shared_lock lock(algo_mutex_); // 读锁
         if (!algorithms_.contains(name)) {
             ValueError(std::format("Algorithm[{}] not found.", name));
         }
@@ -149,9 +149,9 @@ public:
 
     CString __str__() const {
         std::stringstream stream;
-        stream << "Graph (" << (isDirected_ ? "Directed" : "Undirected") << ")\n";
-        stream << "Vertex count: " << vertexCount() << '\n';
-        stream << "Edge count: " << edgeCount() << '\n';
+        stream << "Graph (" << (is_directed_ ? "Directed" : "Undirected") << ")\n";
+        stream << "Vertex count: " << vertex_cnt() << '\n';
+        stream << "Edge count: " << edge_cnt() << '\n';
         stream << "Vertex value type: " << dtype(V) << '\n';
         stream << "Edge value type: " << dtype(E) << '\n';
         stream << "Adjacency List:\n";
@@ -173,14 +173,14 @@ public:
     }
 
 private:
-    isize edgeCount_ = 0;                    // 边数，无向图为双倍边
-    bool isDirected_;                        // 是否为有向图 true=是 false=否
+    isize edge_cnt_ = 0;                     // 边数，无向图为双倍边
+    bool is_directed_;                       // 是否为有向图 true=是 false=否
     util::Dict<i64, Vertex<V, E>> vertices_; // 邻接表
 
     // 插件系统
     using Algorithm = std::function<std::any(Graph&, util::DynArray<std::any>)>;
     mutable util::Dict<CString, Algorithm> algorithms_;
-    mutable std::shared_mutex algoMutex_;
+    mutable std::shared_mutex algo_mutex_;
 };
 
 } // namespace my::graph
