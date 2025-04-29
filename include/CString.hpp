@@ -20,9 +20,9 @@ namespace my {
  * @brief 自定义字符串类，提供安全的字符串操作和内存管理
  */
 class CString {
-    using self = CString;
-
 public:
+    using self = CString;
+    
     /**
      * @brief 默认构造函数，创建一个空字符串
      */
