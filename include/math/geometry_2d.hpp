@@ -90,6 +90,13 @@ fn projection(const Point2& p, const Point2& a, const Point2& b)->Point2 {
     return a + v * (dot(v, p - a) / dot(v, v));
 }
 
+/**
+ * @brief 判断点p是否在线段AB上
+ */
+fn is_point_on_seg(const Point2& p, const Point2& a, const Point2& b)->bool {
+    return is_zero(cross(a - p, b - p)) && is_neg(dot(a - p, b - p));
+}
+
 } // namespace my::math
 
 #endif // GEOMETRY_2D_HPP

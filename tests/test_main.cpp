@@ -49,6 +49,7 @@
 #include "test_expr.hpp"
 #include "test_vector2.hpp"
 #include "test_geometry_2d.hpp"
+#include "test_polygon.hpp"
 #else
 #include "test_speed.hpp"
 #endif
@@ -96,6 +97,7 @@ int main() {
     test_expr::test_expr();
     test_vector2::test_vector2();
     test_geometry_2d::test_geometry_2d();
+    test_polygon::test_polygon();
 #else
     test_speed();
 #endif
