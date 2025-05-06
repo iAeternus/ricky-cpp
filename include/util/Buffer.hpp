@@ -20,27 +20,27 @@ public:
     using value_t = T;
     using Self = Buffer<value_t>;
     using Super = Sequence<Buffer<value_t>, value_t>;
-    
+
     using iterator = Super::iterator;
     using const_iterator = Super::const_iterator;
 
     Buffer() :
-            size_(0), capacity_(0), buffer_(nullptr) {}
+            size_(0), capacity_(0), buf_(nullptr) {}
 
     Buffer(isize capacity) :
-            size_(0), capacity_(capacity), buffer_(my_alloc<value_t>(capacity_)) {}
+            size_(0), capacity_(capacity), buf_(my_alloc<value_t>(capacity_)) {}
 
     Buffer(const Buffer& other) :
-            size_(other.size_), capacity_(other.capacity_), buffer_(my_alloc<value_t>(capacity_)) {
+            size_(other.size_), capacity_(other.capacity_), buf_(my_alloc<value_t>(capacity_)) {
         for (isize i = 0; i < other.size(); ++i) {
             my_construct(data() + i, other.data()[i]);
         }
     }
 
     Buffer(Buffer&& other) noexcept :
-            size_(other.size_), capacity_(other.capacity_), buffer_(other.buffer_) {
+            size_(other.size_), capacity_(other.capacity_), buf_(other.buf_) {
         other.size_ = other.capacity_ = 0;
-        other.buffer_ = nullptr;
+        other.buf_ = nullptr;
     }
 
     Self& operator=(const Self& other) {
@@ -56,8 +56,8 @@ public:
     }
 
     ~Buffer() {
-        my_destroy(buffer_, size_);
-        my_delloc(buffer_);
+        my_destroy(buf_, size_);
+        my_delloc(buf_);
         size_ = capacity_ = 0;
     }
 
@@ -74,27 +74,27 @@ public:
     }
 
     value_t* data() {
-        return buffer_;
+        return buf_;
     }
 
     const value_t* data() const {
-        return buffer_;
+        return buf_;
     }
 
     value_t& front() {
-        return buffer_[0];
+        return buf_[0];
     }
 
     const value_t& front() const {
-        return buffer_[0];
+        return buf_[0];
     }
 
     value_t& back() {
-        return buffer_[size_ - 1];
+        return buf_[size_ - 1];
     }
 
     const value_t& back() const {
-        return buffer_[size_ - 1];
+        return buf_[size_ - 1];
     }
 
     /**
@@ -103,12 +103,12 @@ public:
      */
     template <typename... Args>
     value_t& append(Args&&... args) {
-        my_construct(buffer_ + size_, std::forward<Args>(args)...);
-        return buffer_[size_++];
+        my_construct(buf_ + size_, std::forward<Args>(args)...);
+        return buf_[size_++];
     }
 
     void pop_back() {
-        my_destroy(buffer_ + size_);
+        my_destroy(buf_ + size_);
         --size_;
     }
 
@@ -122,11 +122,11 @@ public:
     }
 
     value_t& at(isize index) {
-        return buffer_[index];
+        return buf_[index];
     }
 
     const value_t& at(isize index) const {
-        return buffer_[index];
+        return buf_[index];
     }
 
     /**
@@ -154,7 +154,7 @@ public:
 
 private:
     isize size_, capacity_;
-    value_t* buffer_;
+    value_t* buf_;
 };
 
 } // namespace my::util

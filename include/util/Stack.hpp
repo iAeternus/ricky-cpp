@@ -7,17 +7,19 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
-#include "DynArray.hpp"
+// #include "DynArray.hpp"
+#include "Vec.hpp"
 
 namespace my::util {
 
 template <typename T>
-class Stack {
+class Stack : public Object<Stack<T>> {
 public:
     using value_t = T;
+    using Self = Stack<value_t>;
 
     Stack() :
-            data_({}) {}
+            data_() {}
 
     isize size() const {
         return data_.size();
@@ -54,7 +56,7 @@ public:
      * @note 若栈空，则抛出ValueError
      * @return 栈顶元素的引用
      */
-    T& peek() {
+    value_t& peek() {
         if (empty()) {
             ValueError("Stack is empty.");
         }
@@ -66,16 +68,16 @@ public:
      * @note 若栈空，则抛出ValueError
      * @return 栈顶元素的引用
      */
-    const T& peek() const {
+    const value_t& peek() const {
         if (empty()) {
             ValueError("Stack is empty.");
-            return None<T&>;
+            return None<value_t&>;
         }
         return data_.back();
     }
 
 private:
-    DynArray<T> data_;
+    Vec<value_t> data_;
 };
 
 } // namespace my::util

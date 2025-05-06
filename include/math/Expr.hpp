@@ -10,10 +10,8 @@
 #include "math_utils.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
-// #include "Stack.hpp"
-
-#include <stack>
-#include <algorithm>
+#include "Stack.hpp"
+#include "String.hpp"
 
 namespace my::math {
 
@@ -34,11 +32,11 @@ struct Token : public Object<Token> {
         bool right_assoc; // 是否右结合
     };
 
-    Type type;            // 标记类型
-    std::string op_value; // 操作符值
-    f64 num_value;        // 数字值
+    Type type;             // 标记类型
+    util::String op_value; // 操作符值
+    f64 num_value;         // 数字值
 
-    Token(Type type, const std::string& value = "", f64 num = 0.0) :
+    Token(Type type, const util::String& value = "", f64 num = 0.0) :
             type(type), op_value(value), num_value(num) {}
 
     /**
@@ -47,7 +45,7 @@ struct Token : public Object<Token> {
      * @return OpProp 操作符属性
      */
     OpProp get_op_prop() const {
-        static const util::Dict<std::string, OpProp> op_mp = {
+        static const util::Dict<util::String, OpProp> op_mp = {
             {"+", {2, false}}, // 加法
             {"-", {2, false}}, // 减法
             {"*", {3, false}}, // 乘法
@@ -62,7 +60,7 @@ struct Token : public Object<Token> {
     CString __str__() const {
         std::stringstream stream;
         if (op_value.empty()) {
-            if (op_value == "u-") {
+            if (op_value == "u-"_s) {
                 stream << '-';
             } else {
                 stream << num_value;
@@ -81,15 +79,13 @@ class Expr : public Object<Expr> {
 public:
     using Self = Expr;
 
-    Expr(const std::string& expr) :
+    Expr(const util::String& expr) :
             valid_(false) {
         try {
-            std::string filtered;
-            std::remove_copy_if(expr.begin(), expr.end(), back_inserter(filtered), [](char c) {
-                return isspace(c);
+            expr.remove_all([](const auto& cp) {
+                return cp.is_blank();
             });
-
-            tokenize(filtered);
+            tokenize(expr);
             this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
             RuntimeError(std::format("Tokenization error: {}", std::string(ex.what())));
@@ -131,7 +127,7 @@ private:
     /**
      * @brief 分词函数，将表达式分解为tokens
      */
-    void tokenize(const std::string& expr) {
+    void tokenize(const util::String& expr) {
         tokens_.clear();
         std::string num_str;
         auto handle_num = [&]() {
@@ -142,19 +138,19 @@ private:
         };
 
         for (const auto& c : expr) {
-            if (std::isdigit(c) || c == '.') {
+            if (c.is_digit() || c == '.') {
                 num_str += c;
             } else {
                 handle_num();
                 if (is_unary_neg_sign(c)) {
-                    tokens_.append(Token::UNARY_OP, "u-");
+                    tokens_.append(Token::UNARY_OP, "u-"_s);
                 } else if (c == '(') {
-                    tokens_.append(Token::LEFT_PAREN, "(");
+                    tokens_.append(Token::LEFT_PAREN, "("_s);
                 } else if (c == ')') {
-                    tokens_.append(Token::RIGHT_PAREN, ")");
+                    tokens_.append(Token::RIGHT_PAREN, ")"_s);
                 } else if (is_op(c)) {
-                    tokens_.append(Token::OPERATOR, std::string(1, c));
-                } else if (!std::isspace(c)) {
+                    tokens_.append(Token::OPERATOR, util::String(c));
+                } else if (!c.is_blank()) {
                     RuntimeError(std::format("Invalid character: {}", c));
                 }
             }
@@ -187,28 +183,28 @@ private:
     /**
      * @brief 判断是否为一元负号
      */
-    bool is_unary_neg_sign(char c) const {
-        return c == '-' && (tokens_.empty() || tokens_.back().type == Token::LEFT_PAREN || tokens_.back().type == Token::OPERATOR || tokens_.back().type == Token::UNARY_OP);
+    bool is_unary_neg_sign(const util::CodePoint& cp) const {
+        return cp == '-' && (tokens_.empty() || tokens_.back().type == Token::LEFT_PAREN || tokens_.back().type == Token::OPERATOR || tokens_.back().type == Token::UNARY_OP);
     }
 
     /**
      * @brief 判断是否为操作符
      */
-    bool is_op(char c) const {
-        static const std::string ops("+-*/%^");
-        return ops.find(c) != std::string::npos;
+    bool is_op(const util::CodePoint& cp) const {
+        static const util::String ops("+-*/%^");
+        return ops.find(cp) != util::String::npos;
     }
 
     /**
      * @brief 判断括号是否匹配
      */
     bool check_brackets() const {
-        std::stack<Token> st;
+        util::Stack<Token> st;
         for (const auto& token : tokens_) {
             if (token.type == Token::LEFT_PAREN) {
                 st.push(token);
             } else if (token.type == Token::RIGHT_PAREN) {
-                if (st.empty() || st.top().type != Token::LEFT_PAREN) {
+                if (st.empty() || st.peek().type != Token::LEFT_PAREN) {
                     return false;
                 }
                 st.pop();
@@ -222,7 +218,7 @@ private:
      */
     util::Vec<Token> in2post() const {
         util::Vec<Token> ans;
-        std::stack<Token> op_st;
+        util::Stack<Token> op_st;
 
         for (const auto& token : tokens_) {
             switch (token.type) {
@@ -233,8 +229,8 @@ private:
                 op_st.push(token);
                 break;
             case Token::RIGHT_PAREN:
-                while (!op_st.empty() && op_st.top().type != Token::LEFT_PAREN) {
-                    ans.append(op_st.top());
+                while (!op_st.empty() && op_st.peek().type != Token::LEFT_PAREN) {
+                    ans.append(op_st.peek());
                     op_st.pop();
                 }
                 if (op_st.empty()) RuntimeError("Mismatched parentheses");
@@ -242,8 +238,8 @@ private:
                 break;
             case Token::OPERATOR:
             case Token::UNARY_OP:
-                while (!op_st.empty() && op_st.top().type != Token::LEFT_PAREN && should_pop(token, op_st.top())) {
-                    ans.append(op_st.top());
+                while (!op_st.empty() && op_st.peek().type != Token::LEFT_PAREN && should_pop(token, op_st.peek())) {
+                    ans.append(op_st.peek());
                     op_st.pop(); // TODO 用 util::Stack 这里段错误
                 }
                 op_st.push(token); // 当前操作符入栈
@@ -255,10 +251,10 @@ private:
 
         // 处理剩下的操作符
         while (!op_st.empty()) {
-            if (op_st.top().type == Token::LEFT_PAREN) {
+            if (op_st.peek().type == Token::LEFT_PAREN) {
                 RuntimeError("Mismatched parentheses");
             }
-            ans.append(op_st.top());
+            ans.append(op_st.peek());
             op_st.pop();
         }
 
@@ -284,7 +280,7 @@ private:
      * @brief 后缀表达式求值
      */
     f64 eval_post(const util::Vec<Token>& post) const {
-        std::stack<f64> st;
+        util::Stack<f64> st;
         f64 a, b, x;
         for (const auto& token : post) {
             switch (token.type) {
@@ -293,14 +289,14 @@ private:
                 break;
             case Token::OPERATOR:
                 if (st.size() < 2) RuntimeError("Insufficient operands");
-                b = st.top();
+                b = st.peek();
                 st.pop();
-                a = st.top();
+                a = st.peek();
                 st.pop();
                 st.push(eval_op(a, b, token.op_value));
                 break;
             case Token::UNARY_OP:
-                x = st.top();
+                x = st.peek();
                 st.pop();
                 st.push(eval_unary_op(x, token.op_value));
                 break;
@@ -309,24 +305,24 @@ private:
             }
         }
         if (st.size() != 1) RuntimeError("Malformed expression");
-        return st.top();
+        return st.peek();
     }
 
-    static f64 eval_op(f64 a, f64 b, const std::string& op) {
-        if (op == "+") {
+    static f64 eval_op(f64 a, f64 b, const util::String& op) {
+        if (op == "+"_s) {
             return a + b;
-        } else if (op == "-") {
+        } else if (op == "-"_s) {
             return a - b;
-        } else if (op == "*") {
+        } else if (op == "*"_s) {
             return a * b;
-        } else if (op == "/") {
+        } else if (op == "/"_s) {
             if (is_zero(b)) {
                 RuntimeError("Divide by zero");
             }
             return a / b;
-        } else if (op == "%") {
+        } else if (op == "%"_s) {
             return std::fmod(a, b);
-        } else if (op == "^") {
+        } else if (op == "^"_s) {
             return std::pow(a, b);
         } else {
             ValueError(std::format("Unknown operator: {}", op));
@@ -334,8 +330,8 @@ private:
         }
     }
 
-    static f64 eval_unary_op(f64 x, const std::string& op) {
-        if (op == "u-") {
+    static f64 eval_unary_op(f64 x, const util::String& op) {
+        if (op == "u-"_s) {
             return -x;
         } else {
             ValueError(std::format("Unknown unary operator: {}", op));
@@ -347,7 +343,7 @@ private:
 } // namespace my::math
 
 fn operator""_expr(const char* str, size_t len)->my::math::Expr {
-    return my::math::Expr(std::string(str));
+    return my::math::Expr(my::util::String(str, len));
 }
 
 #endif // EXPR_HPP

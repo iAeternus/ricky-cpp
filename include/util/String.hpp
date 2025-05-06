@@ -28,7 +28,7 @@ public:
      * @param shared_head 共享的码点数组
      * @param encoding 字符串的编码
      */
-    StringManager(isize length, util::CodePoint* shared_head, util::Encoding* encoding) :
+    StringManager(isize length, CodePoint* shared_head, util::Encoding* encoding) :
             length_(length), shared_head_(shared_head), encoding_(encoding) {}
 
     /**
@@ -44,7 +44,7 @@ public:
      * @brief 获取共享的码点数组
      * @return 共享的码点数组
      */
-    util::CodePoint* shared_head() const {
+    CodePoint* shared_head() const {
         return shared_head_;
     }
 
@@ -61,7 +61,7 @@ public:
      * @param length 新的字符串长度
      * @param shared_head 新的共享码点数组
      */
-    void reset(isize length, util::CodePoint* shared_head) {
+    void reset(isize length, CodePoint* shared_head) {
         my_destroy(shared_head_, length_);
         my_delloc(shared_head_);
         this->shared_head_ = shared_head;
@@ -69,15 +69,15 @@ public:
     }
 
 private:
-    isize length_;                 // 字符串的长度
-    util::CodePoint* shared_head_; // 共享的码点数组
-    util::Encoding* encoding_;     // 字符串的编码
+    isize length_;             // 字符串的长度
+    CodePoint* shared_head_;   // 共享的码点数组
+    util::Encoding* encoding_; // 字符串的编码
 };
 
 /**
  * @brief 字符串，支持 Unicode 编码和多种操作
  */
-class String : public util::Sequence<String, util::CodePoint> {
+class String : public util::Sequence<String, CodePoint> {
     friend class StringBuilder;
 
     /**
@@ -86,7 +86,7 @@ class String : public util::Sequence<String, util::CodePoint> {
      * @param length 字符串的长度
      * @param manager 字符串管理器
      */
-    String(util::CodePoint* code_points, isize length, std::shared_ptr<StringManager> manager) :
+    String(CodePoint* code_points, isize length, std::shared_ptr<StringManager> manager) :
             length_(length), code_points_(code_points), manager_(std::move(manager)) {}
 
     /**
@@ -95,7 +95,7 @@ class String : public util::Sequence<String, util::CodePoint> {
      * @param encoding 字符串的编码
      */
     String(isize length, util::Encoding* encoding) :
-            String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<util::CodePoint>(length), encoding)) {
+            String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<CodePoint>(length), encoding)) {
         for (isize i = 0; i < length_; ++i) {
             my_construct(manager_->shared_head() + i);
         }
@@ -104,7 +104,7 @@ class String : public util::Sequence<String, util::CodePoint> {
 
 public:
     using Self = String;
-    using Super = util::Sequence<Self, util::CodePoint>;
+    using Super = util::Sequence<Self, CodePoint>;
 
     static constexpr isize npos = -1LL; // 无效的索引位置
 
@@ -116,7 +116,7 @@ public:
             String(0, util::encoding_map(encoding)) {}
 
     /**
-     * @brief 构造函数，根据 C 风格字符串创建字符串对象
+     * @brief 构造函数，根据 C 风格字符串创建字符串
      * @param str C 风格字符串
      * @param length 字符串的长度（可选）
      * @param encoding 字符串的编码（可选）
@@ -131,12 +131,20 @@ public:
     }
 
     /**
-     * @brief 构造函数，根据自定义字符串创建字符串对象
+     * @brief 构造函数，根据自定义字符串创建字符串
      * @param cstr 自定义字符串
      * @param encoding 字符串的编码（可选）
      */
     String(const CString& cstr, const CString& encoding = util::UTF8) :
             String(cstr.data(), cstr.size(), encoding) {}
+
+    /**
+     * @brief 构造函数，根据码点创建字符串
+     * @param cp 码点
+     * @param encoding 字符串的编码（可选）
+     */
+    String(const CodePoint& cp, const CString& encoding = util::UTF8) :
+            String(cp.data(), cp.size(), encoding) {}
 
     /**
      * @brief 拷贝构造函数
@@ -234,7 +242,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的码点
      */
-    util::CodePoint& at(isize index) {
+    CodePoint& at(isize index) {
         return code_points_[index];
     }
 
@@ -243,7 +251,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的码点
      */
-    const util::CodePoint& at(isize index) const {
+    const CodePoint& at(isize index) const {
         return code_points_[index];
     }
 
@@ -252,7 +260,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的码点
      */
-    util::CodePoint& operator[](isize index) {
+    CodePoint& operator[](isize index) {
         return at(index);
     }
 
@@ -261,7 +269,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的码点
      */
-    const util::CodePoint& operator[](isize index) const {
+    const CodePoint& operator[](isize index) const {
         return at(index);
     }
 
@@ -350,7 +358,7 @@ public:
      * @param c 要查找的字符
      * @return 字符的位置，未找到返回 `npos`
      */
-    isize find(const util::CodePoint& c) const {
+    isize find(const CodePoint& c) const {
         return Super::find(c);
     }
 
@@ -619,7 +627,7 @@ public:
      * @param right 右字符
      * @return 包含两个字符的子字符串
      */
-    Self match(const util::CodePoint& left, const util::CodePoint& right) const {
+    Self match(const CodePoint& left, const CodePoint& right) const {
         isize l = find(left);
         if (l == npos) {
             return "";
@@ -646,15 +654,30 @@ public:
      * @param codePoint 要删除的字符
      * @return 删除后的字符串
      */
-    Self remove_all(util::CodePoint&& codePoint) const {
+    Self remove_all(CodePoint&& codePoint) const {
         isize m_size = size();
-        std::stringstream stream;
+        Vec<CodePoint> buf;
         for (isize i = 0; i < m_size; ++i) {
             if (at(i) != codePoint) {
-                stream << at(i);
+                buf.append(at(i));
             }
         }
-        return Self{stream.str().data()};
+        auto length = buf.size();
+        auto [size, code_points] = buf.separate();
+        return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding()));
+    }
+
+    Self remove_all(std::function<bool(const CodePoint&)>&& pred) const {
+        isize m_size = size();
+        Vec<CodePoint> buf;
+        for (isize i = 0; i < m_size; ++i) {
+            if (pred(at(i))) {
+                buf.append(at(i));
+            }
+        }
+        auto length = buf.size();
+        auto [size, code_points] = buf.separate();
+        return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding()));
     }
 
     /**
@@ -759,7 +782,7 @@ private:
 
 private:
     isize length_;                           // 字符串的长度
-    util::CodePoint* code_points_;           // 字符串的码点数组
+    CodePoint* code_points_;                 // 字符串的码点数组
     std::shared_ptr<StringManager> manager_; // 字符串管理器
 private:
     /**
@@ -781,71 +804,6 @@ private:
         }
         return next;
     }
-};
-
-/**
- * @brief 字符串构建器
- * @class StringBuilder
- */
-class StringBuilder : public Object<StringBuilder> {
-public:
-    using Self = StringBuilder;
-
-    /**
-     * @brief 默认构造函数
-     */
-    explicit StringBuilder(util::Encoding* enc = util::encoding_map(util::UTF8)) :
-            encoding_(enc) {}
-
-    /**
-     * @brief 追加字符串
-     * @note 允许链式调用
-     */
-    Self& append(const String& str) {
-        if (str.encoding() != encoding_) {
-            EncodingError("Encoding mismatch");
-        }
-        for (isize i = 0; i < str.size(); ++i) {
-            buffer_.append(str.at(i));
-        }
-        return *this;
-    }
-
-    /**
-     * @brief 追加 C 字符串
-     * @note 允许链式调用
-     */
-    Self& append(const char* cstr) {
-        isize len = std::strlen(cstr);
-        isize i = 0;
-        while (i < len) {
-            CodePoint cp(cstr + i, encoding_);
-            i += cp.size();
-            buffer_.append(std::move(cp)); // 移动语义
-        }
-        return *this;
-    }
-
-    /**
-     * @brief 生成 String
-     * @note 内部实现对数据的转移
-     */
-    String str() {
-        auto length = buffer_.size();
-        auto [size, code_points] = buffer_.separate();
-        return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding_));
-    }
-
-    /**
-     * @brief 清空构造器
-     */
-    void clear() {
-        buffer_.clear();
-    }
-
-private:
-    util::Vec<util::CodePoint> buffer_; // 缓冲区
-    util::Encoding* encoding_;          // 字符串编码
 };
 
 } // namespace my::util

@@ -21,6 +21,7 @@
 #include "test_random.hpp"
 #include "test_code_point.hpp"
 #include "test_string.hpp"
+#include "test_string_builder.hpp"
 #include "test_array.hpp"
 #include "test_thread_pool.hpp"
 #include "test_win_file_utils.hpp"
@@ -69,6 +70,7 @@ int main() {
     test_random::test_random();
     test_code_point::test_code_point();
     test_string::test_string();
+    test_string_builder::test_string_builder();
     test_array::test_array();
     test_thread_pool::test_thread_pool();
     test_win_file_utils::test_win_file_utils();

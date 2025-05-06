@@ -23,8 +23,8 @@ auto should_judge_point_in_polygon = []() {
     math::Point2 a{0.5, 0.5}, b{2, 2};
 
     // When
-    auto res = p.point_in_polygon(a);
-    auto res2 = p.point_in_polygon(b);
+    auto res = p.is_included(a);
+    auto res2 = p.is_included(b);
 
     // Then
     Assertions::assertTrue(res);

@@ -239,17 +239,6 @@ auto should_remove_all = []() {
     Assertions::assertEquals("abc"_s, res);
 };
 
-auto should_append_string_by_string_builder = []() {
-    // Given
-    util::StringBuilder sb;
-
-    // When
-    sb.append("aaa").append("bbb"_s).append("ccc").append("你好"_s);
-
-    // Then
-    Assertions::assertEquals("aaabbbccc你好"_cs, sb.str().__str__());
-};
-
 void test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -270,35 +259,6 @@ void test_string() {
     group.addTest("should_match_parentheses", should_match_parentheses);
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
-    group.addTest("should_append_string_by_string_builder", should_append_string_by_string_builder);
-
-    group.startAll();
-}
-
-constexpr i32 N = 1e6;
-
-auto speed_of_string_builder_append_string = []() {
-    util::StringBuilder sb;
-    for (auto i = 0; i < N; ++i) {
-        sb.append("abcdef");
-    }
-    auto str = sb.str();
-    Assertions::assertEquals(N * 6, str.size());
-};
-
-auto speed_of_std_string_splicing = []() {
-    std::string str;
-    for (auto i = 0; i < N; ++i) {
-        str += "abcdef";
-    }
-    Assertions::assertEquals(N * 6, str.length());
-};
-
-void test_string_builder_speed() {
-    UnitTestGroup group{"test_string_builder_speed"};
-
-    group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);
-    group.addTest("speed_of_std_string_splicing", speed_of_std_string_splicing);
 
     group.startAll();
 }
