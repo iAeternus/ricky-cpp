@@ -24,40 +24,43 @@ using Runnable = std::function<void(void)>;
 template <typename T>
 class Pred {
 public:
-    template <typename F, typename = std::enable_if_t<std::is_invocable_r_v<bool, F, T>>>
+    using Self = Pred<T>;
+
+    template <typename F>
+    requires std::invocable<F, T> && std::convertible_to<std::invoke_result_t<F, T>, bool>
     Pred(F&& func) :
             func_(std::forward<F>(func)) {}
 
-    Pred(Pred&&) noexcept = default;
-    Pred& operator=(Pred&&) noexcept = default;
+    Pred(Self&&) noexcept = default;
+    Self& operator=(Self&&) noexcept = default;
 
     explicit operator bool() const noexcept {
         return static_cast<bool>(func_);
     }
 
-    bool operator()(const T& arg) const {
+    fn operator()(const T& arg) const {
         return func_(arg);
     }
 
     template <typename... Args>
-    bool operator()(Args&&... args) const {
+    fn operator()(Args&&... args) const {
         return func_(std::forward<Args>(args)...);
     }
 
-    Pred operator&&(const Pred& other) const {
-        return Pred([*this, other](const T& arg) {
+    fn operator&&(const Self& other) const {
+        return Self([*this, other](const T& arg) {
             return (*this)(arg) && other(arg);
         });
     }
 
-    Pred operator||(const Pred& other) const {
-        return Pred([*this, other](const T& arg) {
+    fn operator||(const Self& other) const {
+        return Self([*this, other](const T& arg) {
             return (*this)(arg) || other(arg);
         });
     }
 
-    Pred operator!() const {
-        return Pred([*this](const T& arg) {
+    fn operator!() const {
+        return Self([*this](const T& arg) {
             return !(*this)(arg);
         });
     }
