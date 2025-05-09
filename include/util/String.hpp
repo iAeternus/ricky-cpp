@@ -12,6 +12,7 @@
 #include "CodePoint.hpp"
 #include "NoCopy.hpp"
 #include "Vec.hpp"
+#include "Function.hpp"
 
 namespace my::util {
 
@@ -667,11 +668,16 @@ public:
         return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding()));
     }
 
-    Self remove_all(std::function<bool(const CodePoint&)>&& pred) const {
+    /**
+     * @brief 删除字符串中所有满足谓词的字符
+     * @param pred 谓词
+     * @return 删除后的字符串
+     */
+    Self remove_all(Pred<const CodePoint&>&& pred) const {
         isize m_size = size();
         Vec<CodePoint> buf;
         for (isize i = 0; i < m_size; ++i) {
-            if (pred(at(i))) {
+            if (!pred(at(i))) {
                 buf.append(at(i));
             }
         }

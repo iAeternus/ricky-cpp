@@ -234,9 +234,13 @@ auto should_remove_all = []() {
 
     // When
     auto res = s.remove_all(' ');
+    auto res2 = s.remove_all([](const auto& cp) {
+        return cp == ' ';
+    });
 
     // Then
     Assertions::assertEquals("abc"_s, res);
+    Assertions::assertEquals("abc"_s, res2);
 };
 
 void test_string() {

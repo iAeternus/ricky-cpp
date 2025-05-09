@@ -30,14 +30,14 @@ public:
     Buffer(isize capacity) :
             size_(0), capacity_(capacity), buf_(my_alloc<value_t>(capacity_)) {}
 
-    Buffer(const Buffer& other) :
+    Buffer(const Self& other) :
             size_(other.size_), capacity_(other.capacity_), buf_(my_alloc<value_t>(capacity_)) {
         for (isize i = 0; i < other.size(); ++i) {
             my_construct(data() + i, other.data()[i]);
         }
     }
 
-    Buffer(Buffer&& other) noexcept :
+    Buffer(Self&& other) noexcept :
             size_(other.size_), capacity_(other.capacity_), buf_(other.buf_) {
         other.size_ = other.capacity_ = 0;
         other.buf_ = nullptr;

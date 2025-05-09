@@ -135,19 +135,6 @@ T& None = *reinterpret_cast<T*>(NULL);
  */
 #define STD ::std::
 
-// /**
-//  * @brief 函数式编程组件
-//  */
-// namespace fp {
-// // 单参数函数类型
-// template <typename R, typename T>
-// using Func = std::function<R(T)>;
-
-// // 谓词类型（返回bool的特定函数）
-// template <typename T>
-// using Pred = Func<T, bool>;
-// } // namespace fp
-
 } // namespace my
 
 #endif // RICKY_HPP

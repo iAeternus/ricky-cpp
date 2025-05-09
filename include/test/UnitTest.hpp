@@ -12,8 +12,7 @@
 #include "Timer.hpp"
 #include "raise_error.hpp"
 #include "DynArray.hpp"
-
-#include <functional>
+#include "Function.hpp"
 
 namespace my::test {
 
@@ -27,10 +26,12 @@ class UnitTest : public Object<UnitTest> {
     using Self = UnitTest;
 
 public:
-    UnitTest(const CString& displayName, const std::function<void(void)>& testCase) :
+    using TestCase = Runnable;
+
+    UnitTest(const CString& displayName, const TestCase& testCase) :
             displayName_(displayName), testCase_(testCase) {}
 
-    UnitTest(CString&& displayName, std::function<void(void)>&& testCase) :
+    UnitTest(CString&& displayName, TestCase&& testCase) :
             displayName_(std::move(displayName)), testCase_(std::move(testCase)) {}
 
     ~UnitTest() = default;
@@ -54,7 +55,7 @@ public:
 
 private:
     CString displayName_;
-    std::function<void(void)> testCase_;
+    TestCase testCase_;
     util::Timer_ms timer_;
 };
 

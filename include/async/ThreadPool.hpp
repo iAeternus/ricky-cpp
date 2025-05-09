@@ -7,13 +7,12 @@
 #ifndef THREAD_POOL_HPP
 #define THREAD_POOL_HPP
 
+#include "Function.hpp"
 #include "Array.hpp"
 #include "NoCopy.hpp"
 #include "Queue.hpp"
 
 #include <thread>
-#include <functional>
-// #include <queue>
 #include <mutex>
 #include <condition_variable>
 #include <future>
@@ -36,7 +35,7 @@ class ThreadPool : public Object<ThreadPool>, public NoCopy {
     using Self = ThreadPool;
 
 public:
-    using Task = std::function<void(void)>;
+    using Task = Runnable;
 
     ThreadPool(isize numOfThreads) :
             threads_(numOfThreads), stopFlag_(StopFlag::WAIT_FOREVER) {
