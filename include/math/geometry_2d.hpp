@@ -8,7 +8,7 @@
 #define GEOMETRY_2D_HPP
 
 #include "Vector2.hpp"
-#include "Line.hpp"
+#include "Line2.hpp"
 
 namespace my::math {
 
@@ -50,7 +50,7 @@ fn area(const Point2& a, const Point2& b, const Point2& c)->f64 {
 /**
  * @brief 计算两直线交点
  */
-fn line_intersection(const Line& a, const Line& b)->Point2 {
+fn line_intersection(const Line2& a, const Line2& b)->Point2 {
     auto u = a.p() - b.p();
     auto t = cross(b.s(), u) / cross(a.s(), b.s());
     return a.p() + a.s() * t;

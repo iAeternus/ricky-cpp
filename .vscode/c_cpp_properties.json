@@ -3,8 +3,7 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**",
-                "F:\\application\\develop\\google-test\\googletest-609281088cfefc76f9d0ce82e1ff6c30cc3591e5\\googletest\\include"
+                "${workspaceFolder}/**"
             ],
             "defines": [
                 "_DEBUG",

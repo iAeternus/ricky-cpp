@@ -22,7 +22,7 @@ auto should_calc_the_cos_of_vec = []() {
     // Given
     math::Vector2 a{1, 1};
     math::Vector2 b{0, 0};
-    
+
     // When
     auto res = math::cos(a, b);
 
@@ -65,8 +65,8 @@ auto should_calc_area_of_triangle = []() {
 
 auto should_calc_line_intersection = []() {
     // Given
-    math::Line a{math::Point2{0, 1}, math::Point2{1, 0}};
-    math::Line b{math::Point2{1, 0}, math::Point2{0, 1}};
+    math::Line2 a{math::Point2{0, 1}, math::Point2{1, 0}};
+    math::Line2 b{math::Point2{1, 0}, math::Point2{0, 1}};
 
     // When
     auto res = math::line_intersection(a, b);

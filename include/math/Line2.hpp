@@ -4,18 +4,18 @@
  * @date 2025/4/25
  * @version 1.0
  */
-#ifndef LINE_HPP
-#define LINE_HPP
+#ifndef LINE2_HPP
+#define LINE2_HPP
 
 #include "Vector2.hpp"
 
 namespace my::math {
 
-class Line : public Object<Line> {
+class Line2 : public Object<Line2> {
 public:
-    using Self = Line;
+    using Self = Line2;
 
-    Line(const Point2& p, const Vector2& s) :
+    Line2(const Point2& p, const Vector2& s) :
             p_(p), s_(s), ang_(std::atan2(s.y(), s.x())) {}
 
     fn p() const { return p_; }
