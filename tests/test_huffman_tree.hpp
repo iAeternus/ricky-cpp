@@ -35,10 +35,45 @@ auto it_works = []() {
     Assertions::assertEquals(text, decode_res);
 };
 
+auto should_handle_empty_string = []() {
+    // Given
+    util::String text = ""_s;
+
+    // When
+    util::HuffmanTree h(text);
+    auto encode_res = h.encode();
+
+    // Then
+    Assertions::assertTrue(encode_res.empty());
+    Assertions::assertEquals(0, h.wpl());
+    Assertions::assertEquals(0.0, h.acl());
+
+    // When
+    auto decode_res = h.decode();
+
+    // Then
+    Assertions::assertTrue(decode_res.empty());
+};
+
+auto should_handle_non_ascii_character = []() {
+    // Given
+    util::String text = "你好好"_s;
+
+    // When
+    util::HuffmanTree h(text);
+    auto encode_res = h.encode();
+
+    // Then
+    Assertions::assertEquals("011"_s, encode_res);
+    Assertions::assertEquals(text, h.decode());
+};
+
 void test_huffman_tree() {
     UnitTestGroup group{"test_huffman_tree"};
 
     group.addTest("it_works", it_works);
+    group.addTest("should_handle_empty_string", should_handle_empty_string);
+    group.addTest("should_handle_non_ascii_character", should_handle_non_ascii_character);
 
     group.startAll();
 }
