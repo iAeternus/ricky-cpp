@@ -98,7 +98,8 @@
     "xloctime": "cpp",
     "xstddef": "cpp",
     "xtr1common": "cpp",
-    "stack": "cpp"
+    "stack": "cpp",
+    "xtree": "cpp"
   },
   "cSpell.words": [
     "coro",

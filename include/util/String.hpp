@@ -282,6 +282,10 @@ public:
         return length_;
     }
 
+    isize length() const {
+        return length_;
+    }
+
     /**
      * @brief 判断字符串是否为空
      * @return true=是 false=否

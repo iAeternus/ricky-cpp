@@ -67,24 +67,30 @@ target_include_directories(RICKY_CPP PUBLIC
 # 编译器优化
 # ----------------------------------------
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    # GCC优化配置
     target_compile_options(RICKY_CPP PRIVATE
             -Wall -Wextra -Wpedantic  # 严格警告
             -O2                       # 发布模式优化
             -ffunction-sections       # 函数分段（减少二进制体积）
             -fdata-sections           # 数据分段
+            -Wa,-mbig-obj             # 汇编器大对象支持
     )
+
     # 链接器优化（gold/lld）
     include(CheckLinkerFlag)
     check_linker_flag(CXX "-fuse-ld=gold" LINKER_SUPPORTS_GOLD)
-    check_linker_flag(CXX "-fuse-ld=lld" LINKER_SUPPORTS_LLD)
     if (LINKER_SUPPORTS_GOLD)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--gc-sections")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--gc-sections,--no-keep-memory")
         message(STATUS "[MAIN] Using GNU gold linker")
-    elseif (LINKER_SUPPORTS_LLD)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -Wl,--gc-sections")
-        message(STATUS "[MAIN] Using LLVM lld linker")
-    endif ()
+    else()
+        check_linker_flag(CXX "-fuse-ld=lld" LINKER_SUPPORTS_LLD)
+        if (LINKER_SUPPORTS_LLD)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -Wl,--gc-sections,--icf=safe")
+            message(STATUS "[MAIN] Using LLVM lld linker")
+        else()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections,--no-keep-memory")
+            message(STATUS "[MAIN] Using default linker")
+        endif()
+    endif()
 
 elseif (MSVC)
     # MSVC优化配置
@@ -93,6 +99,7 @@ elseif (MSVC)
             /WX       # 视警告为错误
             /MP       # 多进程编译
             /GL       # 全程序优化
+            /bigobj   # 大对象支持
     )
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG")  # 链接时代码生成
 endif ()

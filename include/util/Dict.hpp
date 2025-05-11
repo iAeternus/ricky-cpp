@@ -110,6 +110,14 @@ public:
     }
 
     /**
+     * @brief 判断字典是否为空
+     * @return true=是 false=否
+     */
+    bool empty() const {
+        return keys_.empty();
+    }
+
+    /**
      * @brief 获取桶的容量。
      * @return 返回桶的容量。
      */
@@ -138,7 +146,7 @@ public:
      * @brief 获取键的视图（可迭代范围）。
      * @return 返回键的视图。
      */
-    auto keys() const {
+    fn keys() const {
         return std::ranges::subrange(keys_.begin(), keys_.end());
     }
 
@@ -146,7 +154,7 @@ public:
      * @brief 获取值的视图（可迭代范围）。
      * @return 返回值的视图。
      */
-    auto values() const {
+    fn values() const {
         return std::ranges::subrange(bucket_.begin(), bucket_.end());
     }
 

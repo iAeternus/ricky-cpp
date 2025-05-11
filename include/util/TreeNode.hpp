@@ -118,7 +118,6 @@ public:
 private:
     void print(std::stringstream& stream, const CString& prefix) const {
         stream << prefix.data() << "+-- " << value_ << '\n';
-        const auto childCount = children_.size();
         for (const auto& child : children_) {
             child->print(stream, prefix + "|   ");
         }

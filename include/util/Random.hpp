@@ -111,7 +111,7 @@ public:
         board.append(sum + n);
 
         // 计算相邻元素的差值，并减去1得到最终结果
-        for (size_t i = 1; i < board.size(); ++i) {
+        for (auto i = 1; i < board.size(); ++i) {
             i32 diff = board[i] - board[i - 1];
             numbers.append(diff - 1);
         }

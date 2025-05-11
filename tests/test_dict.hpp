@@ -36,12 +36,12 @@ auto should_get_or_default = []() {
     // When
     i32 res1 = d.get(1);
     auto& res2 = d.get_or_default(2, 0);
-    auto& res3 = d.get_or_default(6, 0);
+    auto& res3 = d.get_or_default(6, 0); // TODO [should_get_or_default] Test failed! Exception: Assertion Failed: Expected 0, but got 1998353488
 
     // Then
-    Assertions::assertEquals(res1, 1);
-    Assertions::assertEquals(res2, 1);
-    Assertions::assertEquals(res3, 0);
+    Assertions::assertEquals(1, res1);
+    Assertions::assertEquals(1, res2);
+    Assertions::assertEquals(0, res3);
 };
 
 auto should_set_default = []() {

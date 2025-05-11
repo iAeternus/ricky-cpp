@@ -34,6 +34,39 @@ target_include_directories(RICKY_CPP_TESTS PUBLIC
 )
 
 # ----------------------------------------
+# 编译器优化
+# ----------------------------------------
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+    target_compile_options(RICKY_CPP_TESTS PRIVATE
+            -Wa,-mbig-obj             # 汇编器大对象支持
+    )
+
+    # 链接器优化（gold/lld）
+    include(CheckLinkerFlag)
+    check_linker_flag(CXX "-fuse-ld=gold" LINKER_SUPPORTS_GOLD)
+    if (LINKER_SUPPORTS_GOLD)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--gc-sections,--no-keep-memory")
+        message(STATUS "[MAIN] Using GNU gold linker")
+    else()
+        check_linker_flag(CXX "-fuse-ld=lld" LINKER_SUPPORTS_LLD)
+        if (LINKER_SUPPORTS_LLD)
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -Wl,--gc-sections,--icf=safe")
+            message(STATUS "[MAIN] Using LLVM lld linker")
+        else()
+            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections,--no-keep-memory")
+            message(STATUS "[MAIN] Using default linker")
+        endif()
+    endif()
+
+elseif (MSVC)
+    # MSVC优化配置
+    target_compile_options(RICKY_CPP_TESTS PRIVATE
+            /bigobj   # 大对象支持
+    )
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG")  # 链接时代码生成
+endif ()
+
+# ----------------------------------------
 # 继承主项目的预编译头配置
 # ----------------------------------------
 if (DEFINED PCH_HEADER AND EXISTS ${PCH_HEADER})

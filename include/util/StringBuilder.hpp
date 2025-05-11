@@ -80,8 +80,7 @@ public:
     }
 
     /**
-     * @brief 生成 String
-     * @note 内部实现对数据的转移
+     * @brief 转换为String
      */
     String str() {
         auto length = buf_.size();

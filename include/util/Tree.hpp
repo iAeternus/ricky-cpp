@@ -33,7 +33,7 @@ public:
         return root_;
     }
 
-    const Node* const root() const {
+    Node* root() const {
         return root_;
     }
 
