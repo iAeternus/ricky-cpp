@@ -9,7 +9,7 @@ namespace my::test::test_win_file {
 static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
 
 auto should_write_win_file = []() {
-    // // Given
+    // Given
     const char* path = fs::win::join(CLASS_PATH, "test1.txt");
     fs::win::File file{path, "w"};
 

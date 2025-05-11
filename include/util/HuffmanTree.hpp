@@ -82,11 +82,11 @@ public:
         return sb.str();
     }
 
-    Dict<CodePoint, CString> get_key() const {
+    fn get_key() const {
         return key_;
     }
 
-    Dict<CodePoint, u32> get_freqs() const {
+    fn get_freqs() const {
         return freqs_;
     }
 
