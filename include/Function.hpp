@@ -18,6 +18,18 @@ namespace my {
 using Runnable = std::function<void(void)>;
 
 /**
+ * @brief 消费者
+ */
+template <typename T>
+using Consumer = std::function<void(T)>;
+
+/**
+ * @brief 生产者
+ */
+template <typename T>
+using Supplier = std::function<T()>;
+
+/**
  * @brief 谓词函数
  * @note 单参数返回bool的函数
  */
@@ -27,7 +39,7 @@ public:
     using Self = Pred<T>;
 
     template <typename F>
-    requires std::invocable<F, T> && std::convertible_to<std::invoke_result_t<F, T>, bool>
+    requires std::invocable<F, T>&& std::convertible_to<std::invoke_result_t<F, T>, bool>
     Pred(F&& func) :
             func_(std::forward<F>(func)) {}
 

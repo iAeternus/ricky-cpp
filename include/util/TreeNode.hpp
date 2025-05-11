@@ -9,6 +9,7 @@
 
 #include "DynArray.hpp"
 #include "KeyValue.hpp"
+#include "Function.hpp"
 
 namespace my::util {
 
@@ -47,7 +48,7 @@ class TreeNode : public Object<TreeNode<T>> {
 public:
     using value_t = T;
     using Self = TreeNode<value_t>;
-    using Callback = std::function<void(const value_t&)>;
+    using Callback = Consumer<const value_t&>;
 
     value_t value_;            // 节点值
     Self* parent_;             // 指向父节点的指针，定义根节点的父指针指向自身
@@ -132,7 +133,7 @@ class BiTreeNode : public Object<BiTreeNode<T>> {
 public:
     using value_t = T;
     using Self = BiTreeNode<value_t>;
-    using Callback = std::function<void(const value_t&)>;
+    using Callback = Consumer<const value_t&>;
 
     value_t value_; // 值
     Self* lchild_;  // 指向左孩子的指针
@@ -225,7 +226,7 @@ public:
     using key_t = K;
     using value_t = V;
     using Self = RBTreeNode<key_t, value_t>;
-    using Callback = std::function<void(const KeyValueView<key_t, value_t>&)>;
+    using Callback = Consumer<const KeyValueView<key_t, value_t>&>;
 
     key_t key_;     // 键
     value_t value_; // 值
