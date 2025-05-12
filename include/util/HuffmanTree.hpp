@@ -105,8 +105,8 @@ public:
     }
 
     /**
-     * @brief 计算平均编码长度
-     * @note Average Code Length
+     * @brief 计算平均编码长度，别名平均带权路径长度
+     * @note Average Code Length/Average Weighted Path Length
      */
     f64 acl() const {
         if (freqs_.empty()) return 0.0;
