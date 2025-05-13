@@ -116,7 +116,7 @@ public:
     template <typename Func>
     void register_algo(const CString& name, Func&& func) {
         std::unique_lock lock(algo_mutex_); // 写锁
-        algorithms_.insert(name, [func = std::forward<Func>(func)](const Graph& g, util::DynArray<std::any> args) -> std::any {
+        algorithms_.insert(name, [func = std::forward<Func>(func)](const Graph& g, util::DynArray<std::any>&& args) -> std::any {
             return func(g, std::move(args));
         });
     }
@@ -168,7 +168,7 @@ private:
     util::Dict<i64, Vertex<V, E>> vertices_; // 邻接表
 
     // 插件系统
-    using Algorithm = std::function<std::any(Graph&, util::DynArray<std::any>)>;
+    using Algorithm = std::function<std::any(Graph&, util::DynArray<std::any>&&)>;
     mutable util::Dict<CString, Algorithm> algorithms_;
     mutable std::shared_mutex algo_mutex_;
 };
