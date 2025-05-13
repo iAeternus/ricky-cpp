@@ -34,6 +34,12 @@ struct Edge : public Object<Edge<E>> {
             return this->w - other.w;
         }
     }
+
+    CString __str__() const {
+        std::stringstream stream;
+        stream << '(' << end << ',' << w << ')';
+        return CString{stream.str()};
+    }
 };
 
 /**
@@ -109,6 +115,23 @@ struct Vertex : public Object<Vertex<V, E>> {
         } else {
             return this->w - other.w;
         }
+    }
+
+    CString __str__() const {
+        std::stringstream stream;
+        stream << '(' << id << ',' << w << ")->";
+        if (edges.empty()) {
+            stream << "null";
+            return CString{stream.str()};
+        }
+
+        bool first = true;
+        for (const auto& edge : edges) {
+            if (!first) stream << "->";
+            stream << edge.__str__().data();
+            first = false;
+        }
+        return CString{stream.str()};
     }
 };
 

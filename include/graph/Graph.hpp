@@ -157,17 +157,7 @@ public:
         stream << "Adjacency List:\n";
 
         for (const auto& vertex : vertices_.values()) {
-            stream << "[" << vertex.id << "](" << vertex.w << ")->";
-            bool first = true;
-            for (const auto& edge : vertex.edges) {
-                if (!first) stream << "->";
-                stream << "[" << edge.end << "](" << edge.w << ")";
-                first = false;
-            }
-            if (vertex.edges.empty()) {
-                stream << "null";
-            }
-            stream << '\n';
+            stream << vertex.__str__().data() << '\n';
         }
         return CString{stream.str()};
     }

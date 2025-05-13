@@ -59,8 +59,8 @@ auto should_register = []() {
 
     // When
     g.register_algo("filter_edge", [](const auto& g, auto&& args) -> util::DynArray<i64> {
-        f64 min = opt<f64>(args, 0);
-        f64 max = opt<f64>(args, 1);
+        auto min = opt<f64>(args, 0);
+        auto max = opt<f64>(args, 1);
 
         util::DynArray<i64> res;
         for (const auto& edge : g.edges()) {
