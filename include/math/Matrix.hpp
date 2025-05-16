@@ -96,6 +96,9 @@ public:
     Matrix(isize rows = 1, isize cols = 1, value_t value = 0.0) :
             rows_(rows), cols_(cols), data_(rows_ * cols_, value) {}
 
+    Matrix(isize n, value_t value = 0.0) :
+            rows_(n), cols_(n), data_(rows_ * cols_, value) {}
+
     Matrix(std::initializer_list<std::initializer_list<value_t>>&& initList) :
             rows_(initList.size()), cols_(rows_ > 0 ? initList.begin()->size() : 0), data_(rows_ * cols_) {
         size_t index = 0;

@@ -26,6 +26,7 @@ template <typename V = f64, typename E = f64>
 class Graph : public Object<Graph<V, E>> {
 public:
     using Self = Graph<V, E>;
+    using Algorithm = std::function<std::any(Graph&, util::DynArray<std::any>&&)>;
 
     explicit Graph(bool is_directed = true) :
             is_directed_(is_directed) {}
@@ -42,7 +43,7 @@ public:
      * @brief 获取从ID节点出发的边的数量
      * @return 若节点不存在，则返回-1
      */
-    isize edge_cnt(i64 id) const {
+    isize edge_cnt(u64 id) const {
         if (!vertices_.contains(id)) {
             return -1;
         }
@@ -55,6 +56,13 @@ public:
      */
     bool is_directed() const {
         return is_directed_;
+    }
+
+    /**
+     * @brief 根据ID获取节点
+     */
+    Vertex<V, E>& get_vertex(u64 id) {
+        return vertices_.get(id);
     }
 
     /**
@@ -78,10 +86,48 @@ public:
     }
 
     /**
+     * @brief 获取节点的入度
+     * @param id 节点ID
+     * @note 时间复杂度：O(|V| * |E|)
+     */
+    isize in_deg(u64 id) const {
+        isize deg = 0;
+        for_each([&](const auto& vertex) {
+            if (id == vertex.id) return;
+            vertex.for_each([&](const auto& edge) {
+                if (id == edge.end) {
+                    ++deg;
+                }
+            });
+        });
+        return deg;
+    }
+
+    /**
+     * @brief 遍历所有顶点
+     */
+    template <typename C>
+    void for_each(C&& consumer) {
+        for (auto& [id, vertex] : vertices_) {
+            std::forward<C>(consumer)(vertex);
+        }
+    }
+
+    /**
+     * @brief 遍历所有顶点，常量版本
+     */
+    template <typename C>
+    void for_each(C&& consumer) const {
+        for (const auto& [id, vertex] : vertices_) {
+            std::forward<C>(consumer)(vertex);
+        }
+    }
+
+    /**
      * @brief 添加节点，若节点已存在，则什么都不做
      * @return true=节点不存在 false=节点已存在
      */
-    bool add_vertex(i64 id, const V& weight = V{}) {
+    bool add_vertex(u64 id, const V& weight = V{}) {
         if (vertices_.contains(id)) {
             return false;
         }
@@ -93,7 +139,7 @@ public:
      * @brief 添加边，若某一点不存在，则抛出异常，若边已存在，则什么都不做
      * @return true=边不存在 false=边已存在
      */
-    bool add_edge(i64 from, i64 to, const E& weight = E{}) {
+    bool add_edge(u64 from, u64 to, const E& weight = E{}) {
         if (!vertices_.contains(from) || !vertices_.contains(to)) {
             ValueError(std::format("Node from[{}] or to[{}] does not exist.", from, to));
             return None<bool>;
@@ -111,7 +157,7 @@ public:
     /**
      * @brief 注册算法插件
      * @param name 插件名称，若重复则覆盖已有算法
-     * @param func 函数，例如 [](auto& g, auto&& args) {}
+     * @param func 算法，例如 [](auto& g, auto&& args) {}
      */
     template <typename Func>
     void register_algo(const CString& name, Func&& func) {
@@ -165,10 +211,9 @@ public:
 private:
     isize edge_cnt_ = 0;                     // 边数，无向图为双倍边
     bool is_directed_;                       // 是否为有向图 true=是 false=否
-    util::Dict<i64, Vertex<V, E>> vertices_; // 邻接表
+    util::Dict<u64, Vertex<V, E>> vertices_; // 邻接表
 
     // 插件系统
-    using Algorithm = std::function<std::any(Graph&, util::DynArray<std::any>&&)>;
     mutable util::Dict<CString, Algorithm> algorithms_;
     mutable std::shared_mutex algo_mutex_;
 };

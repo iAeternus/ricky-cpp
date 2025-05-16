@@ -8,6 +8,7 @@
 #define RICKY_HPP
 
 #include <cstdint>
+#include <cfloat>
 #include <cassert>
 #include <typeinfo>
 #include <limits>
@@ -101,28 +102,31 @@ using hash_t = u32; // hash type
 /**
  * @brief 类型范围
  */
-#define I8_MIN std::numeric_limits<i8>::min()
-#define I8_MAX std::numeric_limits<i8>::max()
-#define I16_MIN std::numeric_limits<i16>::min()
-#define I16_MAX std::numeric_limits<i16>::max()
-#define I32_MIN std::numeric_limits<i32>::min()
-#define I32_MAX std::numeric_limits<i32>::max()
-#define I64_MIN std::numeric_limits<i64>::min()
-#define I64_MAX std::numeric_limits<i64>::max()
+// 有符号整数类型极值
+#define I8_MIN INT8_MIN
+#define I8_MAX INT8_MAX
+#define I16_MIN INT16_MIN
+#define I16_MAX INT16_MAX
+#define I32_MIN INT32_MIN   
+#define I32_MAX INT32_MAX
+#define I64_MIN INT64_MIN   
+#define I64_MAX INT64_MAX
 
-#define U8_MIN std::numeric_limits<u8>::min()
-#define U8_MAX std::numeric_limits<u8>::max()
-#define U16_MIN std::numeric_limits<u16>::min()
-#define U16_MAX std::numeric_limits<u16>::max()
-#define U32_MIN std::numeric_limits<u32>::min()
-#define U32_MAX std::numeric_limits<u32>::max()
-#define U64_MIN std::numeric_limits<u64>::min()
-#define U64_MAX std::numeric_limits<u64>::max()
+// 无符号整数类型极值
+#define U8_MIN 0U
+#define U8_MAX UINT8_MAX  
+#define U16_MIN 0U
+#define U16_MAX UINT16_MAX  
+#define U32_MIN 0U
+#define U32_MAX UIN32_MAX  
+#define U64_MIN 0ULL
+#define U64_MAX UINT64_MAX  
 
-#define F32_MIN std::numeric_limits<f32>::min()
-#define F32_MAX std::numeric_limits<f32>::max()
-#define F64_MIN std::numeric_limits<f64>::min()
-#define F64_MAX std::numeric_limits<f64>::max()
+// 浮点类型极值（IEEE 754）
+#define F32_MIN FLT_MIN // 最小正正规化数
+#define F32_MAX FLT_MAX // 最大正有限数
+#define F64_MIN DBL_MIN // 最小正正规化数
+#define F64_MAX DBL_MAX // 最大正有限数
 
 /**
  * @brief 空值, 不会被使用, 仅用于占位符

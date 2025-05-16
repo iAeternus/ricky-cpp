@@ -17,12 +17,12 @@ namespace my::graph {
  */
 template <typename E = f64>
 struct Edge : public Object<Edge<E>> {
-    i64 end; // 终点ID
+    u64 end; // 终点ID
     E w;     // 边权
 
     using Self = Edge<E>;
 
-    Edge(i64 end, const E& w = E{}) :
+    Edge(u64 end, const E& w = E{}) :
             end(end), w(w) {}
 
     cmp_t __cmp__(const Self& other) const {
@@ -47,7 +47,7 @@ struct Edge : public Object<Edge<E>> {
  */
 template <typename V = f64, typename E = f64>
 struct Vertex : public Object<Vertex<V, E>> {
-    i64 id;                        // 节点ID，唯一
+    u64 id;                        // 节点ID，唯一
     V w;                           // 点权
     util::DynArray<Edge<E>> edges; // 该节点对应的边。如果为有向图，则代表以这个节点为起点的边
 
@@ -55,7 +55,7 @@ struct Vertex : public Object<Vertex<V, E>> {
 
     Vertex() = default;
 
-    Vertex(i64 id, const V& w = V{}) :
+    Vertex(u64 id, const V& w = V{}) :
             id(id), w(w) {}
 
     /**
@@ -69,7 +69,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 使用权值为w的边连接两个节点，若两个节点已连接，则不做任何事
      * @return true=两节点未连接 false=两节点已连接
      */
-    bool connect(i64 end, const E& w) {
+    bool connect(u64 end, const E& w) {
         for (auto&& edge : edges) {
             if (edge.end == end) {
                 return false;
@@ -83,7 +83,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 删除连接两节点的边，若两节点之间没有边，则什么都不做
      * @return true=两节点已连接 false=两节点未连接
      */
-    bool disconnect(i64 end) {
+    bool disconnect(u64 end) {
         auto size = edges.size();
         for (auto i = 0; i < size; ++i) {
             if (edges[i].end == end) {
@@ -98,13 +98,33 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 判断两节点是否连接
      * @return true=是 false=否
      */
-    bool is_connected(i64 end) const {
+    bool is_connected(u64 end) const {
         for (const auto& edge : edges) {
             if (edge.end == end) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * @brief 遍历邻接边
+     */
+    template <typename C>
+    void for_each(C&& consumer) {
+        for (auto& edge : edges) {
+            std::forward<C>(consumer)(edge);
+        }
+    }
+
+    /**
+     * @brief 遍历邻接边，常量版本
+     */
+    template <typename C>
+    void for_each(C&& consumer) const {
+        for (const auto& edge : edges) {
+            std::forward<C>(consumer)(edge);
+        }
     }
 
     cmp_t __cmp__(const Self& other) const {
