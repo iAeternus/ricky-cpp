@@ -41,11 +41,11 @@ auto should_get_sub_mat = []() {
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When
-    auto res = m.subMat(1, 1, 2, 2);
+    auto res = m.sub_mat(1, 1, 2, 2);
 
     // Then
-    Assertions::assertEquals(res.__str__(), res.toMatrix().__str__());
-    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.toMatrix().__str__());
+    Assertions::assertEquals(res.__str__(), res.to_matrix().__str__());
+    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.to_matrix().__str__());
 };
 
 auto should_fill = []() {
@@ -121,7 +121,7 @@ auto should_transpose = []() {
     math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}};
 
     // When
-    auto res = m.T();
+    auto res = m.t();
 
     // Then
     Assertions::assertEquals("[[1,4],[2,5],[3,6]]"_cs, res.__str__());
@@ -165,7 +165,7 @@ auto should_lu_decomposition = []() {
     math::Matrix<f64> m = {{1, 5, -3}, {-2, -7, 3}, {4, 9, 6}};
 
     // When
-    auto [L, U] = m.LU();
+    auto [L, U] = m.lu();
 
     // Then
     Assertions::assertEquals("[[1,0,0],[-2,1,0],[4,-3.66667,1]]"_cs, L.__str__());

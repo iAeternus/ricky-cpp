@@ -546,13 +546,13 @@ public:
         using Self = DictIterator;
         using Super = Object<Self>;
 
-        using iterator_category = std::random_access_iterator_tag; // 迭代器类别为随机访问迭代器
-        using value_type = KeyValueView<key_t, value_t>;           // 值的类型
-        using difference_type = std::ptrdiff_t;                    // 差值类型
-        using pointer = value_type*;                               // 指针类型
-        using const_pointer = const value_type*;                   // 常量指针类型
-        using reference = value_type&;                             // 引用类型
-        using const_reference = const value_type&;                 // 常量引用类型
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = KeyValueView<key_t, value_t>;
+        using difference_type = std::ptrdiff_t;
+        using pointer = value_type*;
+        using const_pointer = const value_type*;
+        using reference = value_type&;
+        using const_reference = const value_type&;
 
         /**
          * @brief 默认构造函数。

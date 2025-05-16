@@ -66,15 +66,6 @@ public:
         }
     }
 
-    // template <std::size_t I>
-    // decltype(auto) get() && {
-    //     if constexpr (I == 0) {
-    //         return std::move(*key_);
-    //     } else if constexpr (I == 1) {
-    //         return std::move(*value_);
-    //     }
-    // }
-
     CString __str__() const {
         std::stringstream stream;
         stream << *key_ << "->" << *value_;
@@ -127,16 +118,6 @@ const auto& get(util::KeyValueView<K, V>& kv) {
         return kv.value();
     }
 }
-
-// template <size_t I, my::KeyType K, typename V>
-// auto&& get(util::KeyValueView<K, V>& kv) {
-//     static_assert(I < 2, "KeyValueView index out of range");
-//     if constexpr (I == 0) {
-//         return kv.key();
-//     } else {
-//         return kv.value();
-//     }
-// }
 
 } // namespace my
 
