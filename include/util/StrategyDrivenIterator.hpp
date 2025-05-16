@@ -1,14 +1,13 @@
 /**
- * @brief 基于策略模式的迭代器封装
+ * @brief 基于移动策略的迭代器封装
  * @author Ricky
  * @date 2024/12/2
  * @version 1.0
  */
-#ifndef RELATION_ITERATOR_HPP
-#define RELATION_ITERATOR_HPP
+#ifndef STRATEGY_DRIVEN_ITERATOR_HPP
+#define STRATEGY_DRIVEN_ITERATOR_HPP
 
 #include "ricky_concepts.hpp"
-#include "raise_error.hpp"
 
 namespace my::util {
 
@@ -16,35 +15,27 @@ namespace my::util {
  * @brief 迭代器移动策略基类
  */
 template <std::input_or_output_iterator I>
-class BaseIterMove : public Object<BaseIterMove<I>> {
+class IterStrategy : public Object<IterStrategy<I>> {
 public:
     using iterator = I;
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = std::input_or_output_iterator;
     using value_type = std::remove_reference<decltype(*std::declval<iterator>())>;
 
-    static iterator& next(iterator& iter) {
-        NotImplementedError("next not implemented");
-        return None<I>;
-    }
-
-    static iterator& prev(iterator& iter) {
-        NotImplementedError("prev not implemented");
-        return None<I>;
-    }
+    static iterator& next(iterator& iter) = delete;
+    static iterator& prev(iterator& iter) = delete;
 };
 
 /**
- * @brief 自增
+ * @brief 自增自减策略
  */
-template <std::input_or_output_iterator I>
-class SelfAddMove : public BaseIterMove<I> {
-    using Self = SelfAddMove;
-    using Super = BaseIterMove<I>;
-
+template <std::bidirectional_iterator I>
+class IncrDecrStrategy : public IterStrategy<I> {
 public:
+    using Self = IncrDecrStrategy<I>;
+    using Super = IterStrategy<I>;
+
     using iterator = I;
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = std::remove_reference<decltype(*std::declval<iterator>())>;
 
     /**
      * @brief 移动到下一个元素，修改自身
@@ -56,37 +47,73 @@ public:
     /**
      * @brief 移动到上一个元素，修改自身
      */
-    static iterator& prev(iterator iter) {
+    static iterator& prev(iterator& iter) {
         return --iter;
     }
 };
 
-template <typename IterMove>
-class RelationIterator : public Object<RelationIterator<IterMove>> {
-    using Self = RelationIterator<IterMove>;
+/**
+ * @brief 跳跃步长策略
+ */
+template <std::bidirectional_iterator I, isize N>
+class StepJumpStrategy : public IterStrategy<I> {
+public:
+    using Self = StepJumpStrategy<I, N>;
+    using Super = IterStrategy<I>;
+
+    using iterator = I;
+    using iterator_category = std::bidirectional_iterator;
+
+    /**
+     * @brief 跳跃步长，前向
+     */
+    static iterator& next(iterator& iter) {
+        for (auto i = 0; i < N; ++i) {
+            ++iter;
+        }
+        return iter;
+    }
+
+    /**
+     * @brief 跳跃步长，后向
+     */
+    static iterator& prev(iterator& iter) {
+        for (auto i = 0; i < N; ++i) {
+            --iter;
+        }
+        return iter;
+    }
+};
+
+/**
+ * @brief 策略驱动的迭代器，根据策略定制不同的迭代行为
+ */
+template <typename Strategy>
+class StrategyDrivenIterator : public Object<StrategyDrivenIterator<Strategy>> {
+public:
+    using Self = StrategyDrivenIterator<Strategy>;
     using Super = Object<Self>;
 
-public:
-    using iterator = typename IterMove::iterator;
-    using move_t = IterMove;
-    using iterator_category = typename IterMove::iterator_category;
-    using value_type = typename IterMove::value_type;
+    using iterator = typename Strategy::iterator;
+    using move_t = Strategy;
+    using iterator_category = typename Strategy::iterator_category;
+    using value_type = typename Strategy::value_type;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
     using const_pointer = const value_type*;
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    RelationIterator() :
+    StrategyDrivenIterator() :
             iter_() {}
 
-    RelationIterator(const iterator& iter) :
+    StrategyDrivenIterator(const iterator& iter) :
             iter_(iter) {}
 
-    RelationIterator(const Self& other) :
+    StrategyDrivenIterator(const Self& other) :
             iter_(other.iter_) {}
 
-    RelationIterator(Self&& other) noexcept :
+    StrategyDrivenIterator(Self&& other) noexcept :
             iter_(std::move(other.iter_)) {}
 
     Self& operator=(const Self& other) {
@@ -157,4 +184,4 @@ private:
 
 } // namespace my::util
 
-#endif // RELATION_ITERATOR_HPP
+#endif // STRATEGY_DRIVEN_ITERATOR_HPP

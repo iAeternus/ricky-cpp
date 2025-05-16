@@ -11,7 +11,6 @@
 #include "binary_utils.hpp"
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
-#include "RelationIterator.hpp"
 #include "Pair.hpp"
 
 namespace my::util {

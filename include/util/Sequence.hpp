@@ -83,7 +83,7 @@ public:
     }
 
     bool contains(const value_t& v) const {
-        return find_it(v) != end();
+        return find_itr(v) != end();
     }
 
     isize find(const value_t& v) const {
@@ -95,7 +95,7 @@ public:
         return -1;
     }
 
-    iterator find_it(const value_t& v) {
+    iterator find_itr(const value_t& v) {
         auto it = begin(), end_ = end();
         while (it != end_) {
             if (*it == v) {
@@ -106,7 +106,7 @@ public:
         return end_;
     }
 
-    const_iterator find_it(const value_t& v) const {
+    const_iterator find_itr(const value_t& v) const {
         auto it = begin(), end_ = end();
         while (it != end_) {
             if (*it == v) {
