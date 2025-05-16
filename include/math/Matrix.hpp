@@ -24,8 +24,8 @@ public:
     using value_t = E;
     using Self = MatrixView<value_t>;
 
-    MatrixView(const Matrix<value_t>& ref, isize rowBegin, isize colBegin, isize rows, isize cols) :
-            ref_(ref), rowBegin_(rowBegin), colBegin_(colBegin), rows_(rows), cols_(cols) {}
+    MatrixView(const Matrix<value_t>& ref, isize row_begin, isize col_begin, isize rows, isize cols) :
+            ref_(ref), row_begin_(row_begin), col_begin_(col_begin), rows_(rows), cols_(cols) {}
 
     isize rows() const {
         return rows_;
@@ -36,11 +36,11 @@ public:
     }
 
     typename Matrix<value_t>::ConstRowProxy operator[](isize i) const {
-        return ref_[rowBegin_ + i];
+        return ref_[row_begin_ + i];
     }
 
     value_t at(isize i, isize j) const {
-        return ref_.at(rowBegin_ + i, colBegin_ + j);
+        return ref_.at(row_begin_ + i, col_begin_ + j);
     }
 
     Matrix<value_t> to_matrix() const {
@@ -75,7 +75,7 @@ public:
 
 private:
     const Matrix<value_t>& ref_;
-    isize rowBegin_, colBegin_;
+    isize row_begin_, col_begin_;
     isize rows_, cols_;
 };
 
