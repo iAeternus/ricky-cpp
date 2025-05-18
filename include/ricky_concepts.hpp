@@ -25,7 +25,7 @@ concept ConvertibleToCstr = std::convertible_to<S, const char*>;
  * @brief 可输出的类型约束概念
  */
 template <typename T>
-concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, float, double, long double, nullptr_t, std::string>;
+concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, float, double, long double, nullptr_t, const char*, std::string>;
 
 template <typename T>
 concept MyPrintable = requires(T t) {

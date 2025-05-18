@@ -365,7 +365,7 @@ public:
             std::memcpy(ptr, data_, min_size * sizeof(value_t));
         } else {
             for (isize i = 0; i < min_size; ++i) {
-                new (ptr + i) value_t(std::move(data_[i])); // 移动构造
+                new (ptr + i) value_t(std::move(data_[i]));
                 data_[i].~value_t();
             }
         }
@@ -678,7 +678,7 @@ private:
     static constexpr isize DEFAULT_CAPACITY = 16;
 
 private:
-    void try_expand() {
+    fn try_expand() {
         if (size_ == capacity_) {
             resize(capacity_ << 1);
         }

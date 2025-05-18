@@ -212,11 +212,39 @@ public:
     }
 
     /**
+     * @brief 字符串拼接操作符
+     * @param other 要拼接的C风格字符串对象
+     * @return 拼接后的新字符串
+     */
+    Self operator+(const CString& other) const {
+        isize m_size = this->size(), o_size = other.size();
+        Self res{m_size + o_size, this->encoding()};
+        for (isize i = 0; i < m_size; ++i) {
+            res.at(i) = this->at(i);
+        }
+        for (isize i = 0; i < o_size; ++i) {
+            res.at(m_size + i) = CodePoint(other[i]);
+        }
+        return res;
+    }
+
+    /**
      * @brief 累加字符串拼接操作符
      * @param other 要拼接的字符串对象
      * @return 自身的引用
      */
     Self& operator+=(const Self& other) {
+        Self res = *this + other;
+        *this = std::move(res);
+        return *this;
+    }
+
+    /**
+     * @brief 累加字符串拼接操作符
+     * @param other 要拼接的C风格字符串对象
+     * @return 自身的引用
+     */
+    Self& operator+=(const CString& other) {
         Self res = *this + other;
         *this = std::move(res);
         return *this;
@@ -574,32 +602,52 @@ public:
         return split(get_rtrim_index(pattern));
     }
 
-    // /**
-    //  * @brief 使用当前字符串连接可迭代对象的每个元素
-    //  * @param iter 可迭代对象
-    //  * @return 连接后的字符串
-    //  */
-    // template <Iterable I>
-    // Self join(const I& iter) const {
-    //     isize newLength = 0LL, pos = 0LL;
-    //     for (auto&& elem : iter) {
-    //         newLength = elem.size() + length_;
-    //     }
-    //     newLength = math::max<isize>(0LL, newLength - length_);
+    /**
+     * @brief 使用当前字符串连接可迭代对象的每个元素
+     * @param iter 可迭代对象
+     * @return 连接后的字符串
+     */
+    template <Iterable I>
+    Self join(const I& iter) const {
+        if(iter.size() == 0) {
+            return Self{};
+        }
 
-    //     Self result{newLength, encoding()};
-    //     for (auto&& elem : iter) {
-    //         for (isize i = 0, eSize = elem.size(); i < eSize; ++i) {
-    //             result.at(pos++) = elem.at(i);
-    //         }
-    //         if (pos < result.size()) {
-    //             for (isize i = 0; i < length_; ++i) {
-    //                 result.at(pos++) = this->at(i);
-    //             }
-    //         }
-    //     }
-    //     return result;
-    // }
+        util::Vec<CString> elem_strs;
+        isize total_len = 0LL;
+        for (auto&& elem : iter) {
+            elem_strs.append(cstr(elem));
+            total_len += elem_strs.back().size() + length_;
+        }
+        if (!elem_strs.empty()) {
+            total_len -= length_;
+        }
+
+        Self result{std::max(0LL, total_len), encoding()};
+        isize pos = 0LL;
+
+        auto elem_it = elem_strs.begin();
+        auto elem_end = elem_strs.end();
+        if (elem_it != elem_end) {
+            const auto& elem_str = *elem_it;
+            for (isize i = 0; i < elem_str.size(); ++i) {
+                result.at(pos++) = elem_str[i];
+            }
+            ++elem_it;
+        }
+
+        for (; elem_it != elem_end; ++elem_it) {
+            for (isize i = 0; i < length_; ++i) {
+                result.at(pos++) = this->at(i);
+            }
+            const auto& elem_str = *elem_it;
+            for (isize i = 0; i < elem_str.size(); ++i) {
+                result.at(pos++) = elem_str[i];
+            }
+        }
+
+        return result;
+    }
 
     /**
      * @brief 替换字符串中的子字符串
@@ -609,7 +657,6 @@ public:
      */
     Self replace(const Self& old_, const Self& new_) const {
         auto indices = find_all(old_);
-
         isize m_size = size();
         Self result{m_size + indices.size() * (new_.size() - old_.size()), encoding()};
         for (isize i = 0, j = 0, k = 0; i < m_size; ++i) {
@@ -635,7 +682,7 @@ public:
     Self match(const CodePoint& left, const CodePoint& right) const {
         isize l = find(left);
         if (l == npos) {
-            return "";
+            return Self{};
         }
 
         isize match_cnt = 1;

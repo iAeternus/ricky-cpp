@@ -4,6 +4,7 @@
 #include "ricky_test.hpp"
 #include "String.hpp"
 #include "Array.hpp"
+#include "Vec.hpp"
 
 namespace my::test::test_string {
 
@@ -16,14 +17,16 @@ auto should_add = []() {
     // Given
     util::String s = "abc"_s;
     util::String s2 = "bcd"_s;
+    CString cs = "cde"_cs;
 
     // When
     s += s2;
+    s += cs;
 
     // Then
-    Assertions::assertEquals(6, s.size());
+    Assertions::assertEquals(9, s.size());
     Assertions::assertEquals(util::CodePoint{'b'}, s[3]);
-    Assertions::assertEquals("abcbcd"_s, s);
+    Assertions::assertEquals("abcbcdcde"_s, s);
 };
 
 auto should_mul = []() {
@@ -184,16 +187,19 @@ auto should_maintain_encoding = []() {
     Assertions::assertEquals("你们好世界"_s, res);
 };
 
-// auto should_join_iterator = []() {
-//     // Given
-//     util::Array<int> arr = {1, 2, 3, 4, 5};
+auto should_join_iterator = []() {
+    // Given
+    util::Array<int> arr = {1, 2, 3, 4, 5};
+    util::Vec<CString> vec = {"aaa", "bbb", "ccc"};
 
-//     // When
-//     util::String s = ", "_s.join(arr);
+    // When
+    auto res = ", "_s.join(arr);
+    auto res2 = ", "_s.join(vec);
 
-//     // Then
-//     Assertions::assertEquals("1, 2, 3, 4, 5"_s, s);
-// };
+    // Then
+    Assertions::assertEquals("1, 2, 3, 4, 5"_s, res);
+    Assertions::assertEquals("aaa, bbb, ccc"_s, res2);
+};
 
 auto should_match_parentheses = []() {
     // Given
@@ -259,7 +265,7 @@ void test_string() {
     group.addTest("should_trim", should_trim);
     group.addTest("should_replace", should_replace);
     group.addTest("should_maintain_encoding", should_maintain_encoding);
-    // group.addTest("should_join_iterator", should_join_iterator);
+    group.addTest("should_join_iterator", should_join_iterator);
     group.addTest("should_match_parentheses", should_match_parentheses);
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
