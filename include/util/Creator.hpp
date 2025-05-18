@@ -8,38 +8,35 @@
 #define CREATOR_HPP
 
 #include "ricky_memory.hpp"
-#include "DynArray.hpp"
+#include "NoCopy.hpp"
 
 namespace my::util {
 
 template <typename T>
-class Creator : public Object<Creator<T>> {
+class Creator : public Object<Creator<T>>, public NoCopy {
 public:
     using value_t = T;
     using Self = Creator<value_t>;
-    using Super = Object<Self>;
 
-    Creator() = default;
-
-    Creator(const Self& other) = delete;
-
-    Self& operator=(const Self& other) = delete;
-
-    Creator(Self&& other) noexcept :
-            created_values_(std::move(other.created_values_)) {}
-
-    Self& operator=(Self&& other) noexcept {
-        this->created_values_ = std::move(other.created_values_);
-        return *this;
-    }
-
+    /**
+     * @brief 安全创建对象，返回构造好的指针
+     * @param args 构造参数
+     * @return 指向新对象的指针，若失败返回 nullptr
+     */
     template <typename... Args>
-    value_t* operator()(Args&&... args) {
-        return &created_values_.append(value_t{std::forward<Args>(args)...});
-    }
+    fn operator()(Args&&... args) -> value_t* {
+        auto* ptr = my_alloc<value_t>(1);
+        if (!ptr) return nullptr;
 
-private:
-    DynArray<value_t> created_values_;
+        try {
+            my_construct(ptr, std::forward<Args>(args)...);
+        } catch (...) {
+            my_delloc(ptr);
+            throw;
+        }
+
+        return ptr;
+    }
 };
 
 } // namespace my::util

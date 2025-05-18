@@ -69,12 +69,20 @@ public:
 
     ~UnitTestGroup() = default;
 
-    void setup(std::function<void(void)>&& func) {
-        func();
+    void setup(Runnable&& setup) {
+        this->setup_ = setup;
     }
 
-    void cleanup(std::function<void(void)>&& func) {
-        func();
+    void teardown(Runnable&& teardown) {
+        this->teardown_ = teardown;
+    }
+
+    void before_each(Runnable&& before_each) {
+        this->before_each_ = before_each;
+    }
+
+    void after_each(Runnable&& after_each) {
+        this->after_each_ = after_each;
     }
 
     void addTest(CString&& displayName, std::function<void(void)>&& testCase) {
@@ -84,17 +92,25 @@ public:
 
     void startAll() {
         io::println(std::format("================= {} =================", groupName_));
+        if(setup_) setup_();
         for (auto& it : group_) {
+            if(before_each_) before_each_();
             if (!it->start()) {
                 ++failed_;
             }
+            if(after_each_) after_each_();
         }
+        if(teardown_) teardown_();
         io::println(std::format("Total tests run: {}, Failures: {}", group_.size(), failed_));
     }
 
 private:
     CString groupName_;
     isize failed_;
+    Runnable setup_;
+    Runnable teardown_;
+    Runnable before_each_;
+    Runnable after_each_;
     util::DynArray<UnitTest*> group_;
 };
 

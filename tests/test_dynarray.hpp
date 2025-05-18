@@ -164,7 +164,7 @@ auto should_find = []() {
 
 //     // Then
 //     io::println(d);
-//     // Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
+//     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 // };
 
 void test_dynarray() {

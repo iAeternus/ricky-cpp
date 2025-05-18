@@ -38,14 +38,17 @@ auto should_iterable = []() {
         sum1 += it;
     }
 
-    // TODO 这里有问题，不能反向迭代
+    // Then
+    Assertions::assertEquals(5050, sum1);
+
+    // // When
+    // // TODO 这里有问题，段错误，不能反向迭代
     // i32 sum2 = 0;
     // for (auto it = bc.rbegin(); it != bc.rend(); ++it) {
     //     sum2 += *it;
     // }
 
-    // Then
-    Assertions::assertEquals(5050, sum1);
+    // // Then
     // Assertions::assertEquals(sum1, sum2);
 };
 

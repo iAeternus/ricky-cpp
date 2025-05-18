@@ -11,6 +11,7 @@
 #include "math_utils.hpp"
 #include "CString.hpp"
 #include "Object.hpp"
+#include "Function.hpp"
 
 #include <stdexcept>
 #include <type_traits>
@@ -95,7 +96,7 @@ public:
         }
     }
 
-    static void assertThrows(CString&& expectedMessage, std::function<void(void)>&& func) {
+    static void assertThrows(CString&& expectedMessage, Runnable&& func) {
         try {
             func();
             fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
@@ -108,7 +109,7 @@ public:
         }
     }
 
-    static void assertThrows(const char* expectedMessage, std::function<void(void)>&& func) {
+    static void assertThrows(const char* expectedMessage, Runnable&& func) {
         try {
             func();
             fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));

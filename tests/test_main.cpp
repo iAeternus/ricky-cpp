@@ -52,6 +52,7 @@
 #include "test_geometry_2d.hpp"
 #include "test_polygon.hpp"
 #include "test_huffman_tree.hpp"
+#include "test_creator_and_deleter.hpp"
 #else
 #include "test_speed.hpp"
 #endif
@@ -102,6 +103,7 @@ int main() {
     test_geometry_2d::test_geometry_2d();
     test_polygon::test_polygon();
     test_huffman_tree::test_huffman_tree();
+    test_creator_and_deleter::test_creator_and_deleter();
 #else
     test_speed();
 #endif

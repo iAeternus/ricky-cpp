@@ -62,7 +62,7 @@ fn my_delloc(T*& ptr) {
 }
 
 template <typename T>
-struct RickyDeleter {
+struct Deleter {
 public:
     void operator()(T* ptr) const {
         my_destroy(ptr);

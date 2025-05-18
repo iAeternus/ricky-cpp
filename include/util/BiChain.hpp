@@ -29,29 +29,27 @@ public:
 
     template <typename... Args>
     void append(Args&&... args) {
-        auto* new_node = Super::creator_(std::forward<Args>(args)...);
-
+        BiNode* new_node = Super::creator_(std::forward<Args>(args)...);
         if (Super::size_ == 0) {
-            Super::head_ = new_node;
+            Super::head_ = Super::tail_ = new_node;
         } else {
             Super::tail_->next_ = new_node;
             new_node->prev_ = Super::tail_;
+            Super::tail_ = new_node;
         }
-        Super::tail_ = new_node;
         ++Super::size_;
     }
 
     template <typename... Args>
     void prepend(Args&&... args) {
-        auto* new_node = Super::creator_(std::forward<Args>(args)...);
-
+        BiNode* new_node = Super::creator_(std::forward<Args>(args)...);
         if (Super::size_ == 0) {
-            Super::tail_ = new_node;
+            Super::head_ = Super::tail_ = new_node;
         } else {
-            Super::head_->prev_ = new_node;
             new_node->next_ = Super::head_;
+            Super::head_->prev_ = new_node;
+            Super::head_ = new_node;
         }
-        Super::head_ = new_node;
         ++Super::size_;
     }
 
@@ -86,14 +84,11 @@ public:
     }
 
     reverse_iterator rbegin() const {
-        return reverse_iterator{Super::tail_};
+        return reverse_iterator{iterator{Super::tail_}};
     }
 
     reverse_iterator rend() const {
-        if (!Super::head_) {
-            return reverse_iterator{nullptr};
-        }
-        return reverse_iterator{Super::head_->prev_};
+        return reverse_iterator{iterator{nullptr}};
     }
 };
 
@@ -106,13 +101,13 @@ class BiChainIterator : public ChainIterator<BiNode> {
     using Super = ChainIterator<BiNode>;
 
 public:
-    // using iterator_category = std::bidirectional_iterator_tag;
-    // using value_type = typename BiNode::value_t;
-    // using difference_type = std::ptrdiff_t;
-    // using pointer = value_type*;
-    // using const_pointer = const value_type*;
-    // using reference = value_type&;
-    // using const_reference = const value_type&;
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = typename BiNode::value_t;
+    using difference_type = std::ptrdiff_t;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using reference = value_type&;
+    using const_reference = const value_type&;
 
     BiChainIterator(BiNode* node = nullptr) :
             Super(node) {}
@@ -121,7 +116,9 @@ public:
             Super(other) {}
 
     Self& operator--() {
-        Super::current_ = Super::current_->prev_;
+        if (Super::current_) {
+            Super::current_ = Super::current_->prev_;
+        }
         return *this;
     }
 

@@ -163,7 +163,7 @@ class ChainIterator : public Object<ChainIterator<Node>> {
     using Self = ChainIterator<Node>;
 
 public:
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = std::forward_iterator_tag;
     using value_type = typename Node::value_t;
     using difference_type = std::ptrdiff_t;
     using pointer = value_type*;
