@@ -7,7 +7,7 @@
 
 namespace my::test::test_dynarray {
 
-auto it_works = []() {
+fn it_works = []() {
     util::DynArray<i32> d(10, 0);
     util::DynArray<util::DynArray<i32>> d2(3, util::DynArray<i32>(3, 0));
     util::DynArray<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -17,7 +17,7 @@ auto it_works = []() {
     Assertions::assertEquals(10, d3.back());
 };
 
-auto should_append = []() {
+fn should_append = []() {
     // Given
     i32 n = 100;
     util::DynArray<CString> d;
@@ -37,7 +37,7 @@ auto should_append = []() {
     }
 };
 
-auto should_insert = []() {
+fn should_insert = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -50,7 +50,7 @@ auto should_insert = []() {
     Assertions::assertEquals(1, d.find(1));
 };
 
-auto should_pop = []() {
+fn should_pop = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -69,7 +69,7 @@ auto should_pop = []() {
     Assertions::assertEquals(2, d.at(0));
 };
 
-auto should_pop2 = []() {
+fn should_pop2 = []() {
     // Given
     util::DynArray<i32> d;
 
@@ -82,7 +82,7 @@ auto should_pop2 = []() {
     Assertions::assertEquals(d.begin(), d.end());
 };
 
-auto should_clear = []() {
+fn should_clear = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -101,7 +101,7 @@ auto should_clear = []() {
     Assertions::assertEquals(d.begin(), d.end());
 };
 
-auto should_to_array = []() {
+fn should_to_array = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -114,7 +114,7 @@ auto should_to_array = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
-auto should_extend = []() {
+fn should_extend = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -127,7 +127,7 @@ auto should_extend = []() {
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
-auto should_at = []() {
+fn should_at = []() {
     // Given
     util::DynArray<char> d = {'a', 'b', 'c'};
 
@@ -142,7 +142,7 @@ auto should_at = []() {
     Assertions::assertEquals('c', res3);
 };
 
-auto should_find = []() {
+fn should_find = []() {
     // Given
     util::DynArray<CString> d = {"aaa"_cs, "bbb"_cs, "ccc"_cs};
 
@@ -155,7 +155,7 @@ auto should_find = []() {
     Assertions::assertEquals(d.size(), res2);
 };
 
-// auto should_sort = []() {
+// fn should_sort = []() {
 //     // Given
 //     util::DynArray<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
@@ -167,7 +167,7 @@ auto should_find = []() {
 //     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 // };
 
-inline void test_dynarray() {
+fn test_dynarray() {
     UnitTestGroup group("test_dynarray");
 
     group.addTest("it_works", it_works);
@@ -187,49 +187,49 @@ inline void test_dynarray() {
 
 constexpr i32 N = 1e6;
 
-auto speed_of_dny_array_append_string = []() {
+fn speed_of_dny_array_append_string = []() {
     util::DynArray<std::string> d;
     for (i32 i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
-auto speed_of_util_vector_append_string = []() {
+fn speed_of_util_vector_append_string = []() {
     util::Vec<std::string> d;
     for (i32 i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
-auto speed_of_vector_push_back_string = []() {
+fn speed_of_vector_push_back_string = []() {
     std::vector<std::string> v;
     for (i32 i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
-auto speed_of_dny_array_append_i32 = []() {
+fn speed_of_dny_array_append_i32 = []() {
     util::DynArray<i32> d;
     for (i32 i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
-auto speed_of_util_vector_append_i32 = []() {
+fn speed_of_util_vector_append_i32 = []() {
     util::Vec<i32> d;
     for (i32 i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
-auto speed_of_vector_push_back_i32 = []() {
+fn speed_of_vector_push_back_i32 = []() {
     std::vector<i32> v;
     for (i32 i = 0; i < N; ++i) {
         v.push_back(i);
     }
 };
 
-inline void test_dynarray_speed() {
+fn test_dynarray_speed() {
     UnitTestGroup group{"test_dynarray_speed"};
 
     group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);

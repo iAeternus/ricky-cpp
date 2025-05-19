@@ -13,7 +13,7 @@ my::coro::Generator<int> range(int start, int end) {
     }
 }
 
-auto should_generate = []() {
+fn should_generate = []() {
     // Given
     util::DynArray<i32> res;
 
@@ -26,7 +26,7 @@ auto should_generate = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 };
 
-inline void test_generator() {
+fn test_generator() {
     UnitTestGroup group{"test_generator"};
 
     group.addTest("should_generate", should_generate);

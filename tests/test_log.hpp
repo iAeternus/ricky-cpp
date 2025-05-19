@@ -8,7 +8,7 @@ namespace my::test::test_log {
 
 using namespace my::io;
 
-auto it_works = []() {
+fn it_works = []() {
     Log::setLevel(io::Log::LogLevel::INFO_);
     Log::trace("This is a trace log.");
     Log::debug("This is a debug log.");
@@ -29,7 +29,7 @@ auto it_works = []() {
     Log::fatal("This is a fatal log.");
 };
 
-inline void test_log() {
+fn test_log() {
     UnitTestGroup group{"test_log"};
 
     group.addTest("it_works", it_works);

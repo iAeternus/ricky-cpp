@@ -7,7 +7,7 @@
 
 namespace my::test::test_stream {
 
-auto should_operates = []() {
+fn should_operates = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -21,7 +21,7 @@ auto should_operates = []() {
     Assertions::assertEquals("[4,8,12,16]"_cs, res.__str__());
 };
 
-auto should_map_objects = []() {
+fn should_map_objects = []() {
     // Given
     util::DynArray<std::pair<int, int>> pairs = {{1, 1}, {2, 2}, {3, 3}};
 
@@ -34,7 +34,7 @@ auto should_map_objects = []() {
     Assertions::assertEquals("[1,2,3]"_cs, res.__str__());
 };
 
-inline void test_stream() {
+fn test_stream() {
     UnitTestGroup group{"test_stream"};
 
     group.addTest("should_operates", should_operates);

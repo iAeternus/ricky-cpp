@@ -5,7 +5,7 @@
 
 namespace my::test::test_cstring {
 
-auto should_construct = []() {
+fn should_construct = []() {
     // Given
     CString str = "abc";
 
@@ -17,7 +17,7 @@ auto should_construct = []() {
     Assertions::assertEquals('c', str[2]);
 };
 
-auto should_hash = []() {
+fn should_hash = []() {
     // Given
     CString str1 = "abc";
     CString str2 = "abd";
@@ -30,7 +30,7 @@ auto should_hash = []() {
     Assertions::assertNotEquals(hash1, hash2);
 };
 
-auto should_compare = []() {
+fn should_compare = []() {
     // Given
     CString str1 = "aaa";
     CString str2 = "aaaa";
@@ -46,7 +46,7 @@ auto should_compare = []() {
     Assertions::assertNotEquals(str2, str4);
 };
 
-auto should_add = []() {
+fn should_add = []() {
     // Given
     CString str = "aaa";
     CString str2 = "bbb";
@@ -58,7 +58,7 @@ auto should_add = []() {
     Assertions::assertEquals("aaabbb"_cs, res);
 };
 
-auto should_iterate = []() {
+fn should_iterate = []() {
     CString str = "abcdefg";
 
     // When
@@ -70,7 +70,7 @@ auto should_iterate = []() {
     Assertions::assertEquals("bcdefgh"_cs, str.__str__());
 };
 
-inline void test_cstring() {
+fn test_cstring() {
     UnitTestGroup group{"test_cstring"};
 
     group.addTest("should_construct", should_construct);

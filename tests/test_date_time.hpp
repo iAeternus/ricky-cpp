@@ -6,7 +6,7 @@
 
 namespace my::test::test_date_time {
 
-auto should_construct = []() {
+fn should_construct = []() {
     auto dt = util::DateTime::of(2025, 2, 5, 20, 20, 20, 20);
     auto dt2 = util::DateTime::of(util::Date::of(2025, 2, 5), util::Time::of(23, 59, 59));
 
@@ -21,7 +21,7 @@ auto should_construct = []() {
     Assertions::assertEquals("2025-02-05T23:59:59.000000000Z"_cs, dt2.__str__());
 };
 
-auto should_parse = []() {
+fn should_parse = []() {
     // Given
     CString str = "2025-02-05 20:20:20";
 
@@ -32,13 +32,13 @@ auto should_parse = []() {
     Assertions::assertEquals("2025-02-05T20:20:20.000000000Z"_cs, dt.__str__());
 };
 
-auto should_fetch_now = []() {
+fn should_fetch_now = []() {
     auto dt = util::DateTime::now();
 
     io::println(dt);
 };
 
-auto should_construct_by_epoch_second = []() {
+fn should_construct_by_epoch_second = []() {
     // Given
     i64 epochSecond = 1738752308;
 
@@ -49,7 +49,7 @@ auto should_construct_by_epoch_second = []() {
     Assertions::assertEquals("2025-02-05T10:45:08.000000000Z"_cs, dt.__str__());
 };
 
-auto should_plus = []() {
+fn should_plus = []() {
     // Given
     auto dt = util::DateTime::of(2025, 2, 5, 20);
 
@@ -67,7 +67,7 @@ auto should_plus = []() {
     Assertions::assertEquals("2026-03-13T21:01:01.000000001Z"_cs, dt9.__str__());
 };
 
-auto should_minus = []() {
+fn should_minus = []() {
     // Given
     auto dt = util::DateTime::of(2025, 2, 5, 20);
 
@@ -85,7 +85,7 @@ auto should_minus = []() {
     Assertions::assertEquals("2023-12-28T18:58:58.999999999Z"_cs, dt9.__str__());
 };
 
-auto should_subtract = []() {
+fn should_subtract = []() {
     // Given
     auto dt = util::DateTime::of(2025, 2, 5, 20);
     auto dt2 = util::DateTime::of(2025, 2, 5, 10);
@@ -100,7 +100,7 @@ auto should_subtract = []() {
     Assertions::assertEquals("PT-10H"_cs, res2.__str__());
 };
 
-inline void test_date_time() {
+fn test_date_time() {
     UnitTestGroup group{"test_date_time"};
 
     group.addTest("should_construct", should_construct);

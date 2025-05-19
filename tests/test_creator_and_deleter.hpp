@@ -47,12 +47,12 @@ public:
     }
 };
 
-auto befor_each = []() {
+fn befor_each = []() {
     TrackedObject::construct_count = 0;
     TrackedObject::destruct_count = 0;
 };
 
-auto it_works = []() {
+fn it_works = []() {
     // Given
     util::Creator<TrackedObject> creator;
     util::Deleter<TrackedObject> deleter;
@@ -73,7 +73,7 @@ auto it_works = []() {
     Assertions::assertEquals(1, TrackedObject::destruct_count);
 };
 
-auto should_delete_array = []() {
+fn should_delete_array = []() {
     // Given
     constexpr isize ARRAY_SIZE = 5;
     TrackedObject* arr = my_alloc<TrackedObject>(ARRAY_SIZE);
@@ -94,7 +94,7 @@ auto should_delete_array = []() {
     Assertions::assertEquals(ARRAY_SIZE, TrackedObject::destruct_count);
 };
 
-auto should_exception_safety = []() {
+fn should_exception_safety = []() {
     // Given
     util::Creator<ExceptionProne> creator;
 
@@ -104,7 +104,7 @@ auto should_exception_safety = []() {
     });
 };
 
-auto should_integrate_smart_pointer = []() {
+fn should_integrate_smart_pointer = []() {
     // Given
     util::Creator<TrackedObject> creator;
     util::Deleter<TrackedObject> deleter;
@@ -124,7 +124,7 @@ auto should_integrate_smart_pointer = []() {
     Assertions::assertEquals(1, TrackedObject::destruct_count);
 };
 
-auto should_handle_null_pointer = []() {
+fn should_handle_null_pointer = []() {
     // Given
     util::Deleter<TrackedObject> deleter;
     TrackedObject* ptr = nullptr;
@@ -133,7 +133,7 @@ auto should_handle_null_pointer = []() {
     deleter(ptr);
 };
 
-inline void test_creator_and_deleter() {
+fn test_creator_and_deleter() {
     UnitTestGroup group{"test_creator_and_deleter"};
     group.before_each(befor_each);
 

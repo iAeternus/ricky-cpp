@@ -7,7 +7,7 @@
 
 namespace my::test::test_dict {
 
-auto should_insert = []() {
+fn should_insert = []() {
     // Given
     util::Dict<CString, i32> d;
 
@@ -29,7 +29,7 @@ auto should_insert = []() {
     Assertions::assertEquals(0, d.get("ccc"_cs));
 };
 
-auto should_get_or_default = []() {
+fn should_get_or_default = []() {
     // Given
     util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}};
 
@@ -44,7 +44,7 @@ auto should_get_or_default = []() {
     Assertions::assertEquals(0, res3);
 };
 
-auto should_set_default = []() {
+fn should_set_default = []() {
     // Given
     util::Dict<i32, i32> d;
 
@@ -61,7 +61,7 @@ auto should_set_default = []() {
     Assertions::assertEquals(1, d.get(1));
 };
 
-auto should_update = []() {
+fn should_update = []() {
     // Given
     util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}};
 
@@ -72,7 +72,7 @@ auto should_update = []() {
     Assertions::assertEquals(5, i32(d.size()));
 };
 
-auto should_operator = []() {
+fn should_operator = []() {
     // Given
     util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}};
     util::Dict<i32, i32> d2 = {{4, 1}, {5, 1}, {6, 1}, {7, 1}, {8, 1}};
@@ -90,7 +90,7 @@ auto should_operator = []() {
     Assertions::assertEquals(3, i32(res4.size()));
 };
 
-auto should_to_string = []() {
+fn should_to_string = []() {
     // Given
     util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}};
     util::Dict<CString, i32> d2;
@@ -107,7 +107,7 @@ auto should_to_string = []() {
     Assertions::assertEquals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
 };
 
-inline void test_dict() {
+fn test_dict() {
     UnitTestGroup group{"test_dict"};
 
     group.addTest("should_insert", should_insert);
@@ -124,7 +124,7 @@ i32 n, k;
 std::vector<i32> nums;
 std::vector<std::string> strs;
 
-auto setup = []() {
+fn setup = []() {
     n = 1e6;
     k = 100;
     for (i32 i = 0; i < n; ++i) {
@@ -133,35 +133,35 @@ auto setup = []() {
     }
 };
 
-auto speed_of_dict_count = []() {
+fn speed_of_dict_count = []() {
     util::Dict<i32, i32> d;
     for (const auto& num : nums) {
         ++d[num];
     }
 };
 
-auto speed_of_unordered_map_count = []() {
+fn speed_of_unordered_map_count = []() {
     std::unordered_map<i32, i32> mp;
     for (const auto& num : nums) {
         ++mp[num];
     }
 };
 
-auto speed_of_dict_insert = []() {
+fn speed_of_dict_insert = []() {
     util::Dict<std::string, i32> d;
     for (i32 i = 0; i < n; ++i) {
         d.insert(strs[i], i);
     }
 };
 
-auto speed_of_unordered_map_insert = []() {
+fn speed_of_unordered_map_insert = []() {
     std::unordered_map<std::string, i32> mp;
     for (i32 i = 0; i < n; ++i) {
         mp.insert(std::make_pair(strs[i], i));
     }
 };
 
-inline void test_dict_speed() {
+fn test_dict_speed() {
     UnitTestGroup group{"test_dict_speed"};
     group.setup(setup);
 

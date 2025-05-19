@@ -6,7 +6,7 @@
 
 namespace my::test::test_graph {
 
-auto should_create_graph = []() {
+fn should_create_graph = []() {
     // Given
     graph::Graph<char> g;
 
@@ -37,7 +37,7 @@ auto should_create_graph = []() {
     io::print(g);
 };
 
-auto should_register = []() {
+fn should_register = []() {
     // Given
     graph::Graph<char> g;
     g.add_vertex(1, 'a');
@@ -78,7 +78,7 @@ auto should_register = []() {
     Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());
 };
 
-inline void test_graph() {
+fn test_graph() {
     UnitTestGroup group{"test_graph"};
 
     group.addTest("should_create_graph", should_create_graph);

@@ -6,7 +6,7 @@
 
 namespace my::test::test_string_builder {
 
-auto it_works = []() {
+fn it_works = []() {
     // Given
     util::StringBuilder sb;
 
@@ -17,7 +17,7 @@ auto it_works = []() {
     Assertions::assertEquals("aaabbbccc你好R"_s, sb.str());
 };
 
-inline void test_string_builder() {
+fn test_string_builder() {
     UnitTestGroup group{"test_string_builder"};
 
     group.addTest("it_works", it_works);
@@ -27,7 +27,7 @@ inline void test_string_builder() {
 
 constexpr i32 N = 1e6;
 
-auto speed_of_string_builder_append_string = []() {
+fn speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
     for (auto i = 0; i < N; ++i) {
         sb.append("abcdef");
@@ -36,7 +36,7 @@ auto speed_of_string_builder_append_string = []() {
     Assertions::assertEquals(N * 6, str.size());
 };
 
-auto speed_of_std_string_splicing = []() {
+fn speed_of_std_string_splicing = []() {
     std::string str;
     for (auto i = 0; i < N; ++i) {
         str += "abcdef";
@@ -44,7 +44,7 @@ auto speed_of_std_string_splicing = []() {
     Assertions::assertEquals(N * 6, str.length());
 };
 
-inline void test_string_builder_speed() {
+fn test_string_builder_speed() {
     UnitTestGroup group{"test_string_builder_speed"};
 
     group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);

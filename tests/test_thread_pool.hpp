@@ -11,11 +11,11 @@ fn add = [](i32 a, i32 b) {
     return a + b;
 };
 
-auto throw_exception = []() {
+fn throw_exception = []() {
     throw std::runtime_error("wa");
 };
 
-auto should_push = []() {
+fn should_push = []() {
     // Given
     async::ThreadPool tp{4};
 
@@ -26,7 +26,7 @@ auto should_push = []() {
     Assertions::assertEquals(5, future.get());
 };
 
-auto should_push_tasks = []() {
+fn should_push_tasks = []() {
     // Given
     async::ThreadPool tp{4};
 
@@ -39,7 +39,7 @@ auto should_push_tasks = []() {
     Assertions::assertEquals(9, future2.get());
 };
 
-auto should_push_tasks_with_exception = []() {
+fn should_push_tasks_with_exception = []() {
     // Given
     async::ThreadPool tp{4};
 
@@ -59,7 +59,7 @@ auto should_push_tasks_with_exception = []() {
     });
 };
 
-auto should_wait = []() {
+fn should_wait = []() {
     // Given
     i32 n = 100;
     async::ThreadPool tp{4};
@@ -77,7 +77,7 @@ auto should_wait = []() {
     }
 };
 
-inline void test_thread_pool() {
+fn test_thread_pool() {
     UnitTestGroup group{"test_thread_pool"};
 
     group.addTest("should_push", should_push);
@@ -89,11 +89,11 @@ inline void test_thread_pool() {
 }
 
 i32 n; // count of tasks
-auto task = []() {
+fn task = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
 };
 
-auto speed_of_thread_pool = []() {
+fn speed_of_thread_pool = []() {
     async::ThreadPool tp{100};
     for (i32 i = 0; i < n; ++i) {
         tp.push(task);
@@ -101,13 +101,13 @@ auto speed_of_thread_pool = []() {
     tp.wait();
 };
 
-auto speed_of_sync = []() {
+fn speed_of_sync = []() {
     for (i32 i = 0; i < n; ++i) {
         task();
     }
 };
 
-inline void test_thread_pool_speed() {
+fn test_thread_pool_speed() {
     UnitTestGroup group{"test_thread_pool_speed"};
     group.setup([]() {
         n = 100;

@@ -6,7 +6,7 @@
 
 namespace my::test::test_graph_algorithm {
 
-auto test_fake_algorithm = []() {
+fn test_fake_algorithm = []() {
     // Given
     graph::Graph g;
     g.register_algo("fake_algorithm", graph::fake_algorithm<f64, f64>);
@@ -18,7 +18,7 @@ auto test_fake_algorithm = []() {
     Assertions::assertEquals("Fake algorithm. Args are 1,2,3"_cs, res);
 };
 
-auto test_adj2matrix = []() {
+fn test_adj2matrix = []() {
     // Given
     graph::Graph g;
     g.add_vertex(0);
@@ -58,7 +58,7 @@ auto test_adj2matrix = []() {
                              res);
 };
 
-auto test_is_exist_el = []() {
+fn test_is_exist_el = []() {
     // Given
     graph::Graph g;
     g.add_vertex(0);
@@ -108,7 +108,7 @@ auto test_is_exist_el = []() {
     Assertions::assertFalse(res2);
 };
 
-inline void test_graph_algorithm() {
+fn test_graph_algorithm() {
     UnitTestGroup group{"test_graph_algorithm"};
 
     group.addTest("test_fake_algorithm", test_fake_algorithm);

@@ -6,7 +6,7 @@
 
 namespace my::test::test_binary_utils {
 
-auto should_cal_lowbit = []() {
+fn should_cal_lowbit = []() {
     // Given
     u32 x = 0b10110010U;
 
@@ -17,7 +17,7 @@ auto should_cal_lowbit = []() {
     Assertions::assertEquals(0b10U, res);
 };
 
-auto should_cal_lowbit_index = []() {
+fn should_cal_lowbit_index = []() {
     // Given
     u32 x = 0b10110010U;
 
@@ -28,7 +28,7 @@ auto should_cal_lowbit_index = []() {
     Assertions::assertEquals(1U, res);
 };
 
-auto should_cal_highbit_index = []() {
+fn should_cal_highbit_index = []() {
     // Given
     u32 x = 0b10110010U;
 
@@ -39,7 +39,7 @@ auto should_cal_highbit_index = []() {
     Assertions::assertEquals(7U, res);
 };
 
-auto should_cal_highbit = []() {
+fn should_cal_highbit = []() {
     // Given
     u32 x = 0b10110010U;
 
@@ -50,7 +50,7 @@ auto should_cal_highbit = []() {
     Assertions::assertEquals(0b10000000U, res);
 };
 
-auto should_judge_all_one = []() {
+fn should_judge_all_one = []() {
     // Given
     u32 x = 0b11111111U;
     u32 x2 = 0b10110010U;
@@ -64,7 +64,7 @@ auto should_judge_all_one = []() {
     Assertions::assertFalse(res2);
 };
 
-auto should_judge_only_one = []() {
+fn should_judge_only_one = []() {
     // Given
     u32 x = 0b00010000U;
     u32 x2 = 0b10110010U;
@@ -78,7 +78,7 @@ auto should_judge_only_one = []() {
     Assertions::assertFalse(res2);
 };
 
-auto should_roundup2 = []() {
+fn should_roundup2 = []() {
     // Given
     isize x = 0;
     isize x2 = 3;
@@ -95,7 +95,7 @@ auto should_roundup2 = []() {
     Assertions::assertEquals(4, res3);
 };
 
-inline void test_binary_utils() {
+fn test_binary_utils() {
     UnitTestGroup group{"test_binary_utils"};
 
     group.addTest("should_cal_lowbit", should_cal_lowbit);

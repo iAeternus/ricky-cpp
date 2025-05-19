@@ -8,12 +8,12 @@
 
 namespace my::test::test_string {
 
-auto should_construct = []() {
+fn should_construct = []() {
     util::String s = "abc";
     Assertions::assertEquals("abc"_cs, s.__str__());
 };
 
-auto should_add = []() {
+fn should_add = []() {
     // Given
     util::String s = "abc"_s;
     util::String s2 = "bcd"_s;
@@ -29,7 +29,7 @@ auto should_add = []() {
     Assertions::assertEquals("abcbcdcde"_s, s);
 };
 
-auto should_mul = []() {
+fn should_mul = []() {
     // Given
     util::String s = "abc"_s;
 
@@ -41,7 +41,7 @@ auto should_mul = []() {
     Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
 };
 
-auto should_split = []() {
+fn should_split = []() {
     // Given
     util::String s = "abcdef"_s;
 
@@ -57,7 +57,7 @@ auto should_split = []() {
     Assertions::assertEquals("bcde"_s, res3);
 };
 
-auto should_find = []() {
+fn should_find = []() {
     // Given
     util::String s = "abcdeff"_s;
     util::String s2 = "caabaabaabaabaaaab"_s;
@@ -77,7 +77,7 @@ auto should_find = []() {
     Assertions::assertEquals(util::String::npos, pos5);
 };
 
-auto should_find_all = []() {
+fn should_find_all = []() {
     // Given
     util::String s = "abcdefabc"_s;
 
@@ -89,7 +89,7 @@ auto should_find_all = []() {
     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
 };
 
-auto should_judge_starts_with = []() {
+fn should_judge_starts_with = []() {
     // Given
     util::String s = "abcdef"_s;
 
@@ -102,7 +102,7 @@ auto should_judge_starts_with = []() {
     Assertions::assertFalse(res2);
 };
 
-auto should_judge_ends_with = []() {
+fn should_judge_ends_with = []() {
     // Given
     util::String s = "abcdef"_s;
 
@@ -115,7 +115,7 @@ auto should_judge_ends_with = []() {
     Assertions::assertFalse(res2);
 };
 
-auto should_get_upper = []() {
+fn should_get_upper = []() {
     // Given
     util::String s = "abcDef"_s;
 
@@ -126,7 +126,7 @@ auto should_get_upper = []() {
     Assertions::assertEquals("ABCDEF"_s, res);
 };
 
-auto should_get_lower = []() {
+fn should_get_lower = []() {
     // Given
     util::String s = "ABCdEF"_s;
 
@@ -137,7 +137,7 @@ auto should_get_lower = []() {
     Assertions::assertEquals("abcdef"_s, res);
 };
 
-auto should_trim = []() {
+fn should_trim = []() {
     // Given
     util::String s = "   abcdef   "_s;
 
@@ -148,7 +148,7 @@ auto should_trim = []() {
     Assertions::assertEquals("abcdef"_s, res);
 };
 
-auto should_replace = []() {
+fn should_replace = []() {
     // Given
     util::String s = "abcdefabc"_s;
 
@@ -159,7 +159,7 @@ auto should_replace = []() {
     Assertions::assertEquals("defdefdef"_s, res);
 };
 
-auto should_maintain_encoding = []() {
+fn should_maintain_encoding = []() {
     // Given
     util::String s = "你好世界";
 
@@ -187,7 +187,7 @@ auto should_maintain_encoding = []() {
     Assertions::assertEquals("你们好世界"_s, res);
 };
 
-auto should_join_iterator = []() {
+fn should_join_iterator = []() {
     // Given
     util::Array<int> arr = {1, 2, 3, 4, 5};
     util::Vec<CString> vec = {"aaa", "bbb", "ccc"};
@@ -201,7 +201,7 @@ auto should_join_iterator = []() {
     Assertions::assertEquals("aaa, bbb, ccc"_s, res2);
 };
 
-auto should_match_parentheses = []() {
+fn should_match_parentheses = []() {
     // Given
     util::String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
 
@@ -214,7 +214,7 @@ auto should_match_parentheses = []() {
     Assertions::assertEquals("[1, 2, 3]"_s, res2);
 };
 
-auto should_compare = []() {
+fn should_compare = []() {
     // Given
     util::String s = "abc";
     util::String s2 = "abd";
@@ -234,7 +234,7 @@ auto should_compare = []() {
     Assertions::assertEquals(0, res4);
 };
 
-auto should_remove_all = []() {
+fn should_remove_all = []() {
     // Given
     util::String s = "   a  bc ";
 
@@ -249,7 +249,7 @@ auto should_remove_all = []() {
     Assertions::assertEquals("abc"_s, res2);
 };
 
-inline void test_string() {
+fn test_string() {
     UnitTestGroup group{"test_string"};
 
     group.addTest("should_construct", should_construct);

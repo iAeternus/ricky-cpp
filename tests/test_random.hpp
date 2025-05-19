@@ -7,7 +7,7 @@
 
 namespace my::test::test_random {
 
-auto should_generate_random = []() {
+fn should_generate_random = []() {
     io::println(std::format("u8: {}", util::Random::instance().next<u8>()));
     io::println(std::format("u16: {}", util::Random::instance().next<u16>()));
     io::println(std::format("u32: {}", util::Random::instance().next<u32>()));
@@ -21,7 +21,7 @@ auto should_generate_random = []() {
     io::println(std::format("CString: {}", util::Random::instance().next_str(6)));
 };
 
-auto should_generate_uniform_sum_numbers = []() {
+fn should_generate_uniform_sum_numbers = []() {
     // Given
     i32 n = 100, sum = 1e6;
 
@@ -29,7 +29,7 @@ auto should_generate_uniform_sum_numbers = []() {
     io::println(util::Random::instance().generate_uniform_sum_numbers(n, sum));
 };
 
-inline void test_random() {
+fn test_random() {
     UnitTestGroup group{"test_random"};
 
     group.addTest("should_generate_random", should_generate_random);

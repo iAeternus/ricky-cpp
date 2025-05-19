@@ -6,7 +6,7 @@
 
 namespace my::test::test_stack {
 
-auto it_works = []() {
+fn it_works = []() {
     util::Stack<i32> st;
     Assertions::assertTrue(st.empty());
 
@@ -24,7 +24,7 @@ auto it_works = []() {
     Assertions::assertEquals(0, st.size());
 };
 
-inline void test_stack() {
+fn test_stack() {
     UnitTestGroup group{"test_stack"};
 
     group.addTest("it_works", it_works);

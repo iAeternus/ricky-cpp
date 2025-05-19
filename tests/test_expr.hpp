@@ -6,7 +6,7 @@
 
 namespace my::test::test_expr {
 
-auto it_works = []() {
+fn it_works = []() {
     math::Expr expr = "3 + 4*2/(1-5)^2"_expr;
     math::Expr expr2 = "2^3^2"_expr;
     math::Expr expr3 = "-5%3"_expr;
@@ -28,7 +28,7 @@ auto it_works = []() {
     Assertions::assertEquals(3.5 + 4.2 * (2 - 5.1) / 2, expr4.eval());
 };
 
-inline void test_expr() {
+fn test_expr() {
     UnitTestGroup group{"test_expr"};
 
     group.addTest("it_works", it_works);

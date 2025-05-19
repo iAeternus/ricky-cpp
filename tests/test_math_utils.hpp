@@ -6,7 +6,7 @@
 
 namespace my::test::test_math_utils {
 
-auto should_cal_gcd = []() {
+fn should_cal_gcd = []() {
     // Given
     i32 a = 2, b = 4, c = 5, d = 2;
 
@@ -23,7 +23,7 @@ auto should_cal_gcd = []() {
     Assertions::assertEquals(1, res4);
 };
 
-auto should_cal_lcm = []() {
+fn should_cal_lcm = []() {
     // Given
     i32 a = 2, b = 4, c = 5, d = 2;
 
@@ -40,7 +40,7 @@ auto should_cal_lcm = []() {
     Assertions::assertEquals(20, res4);
 };
 
-auto should_judge_is_prime = []() {
+fn should_judge_is_prime = []() {
     // Given
     i32 a = 1, b = 2, c = 3, d = 4;
 
@@ -57,7 +57,7 @@ auto should_judge_is_prime = []() {
     Assertions::assertFalse(res4);
 };
 
-auto should_cal_pow = []() {
+fn should_cal_pow = []() {
     // Given
     i32 a = 2, n = 10, n2 = 0;
 
@@ -70,7 +70,7 @@ auto should_cal_pow = []() {
     Assertions::assertEquals(1, res2);
 };
 
-auto should_compare = []() {
+fn should_compare = []() {
     // Given
     f64 a = 1.0, b = 1.0;
     // f64 c = 1.000000000000001, d = 0.999999999999999;   // 1e-15
@@ -93,7 +93,7 @@ auto should_compare = []() {
     Assertions::assertEquals(0, res5);
 };
 
-inline void test_math_utils() {
+fn test_math_utils() {
     UnitTestGroup group{"test_math_utils"};
 
     group.addTest("should_cal_gcd", should_cal_gcd);

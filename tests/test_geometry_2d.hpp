@@ -6,7 +6,7 @@
 
 namespace my::test::test_geometry_2d {
 
-auto should_calc_dot = []() {
+fn should_calc_dot = []() {
     // Given
     math::Vector2 a{1, 1};
     math::Vector2 b{-1, 1};
@@ -18,7 +18,7 @@ auto should_calc_dot = []() {
     Assertions::assertEquals(0, res);
 };
 
-auto should_calc_the_cos_of_vec = []() {
+fn should_calc_the_cos_of_vec = []() {
     // Given
     math::Vector2 a{1, 1};
     math::Vector2 b{0, 0};
@@ -30,7 +30,7 @@ auto should_calc_the_cos_of_vec = []() {
     Assertions::assertEquals(1.0 / sqrt(2), res);
 };
 
-auto should_calc_the_angle_between_two_vectors = []() {
+fn should_calc_the_angle_between_two_vectors = []() {
     // Given
     math::Vector2 a{1, 0}, b{0, 1};
 
@@ -41,7 +41,7 @@ auto should_calc_the_angle_between_two_vectors = []() {
     Assertions::assertEquals(math::PI / 2, res);
 };
 
-auto should_calc_cross = []() {
+fn should_calc_cross = []() {
     // Given
     math::Vector2 a{1, 0}, b{0, 1};
 
@@ -52,7 +52,7 @@ auto should_calc_cross = []() {
     Assertions::assertEquals(1, res);
 };
 
-auto should_calc_area_of_triangle = []() {
+fn should_calc_area_of_triangle = []() {
     // Given
     math::Point2 a{0, 0}, b{1, 0}, c{0, 1};
 
@@ -63,7 +63,7 @@ auto should_calc_area_of_triangle = []() {
     Assertions::assertEquals(0.5, res);
 };
 
-auto should_calc_line_intersection = []() {
+fn should_calc_line_intersection = []() {
     // Given
     math::Line2 a{math::Point2{0, 1}, math::Point2{1, 0}};
     math::Line2 b{math::Point2{1, 0}, math::Point2{0, 1}};
@@ -75,7 +75,7 @@ auto should_calc_line_intersection = []() {
     Assertions::assertEquals(math::Point2{1, 1}, res);
 };
 
-auto should_calc_distance = []() {
+fn should_calc_distance = []() {
     // Given
     math::Point2 p{0, 0}, a{1, 0}, b{1, 1};
 
@@ -86,7 +86,7 @@ auto should_calc_distance = []() {
     Assertions::assertEquals(1, res);
 };
 
-auto should_calc_distance_to_seg = []() {
+fn should_calc_distance_to_seg = []() {
     // Given
     math::Point2 p{0, 0}, p2{0, 2}, p3{0, -1};
     math::Point2 a{1, 0}, b{1, 1};
@@ -102,7 +102,7 @@ auto should_calc_distance_to_seg = []() {
     Assertions::assertEquals(std::sqrt(2), res3);
 };
 
-auto should_calc_projection = []() {
+fn should_calc_projection = []() {
     // Given
     math::Point2 p{0, 2}, p2{0, -1};
     math::Point2 a{1, 0}, b{1, 1};
@@ -116,7 +116,7 @@ auto should_calc_projection = []() {
     Assertions::assertEquals(math::Point2{1, -1}, res2);
 };
 
-inline void test_geometry_2d() {
+fn test_geometry_2d() {
     UnitTestGroup group{"test_geometry_2d"};
 
     group.addTest("should_calc_dot", should_calc_dot);

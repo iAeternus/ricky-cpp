@@ -8,24 +8,24 @@
 
 namespace my::test::test_test_utils {
 
-auto should_success1 = []() {
+fn should_success1 = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 };
 
-auto should_success2 = []() {
+fn should_success2 = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 };
 
-auto should_failed = []() {
+fn should_failed = []() {
     throw std::runtime_error("wa");
 };
 
-auto should_throws = []() {
+fn should_throws = []() {
     Assertions::assertThrows("wa"_cs, should_failed);
     Assertions::assertThrows("wa", should_failed);
 };
 
-inline void test_test_utils() {
+fn test_test_utils() {
     UnitTestGroup group("test_test_utils");
 
     group.addTest("should_success1", should_success1);

@@ -6,7 +6,7 @@
 
 namespace my::test::test_tree {
 
-auto it_works = []() {
+fn it_works = []() {
     util::Tree<i32> t;
     auto* root = t.set_root(1);
 
@@ -18,7 +18,7 @@ auto it_works = []() {
     io::println(t);
 };
 
-auto should_dfs = []() {
+fn should_dfs = []() {
     // Given
     util::Tree<i32> t;
     t.set_root(1);
@@ -37,7 +37,7 @@ auto should_dfs = []() {
     Assertions::assertEquals("[1,2,5,3,4]"_cs, res.__str__());
 };
 
-auto should_bfs = []() {
+fn should_bfs = []() {
     // Given
     util::Tree<i32> t;
     t.set_root(1);
@@ -56,7 +56,7 @@ auto should_bfs = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 };
 
-inline void test_tree() {
+fn test_tree() {
     UnitTestGroup group{"test_tree"};
 
     group.addTest("it_works", it_works);

@@ -6,7 +6,7 @@
 
 namespace my::test::test_time {
 
-auto should_construct = []() {
+fn should_construct = []() {
     auto t = util::Time::of(20);
     auto t2 = util::Time::of(12, 34, 56, 789);
 
@@ -14,7 +14,7 @@ auto should_construct = []() {
     Assertions::assertEquals("12:34:56.000000789"_cs, t2.__str__());
 };
 
-auto should_parse = []() {
+fn should_parse = []() {
     // Given
     CString str = "20:32:06";
 
@@ -27,13 +27,13 @@ auto should_parse = []() {
     Assertions::assertEquals(6, t.second());
 };
 
-auto should_fetch_now = []() {
+fn should_fetch_now = []() {
     auto t = util::Time::now();
 
     io::println(t);
 };
 
-auto should_calc_second_of_day = []() {
+fn should_calc_second_of_day = []() {
     // Given
     auto t = util::Time::of(0, 0, 0);
     auto t2 = util::Time::of(20, 20, 20);
@@ -50,7 +50,7 @@ auto should_calc_second_of_day = []() {
     Assertions::assertEquals(t3, res3);
 };
 
-auto should_calc_nanos_of_day = []() {
+fn should_calc_nanos_of_day = []() {
     // Given
     auto t = util::Time::MIN;
     auto t2 = util::Time::of(20, 20, 20, 20);
@@ -67,7 +67,7 @@ auto should_calc_nanos_of_day = []() {
     Assertions::assertEquals(t3, res3);
 };
 
-auto should_plus = []() {
+fn should_plus = []() {
     // Given
     auto t = util::Time::of(6);
 
@@ -80,7 +80,7 @@ auto should_plus = []() {
     Assertions::assertEquals("08:02:01.000000000"_cs, t4.__str__());
 };
 
-auto should_minus = []() {
+fn should_minus = []() {
     // Given
     auto t = util::Time::of(18);
 
@@ -93,7 +93,7 @@ auto should_minus = []() {
     Assertions::assertEquals("15:57:59.000000000"_cs, t4.__str__());
 };
 
-auto should_subtract = []() {
+fn should_subtract = []() {
     // Given
     auto t = util::Time::of(20, 20, 20, 20);
     auto t2 = util::Time::of(18);
@@ -108,7 +108,7 @@ auto should_subtract = []() {
     Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.__str__());
 };
 
-inline void test_time() {
+fn test_time() {
     UnitTestGroup group{"test_time"};
 
     group.addTest("should_construct", should_construct);

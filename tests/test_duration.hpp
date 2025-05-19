@@ -6,7 +6,7 @@
 
 namespace my::test::test_duration {
 
-auto should_construct = []() {
+fn should_construct = []() {
     auto d = util::Duration::ofDays(4);
     auto d2 = util::Duration::ofHours(4);
     auto d3 = util::Duration::ofMinutes(4);
@@ -32,7 +32,7 @@ auto should_construct = []() {
     Assertions::assertEquals("PT2D1H1S"_cs, (d8 + util::Duration::ofSeconds(3601)).__str__());
 };
 
-auto should_add = []() {
+fn should_add = []() {
     // Given
     auto d = util::Duration::ofHours(25);
     auto d2 = util::Duration::ofDays(1);
@@ -44,7 +44,7 @@ auto should_add = []() {
     Assertions::assertEquals(49, res.toHours());
 };
 
-auto should_subtract = []() {
+fn should_subtract = []() {
     // Given
     auto d = util::Duration::ofHours(25);
     auto d2 = util::Duration::ofDays(1);
@@ -56,7 +56,7 @@ auto should_subtract = []() {
     Assertions::assertEquals(1, res.toHours());
 };
 
-auto should_multiply = []() {
+fn should_multiply = []() {
     // Given
     auto d = util::Duration::ofMinutes(15);
     i64 scalar = 2;
@@ -68,7 +68,7 @@ auto should_multiply = []() {
     Assertions::assertEquals(30, res.toMinutes());
 };
 
-inline void test_duration() {
+fn test_duration() {
     UnitTestGroup group{"test_duration"};
 
     group.addTest("should_construct", should_construct);

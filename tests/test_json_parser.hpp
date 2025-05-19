@@ -9,7 +9,7 @@ namespace my::test::test_json_parser {
 /**
  * TODO 不知道为什么，dict的结尾不加逗号就报错
  */
-auto should_parse = []() {
+fn should_parse = []() {
     // Given
     util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3,}], "other": null, "bool": true, })";
 
@@ -30,7 +30,7 @@ auto should_parse = []() {
     io::println(jsonStr);
 };
 
-inline void test_json_parser() {
+fn test_json_parser() {
     UnitTestGroup group{"test_json_parser"};
 
     group.addTest("should_parse", should_parse);
