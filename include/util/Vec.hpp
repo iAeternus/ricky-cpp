@@ -401,7 +401,7 @@ public:
      * @brief 获取动态数组的字符串表示
      * @return 返回动态数组的 CSV 格式的字符串
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '[';
         for (isize i = 0; i < size_; ++i) {
@@ -618,7 +618,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果内部状态相等返回 true，否则返回 false
          */
-        bool __equals__(const Self& other) const {
+        [[nodiscard]] bool __equals__(const Self& other) const {
             return this->cur_idx_ == other.cur_idx_ && this->vec_ptr_ == other.vec_ptr_;
         }
 
@@ -627,7 +627,7 @@ public:
          * @param other 另一个迭代器
          * @return 返回一个整数值，表示两个迭代器的顺序
          */
-        cmp_t __cmp__(const Self& other) const {
+        [[nodiscard]] cmp_t __cmp__(const Self& other) const {
             return this->cur_idx_ - other.cur_idx_;
         }
 

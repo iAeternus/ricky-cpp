@@ -207,7 +207,7 @@ public:
      * @brief 转为字符串
      * @return 自身对象
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         return *this;
     }
 
@@ -215,7 +215,7 @@ public:
      * @brief 计算字符串的哈希值
      * @return 字符串的哈希值
      */
-    hash_t __hash__() const {
+    [[nodiscard]] hash_t __hash__() const {
         return bytes_hash(data(), size());
     }
 
@@ -224,7 +224,7 @@ public:
      * @param other 要比较的字符串
      * @return 比较结果
      */
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return std::strcmp(data(), other.data());
     }
 
@@ -233,7 +233,7 @@ public:
      * @param other 要比较的字符串
      * @return 是否相等
      */
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return __cmp__(other) == 0;
     }
 
@@ -242,7 +242,7 @@ public:
      * @param other 要比较的 C 风格字符串
      * @return 是否相等
      */
-    bool __equals__(const char* other) const {
+    [[nodiscard]] bool __equals__(const char* other) const {
         return std::strcmp(data(), other) == 0;
     }
 
@@ -394,7 +394,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果内部状态相等返回 true，否则返回 false
          */
-        bool __equals__(const Self& other) const {
+        [[nodiscard]] bool __equals__(const Self& other) const {
             return this->current_ == other.current_;
         }
 
@@ -403,7 +403,7 @@ public:
          * @param other 另一个迭代器
          * @return 返回一个整数值，表示两个迭代器的顺序
          */
-        cmp_t __cmp__(const Self& other) const {
+        [[nodiscard]] cmp_t __cmp__(const Self& other) const {
             return this->current_ - other.current_;
         }
 

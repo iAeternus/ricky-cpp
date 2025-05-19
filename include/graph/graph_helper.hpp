@@ -25,7 +25,7 @@ struct Edge : public Object<Edge<E>> {
     Edge(u64 end, const E& w = E{}) :
             end(end), w(w) {}
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (math::FloatingPointType<E>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<E>) {
@@ -35,7 +35,7 @@ struct Edge : public Object<Edge<E>> {
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '(' << end << ',' << w << ')';
         return CString{stream.str()};
@@ -127,7 +127,7 @@ struct Vertex : public Object<Vertex<V, E>> {
         }
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (math::FloatingPointType<V>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<V>) {
@@ -137,7 +137,7 @@ struct Vertex : public Object<Vertex<V, E>> {
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '(' << id << ',' << w << ")->";
         if (edges.empty()) {

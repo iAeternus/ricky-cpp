@@ -100,7 +100,7 @@ public:
         return index_ - other.index_;
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return container_ == other.container_ && index_ == other.index_;
     }
 

@@ -493,7 +493,7 @@ public:
      * @param other 另一个字典。
      * @return 如果相等返回 true，否则返回 false。
      */
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         if (this->size() != other.size()) return false;
 
         for (auto&& kv : *this) {
@@ -511,7 +511,7 @@ public:
      * @brief 获取字典的字符串表示。
      * @return 返回字典的 CSV 格式的字符串。
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '{';
         for (auto&& item : *this) {
@@ -693,7 +693,7 @@ public:
          * @param other 另一个迭代器。
          * @return 如果相等返回 true，否则返回 false。
          */
-        bool __equals__(const Self& other) const {
+        [[nodiscard]] bool __equals__(const Self& other) const {
             return dict_ == other.dict_ && index_ == other.index_;
         }
 

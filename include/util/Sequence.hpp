@@ -38,7 +38,7 @@ public:
         return static_cast<const D*>(this)->size();
     }
 
-    cmp_t __cmp__(const D& other) const {
+    [[nodiscard]] cmp_t __cmp__(const D& other) const {
         auto m_it = begin(), m_end = end();
         auto o_it = other.begin(), o_end = other.end();
         while (m_it != m_end && o_it != o_end) {
@@ -51,7 +51,7 @@ public:
         return 0;
     }
 
-    bool __equals__(const D& other) const {
+    [[nodiscard]] bool __equals__(const D& other) const {
         if (size() != other.size()) {
             return false;
         }

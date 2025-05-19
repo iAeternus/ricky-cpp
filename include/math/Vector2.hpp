@@ -124,19 +124,19 @@ public:
         return *this;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '(' << x_ << ',' << y_ << ')';
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         auto x_cmp = fcmp(x_, other.x_);
         if (x_cmp != 0) return x_cmp;
         return fcmp(y_, other.y_);
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return fcmp(x_, other.x_) == 0 && fcmp(y_, other.y_) == 0;
     }
 

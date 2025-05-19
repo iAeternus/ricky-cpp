@@ -66,7 +66,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << *key_ << "->" << *value_;
         return CString{stream.str()};

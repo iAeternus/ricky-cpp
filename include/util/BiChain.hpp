@@ -53,7 +53,7 @@ public:
         ++Super::size_;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << "<BiChain> [";
         bool first = true;
@@ -128,7 +128,7 @@ public:
         return tmp;
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return Super::current_ - other.current_;
     }
 

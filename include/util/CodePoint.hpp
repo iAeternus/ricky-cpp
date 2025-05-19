@@ -141,15 +141,15 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         return CString{data(), size()};
     }
 
-    hash_t __hash__() const {
+    [[nodiscard]] hash_t __hash__() const {
         return bytes_hash(data(), size());
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         isize m_size = this->size(), o_size = other.size();
         if (m_size != o_size) {
             return m_size - o_size;
@@ -157,11 +157,11 @@ public:
         return std::memcmp(this->data(), other.data(), m_size);
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return this->__cmp__(other) == 0;
     }
 
-    bool __equals__(u8 ch) const {
+    [[nodiscard]] bool __equals__(u8 ch) const {
         return static_cast<u8>(byte_code_[0]) == static_cast<u8>(ch);
     }
 

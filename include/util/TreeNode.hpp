@@ -109,7 +109,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         this->print(stream, "");
         return CString{stream.str()};
@@ -194,7 +194,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         this->print(stream, "");
         return CString{stream.str()};
@@ -267,7 +267,7 @@ public:
         return *this;
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (Comparable<key_t>) {
             return this->key_.__cmp__(other.key_);
         } else if constexpr (Subtractble<key_t>) {
@@ -278,7 +278,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << (color_ == RED ? io::Color::RED : "") << '(' << key_ << ',' << value_ << ')' << io::Color::CLOSE << '\n';
         return CString{stream.str()};

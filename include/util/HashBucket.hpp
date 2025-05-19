@@ -583,7 +583,7 @@ public:
          * @param other 另一个迭代器。
          * @return 如果相等返回 true，否则返回 false。
          */
-        bool __equals__(const Self& other) const {
+        [[nodiscard]] bool __equals__(const Self& other) const {
             return this->bucket_ptr_ == other.bucket_ptr_ && this->index_ == other.index_;
         }
 

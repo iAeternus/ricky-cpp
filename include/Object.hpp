@@ -23,7 +23,7 @@ public:
     /**
      * 计算hash编码
      */
-    hash_t __hash__() const {
+    [[nodiscard]] hash_t __hash__() const {
         static_assert(false, "NotImplementedError: not implemented __hash__()");
         std::unreachable();
     }
@@ -32,7 +32,7 @@ public:
      * @brief 比较两个对象
      * @return 返回值大于0为大于，小于0为小于，等于0为等于
      */
-    cmp_t __cmp__(const D& other) const {
+    [[nodiscard]] cmp_t __cmp__(const D& other) const {
         return static_cast<cmp_t>(this) - static_cast<cmp_t>(&other);
     }
 
@@ -40,14 +40,14 @@ public:
      * @brief 判断两个对象是否相等
      * @return true=相等 false=不相等
      */
-    bool __equals__(const D& other) const {
+    [[nodiscard]] bool __equals__(const D& other) const {
         return static_cast<const D*>(this)->__cmp__(other) == 0;
     }
 
     /**
      * @brief 转换为 字符串 类型
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::string type_name = dtype(D);
         i32 len = type_name.size() + 22; // TODO ??
         CString s(len);

@@ -101,7 +101,7 @@ public:
         return *this;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         if (is_zero(re_) && is_zero(im_)) {
             return CString{"0"};
@@ -122,13 +122,13 @@ public:
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         (void)other;
         RuntimeError("Complex numbers cannot compare sizes");
         std::unreachable();
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return fcmp(this->re_, other.re_) == 0 && fcmp(this->im_, other.im_) == 0;
     }
 

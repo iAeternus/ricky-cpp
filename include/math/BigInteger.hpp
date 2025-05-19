@@ -350,7 +350,7 @@ public:
         return *this != ZERO;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         isize mSize = num_.size();
         std::stringstream stream;
         if (!sign_) {
@@ -364,7 +364,7 @@ public:
         return CString{stream.str()};
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if (this->sign_ && !other.sign_) {
             return 1;
         } else if (!this->sign_ && other.sign_) {

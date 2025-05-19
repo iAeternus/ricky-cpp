@@ -88,7 +88,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '(';
         if constexpr (is_same<S, CString, String, std::string>) {

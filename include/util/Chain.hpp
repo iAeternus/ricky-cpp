@@ -121,7 +121,7 @@ public:
         return arr;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << "<Chain> [";
         bool first = true;
@@ -205,7 +205,7 @@ public:
         return tmp;
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return this->current_ - other.current_;
     }
 

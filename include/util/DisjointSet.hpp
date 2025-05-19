@@ -24,7 +24,7 @@ class DisjointSet : public Object<DisjointSet<T>> {
         Node(const T& value) :
                 value(value), rank(1), parent(this) {}
 
-        CString __str__() const {
+        [[nodiscard]] CString __str__() const {
             return CString{std::format("([{}] {} {})", value, rank, parent ? parent->value : "null")};
         }
     };
@@ -103,7 +103,7 @@ public:
         return n->rank;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         Dict<value_t, DynArray<value_t>> sets;
         for (const auto& elem : nodes_.keys()) {
             sets[find(elem)].append(elem);

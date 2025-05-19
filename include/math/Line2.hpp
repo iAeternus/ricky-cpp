@@ -22,7 +22,7 @@ public:
     fn s() const { return s_; }
     fn ang() const { return ang_; }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return fcmp(ang_, other.ang_);
     }
 

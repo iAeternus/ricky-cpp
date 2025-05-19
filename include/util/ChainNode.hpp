@@ -72,13 +72,13 @@ public:
         return *this;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << "<Node  " << value_ << '>';
         return CString(stream.str());
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return this->value_ == other.value_;
     }
 
@@ -129,13 +129,13 @@ public:
         return *this;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << "<BiNode  " << value_ << ">";
         return CString{stream.str()};
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return this->value_ == other.value_;
     }
 

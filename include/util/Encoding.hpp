@@ -37,7 +37,7 @@ public:
      */
     virtual Encoding* clone() const = 0;
 
-    virtual CString __str__() const {
+    [[nodiscard]] virtual CString __str__() const {
         return "Encoding";
     }
 };
@@ -59,7 +59,7 @@ public:
         return new Self{};
     }
 
-    CString __str__() const override {
+    [[nodiscard]] CString __str__() const override {
         return ASCII;
     }
 };
@@ -91,7 +91,7 @@ public:
         return new Self{};
     }
 
-    CString __str__() const override {
+    [[nodiscard]] CString __str__() const override {
         return UTF8;
     }
 };
@@ -116,7 +116,7 @@ public:
         return new Self{};
     }
 
-    CString __str__() const override {
+    [[nodiscard]] CString __str__() const override {
         return UTF16;
     }
 };
@@ -138,7 +138,7 @@ public:
         return new Self{};
     }
 
-    CString __str__() const override {
+    [[nodiscard]] CString __str__() const override {
         return UTF32;
     }
 };
@@ -160,7 +160,7 @@ public:
         return new Self{};
     }
 
-    CString __str__() const override {
+    [[nodiscard]] CString __str__() const override {
         return GB2312;
     }
 };

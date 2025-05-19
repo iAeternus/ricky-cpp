@@ -92,7 +92,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         if (root_ == nullptr) {
             return "(empty tree)"_cs;
         }

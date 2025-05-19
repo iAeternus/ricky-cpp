@@ -235,7 +235,7 @@ public:
         std::unreachable();
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         switch (jsonType_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
             return cstr(transform<JsonType::JsonInt>());

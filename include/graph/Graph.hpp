@@ -193,7 +193,7 @@ public:
         return std::any_cast<RetType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << "Graph (" << (is_directed_ ? "Directed" : "Undirected") << ")\n";
         stream << "Vertex count: " << vertex_cnt() << '\n';

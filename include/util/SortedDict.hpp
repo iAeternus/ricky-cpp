@@ -40,7 +40,7 @@ public:
         size_ = 0;
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         if (root_ == NIL) {
             return "(empty dict)"_cs;
         }

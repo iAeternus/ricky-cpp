@@ -166,7 +166,7 @@ public:
         return Self{tmp};
     }
 
-    bool __equals__(const Self& other) const {
+    [[nodiscard]] bool __equals__(const Self& other) const {
         return iter_ == other.iter_;
     }
 

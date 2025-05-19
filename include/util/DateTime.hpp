@@ -309,7 +309,7 @@ public:
      * @param other 另一个日期对象
      * @return 比较结果（-1、0、1），0 表示相等
      */
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return this->year_ != other.year_   ? this->year_ - other.year_ :
                this->month_ != other.month_ ? this->month_ - other.month_ :
                                               this->day_ - other.day_;
@@ -319,7 +319,7 @@ public:
      * @brief 返回日期的字符串表示（YYYY-MM-DD 格式）
      * @return 日期字符串
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         char buf[11];
         snprintf(buf, sizeof(buf), "%04d-%02d-%02d", year_, month_, day_);
         return CString{buf};
@@ -741,7 +741,7 @@ public:
      * @param other 另一个时间点
      * @return 比较结果（-1、0、1），0 表示相等
      */
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return this->hour_ != other.hour_     ? this->hour_ - other.hour_ :
                this->minute_ != other.minute_ ? this->minute_ - other.minute_ :
                this->second_ != other.second_ ? this->second_ - other.second_ :
@@ -752,7 +752,7 @@ public:
      * @brief 返回时间的字符串表示（HH:MM:SS.nnnnnnnnn 格式）
      * @return 时间字符串
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         char buf[20];
         snprintf(buf, sizeof(buf), "%02d:%02d:%02d.%09d", hour_, minute_, second_, nano_);
         return CString{buf};
@@ -1207,7 +1207,7 @@ public:
      * @param other 另一个日期时间对象
      * @return 比较结果（-1、0、1），0 表示相等
      */
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         auto date_cmp = date_.__cmp__(other.date_);
         return date_cmp == 0 ? time_.__cmp__(other.time_) : date_cmp;
     }
@@ -1216,7 +1216,7 @@ public:
      * @brief 返回日期时间的字符串表示（如：2025-02-14T12:30:45.000000000Z）
      * @return 日期时间字符串
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << date_.__str__().data() << 'T' << time_.__str__().data() << 'Z';
         return CString{stream.str()};

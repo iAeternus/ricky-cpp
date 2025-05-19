@@ -741,7 +741,7 @@ public:
      * @brief 返回字符串的 C 风格字符串表示
      * @return C 风格字符串
      */
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         CString res{byte_length()};
         isize pos = 0;
         for (auto&& ch : *this) {
@@ -756,11 +756,11 @@ public:
      * @brief 返回字符串的哈希值
      * @return 字符串的哈希值
      */
-    hash_t __hash__() const {
+    [[nodiscard]] hash_t __hash__() const {
         return __str__().__hash__();
     }
 
-    cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         isize min_size = std::min(this->size(), other.size());
         for (auto i = 0; i < min_size; ++i) {
             auto cmp = this->at(i).__cmp__(other.at(i));
