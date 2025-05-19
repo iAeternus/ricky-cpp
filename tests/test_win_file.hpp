@@ -46,7 +46,7 @@ auto should_append_win_file = []() {
     fs::win::remove(path);
 };
 
-void test_win_file() {
+inline void test_win_file() {
     UnitTestGroup group{"test_win_file"};
 
     group.addTest("should_write_win_file", should_write_win_file);

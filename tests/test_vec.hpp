@@ -178,7 +178,7 @@ auto should_sort = []() {
     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 };
 
-void test_vec() {
+inline void test_vec() {
     UnitTestGroup group{"test_vec"};
 
     group.addTest("it_works", it_works);
@@ -227,7 +227,7 @@ auto speed_of_vector_push_back_i32 = []() {
     }
 };
 
-void test_vec_speed() {
+inline void test_vec_speed() {
     UnitTestGroup group{"test_vec_speed"};
 
     group.addTest("speed_of_vec_append_string", speed_of_vec_append_string);

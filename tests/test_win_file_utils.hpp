@@ -93,7 +93,7 @@ auto should_list_dir = []() {
     }
 };
 
-void test_win_file_utils() {
+inline void test_win_file_utils() {
     UnitTestGroup group{"test_win_file_utils"};
 
     group.addTest("should_judge_exists", should_judge_exists);

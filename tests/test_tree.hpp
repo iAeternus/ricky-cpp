@@ -56,7 +56,7 @@ auto should_bfs = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 };
 
-void test_tree() {
+inline void test_tree() {
     UnitTestGroup group{"test_tree"};
 
     group.addTest("it_works", it_works);

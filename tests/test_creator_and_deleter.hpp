@@ -35,11 +35,6 @@ private:
 i32 TrackedObject::construct_count = 0;
 i32 TrackedObject::destruct_count = 0;
 
-auto befor_each = []() {
-    TrackedObject::construct_count = 0;
-    TrackedObject::destruct_count = 0;
-};
-
 /**
  * @brief 异常测试类：构造函数可能抛出异常
  */
@@ -50,6 +45,11 @@ public:
             throw std::runtime_error("Construction failed");
         }
     }
+};
+
+auto befor_each = []() {
+    TrackedObject::construct_count = 0;
+    TrackedObject::destruct_count = 0;
 };
 
 auto it_works = []() {
@@ -133,7 +133,7 @@ auto should_handle_null_pointer = []() {
     deleter(ptr);
 };
 
-void test_creator_and_deleter() {
+inline void test_creator_and_deleter() {
     UnitTestGroup group{"test_creator_and_deleter"};
     group.before_each(befor_each);
 

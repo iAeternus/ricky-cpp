@@ -93,7 +93,7 @@ auto should_compare = []() {
     Assertions::assertEquals(0, res5);
 };
 
-void test_math_utils() {
+inline void test_math_utils() {
     UnitTestGroup group{"test_math_utils"};
 
     group.addTest("should_cal_gcd", should_cal_gcd);

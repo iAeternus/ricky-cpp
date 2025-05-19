@@ -11,7 +11,7 @@ auto it_works = []() {
     Assertions::assertEquals("(empty dict)"_cs, sd.__str__());
 };
 
-void test_sorted_dict() {
+inline void test_sorted_dict() {
     UnitTestGroup group{"test_sorted_dict"};
 
     group.addTest("it_works", it_works);

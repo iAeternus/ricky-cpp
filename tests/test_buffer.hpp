@@ -20,7 +20,7 @@ auto should_get_front_and_back = []() {
     Assertions::assertEquals(3, res2);
 };
 
-void test_buffer() {
+inline void test_buffer() {
     UnitTestGroup group{"test_buffer"};
 
     group.addTest("should_get_front_and_back", should_get_front_and_back);

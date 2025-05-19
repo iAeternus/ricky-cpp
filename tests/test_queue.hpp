@@ -35,7 +35,7 @@ auto it_works = []() {
     Assertions::assertEquals(0, q.size());
 };
 
-void test_queue() {
+inline void test_queue() {
     UnitTestGroup group{"test_queue"};
 
     group.addTest("it_works", it_works);
@@ -65,7 +65,7 @@ auto speed_of_std_queue_push_and_pop = []() {
     }
 };
 
-void test_queue_speed() {
+inline void test_queue_speed() {
     UnitTestGroup group{"test_queue_speed"};
 
     group.addTest("speed_of_util_queue_push_and_pop", speed_of_util_queue_push_and_pop);

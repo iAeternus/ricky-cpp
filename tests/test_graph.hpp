@@ -78,7 +78,7 @@ auto should_register = []() {
     Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());
 };
 
-void test_graph() {
+inline void test_graph() {
     UnitTestGroup group{"test_graph"};
 
     group.addTest("should_create_graph", should_create_graph);

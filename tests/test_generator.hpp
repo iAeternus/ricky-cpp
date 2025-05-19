@@ -26,7 +26,7 @@ auto should_generate = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 };
 
-void test_generator() {
+inline void test_generator() {
     UnitTestGroup group{"test_generator"};
 
     group.addTest("should_generate", should_generate);

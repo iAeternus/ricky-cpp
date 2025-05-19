@@ -30,7 +30,7 @@ auto should_parse = []() {
     io::println(jsonStr);
 };
 
-void test_json_parser() {
+inline void test_json_parser() {
     UnitTestGroup group{"test_json_parser"};
 
     group.addTest("should_parse", should_parse);

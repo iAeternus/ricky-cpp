@@ -17,7 +17,7 @@ auto it_works = []() {
     Assertions::assertEquals("aaabbbccc你好R"_s, sb.str());
 };
 
-void test_string_builder() {
+inline void test_string_builder() {
     UnitTestGroup group{"test_string_builder"};
 
     group.addTest("it_works", it_works);
@@ -44,7 +44,7 @@ auto speed_of_std_string_splicing = []() {
     Assertions::assertEquals(N * 6, str.length());
 };
 
-void test_string_builder_speed() {
+inline void test_string_builder_speed() {
     UnitTestGroup group{"test_string_builder_speed"};
 
     group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);

@@ -98,7 +98,7 @@ auto should_calc_norm = []() {
     Assertions::assertEquals(math::Vector2{-1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
 };
 
-void test_vector2() {
+inline void test_vector2() {
     UnitTestGroup group{"test_vector2"};
 
     group.addTest("it_works", it_works);

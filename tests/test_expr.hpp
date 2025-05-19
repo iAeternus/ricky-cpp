@@ -28,7 +28,7 @@ auto it_works = []() {
     Assertions::assertEquals(3.5 + 4.2 * (2 - 5.1) / 2, expr4.eval());
 };
 
-void test_expr() {
+inline void test_expr() {
     UnitTestGroup group{"test_expr"};
 
     group.addTest("it_works", it_works);

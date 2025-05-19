@@ -116,7 +116,7 @@ auto should_calc_projection = []() {
     Assertions::assertEquals(math::Point2{1, -1}, res2);
 };
 
-void test_geometry_2d() {
+inline void test_geometry_2d() {
     UnitTestGroup group{"test_geometry_2d"};
 
     group.addTest("should_calc_dot", should_calc_dot);

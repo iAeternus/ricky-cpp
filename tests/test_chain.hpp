@@ -98,7 +98,7 @@ auto should_str = []() {
     Assertions::assertEquals("<Chain> [1->2->3->4->5]"_cs, s);
 };
 
-void test_chain() {
+inline void test_chain() {
     UnitTestGroup group{"test_chain"_cs};
 
     group.addTest("should_append", should_append);

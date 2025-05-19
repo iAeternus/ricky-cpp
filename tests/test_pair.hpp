@@ -41,7 +41,7 @@ auto should_structured_binding = []() {
     Assertions::assertEquals(2, y);
 };
 
-void test_pair() {
+inline void test_pair() {
     UnitTestGroup group{"test_pair"};
 
     group.addTest("should_construct", should_construct);

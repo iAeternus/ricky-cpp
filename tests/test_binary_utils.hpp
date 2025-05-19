@@ -95,7 +95,7 @@ auto should_roundup2 = []() {
     Assertions::assertEquals(4, res3);
 };
 
-void test_binary_utils() {
+inline void test_binary_utils() {
     UnitTestGroup group{"test_binary_utils"};
 
     group.addTest("should_cal_lowbit", should_cal_lowbit);

@@ -35,7 +35,7 @@ auto should_merge_and_find = []() {
     io::println();
 };
 
-void test_disjoint_set() {
+inline void test_disjoint_set() {
     UnitTestGroup group{"test_disjoint_set"};
 
     group.addTest("should_merge_and_find", should_merge_and_find);

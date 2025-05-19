@@ -108,7 +108,7 @@ auto test_is_exist_el = []() {
     Assertions::assertFalse(res2);
 };
 
-void test_graph_algorithm() {
+inline void test_graph_algorithm() {
     UnitTestGroup group{"test_graph_algorithm"};
 
     group.addTest("test_fake_algorithm", test_fake_algorithm);

@@ -167,7 +167,7 @@ auto should_find = []() {
 //     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 // };
 
-void test_dynarray() {
+inline void test_dynarray() {
     UnitTestGroup group("test_dynarray");
 
     group.addTest("it_works", it_works);
@@ -229,7 +229,7 @@ auto speed_of_vector_push_back_i32 = []() {
     }
 };
 
-void test_dynarray_speed() {
+inline void test_dynarray_speed() {
     UnitTestGroup group{"test_dynarray_speed"};
 
     group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);

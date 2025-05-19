@@ -40,7 +40,7 @@ auto should_at = []() {
     Assertions::assertEquals("[b,b,c]"_cs, arr.__str__());
 };
 
-void test_array() {
+inline void test_array() {
     UnitTestGroup group{"test_array"};
 
     group.addTest("it_works", it_works);

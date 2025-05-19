@@ -52,7 +52,7 @@ auto should_iterable = []() {
     // Assertions::assertEquals(sum1, sum2);
 };
 
-void test_bi_chain() {
+inline void test_bi_chain() {
     UnitTestGroup group{"test_bi_chain"};
 
     group.addTest("should_append_and_prepend", should_append_and_prepend);

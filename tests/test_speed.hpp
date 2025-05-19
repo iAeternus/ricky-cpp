@@ -11,7 +11,7 @@
 
 namespace my::test {
 
-void test_speed() {
+inline void test_speed() {
     test_dynarray::test_dynarray_speed();
     test_vec::test_vec_speed();
     test_dict::test_dict_speed();

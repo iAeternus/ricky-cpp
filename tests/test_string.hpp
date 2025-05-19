@@ -249,7 +249,7 @@ auto should_remove_all = []() {
     Assertions::assertEquals("abc"_s, res2);
 };
 
-void test_string() {
+inline void test_string() {
     UnitTestGroup group{"test_string"};
 
     group.addTest("should_construct", should_construct);

@@ -68,7 +68,7 @@ auto should_handle_non_ascii_character = []() {
     Assertions::assertEquals(text, h.decode());
 };
 
-void test_huffman_tree() {
+inline void test_huffman_tree() {
     UnitTestGroup group{"test_huffman_tree"};
 
     group.addTest("it_works", it_works);

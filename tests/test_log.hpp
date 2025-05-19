@@ -29,7 +29,7 @@ auto it_works = []() {
     Log::fatal("This is a fatal log.");
 };
 
-void test_log() {
+inline void test_log() {
     UnitTestGroup group{"test_log"};
 
     group.addTest("it_works", it_works);

@@ -62,7 +62,7 @@ auto should_iterate = []() {
     CString str = "abcdefg";
 
     // When
-    for(auto&& c : str) {
+    for (auto&& c : str) {
         c++;
     }
 
@@ -70,7 +70,7 @@ auto should_iterate = []() {
     Assertions::assertEquals("bcdefgh"_cs, str.__str__());
 };
 
-void test_cstring() {
+inline void test_cstring() {
     UnitTestGroup group{"test_cstring"};
 
     group.addTest("should_construct", should_construct);

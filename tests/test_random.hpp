@@ -29,7 +29,7 @@ auto should_generate_uniform_sum_numbers = []() {
     io::println(util::Random::instance().generate_uniform_sum_numbers(n, sum));
 };
 
-void test_random() {
+inline void test_random() {
     UnitTestGroup group{"test_random"};
 
     group.addTest("should_generate_random", should_generate_random);

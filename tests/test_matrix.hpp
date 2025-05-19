@@ -172,7 +172,7 @@ auto should_lu_decomposition = []() {
     Assertions::assertEquals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.__str__());
 };
 
-void test_matrix() {
+inline void test_matrix() {
     UnitTestGroup group{"test_matrix"};
 
     group.addTest("should_construct", should_construct);

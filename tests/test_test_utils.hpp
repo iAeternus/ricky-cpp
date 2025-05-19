@@ -25,7 +25,7 @@ auto should_throws = []() {
     Assertions::assertThrows("wa", should_failed);
 };
 
-void test_test_utils() {
+inline void test_test_utils() {
     UnitTestGroup group("test_test_utils");
 
     group.addTest("should_success1", should_success1);

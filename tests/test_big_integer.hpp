@@ -232,7 +232,7 @@ auto should_compare = []() {
     Assertions::assertTrue(res6);
 };
 
-void test_big_integer() {
+inline void test_big_integer() {
     UnitTestGroup group{"test_big_integer"};
 
     group.addTest("should_construct_with_i64", should_construct_with_i64);

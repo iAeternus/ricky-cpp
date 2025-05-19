@@ -24,7 +24,7 @@ auto it_works = []() {
     Assertions::assertEquals(0, st.size());
 };
 
-void test_stack() {
+inline void test_stack() {
     UnitTestGroup group{"test_stack"};
 
     group.addTest("it_works", it_works);

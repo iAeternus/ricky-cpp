@@ -68,7 +68,7 @@ auto should_multiply = []() {
     Assertions::assertEquals(30, res.toMinutes());
 };
 
-void test_duration() {
+inline void test_duration() {
     UnitTestGroup group{"test_duration"};
 
     group.addTest("should_construct", should_construct);

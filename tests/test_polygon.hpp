@@ -31,7 +31,7 @@ auto should_judge_point_in_polygon = []() {
     Assertions::assertFalse(res2);
 };
 
-void test_polygon() {
+inline void test_polygon() {
     UnitTestGroup group{"test_polygon"};
 
     group.addTest("should_calc_area", should_calc_area);

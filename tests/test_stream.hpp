@@ -34,7 +34,7 @@ auto should_map_objects = []() {
     Assertions::assertEquals("[1,2,3]"_cs, res.__str__());
 };
 
-void test_stream() {
+inline void test_stream() {
     UnitTestGroup group{"test_stream"};
 
     group.addTest("should_operates", should_operates);

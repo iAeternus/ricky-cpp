@@ -14,7 +14,7 @@ auto should_compare = []() {
     Assertions::assertFalse('a' != util::CodePoint{'a'});
 };
 
-void test_code_point() {
+inline void test_code_point() {
     UnitTestGroup group("test_code_point");
 
     group.addTest("should_compare", should_compare);
@@ -40,7 +40,7 @@ auto speed_of_original_code_point_create = []() {
     Assertions::assertEquals(N, cps.size());
 };
 
-void test_code_point_pool_speed() {
+inline void test_code_point_pool_speed() {
     UnitTestGroup group{"test_code_point_pool_speed"};
 
     group.addTest("speed_of_code_point_pool_create", speed_of_code_point_pool_create);

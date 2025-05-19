@@ -108,7 +108,7 @@ auto should_subtract = []() {
     Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.__str__());
 };
 
-void test_time() {
+inline void test_time() {
     UnitTestGroup group{"test_time"};
 
     group.addTest("should_construct", should_construct);

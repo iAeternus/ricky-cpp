@@ -5,11 +5,9 @@
 #include "ThreadPool.hpp"
 #include "Dict.hpp"
 
-#include <exception>
-
 namespace my::test::test_thread_pool {
 
-auto add = [](i32 a, i32 b) {
+fn add = [](i32 a, i32 b) {
     return a + b;
 };
 
@@ -79,7 +77,7 @@ auto should_wait = []() {
     }
 };
 
-void test_thread_pool() {
+inline void test_thread_pool() {
     UnitTestGroup group{"test_thread_pool"};
 
     group.addTest("should_push", should_push);
@@ -109,7 +107,7 @@ auto speed_of_sync = []() {
     }
 };
 
-void test_thread_pool_speed() {
+inline void test_thread_pool_speed() {
     UnitTestGroup group{"test_thread_pool_speed"};
     group.setup([]() {
         n = 100;

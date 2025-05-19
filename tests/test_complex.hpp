@@ -101,7 +101,7 @@ auto should_divide = []() {
     Assertions::assertEquals(res.__str__(), a.__str__());
 };
 
-void test_complex() {
+inline void test_complex() {
     UnitTestGroup group{"test_complex"};
 
     group.addTest("should_construct", should_construct);

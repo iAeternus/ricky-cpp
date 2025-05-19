@@ -134,7 +134,7 @@ auto should_calc_epoch_day = []() {
     Assertions::assertEquals(d4, res4);
 };
 
-void test_date() {
+inline void test_date() {
     UnitTestGroup group{"test_date"};
 
     group.addTest("should_construct", should_construct);

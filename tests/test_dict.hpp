@@ -107,7 +107,7 @@ auto should_to_string = []() {
     Assertions::assertEquals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
 };
 
-void test_dict() {
+inline void test_dict() {
     UnitTestGroup group{"test_dict"};
 
     group.addTest("should_insert", should_insert);
@@ -161,7 +161,7 @@ auto speed_of_unordered_map_insert = []() {
     }
 };
 
-void test_dict_speed() {
+inline void test_dict_speed() {
     UnitTestGroup group{"test_dict_speed"};
     group.setup(setup);
 
