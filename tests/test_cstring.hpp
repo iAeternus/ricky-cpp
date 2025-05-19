@@ -46,16 +46,111 @@ fn should_compare = []() {
     Assertions::assertNotEquals(str2, str4);
 };
 
-fn should_add = []() {
+fn should_split = []() {
     // Given
-    CString str = "aaa";
-    CString str2 = "bbb";
+    CString s = "abcdef";
 
     // When
-    auto res = str + str2;
+    auto res = s.split(1, 2);
+    auto res2 = s.split(3);
+    auto res3 = s.split(1, -1);
 
     // Then
-    Assertions::assertEquals("aaabbb"_cs, res);
+    Assertions::assertEquals(1, res.size());
+    Assertions::assertEquals("b"_cs, res);
+    Assertions::assertEquals("def"_cs, res2);
+    Assertions::assertEquals("bcde"_cs, res3);
+};
+
+fn should_find = []() {
+    // Given
+    CString s = "abcdeff";
+    CString s2 = "caabaabaabaabaaaab";
+
+    // When
+    // auto pos = s.find("def");
+    auto pos2 = s.find('f');
+    // auto pos3 = s.find("abd");
+    // auto pos4 = s2.find("aabaabaaaa");
+    // auto pos5 = s2.find("");
+
+    // Then
+    // Assertions::assertEquals(3, pos);
+    Assertions::assertEquals(5, pos2);
+    // Assertions::assertEquals(npos, pos3);
+    // Assertions::assertEquals(7, pos4);
+    // Assertions::assertEquals(npos, pos5);
+};
+
+// fn should_find_all = []() {
+//     // Given
+//     CString s = "abcdefabc";
+
+//     // When
+//     auto poss = s.find_all("abc");
+
+//     // Then
+//     Assertions::assertEquals(2, poss.size());
+//     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
+// };
+
+fn should_judge_starts_with = []() {
+    // Given
+    CString s = "abcdef";
+
+    // When
+    bool res = s.starts_with("abc");
+    bool res2 = s.starts_with("abd");
+
+    // Then
+    Assertions::assertTrue(res);
+    Assertions::assertFalse(res2);
+};
+
+fn should_judge_ends_with = []() {
+    // Given
+    CString s = "abcdef";
+
+    // When
+    bool res = s.ends_with("def");
+    bool res2 = s.ends_with("deg");
+
+    // Then
+    Assertions::assertTrue(res);
+    Assertions::assertFalse(res2);
+};
+
+fn should_get_upper = []() {
+    // Given
+    CString s = "abcDef";
+
+    // When
+    auto res = s.upper();
+
+    // Then
+    Assertions::assertEquals("ABCDEF"_cs, res);
+};
+
+fn should_get_lower = []() {
+    // Given
+    CString s = "ABCdEF";
+
+    // When
+    auto res = s.lower();
+
+    // Then
+    Assertions::assertEquals("abcdef"_cs, res);
+};
+
+fn should_trim = []() {
+    // Given
+    CString s = "   abcdef   ";
+
+    // When
+    auto res = s.trim();
+
+    // Then
+    Assertions::assertEquals("abcdef"_cs, res);
 };
 
 fn should_remove_all = []() {
@@ -71,6 +166,18 @@ fn should_remove_all = []() {
     // Then
     Assertions::assertEquals("abc"_cs, res);
     Assertions::assertEquals("abc"_cs, res2);
+};
+
+fn should_add = []() {
+    // Given
+    CString str = "aaa";
+    CString str2 = "bbb";
+
+    // When
+    auto res = str + str2;
+
+    // Then
+    Assertions::assertEquals("aaabbb"_cs, res);
 };
 
 fn should_iterate = []() {
@@ -91,8 +198,16 @@ fn test_cstring() {
     group.addTest("should_construct", should_construct);
     group.addTest("should_hash", should_hash);
     group.addTest("should_compare", should_compare);
-    group.addTest("should_add", should_add);
+    group.addTest("should_split", should_split);
+    group.addTest("should_find", should_find);
+    // group.addTest("should_find_all", should_find_all);
+    group.addTest("should_judge_starts_with", should_judge_starts_with);
+    group.addTest("should_judge_ends_with", should_judge_ends_with);
+    group.addTest("should_get_upper", should_get_upper);
+    group.addTest("should_get_lower", should_get_lower);
+    group.addTest("should_trim", should_trim);
     group.addTest("should_remove_all", should_remove_all);
+    group.addTest("should_add", should_add);
     group.addTest("should_iterate", should_iterate);
 
     group.startAll();

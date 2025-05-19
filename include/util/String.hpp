@@ -340,18 +340,18 @@ public:
         return length;
     }
 
-    /**
-     * @brief 分割字符串，返回指定范围的子字符串
-     * @param start 起始索引
-     * @param end 结束索引（不包含）
-     * @return 子字符串
-     */
-    Self split(usize start, isize end) {
-        auto m_size = size();
-        start = neg_index(start, m_size);
-        end = neg_index(end, static_cast<isize>(m_size));
-        return Self{code_points_ + start, static_cast<usize>(end - start), manager_};
-    }
+    // /**
+    //  * @brief 分割字符串，返回指定范围的子字符串
+    //  * @param start 起始索引
+    //  * @param end 结束索引（不包含）
+    //  * @return 子字符串
+    //  */
+    // Self split(usize start, isize end) {
+    //     auto m_size = size();
+    //     start = neg_index(start, m_size);
+    //     end = neg_index(end, static_cast<isize>(m_size));
+    //     return Self{code_points_ + start, end - start, manager_};
+    // }
 
     /**
      * @brief 分割字符串，返回指定范围的子字符串（常量版本）
@@ -359,11 +359,11 @@ public:
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-    const Self split(usize start, isize end) const {
+    Self split(usize start, isize end) const {
         auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
-        return Self{code_points_ + start, static_cast<usize>(end - start), manager_};
+        return Self{code_points_ + start, end - start, manager_};
     }
 
     /**
@@ -498,16 +498,7 @@ public:
      * @brief 去除字符串首尾的空白字符
      * @return 去除空白后的字符串
      */
-    Self trim() {
-        auto [l, r] = get_trim_index();
-        return split(l, r);
-    }
-
-    /**
-     * @brief 去除字符串首尾的空白字符（常量版本）
-     * @return 去除空白后的字符串
-     */
-    const Self trim() const {
+    Self trim() const {
         auto [l, r] = get_trim_index();
         return split(l, r);
     }
@@ -516,15 +507,7 @@ public:
      * @brief 去除字符串首部的空白字符
      * @return 去除首部空白后的字符串
      */
-    Self ltrim() {
-        return split(get_ltrim_index());
-    }
-
-    /**
-     * @brief 去除字符串首部的空白字符（常量版本）
-     * @return 去除首部空白后的字符串
-     */
-    const Self ltrim() const {
+    Self ltrim() const {
         return split(get_ltrim_index());
     }
 
@@ -532,15 +515,7 @@ public:
      * @brief 去除字符串尾部的空白字符
      * @return 去除尾部空白后的字符串
      */
-    Self rtrim() {
-        return split(get_rtrim_index());
-    }
-
-    /**
-     * @brief 去除字符串尾部的空白字符（常量版本）
-     * @return 去除尾部空白后的字符串
-     */
-    const Self rtrim() const {
+    Self rtrim() const {
         return split(get_rtrim_index());
     }
 
@@ -549,17 +524,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self trim(const Self& pattern) {
-        auto [l, r] = get_trim_index(pattern);
-        return split(l, r);
-    }
-
-    /**
-     * @brief 去除字符串首尾的指定模式（常量版本）
-     * @param pattern 要去除的模式
-     * @return 去除模式后的字符串
-     */
-    const Self trim(const Self& pattern) const {
+    Self trim(const Self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return split(l, r);
     }
@@ -569,16 +534,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self ltrim(const Self& pattern) {
-        return split(get_ltrim_index(pattern));
-    }
-
-    /**
-     * @brief 去除字符串首部的指定模式（常量版本）
-     * @param pattern 要去除的模式
-     * @return 去除模式后的字符串
-     */
-    const Self ltrim(const Self& pattern) const {
+    Self ltrim(const Self& pattern) const {
         return split(get_ltrim_index(pattern));
     }
 
@@ -587,16 +543,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self rtrim(const Self& pattern) {
-        return split(get_rtrim_index(pattern));
-    }
-
-    /**
-     * @brief 去除字符串尾部的指定模式（常量版本）
-     * @param pattern 要去除的模式
-     * @return 去除模式后的字符串
-     */
-    const Self rtrim(const Self& pattern) const {
+    Self rtrim(const Self& pattern) const {
         return split(get_rtrim_index(pattern));
     }
 
@@ -759,7 +706,7 @@ public:
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        usize min_size = std::min(this->size(), other.size());
+        auto min_size = std::min(this->size(), other.size());
         for (usize i = 0; i < min_size; ++i) {
             auto cmp = this->at(i).__cmp__(other.at(i));
             if (cmp != 0) {

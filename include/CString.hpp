@@ -8,9 +8,11 @@
 #define CSTRING_HPP
 
 #include "hash.hpp"
+#include "ricky.hpp"
 #include "ricky_memory.hpp"
 #include "Function.hpp"
 
+#include <cctype>
 #include <cstring>
 #include <format>
 #include <sstream>
@@ -116,8 +118,8 @@ public:
     /**
      * @brief 创建单字符字符串
      */
-    [[nodiscard]] static CString of(char ch) {
-        CString str(1);
+    [[nodiscard]] static Self of(char ch) {
+        Self str(1);
         str.str_[0] = ch;
         return str;
     }
@@ -172,6 +174,10 @@ public:
         return len_;
     }
 
+    usize length() const {
+        return len_;
+    }
+
     /**
      * @brief 判断字符串是否为空
      * @return 是否为空
@@ -197,20 +203,34 @@ public:
     }
 
     /**
-     * @brief 字符串拼接操作符
-     * @param other 要拼接的 CString 对象
-     * @return 拼接后的新字符串
+     * @brief 分割字符串，返回指定范围的子字符串
+     * @param start 起始索引
+     * @param end 结束索引（不包含）
+     * @return 子字符串
      */
-    Self operator+(const Self& other) const {
-        auto m_size = this->size(), o_size = other.size();
-        CString res{m_size + o_size};
-        for (usize i = 0; i < m_size; ++i) {
-            res[i] = this->str_[i];
-        }
-        for (usize i = 0; i < o_size; ++i) {
-            res[m_size + i] = other.str_[i];
-        }
-        return res;
+    Self split(usize start, isize end) const {
+        auto m_size = size();
+        start = neg_index(start, m_size);
+        end = neg_index(end, static_cast<isize>(m_size));
+        return Self{str_ + start, end - start};
+    }
+
+    /**
+     * @brief 分割字符串，返回从指定索引开始到末尾的子字符串
+     * @param start 起始索引
+     * @return 子字符串
+     */
+    Self split(usize start) {
+        return split(start, size());
+    }
+
+    /**
+     * @brief 分割字符串，返回从指定索引开始到末尾的子字符串（常量版本）
+     * @param start 起始索引
+     * @return 子字符串
+     */
+    const Self split(usize start) const {
+        return split(start, size());
     }
 
     /**
@@ -224,6 +244,122 @@ public:
             }
         }
         return npos;
+    }
+
+    /**
+     * @brief 查找模式串的第一个匹配位置
+     * @param pattern 模式串，长度为m
+     * @param pos 起始查找位置（可选）
+     * @return 模式串的第一个匹配位置，未找到返回 `npos`
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
+    usize find(const Self& pattern, usize pos = 0) const {
+        return npos; // TODO
+    }
+
+    // TODO find_all
+
+    /**
+     * @brief 检查字符串是否以指定子字符串开头
+     * @param prefix 要检查的子字符串
+     * @return 是否以指定子字符串开头
+     */
+    bool starts_with(const Self& prefix) const {
+        if (size() < prefix.size()) {
+            return false;
+        }
+        return split(0, prefix.size()) == prefix;
+    }
+
+    /**
+     * @brief 检查字符串是否以指定子字符串结尾
+     * @param suffix 要检查的子字符串
+     * @return 是否以指定子字符串结尾
+     */
+    bool ends_with(const Self& suffix) const {
+        if (size() < suffix.size()) {
+            return false;
+        }
+        return split(size() - suffix.size()) == suffix;
+    }
+
+    /**
+     * @brief 将字符串转换为全大写
+     * @return 全大写的字符串
+     */
+    Self upper() const {
+        Self res{*this};
+        usize m_size = size();
+        for (usize i = 0; i < m_size; ++i) {
+            res[i] = std::toupper(res[i]);
+        }
+        return res;
+    }
+
+    /**
+     * @brief 将字符串转换为全小写
+     * @return 全小写的字符串
+     */
+    Self lower() const {
+        Self res{*this};
+        usize m_size = size();
+        for (usize i = 0; i < m_size; ++i) {
+            res[i] = std::tolower(res[i]);
+        }
+        return res;
+    }
+
+    /**
+     * @brief 去除字符串首尾的空白字符
+     * @return 去除空白后的字符串
+     */
+    Self trim() const {
+        auto [l, r] = get_trim_index();
+        return split(l, r);
+    }
+
+    /**
+     * @brief 去除字符串首部的空白字符
+     * @return 去除首部空白后的字符串
+     */
+    Self ltrim() const {
+        return split(get_ltrim_index());
+    }
+
+    /**
+     * @brief 去除字符串尾部的空白字符
+     * @return 去除尾部空白后的字符串
+     */
+    Self rtrim() const {
+        return split(get_rtrim_index());
+    }
+
+    /**
+     * @brief 去除字符串首尾的指定模式
+     * @param pattern 要去除的模式
+     * @return 去除模式后的字符串
+     */
+    Self trim(const Self& pattern) const {
+        auto [l, r] = get_trim_index(pattern);
+        return split(l, r);
+    }
+
+    /**
+     * @brief 去除字符串首部的指定模式
+     * @param pattern 要去除的模式
+     * @return 去除模式后的字符串
+     */
+    Self ltrim(const Self& pattern) const {
+        return split(get_ltrim_index(pattern));
+    }
+
+    /**
+     * @brief 去除字符串尾部的指定模式
+     * @param pattern 要去除的模式
+     * @return 去除模式后的字符串
+     */
+    Self rtrim(const Self& pattern) const {
+        return split(get_rtrim_index(pattern));
     }
 
     Self remove_all(char ch) const {
@@ -248,6 +384,23 @@ public:
             }
         }
         return Self{new_str, pos};
+    }
+
+    /**
+     * @brief 字符串拼接操作符
+     * @param other 要拼接的 CString 对象
+     * @return 拼接后的新字符串
+     */
+    Self operator+(const Self& other) const {
+        auto m_size = this->size(), o_size = other.size();
+        CString res{m_size + o_size};
+        for (usize i = 0; i < m_size; ++i) {
+            res[i] = this->str_[i];
+        }
+        for (usize i = 0; i < o_size; ++i) {
+            res[m_size + i] = other.str_[i];
+        }
+        return res;
     }
 
     /**
@@ -496,6 +649,72 @@ public:
 private:
     char* str_; // 存储字符串的动态数组
     usize len_; // 字符串的长度
+
+private:
+    /**
+     * @brief 获取去除首尾空白后的索引范围
+     * @return 首尾空白后的索引范围
+     */
+    std::pair<usize, usize> get_trim_index() const {
+        usize l = 0, r = size();
+        while (l < r && str_[l] == ' ') ++l;
+        while (l < r && str_[r - 1] == ' ') --r;
+        return std::make_pair(l, r);
+    }
+
+    /**
+     * @brief 获取去除首尾模式后的索引范围
+     * @param pattern 要去除的模式
+     * @return 首尾模式后的索引范围
+     */
+    std::pair<usize, usize> get_trim_index(const Self& pattern) const {
+        usize l = 0, r = size(), p_size = pattern.size();
+        while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
+        while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
+        return std::make_pair(l, r);
+    }
+
+    /**
+     * @brief 获取去除首部空白后的索引
+     * @return 去除首部空白后的索引
+     */
+    usize get_ltrim_index() const {
+        usize l = 0, r = size();
+        while (l < r && str_[l] == ' ') ++l;
+        return l;
+    }
+
+    /**
+     * @brief 获取去除首部模式后的索引
+     * @param pattern 要去除的模式
+     * @return 去除首部模式后的索引
+     */
+    usize get_ltrim_index(const Self& pattern) const {
+        usize l = 0, r = size(), p_size = pattern.size();
+        while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
+        return l;
+    }
+
+    /**
+     * @brief 获取去除尾部空白后的索引
+     * @return 去除尾部空白后的索引
+     */
+    usize get_rtrim_index() const {
+        usize l = 0, r = size();
+        while (l < r && str_[r - 1] == ' ') --r;
+        return r;
+    }
+
+    /**
+     * @brief 获取去除尾部模式后的索引
+     * @param pattern 要去除的模式
+     * @return 去除尾部模式后的索引
+     */
+    usize get_rtrim_index(const Self& pattern) const {
+        usize l = 0, r = size(), p_size = pattern.size();
+        while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
+        return r;
+    }
 };
 
 /**
