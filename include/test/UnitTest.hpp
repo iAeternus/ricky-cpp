@@ -89,21 +89,21 @@ public:
 
     void startAll() {
         io::println(std::format("================= {} =================", groupName_));
-        if(setup_) setup_();
+        if (setup_) setup_();
         for (auto& it : group_) {
-            if(before_each_) before_each_();
+            if (before_each_) before_each_();
             if (!it->start()) {
                 ++failed_;
             }
-            if(after_each_) after_each_();
+            if (after_each_) after_each_();
         }
-        if(teardown_) teardown_();
+        if (teardown_) teardown_();
         io::println(std::format("Total tests run: {}, Failures: {}", group_.size(), failed_));
     }
 
 private:
     CString groupName_;
-    isize failed_;
+    usize failed_;
     Runnable setup_;
     Runnable teardown_;
     Runnable before_each_;

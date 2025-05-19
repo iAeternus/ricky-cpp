@@ -33,7 +33,7 @@ fn should_create_graph = []() {
     Assertions::assertEquals(6, g.vertex_cnt());
     Assertions::assertEquals(10, g.edge_cnt());
     Assertions::assertEquals(2, g.edge_cnt(1));
-    Assertions::assertEquals(-1, g.edge_cnt(7));
+    Assertions::assertEquals(npos, g.edge_cnt(7));
     io::print(g);
 };
 

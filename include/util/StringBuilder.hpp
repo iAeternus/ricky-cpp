@@ -34,7 +34,7 @@ public:
         if (str.encoding() != encoding_) {
             EncodingError("Encoding mismatch");
         }
-        for (isize i = 0; i < str.size(); ++i) {
+        for (usize i = 0; i < str.size(); ++i) {
             buf_.append(str.at(i));
         }
         return *this;
@@ -44,7 +44,7 @@ public:
         if (str.encoding() != encoding_) {
             EncodingError("Encoding mismatch");
         }
-        for (isize i = 0; i < str.size(); ++i) {
+        for (usize i = 0; i < str.size(); ++i) {
             buf_.append(std::move(str.at(i)));
         }
         return *this;
@@ -55,8 +55,8 @@ public:
      * @note 允许链式调用
      */
     Self& append(const char* cstr) {
-        isize len = std::strlen(cstr);
-        isize i = 0;
+        usize len = std::strlen(cstr);
+        usize i = 0;
         while (i < len) {
             CodePoint cp(cstr + i, encoding_);
             i += cp.size();

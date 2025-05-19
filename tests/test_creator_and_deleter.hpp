@@ -75,12 +75,12 @@ fn it_works = []() {
 
 fn should_delete_array = []() {
     // Given
-    constexpr isize ARRAY_SIZE = 5;
+    constexpr usize ARRAY_SIZE = 5;
     TrackedObject* arr = my_alloc<TrackedObject>(ARRAY_SIZE);
     util::Deleter<TrackedObject[]> array_deleter;
 
     // When
-    for (i32 i = 0; i < ARRAY_SIZE; ++i) {
+    for (usize i = 0; i < ARRAY_SIZE; ++i) {
         my_construct(&arr[i], i);
     }
 

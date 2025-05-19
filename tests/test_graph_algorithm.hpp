@@ -3,6 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "graph_algorithm.hpp"
+#include "Graph.hpp"
 
 namespace my::test::test_graph_algorithm {
 

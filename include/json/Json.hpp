@@ -204,11 +204,11 @@ public:
      * @brief 下标访问，需要当前Json对象为JsonArray类型
      * @param index 索引，从0开始
      */
-    Self& operator[](isize index) {
+    Self& operator[](usize index) {
         return transform<JsonType::JsonArray>()[index];
     }
 
-    const Self& operator[](isize index) const {
+    const Self& operator[](usize index) const {
         return transform<JsonType::JsonArray>()[index];
     }
 
@@ -224,7 +224,7 @@ public:
     /**
      * @brief 获取json对象的长度，需要当前Json对象为JsonArray或JsonDict类型
      */
-    isize size() const {
+    usize size() const {
         if (is<JsonType::JsonArray>()) {
             return transform<JsonType::JsonArray>().size();
         }

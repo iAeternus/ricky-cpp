@@ -71,7 +71,7 @@ public:
 
     CString read() const {
         DWORD read_bytes = 0;
-        isize buffer_size = fileSize() + 1;
+        usize buffer_size = fileSize() + 1;
         CString buffer{buffer_size};
 
         if (!ReadFile(fh_, buffer.data(), buffer_size, &read_bytes, nullptr))
@@ -80,7 +80,7 @@ public:
         return buffer;
     }
 
-    isize fileSize() const {
+    usize fileSize() const {
         return GetFileSize(fh_, nullptr);
     }
 

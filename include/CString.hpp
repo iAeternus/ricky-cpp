@@ -9,6 +9,7 @@
 
 #include "hash.hpp"
 #include "ricky_memory.hpp"
+#include "Function.hpp"
 
 #include <cstring>
 #include <format>
@@ -35,7 +36,7 @@ public:
      * @brief 根据指定长度创建字符串
      * @param len 字符串的长度
      */
-    CString(isize len) :
+    CString(usize len) :
             str_(my_alloc<char>(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
     }
@@ -52,7 +53,7 @@ public:
      * @param str C 风格字符串
      * @param len 字符串的长度
      */
-    CString(const char* str, isize len) :
+    CString(const char* str, usize len) :
             CString(len) {
         std::memcpy(data(), str, len);
     }
@@ -113,6 +114,15 @@ public:
     }
 
     /**
+     * @brief 创建单字符字符串
+     */
+    [[nodiscard]] static CString of(char ch) {
+        CString str(1);
+        str.str_[0] = ch;
+        return str;
+    }
+
+    /**
      * @brief 隐式转换为 const char* 类型
      * @return 字符串的 const char* 表示
      */
@@ -141,7 +151,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的字符引用
      */
-    char& operator[](isize index) {
+    char& operator[](usize index) {
         return str_[index];
     }
 
@@ -150,7 +160,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的字符常量引用
      */
-    const char& operator[](isize index) const {
+    const char& operator[](usize index) const {
         return str_[index];
     }
 
@@ -158,7 +168,7 @@ public:
      * @brief 获取字符串的长度
      * @return 字符串的长度
      */
-    isize size() const {
+    usize size() const {
         return len_;
     }
 
@@ -192,15 +202,52 @@ public:
      * @return 拼接后的新字符串
      */
     Self operator+(const Self& other) const {
-        isize mSize = this->size(), oSize = other.size();
-        CString res{mSize + oSize};
-        for (isize i = 0; i < mSize; ++i) {
+        auto m_size = this->size(), o_size = other.size();
+        CString res{m_size + o_size};
+        for (usize i = 0; i < m_size; ++i) {
             res[i] = this->str_[i];
         }
-        for (isize i = 0; i < oSize; ++i) {
-            res[mSize + i] = other.str_[i];
+        for (usize i = 0; i < o_size; ++i) {
+            res[m_size + i] = other.str_[i];
         }
         return res;
+    }
+
+    /**
+     * @brief 查找指定字符，找不到返回npos
+     */
+    usize find(char ch) const {
+        auto m_size = size();
+        for (usize i = 0; i < m_size; ++i) {
+            if (str_[i] == ch) {
+                return i;
+            }
+        }
+        return npos;
+    }
+
+    Self remove_all(char ch) const {
+        auto m_size = size();
+        auto* new_str = my_alloc<char>(m_size);
+        usize pos = 0;
+        for (usize i = 0; i < m_size; ++i) {
+            if (str_[i] != ch) {
+                new_str[pos++] = str_[i];
+            }
+        }
+        return Self(new_str, pos);
+    }
+
+    Self remove_all(Pred<char>&& pred) const {
+        auto m_size = size();
+        auto* new_str = my_alloc<char>(m_size);
+        usize pos = 0;
+        for (usize i = 0; i < m_size; ++i) {
+            if (!pred(str_[i])) {
+                new_str[pos++] = str_[i];
+            }
+        }
+        return Self{new_str, pos};
     }
 
     /**
@@ -448,7 +495,7 @@ public:
 
 private:
     char* str_; // 存储字符串的动态数组
-    isize len_; // 字符串的长度
+    usize len_; // 字符串的长度
 };
 
 /**
@@ -532,7 +579,7 @@ struct std::formatter<my::CString> : std::formatter<const char*> {
  * @return 转换后的 CString 对象
  */
 fn operator""_cs(const char* str, size_t len)->my::CString {
-    return my::CString{str, my::isize(len)};
+    return my::CString{str, my::usize(len)};
 }
 
 #endif // CSTRING_HPP

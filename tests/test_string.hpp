@@ -15,9 +15,9 @@ fn should_construct = []() {
 
 fn should_add = []() {
     // Given
-    util::String s = "abc"_s;
-    util::String s2 = "bcd"_s;
-    CString cs = "cde"_cs;
+    util::String s = "abc";
+    util::String s2 = "bcd";
+    CString cs = "cde";
 
     // When
     s += s2;
@@ -31,7 +31,7 @@ fn should_add = []() {
 
 fn should_mul = []() {
     // Given
-    util::String s = "abc"_s;
+    util::String s = "abc";
 
     // When
     s = s * 2;
@@ -43,7 +43,7 @@ fn should_mul = []() {
 
 fn should_split = []() {
     // Given
-    util::String s = "abcdef"_s;
+    util::String s = "abcdef";
 
     // When
     auto res = s.split(1, 2);
@@ -59,30 +59,30 @@ fn should_split = []() {
 
 fn should_find = []() {
     // Given
-    util::String s = "abcdeff"_s;
-    util::String s2 = "caabaabaabaabaaaab"_s;
+    util::String s = "abcdeff";
+    util::String s2 = "caabaabaabaabaaaab";
 
     // When
-    auto pos = s.find("def"_s);
+    auto pos = s.find("def");
     auto pos2 = s.find('f');
-    auto pos3 = s.find("abd"_s);
-    auto pos4 = s2.find("aabaabaaaa"_s);
-    auto pos5 = s2.find(""_s);
+    auto pos3 = s.find("abd");
+    auto pos4 = s2.find("aabaabaaaa");
+    auto pos5 = s2.find("");
 
     // Then
     Assertions::assertEquals(3, pos);
     Assertions::assertEquals(5, pos2);
-    Assertions::assertEquals(util::String::npos, pos3);
+    Assertions::assertEquals(npos, pos3);
     Assertions::assertEquals(7, pos4);
-    Assertions::assertEquals(util::String::npos, pos5);
+    Assertions::assertEquals(npos, pos5);
 };
 
 fn should_find_all = []() {
     // Given
-    util::String s = "abcdefabc"_s;
+    util::String s = "abcdefabc";
 
     // When
-    auto poss = s.find_all("abc"_s);
+    auto poss = s.find_all("abc");
 
     // Then
     Assertions::assertEquals(2, poss.size());
@@ -91,11 +91,11 @@ fn should_find_all = []() {
 
 fn should_judge_starts_with = []() {
     // Given
-    util::String s = "abcdef"_s;
+    util::String s = "abcdef";
 
     // When
-    bool res = s.starts_with("abc"_s);
-    bool res2 = s.starts_with("abd"_s);
+    bool res = s.starts_with("abc");
+    bool res2 = s.starts_with("abd");
 
     // Then
     Assertions::assertTrue(res);
@@ -104,11 +104,11 @@ fn should_judge_starts_with = []() {
 
 fn should_judge_ends_with = []() {
     // Given
-    util::String s = "abcdef"_s;
+    util::String s = "abcdef";
 
     // When
-    bool res = s.ends_with("def"_s);
-    bool res2 = s.ends_with("deg"_s);
+    bool res = s.ends_with("def");
+    bool res2 = s.ends_with("deg");
 
     // Then
     Assertions::assertTrue(res);
@@ -117,7 +117,7 @@ fn should_judge_ends_with = []() {
 
 fn should_get_upper = []() {
     // Given
-    util::String s = "abcDef"_s;
+    util::String s = "abcDef";
 
     // When
     auto res = s.upper();
@@ -128,7 +128,7 @@ fn should_get_upper = []() {
 
 fn should_get_lower = []() {
     // Given
-    util::String s = "ABCdEF"_s;
+    util::String s = "ABCdEF";
 
     // When
     auto res = s.lower();
@@ -139,7 +139,7 @@ fn should_get_lower = []() {
 
 fn should_trim = []() {
     // Given
-    util::String s = "   abcdef   "_s;
+    util::String s = "   abcdef   ";
 
     // When
     auto res = s.trim();
@@ -150,7 +150,7 @@ fn should_trim = []() {
 
 fn should_replace = []() {
     // Given
-    util::String s = "abcdefabc"_s;
+    util::String s = "abcdefabc";
 
     // When
     auto res = s.replace("abc", "def");
@@ -181,7 +181,7 @@ fn should_maintain_encoding = []() {
     Assertions::assertEquals("你好世界"_s, s.split(0, s.size()));
 
     // When
-    auto res = s.replace("你"_s, "你们"_s);
+    auto res = s.replace("你", "你们");
 
     // Then
     Assertions::assertEquals("你们好世界"_s, res);

@@ -140,6 +140,11 @@ template <typename T>
 T& None = *reinterpret_cast<T*>(NULL);
 
 /**
+ * @brief 无效的索引位置
+ */
+inline constexpr usize npos = static_cast<usize>(-1);
+
+/**
  * @brief 标准库命名空间
  */
 #define STD ::std::

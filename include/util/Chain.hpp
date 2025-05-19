@@ -34,7 +34,7 @@ public:
         clear();
     }
 
-    isize size() const {
+    usize size() const {
         return size_;
     }
 
@@ -76,7 +76,7 @@ public:
         size_ = 0;
     }
 
-    value_t& operator[](isize index) {
+    value_t& operator[](usize index) {
         index = neg_index(index, size_);
 
         auto* cur = head_;
@@ -86,7 +86,7 @@ public:
         return cur->value_;
     }
 
-    const value_t& operator[](isize index) const {
+    const value_t& operator[](usize index) const {
         index = neg_index(index, size_);
 
         auto* cur = head_;
@@ -101,7 +101,7 @@ public:
      */
     Array<value_t> to_array() const {
         Array<value_t> arr(size_);
-        isize pos = 0;
+        usize pos = 0;
         for (const auto& cur : *this) {
             arr[pos++] = cur;
         }
@@ -113,7 +113,7 @@ public:
      */
     Array<value_t> to_array() {
         Array<value_t> arr(size_);
-        isize pos = 0;
+        usize pos = 0;
         for (auto&& cur : *this) {
             arr[pos++] = std::forward<value_t>(cur);
         }
@@ -152,7 +152,7 @@ public:
 
 protected:
     Node *head_, *tail_;
-    isize size_;
+    usize size_;
     C creator_;
 };
 

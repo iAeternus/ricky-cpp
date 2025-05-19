@@ -66,13 +66,13 @@ fn should_wait = []() {
     util::Dict<i32, i32> futures;
 
     // When
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         futures.insert(i, tp.push(add, i, i).get());
     }
     tp.wait();
 
     // Then
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         Assertions::assertEquals(i * 2, futures[i]);
     }
 };
@@ -95,14 +95,14 @@ fn task = []() {
 
 fn speed_of_thread_pool = []() {
     async::ThreadPool tp{100};
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         tp.push(task);
     }
     tp.wait();
 };
 
 fn speed_of_sync = []() {
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         task();
     }
 };

@@ -52,9 +52,9 @@ auto adj2matrix = [](const auto& g, auto&& args) -> math::Matrix<E> {
  */
 template <typename V = f64, typename E = f64>
 auto is_exist_el = [](const auto& g, auto&& args) -> bool {
-    isize cnt = 0;
+    usize cnt = 0;
     g.for_each([&](const auto& vertex) {
-        isize deg = vertex.out_deg() + g.in_deg(vertex.id);
+        usize deg = vertex.out_deg() + g.in_deg(vertex.id);
         if (deg & 1) {
             ++cnt;
         }

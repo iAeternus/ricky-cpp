@@ -12,7 +12,7 @@ fn should_append = []() {
     util::ChainList<CString> c;
 
     // When
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         c.append(cstr(i));
     }
 
@@ -28,7 +28,7 @@ fn should_iterable = []() {
     // Given
     i32 N = 100;
     util::ChainList<i32> c;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         c.append(i + 1);
     }
 

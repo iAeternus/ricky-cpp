@@ -8,7 +8,7 @@
 #define COMPLEX_HPP
 
 #include "math_utils.hpp"
-#include "String.hpp"
+#include "Object.hpp"
 
 namespace my::math {
 
@@ -25,7 +25,7 @@ public:
     }
 
     Self& operator=(const char* str) {
-        parse(util::String{str});
+        parse(str);
         return *this;
     }
 
@@ -91,7 +91,7 @@ public:
     }
 
     friend Self operator/(const Self& a, const Self& b) {
-        f64 bNormSqr = b.modulus_sqr();
+        auto bNormSqr = b.modulus_sqr();
         return Self{(a.re_ * b.re_ + a.im_ * b.im_) / bNormSqr,
                     (a.im_ * b.re_ - a.re_ * b.im_) / bNormSqr};
     }
@@ -133,10 +133,10 @@ public:
     }
 
 private:
-    void parse(const util::String& str) {
-        isize i = 0LL;
+    void parse(const CString& str) {
+        usize i = 0;
         auto trim_str = str.remove_all(' ');
-        isize t_size = trim_str.size();
+        auto t_size = trim_str.size();
         if (i < t_size && trim_str[i] == '+') {
             ++i;
             re_ = parse_num(trim_str, i);
@@ -164,11 +164,11 @@ private:
         }
     }
 
-    static bool is_imag_sign(const util::CodePoint& ch) {
+    static bool is_imag_sign(char ch) {
         return ch == 'i' || ch == 'I';
     }
 
-    static f64 parse_num(const util::String& str, isize& i) {
+    static f64 parse_num(const CString& str, usize& i) {
         if (is_imag_sign(str[i])) {
             return 1.0;
         }
@@ -186,9 +186,9 @@ private:
     /**
      * 从第一个数字起探测是否有实部，不会检查字符是否是数字
      */
-    static bool peek_real(const util::String& str) {
-        isize m_size = str.size();
-        for (isize i = 0; i < m_size; ++i) {
+    static bool peek_real(const CString& str) {
+        auto m_size = str.size();
+        for (usize i = 0; i < m_size; ++i) {
             if (str[i] == '+' || str[i] == '-') {
                 return true;
             } else if (is_imag_sign(str[i])) {
@@ -201,9 +201,9 @@ private:
     /**
      * 从i起探测是否有虚部，不会检查字符是否是数字
      */
-    static bool peek_imag(const util::String& str, isize i) {
-        isize m_size = str.size();
-        for (isize j = i; j < m_size; ++j) {
+    static bool peek_imag(const CString& str, usize i) {
+        auto m_size = str.size();
+        for (usize j = i; j < m_size; ++j) {
             if (is_imag_sign(str[j])) {
                 return true;
             }

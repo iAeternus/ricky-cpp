@@ -120,14 +120,14 @@ fn test_dict() {
     group.startAll();
 }
 
-i32 n, k;
-std::vector<i32> nums;
-std::vector<std::string> strs;
+inline i32 n, k;
+inline std::vector<i32> nums;
+inline std::vector<std::string> strs;
 
 fn setup = []() {
     n = 1e6;
     k = 100;
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         nums.push_back(util::Random::instance().next<i32>(0, k));
         strs.push_back(std::to_string(i));
     }

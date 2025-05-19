@@ -23,7 +23,7 @@ fn should_append = []() {
     util::DynArray<CString> d;
 
     // When
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         d.append(cstr(i));
     }
 
@@ -189,42 +189,42 @@ constexpr i32 N = 1e6;
 
 fn speed_of_dny_array_append_string = []() {
     util::DynArray<std::string> d;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
 fn speed_of_util_vector_append_string = []() {
     util::Vec<std::string> d;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
 fn speed_of_vector_push_back_string = []() {
     std::vector<std::string> v;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
 fn speed_of_dny_array_append_i32 = []() {
     util::DynArray<i32> d;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
 fn speed_of_util_vector_append_i32 = []() {
     util::Vec<i32> d;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
 fn speed_of_vector_push_back_i32 = []() {
     std::vector<i32> v;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         v.push_back(i);
     }
 };

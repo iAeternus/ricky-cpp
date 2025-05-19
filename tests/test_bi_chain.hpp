@@ -28,7 +28,7 @@ fn should_iterable = []() {
     // Given
     i32 N = 100;
     util::BiChainList<i32> bc;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         bc.append(i + 1);
     }
 

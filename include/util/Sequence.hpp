@@ -26,15 +26,15 @@ public:
     using iterator = IndexIterator<false, Self, value_t>;
     using const_iterator = IndexIterator<true, Self, value_t>;
 
-    value_t& at(isize idx) {
+    value_t& at(usize idx) {
         return static_cast<D*>(this)->at(idx);
     }
 
-    const value_t& at(isize idx) const {
+    const value_t& at(usize idx) const {
         return static_cast<const D*>(this)->at(idx);
     }
 
-    isize size() const {
+    usize size() const {
         return static_cast<const D*>(this)->size();
     }
 
@@ -74,10 +74,18 @@ public:
         return const_iterator(this, size());
     }
 
+    /**
+     * @brief 中括号下标访问，允许负数下标
+     * @note 负数下标代表倒序下标
+     */
     value_t& operator[](isize idx) {
         return at(neg_index(idx, size()));
     }
 
+    /**
+     * @brief 中括号下标访问，允许负数下标
+     * @note 负数下标代表倒序下标
+     */
     const value_t& operator[](isize idx) const {
         return at(neg_index(idx, size()));
     }
@@ -86,13 +94,13 @@ public:
         return find_itr(v) != end();
     }
 
-    isize find(const value_t& v) const {
-        for (isize i = 0, siz = size(); i < siz; ++i) {
+    usize find(const value_t& v) const {
+        for (usize i = 0, siz = size(); i < siz; ++i) {
             if (at(i) == v) {
                 return i;
             }
         }
-        return -1;
+        return npos;
     }
 
     iterator find_itr(const value_t& v) {

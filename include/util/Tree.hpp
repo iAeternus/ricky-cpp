@@ -100,7 +100,7 @@ public:
     }
 
 private:
-    isize size_; // 节点个数
+    usize size_; // 节点个数
     Node* root_; // 根节点
     C creator_;  // 节点创建管理器
 

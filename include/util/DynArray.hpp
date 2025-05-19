@@ -31,7 +31,7 @@ class DynArray : public Sequence<DynArray<T>, T> {
     constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
 
     // 最小块大小，每个块的初始大小
-    constexpr static isize BASE_CAP = 8ll;
+    constexpr static usize BASE_CAP = 8ll;
 
     // 不存在块时的特殊值
     constexpr static i32 BLOCK_NOT_EXISTS = -1;
@@ -53,9 +53,9 @@ public:
      * @param size 动态数组的大小
      * @param item 用于填充数组的元素，默认为空值
      */
-    DynArray(isize size, const value_t& item = value_t{}) :
+    DynArray(usize size, const value_t& item = value_t{}) :
             DynArray() {
-        for (isize i = 0; i < size; ++i) {
+        for (usize i = 0; i < size; ++i) {
             append(item);
         }
     }
@@ -146,7 +146,7 @@ public:
      * @brief 获取动态数组的大小
      * @return 返回数组中元素的个数
      */
-    isize size() const {
+    usize size() const {
         return size_;
     }
 
@@ -200,9 +200,9 @@ public:
      * @return 返回指定索引处的元素的引用
      * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    value_t& at(isize idx) {
+    value_t& at(usize idx) {
         i32 block_idx = get_block_idx(idx + 1);
-        isize inblock_idx = get_inblock_idx(idx + 1, block_idx);
+        usize inblock_idx = get_inblock_idx(idx + 1, block_idx);
         return blocks_.at(block_idx).at(inblock_idx);
     }
 
@@ -212,9 +212,9 @@ public:
      * @return 返回指定索引处的元素的 const 引用
      * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    const value_t& at(isize idx) const {
+    const value_t& at(usize idx) const {
         i32 block_idx = get_block_idx(idx + 1);
-        isize inblock_idx = get_inblock_idx(idx + 1, block_idx);
+        usize inblock_idx = get_inblock_idx(idx + 1, block_idx);
         return blocks_.at(block_idx).at(inblock_idx);
     }
 
@@ -224,8 +224,8 @@ public:
      * @return 如果存在返回第一个匹配元素的索引，否则返回数组的大小
      * @note 查找时间复杂度为 O(n)，n 为数组大小
      */
-    isize find(const value_t& value) const {
-        for (isize i = 0; i < size_; ++i) {
+    usize find(const value_t& value) const {
+        for (usize i = 0; i < size_; ++i) {
             if (at(i) == value) {
                 return i;
             }
@@ -265,11 +265,14 @@ public:
      * @param item 要插入的元素
      */
     template <typename U>
-    void insert(isize idx, U&& item) {
-        if (idx < 0 || idx > size_) return;
+    void insert(usize idx, U&& item) {
+        if (idx > size_) return;
 
         append(std::forward<U>(item));
-        for (isize i = size() - 1; i > idx; --i) {
+        // for(auto it = end(); it >= begin() + idx; --it) {
+        //     std::swap(*it, *std::prev(it));
+        // }
+        for (isize i = size() - 1; i > static_cast<isize>(idx); --i) {
             std::swap(at(i), at(i - 1));
         }
     }
@@ -281,8 +284,11 @@ public:
     void pop(isize idx = -1) {
         if (empty()) return;
 
-        idx = neg_index(idx, size_);
-        for (isize i = idx + 1; i < size_; ++i) {
+        idx = neg_index(idx, static_cast<isize>(size_));
+        // for(auto it = begin() + idx + 1; it != end(); ++it) {
+        //     *std::prev(it) = std::move(*it);
+        // }
+        for (usize i = idx + 1; i < size_; ++i) {
             at(i - 1) = std::move(at(i));
         }
 
@@ -316,7 +322,7 @@ public:
      */
     Array<value_t> to_array() const {
         Array<value_t> arr(size_);
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             arr.at(i) = at(i);
         }
         return arr;
@@ -329,7 +335,7 @@ public:
      */
     Array<value_t> to_array() {
         Array<value_t> arr(size_);
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             arr.at(i) = std::move(at(i));
         }
         clear();
@@ -393,7 +399,7 @@ public:
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             if (i) stream << ',';
             stream << at(i);
         }
@@ -403,6 +409,7 @@ public:
 
     /**
      * @brief 迭代器支持
+     * TODO 该迭代器现已被标记为不可靠，谨慎使用
      * @tparam IsConst 是否为常量迭代器
      */
     template <bool IsConst>
@@ -425,7 +432,7 @@ public:
          * @param block_idx 块索引
          * @param inblock_idx 块内索引
          */
-        Iterator(container_t* dynarray = nullptr, isize block_idx = 0, isize inblock_idx = 0) :
+        Iterator(container_t* dynarray = nullptr, usize block_idx = 0, usize inblock_idx = 0) :
                 block_idx_(block_idx), inblock_idx_(inblock_idx), dynarray_(dynarray) {}
 
         /**
@@ -543,9 +550,9 @@ public:
         Self& operator+=(difference_type n) {
             if (n == 0) return *this;
 
-            isize target = (block_idx_ * exp2[block_idx_ + 1] - 1) * BASE_CAP + inblock_idx_ + n;
+            usize target = (block_idx_ * exp2[block_idx_ + 1] - 1) * BASE_CAP + inblock_idx_ + n;
             i32 new_block = dynarray_->get_block_idx(target + 1);
-            isize new_inblock = dynarray_->get_inblock_idx(target, new_block);
+            usize new_inblock = dynarray_->get_inblock_idx(target, new_block);
 
             if (new_block >= dynarray_->blocks_.size()) {
                 new_block = dynarray_->blocks_.size() - 1;
@@ -577,9 +584,9 @@ public:
         Self& operator-=(difference_type n) {
             if (n == 0) return *this;
 
-            isize target = (block_idx_ * exp2[block_idx_ + 1] - 1) * BASE_CAP + inblock_idx_ - n;
+            usize target = (block_idx_ * exp2[block_idx_ + 1] - 1) * BASE_CAP + inblock_idx_ - n;
             i32 new_block = dynarray_->get_block_idx(target + 1);
-            isize new_inblock = dynarray_->get_inblock_idx(target, new_block);
+            usize new_inblock = dynarray_->get_inblock_idx(target, new_block);
 
             if (new_block < 0) {
                 new_block = 0;
@@ -623,7 +630,7 @@ public:
                 return this->inblock_idx_ - other.inblock_idx_;
             }
             difference_type diff = this->dynarray_->blocks_.at(other.block_idx_).size() - other.inblock_idx_;
-            for (isize i = other.block_idx_ + 1; i < this->block_idx_; ++i) {
+            for (usize i = other.block_idx_ + 1; i < this->block_idx_; ++i) {
                 diff += this->dynarray_->blocks_.at(i).size();
             }
             return diff + this->inblock_idx_;
@@ -669,8 +676,8 @@ public:
         }
 
     private:
-        isize block_idx_;       // 当前块索引
-        isize inblock_idx_;     // 当前块内的索引
+        usize block_idx_;       // 当前块索引
+        usize inblock_idx_;     // 当前块内的索引
         container_t* dynarray_; // 当前指向当前动态数组的指针
     };
 
@@ -716,7 +723,7 @@ private:
      * @return 返回块索引
      * @note 时间复杂度为 O(log n)
      */
-    i32 get_block_idx(isize ith) const {
+    i32 get_block_idx(usize ith) const {
         i32 l = 0, r = DYNARRAY_BLOCK_SIZE;
         while (l < r) {
             i32 mid = l + ((r - l) >> 1);
@@ -735,7 +742,7 @@ private:
      * @param block_idx 块索引
      * @return 返回块内索引
      */
-    isize get_inblock_idx(isize ith, i32 block_idx) const {
+    usize get_inblock_idx(usize ith, i32 block_idx) const {
         return ith - BASE_CAP * (exp2[block_idx] - 1) - 1;
     }
 
@@ -777,14 +784,14 @@ private:
             // 计算新块的大小：
             // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            isize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
+            usize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
             ++back_block_index_;                   // 将最后一个块的索引递增，指向新块
             get_back_block().resize(new_capacity); // 调整新块的大小
         }
     }
 
 private:
-    isize size_;                    // 元素个数
+    usize size_;                    // 元素个数
     i32 back_block_index_;          // 最后一个块的索引
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
@@ -797,7 +804,7 @@ private:
  * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
  */
 template <typename T>
-fn opt(const DynArray<std::any>& args, isize idx)->T {
+fn opt(const DynArray<std::any>& args, usize idx)->T {
     if (idx < 0 || idx >= args.size()) {
         ValueError("Index out of range in opt function.");
         std::unreachable();

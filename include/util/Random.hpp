@@ -52,12 +52,12 @@ public:
     /**
      * @brief 生成指定长度的随机字符串
      */
-    CString next_str(isize len) {
+    CString next_str(usize len) {
         static const CString characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_cs;
         CString result(len);
-        std::uniform_int_distribution<isize> distribution(0, characters.size() - 1);
+        std::uniform_int_distribution<usize> distribution(0, characters.size() - 1);
 
-        for (isize i = 0; i < len; ++i) {
+        for (usize i = 0; i < len; ++i) {
             result[i] = characters[distribution(generator_)];
         }
 
@@ -88,7 +88,7 @@ public:
         Vec<i32> elements;
 
         // 创建数组 [1, 2, ..., total_elements]
-        for (i32 i = 1; i <= total_elements; ++i) {
+        for (usize i = 1; i <= total_elements; ++i) {
             elements.append(i);
         }
 
@@ -96,7 +96,7 @@ public:
 
         // 选择前 n-1 个元素作为隔板位置
         Vec<i32> partitions;
-        for (i32 i = 0; i < n - 1; ++i) {
+        for (usize i = 0; i < n - 1; ++i) {
             partitions.append(elements[i]);
         }
 
@@ -109,7 +109,7 @@ public:
         board.append(sum + n);
 
         // 计算相邻元素的差值，并减去1得到最终结果
-        for (auto i = 1; i < board.size(); ++i) {
+        for (usize i = 1; i < board.size(); ++i) {
             i32 diff = board[i] - board[i - 1];
             numbers.append(diff - 1);
         }

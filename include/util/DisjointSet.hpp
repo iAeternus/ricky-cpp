@@ -93,7 +93,7 @@ public:
 
     /**
      * @brief 获取秩
-     * @return 秩，若节点不存在返回-1
+     * @return 秩，若节点不存在返回 -1
      */
     i32 rank(const value_t& elem) {
         auto* n = nodes_.get(elem);

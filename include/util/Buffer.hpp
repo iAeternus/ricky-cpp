@@ -25,12 +25,12 @@ public:
     Buffer() :
             size_(0), capacity_(0), buf_(nullptr) {}
 
-    Buffer(isize capacity) :
+    Buffer(usize capacity) :
             size_(0), capacity_(capacity), buf_(my_alloc<value_t>(capacity_)) {}
 
     Buffer(const Self& other) :
             size_(other.size_), capacity_(other.capacity_), buf_(my_alloc<value_t>(capacity_)) {
-        for (isize i = 0; i < other.size(); ++i) {
+        for (usize i = 0; i < other.size(); ++i) {
             my_construct(data() + i, other.data()[i]);
         }
     }
@@ -59,11 +59,11 @@ public:
         size_ = capacity_ = 0;
     }
 
-    isize size() const {
+    usize size() const {
         return size_;
     }
 
-    isize capacity() const {
+    usize capacity() const {
         return capacity_;
     }
 
@@ -113,17 +113,17 @@ public:
     /**
      * @brief 重新分配内存
      */
-    void resize(isize new_capacity) {
+    void resize(usize new_capacity) {
         if (new_capacity == capacity_) return;
         my_destroy(this);
         my_construct(this, new_capacity);
     }
 
-    value_t& at(isize index) {
+    value_t& at(usize index) {
         return buf_[index];
     }
 
-    const value_t& at(isize index) const {
+    const value_t& at(usize index) const {
         return buf_[index];
     }
 
@@ -132,7 +132,7 @@ public:
      */
     Array<value_t> to_array() const {
         Array<value_t> arr(size_);
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             arr[i] = at(i);
         }
         return arr;
@@ -143,7 +143,7 @@ public:
      */
     Array<value_t> to_array() {
         Array<value_t> arr(size_);
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             arr[i] = std::move(at(i));
         }
         size_ = 0;
@@ -151,7 +151,7 @@ public:
     }
 
 private:
-    isize size_, capacity_;
+    usize size_, capacity_;
     value_t* buf_;
 };
 

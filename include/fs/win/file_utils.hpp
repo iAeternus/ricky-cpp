@@ -84,9 +84,9 @@ fn remove(const char* path) {
  * @return 拼接后的路径
  */
 fn join(const char* path1, const char* path2)->CString {
-    isize length1 = std::strlen(path1);
-    isize length2 = std::strlen(path2);
-    isize length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
+    usize length1 = std::strlen(path1);
+    usize length2 = std::strlen(path2);
+    usize length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
 
     CString result{length};
     std::memcpy(result.data(), path1, length1);

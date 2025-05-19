@@ -20,7 +20,7 @@ public:
     Stack() :
             data_() {}
 
-    isize size() const {
+    usize size() const {
         return data_.size();
     }
 

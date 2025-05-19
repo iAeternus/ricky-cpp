@@ -1,6 +1,7 @@
 #ifndef TEST_HUFFMAN_TREE_HPP
 #define TEST_HUFFMAN_TREE_HPP
 
+#include "Printer.hpp"
 #include "ricky_test.hpp"
 #include "filesystem.hpp"
 #include "HuffmanTree.hpp"

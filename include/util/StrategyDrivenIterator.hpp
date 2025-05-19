@@ -55,7 +55,7 @@ public:
 /**
  * @brief 跳跃步长策略
  */
-template <std::bidirectional_iterator I, isize N>
+template <std::bidirectional_iterator I, usize N>
 class StepJumpStrategy : public IterStrategy<I> {
 public:
     using Self = StepJumpStrategy<I, N>;
@@ -68,7 +68,7 @@ public:
      * @brief 跳跃步长，前向
      */
     static iterator& next(iterator& iter) {
-        for (auto i = 0; i < N; ++i) {
+        for (usize i = 0; i < N; ++i) {
             ++iter;
         }
         return iter;
@@ -78,7 +78,7 @@ public:
      * @brief 跳跃步长，后向
      */
     static iterator& prev(iterator& iter) {
-        for (auto i = 0; i < N; ++i) {
+        for (usize i = 0; i < N; ++i) {
             --iter;
         }
         return iter;

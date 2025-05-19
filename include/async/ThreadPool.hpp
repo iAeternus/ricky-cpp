@@ -37,7 +37,7 @@ class ThreadPool : public Object<ThreadPool>, public NoCopy {
 public:
     using Task = Runnable;
 
-    ThreadPool(isize numOfThreads) :
+    ThreadPool(usize numOfThreads) :
             threads_(numOfThreads), stopFlag_(StopFlag::WAIT_FOREVER) {
         auto worker = [this]() {
             while (true) {

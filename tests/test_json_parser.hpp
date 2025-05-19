@@ -6,12 +6,9 @@
 
 namespace my::test::test_json_parser {
 
-/**
- * TODO 不知道为什么，dict的结尾不加逗号就报错
- */
 fn should_parse = []() {
     // Given
-    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3,}], "other": null, "bool": true, })";
+    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })"_s;
 
     // When
     auto json = json::JsonParser::parse(s);

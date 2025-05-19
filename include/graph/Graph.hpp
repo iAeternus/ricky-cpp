@@ -31,21 +31,21 @@ public:
     explicit Graph(bool is_directed = true) :
             is_directed_(is_directed) {}
 
-    isize vertex_cnt() const {
+    usize vertex_cnt() const {
         return vertices_.size();
     }
 
-    isize edge_cnt() const {
+    usize edge_cnt() const {
         return edge_cnt_;
     }
 
     /**
      * @brief 获取从ID节点出发的边的数量
-     * @return 若节点不存在，则返回-1
+     * @return 若节点不存在，则返回npos
      */
-    isize edge_cnt(u64 id) const {
+    usize edge_cnt(u64 id) const {
         if (!vertices_.contains(id)) {
-            return -1;
+            return npos;
         }
         return vertices_.get(id).out_deg();
     }
@@ -90,8 +90,8 @@ public:
      * @param id 节点ID
      * @note 时间复杂度：O(|V| * |E|)
      */
-    isize in_deg(u64 id) const {
-        isize deg = 0;
+    usize in_deg(u64 id) const {
+        usize deg = 0;
         for_each([&](const auto& vertex) {
             if (id == vertex.id) return;
             vertex.for_each([&](const auto& edge) {
@@ -209,7 +209,7 @@ public:
     }
 
 private:
-    isize edge_cnt_ = 0;                     // 边数，无向图为双倍边
+    usize edge_cnt_ = 0;                     // 边数，无向图为双倍边
     bool is_directed_;                       // 是否为有向图 true=是 false=否
     util::Dict<u64, Vertex<V, E>> vertices_; // 邻接表
 

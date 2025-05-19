@@ -26,7 +26,7 @@ public:
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    IndexIterator(container_t* container = nullptr, isize index = 0) :
+    IndexIterator(container_t* container = nullptr, usize index = 0) :
             container_(container), index_(index) {}
 
     IndexIterator(const Self& other) :
@@ -114,7 +114,7 @@ public:
 
 private:
     container_t* container_;
-    isize index_;
+    usize index_;
 };
 
 } // namespace my::util

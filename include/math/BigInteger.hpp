@@ -67,12 +67,12 @@ public:
     }
 
     Self& operator=(const char* str) {
-        isize len = strlen(str), stop = 0LL;
-        i32 tmp = 0, ten = 1;
+        i32 len = strlen(str);
+        i32 tmp = 0, ten = 1, stop = 0;
         num_.clear();
         sign_ = (str[0] != '-');
         if (!sign_) {
-            stop = 1LL;
+            stop = 1;
         }
         for (isize i = len; i > stop; --i) {
             tmp += c2i(str[i - 1]) * ten;
@@ -102,7 +102,7 @@ public:
         return *this;
     }
 
-    isize size() const {
+    usize size() const {
         return length_;
     }
 
@@ -125,8 +125,8 @@ public:
     /**
      * @brief 左移n位，低位补0
      */
-    Self left_shift(isize n) const {
-        isize tmp = n % WIDTH;
+    Self left_shift(usize n) const {
+        usize tmp = n % WIDTH;
         Self ans;
         ans.length_ = n + 1;
         n /= WIDTH;
@@ -159,10 +159,10 @@ public:
         }
         Self ans;
         i32 carry = 0, aa, bb;
-        isize a_size = a.num_.size(), b_size = b.num_.size();
-        isize max_size = math::max_(a_size, b_size);
+        auto a_size = a.num_.size(), b_size = b.num_.size();
+        auto max_size = math::max_(a_size, b_size);
         ans.num_.clear();
-        for (isize i = 0; i < max_size; ++i) {
+        for (usize i = 0; i < max_size; ++i) {
             aa = a_size <= i ? 0 : a.num_[i];
             bb = b_size <= i ? 0 : b.num_[i];
             ans.num_.append((aa + bb + carry) % BASE);
@@ -211,10 +211,10 @@ public:
         }
         Self ans;
         i32 carry = 0, aa, bb;
-        isize a_size = a.num_.size(), b_size = b.num_.size();
-        isize max_size = math::max_(a_size, b_size);
+        usize a_size = a.num_.size(), b_size = b.num_.size();
+        usize max_size = math::max_(a_size, b_size);
         ans.num_.clear();
-        for (isize i = 0; i < max_size; ++i) {
+        for (usize i = 0; i < max_size; ++i) {
             aa = a.num_[i];
             bb = b_size <= i ? 0 : b.num_[i];
             ans.num_.append((aa - bb - carry + BASE) % BASE);
@@ -241,10 +241,10 @@ public:
     }
 
     friend Self operator*(const Self& a, const Self& b) {
-        isize a_size = a.num_.size(), b_size = b.num_.size();
+        auto a_size = a.num_.size(), b_size = b.num_.size();
         util::Vec<i64> res;
-        for (isize i = 0; i < a_size; ++i) {
-            for (isize j = 0; j < b_size; ++j) {
+        for (usize i = 0; i < a_size; ++i) {
+            for (usize j = 0; j < b_size; ++j) {
                 i64 tmp = i64(a.num_[i]) * i64(b.num_[j]);
                 i + j < res.size() ? res[i + j] += tmp : res.append(tmp);
             }
@@ -255,9 +255,9 @@ public:
         Self ans;
         ans.sign_ = a.sign_ == b.sign_ || (res.size() == 1 && res[0] == 0);
         ans.num_.clear();
-        isize resSize = res.size();
+        auto resSize = res.size();
         i64 carry = 0, tmp;
-        for (isize i = 0; i < resSize; ++i) {
+        for (usize i = 0; i < resSize; ++i) {
             tmp = res[i];
             ans.num_.append((tmp + carry) % BASE);
             carry = (tmp + carry) / BASE;
@@ -285,8 +285,8 @@ public:
         CString str(aa.size() + 1);
         std::memset(str.data(), 0, str.size());
         Self tmp;
-        isize lenDiff = aa.length_ - bb.length_;
-        for (isize i = 0; i <= lenDiff; ++i) {
+        auto lenDiff = aa.length_ - bb.length_;
+        for (usize i = 0; i <= lenDiff; ++i) {
             tmp = bb.left_shift(lenDiff - i);
             while (aa >= tmp) {
                 ++str[i];
@@ -351,7 +351,7 @@ public:
     }
 
     [[nodiscard]] CString __str__() const {
-        isize mSize = num_.size();
+        usize mSize = num_.size();
         std::stringstream stream;
         if (!sign_) {
             stream << '-';
@@ -375,7 +375,7 @@ public:
             } else if (this->length_ > other.length_) {
                 return 1;
             } else {
-                isize a_size = this->num_.size();
+                auto a_size = this->num_.size();
                 for (isize i = a_size - 1; i >= 0; --i) {
                     if (this->num_[i] < other.num_[i]) {
                         return -1;
@@ -419,7 +419,7 @@ private:
 
 private:
     bool sign_;          // true=正数 false=负数
-    isize length_;       // 十进制位数
+    usize length_;       // 十进制位数
     util::Vec<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
 
     static const i32 BASE = 100000000;

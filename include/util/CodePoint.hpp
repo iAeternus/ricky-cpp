@@ -91,8 +91,8 @@ public:
     /**
      * @brief 字节码长度
      */
-    isize size() const noexcept {
-        return isize(code_size_);
+    usize size() const noexcept {
+        return usize(code_size_);
     }
 
     operator char() const {
@@ -150,7 +150,7 @@ public:
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        isize m_size = this->size(), o_size = other.size();
+        usize m_size = this->size(), o_size = other.size();
         if (m_size != o_size) {
             return m_size - o_size;
         }
@@ -235,9 +235,9 @@ CodePointPool* CodePointPool::instance_ = nullptr;
 /**
  * @brief 获取字符串的所有码点
  */
-fn getCodePoints(const char* str, isize len, Encoding* encoding)->Vec<CodePoint> {
+fn get_code_points(const char* str, usize len, Encoding* encoding)->Vec<CodePoint> {
     Vec<CodePoint> cps;
-    i32 i = 0;
+    usize i = 0;
     while (i < len) {
         cps.append(CodePoint{str + i, encoding});
         i += cps[-1].size();

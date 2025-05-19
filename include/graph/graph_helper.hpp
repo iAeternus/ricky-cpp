@@ -61,7 +61,7 @@ struct Vertex : public Object<Vertex<V, E>> {
     /**
      * @brief 获取出度
      */
-    isize out_deg() const {
+    usize out_deg() const {
         return edges.size();
     }
 
@@ -85,7 +85,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      */
     bool disconnect(u64 end) {
         auto size = edges.size();
-        for (auto i = 0; i < size; ++i) {
+        for (usize i = 0; i < size; ++i) {
             if (edges[i].end == end) {
                 edges.pop(i);
                 return true;

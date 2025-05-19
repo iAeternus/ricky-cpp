@@ -29,7 +29,7 @@ constexpr i32 N = 1e6;
 
 fn speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
-    for (auto i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         sb.append("abcdef");
     }
     auto str = sb.str();
@@ -38,7 +38,7 @@ fn speed_of_string_builder_append_string = []() {
 
 fn speed_of_std_string_splicing = []() {
     std::string str;
-    for (auto i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         str += "abcdef";
     }
     Assertions::assertEquals(N * 6, str.length());

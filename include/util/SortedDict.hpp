@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    isize size_; // 节点个数
+    usize size_; // 节点个数
     Node* root_; // 指向根节点的指针
     C creator_;  // 节点创建管理器
 

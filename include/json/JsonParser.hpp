@@ -66,7 +66,7 @@ private:
             match = jsonStr.split(0, jsonStr.split(1).find(util::CodePoint{'\"'}) + 2);
         } else {
             auto stopSignIdx = jsonStr.find(stopSign);
-            if (stopSign == util::String::npos) {
+            if (stopSignIdx == npos) {
                 match = jsonStr;
             } else {
                 match = jsonStr.split(0, stopSignIdx);

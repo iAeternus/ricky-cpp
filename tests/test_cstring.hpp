@@ -58,6 +58,21 @@ fn should_add = []() {
     Assertions::assertEquals("aaabbb"_cs, res);
 };
 
+fn should_remove_all = []() {
+    // Given
+    CString s = "   a  bc "_cs;
+
+    // When
+    auto res = s.remove_all(' ');
+    auto res2 = s.remove_all([](const auto& ch) {
+        return ch == ' ';
+    });
+
+    // Then
+    Assertions::assertEquals("abc"_cs, res);
+    Assertions::assertEquals("abc"_cs, res2);
+};
+
 fn should_iterate = []() {
     CString str = "abcdefg";
 
@@ -77,6 +92,7 @@ fn test_cstring() {
     group.addTest("should_hash", should_hash);
     group.addTest("should_compare", should_compare);
     group.addTest("should_add", should_add);
+    group.addTest("should_remove_all", should_remove_all);
     group.addTest("should_iterate", should_iterate);
 
     group.startAll();

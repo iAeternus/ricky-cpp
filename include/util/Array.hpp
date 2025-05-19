@@ -39,9 +39,9 @@ public:
      * @param args 用于初始化数组元素的参数
      */
     template <typename... Args>
-    Array(isize size, const Args&... args) :
+    Array(usize size, const Args&... args) :
             size_(size), arr_(my_alloc<T>(size_)) {
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             my_construct(data() + i, args...);
         }
     }
@@ -52,7 +52,7 @@ public:
      */
     Array(std::initializer_list<T>&& init_list) :
             size_(init_list.size()), arr_(my_alloc<T>(size_)) {
-        isize idx = 0;
+        usize idx = 0;
         for (const T& item : init_list) {
             my_construct(data() + idx++, item);
         }
@@ -64,7 +64,7 @@ public:
      */
     Array(const Self& other) :
             size_(other.size_), arr_(my_alloc<T>(size_)) {
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             my_construct(data() + i, other.data()[i]);
         }
     }
@@ -144,7 +144,7 @@ public:
      * @return 返回对应元素的引用
      * @note 不会对索引进行边界检查，如果索引超出范围，可能会导致未定义行为
      */
-    value_t& at(isize index) {
+    value_t& at(usize index) {
         return arr_[index];
     }
 
@@ -154,7 +154,7 @@ public:
      * @return 返回对应元素的常量引用
      * @note 不会对索引进行边界检查，如果索引超出范围，可能会导致未定义行为
      */
-    const value_t& at(isize index) const {
+    const value_t& at(usize index) const {
         return arr_[index];
     }
 
@@ -162,7 +162,7 @@ public:
      * @brief 获取数组的大小
      * @return 返回数组的大小
      */
-    isize size() const {
+    usize size() const {
         return size_;
     }
 
@@ -182,7 +182,7 @@ public:
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             if (i != 0) stream << ',';
             stream << at(i);
         }
@@ -198,7 +198,7 @@ public:
      * @note 调用此方法会销毁原数组中的所有元素并释放内存
      */
     template <typename... Args>
-    void resize(isize new_size, const Args&... args) {
+    void resize(usize new_size, const Args&... args) {
         my_destroy(this);
         my_construct(this, new_size, args...);
     }
@@ -208,7 +208,7 @@ public:
      * @return 返回包含数组大小和指针的 Pair
      * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
      */
-    Pair<isize, value_t*> separate() {
+    Pair<usize, value_t*> separate() {
         auto res = Pair{size_, arr_};
         size_ = 0;
         arr_ = nullptr;
@@ -216,7 +216,7 @@ public:
     }
 
 private:
-    isize size_;   // 静态数组长度
+    usize size_;   // 静态数组长度
     value_t* arr_; // 指向静态数组首地址的指针
 };
 
@@ -235,7 +235,7 @@ public:
      * @param end 结束值（不包含）
      * @param step 步长
      */
-    Range(isize start, isize end, isize step = 1) :
+    Range(usize start, usize end, usize step = 1) :
             start_(start), end_(end), step_(step) {}
 
     /**
@@ -243,14 +243,14 @@ public:
      * 默认起始值为 0，步长为 1
      * @param end 结束值（不包含）
      */
-    Range(isize end) :
+    Range(usize end) :
             Range(0, end, 1) {}
 
     /**
      * @brief 获取范围的大小
      * @return 返回范围的大小
      */
-    isize size() const {
+    usize size() const {
         return (end_ - start_ + step_ - 1) / step_;
     }
 
@@ -260,7 +260,7 @@ public:
 
     public:
         using iterator_category = std::bidirectional_iterator_tag;
-        using value_type = isize;
+        using value_type = usize;
         using difference_type = std::ptrdiff_t;
         using pointer = value_type*;
         using const_pointer = const value_type*;
@@ -272,7 +272,7 @@ public:
          * @param current 当前值
          * @param step 步长
          */
-        RangeIterator(isize current, isize step) :
+        RangeIterator(usize current, usize step) :
                 current_(current), step_(step) {}
 
         /**
@@ -366,11 +366,11 @@ public:
         }
 
     private:
-        isize current_, step_;
+        usize current_, step_;
     };
 
 private:
-    isize start_, end_, step_; // 起点、终点、步长
+    usize start_, end_, step_; // 起点、终点、步长
 };
 
 /**

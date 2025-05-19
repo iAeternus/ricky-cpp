@@ -19,18 +19,18 @@ namespace my::util {
 class HuffmanTree : public Object<HuffmanTree>, public NoCopy {
 public:
     using Self = HuffmanTree;
-    static constexpr isize NIL = -1;
+    static constexpr usize NIL = -1ULL;
 
     struct Node {
-        isize idx;
+        usize idx;
         CodePoint data;
         u32 freq;
-        isize lch = NIL, rch = NIL;
+        usize lch = NIL, rch = NIL;
 
-        Node(isize idx, const CodePoint& data, u32 freq) :
+        Node(usize idx, const CodePoint& data, u32 freq) :
                 idx(idx), data(data), freq(freq) {}
 
-        Node(isize idx, u32 freq, isize lch, isize rch) :
+        Node(usize idx, u32 freq, usize lch, usize rch) :
                 idx(idx), freq(freq), lch(lch), rch(rch) {}
 
         bool operator<(const Node& other) const {
@@ -44,7 +44,7 @@ public:
             ++freqs_[cp];
         }
 
-        isize idx = 0;
+        usize idx = 0;
         std::priority_queue<Node> pq;
         for (const auto& [cp, freq] : freqs_) {
             nodes_.append(idx++, cp, freq);
@@ -69,7 +69,7 @@ public:
 
     String decode() {
         StringBuilder sb;
-        isize cur = root_idx_;
+        usize cur = root_idx_;
         for (char bit : encoded_text_) {
             cur = (bit == '0') ? nodes_[cur].lch : nodes_[cur].rch;
             if (cur == NIL) RuntimeError("Invalid encoded stream");
@@ -116,7 +116,7 @@ public:
     /**
      * @brief 计算树高
      */
-    isize height() const {
+    usize height() const {
         if (root_idx_ == NIL) RuntimeError("Please build the tree first.");
         return height(root_idx_);
     }
@@ -127,7 +127,7 @@ private:
     Vec<Node> nodes_;              // 树结构
     Dict<CodePoint, CString> key_; // 密钥
     Dict<CodePoint, u32> freqs_;   // 字符出现频率
-    isize root_idx_ = NIL;         // 根索引
+    usize root_idx_ = NIL;         // 根索引
 
     void build_tree(std::priority_queue<Node>& pq) {
         if (pq.empty()) return;
@@ -162,7 +162,7 @@ private:
         traverse(root_idx_, ""_cs);
     }
 
-    void traverse(isize cur, CString code) {
+    void traverse(usize cur, CString code) {
         if (cur == NIL) return;
         const Node& node = nodes_[cur];
 
@@ -175,7 +175,7 @@ private:
         traverse(node.rch, code + "1"_cs);
     }
 
-    isize height(isize cur_idx) const {
+    usize height(usize cur_idx) const {
         if (cur_idx == NIL) return 0;
         const Node& node = nodes_[cur_idx];
         return 1 + std::max(height(node.lch), height(node.rch));

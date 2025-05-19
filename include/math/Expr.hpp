@@ -7,11 +7,11 @@
 #ifndef EXPR_HPP
 #define EXPR_HPP
 
+#include "Printer.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
 #include "Stack.hpp"
-#include "String.hpp"
 
 namespace my::math {
 
@@ -32,11 +32,11 @@ struct Token : public Object<Token> {
         bool right_assoc; // 是否右结合
     };
 
-    Type type;             // 标记类型
-    util::String op_value; // 操作符值
-    f64 num_value;         // 数字值
+    Type type;        // 标记类型
+    CString op_value; // 操作符值
+    f64 num_value;    // 数字值
 
-    Token(Type type, const util::String& value = "", f64 num = 0.0) :
+    Token(Type type, const CString& value = "", f64 num = 0.0) :
             type(type), op_value(value), num_value(num) {}
 
     /**
@@ -45,7 +45,7 @@ struct Token : public Object<Token> {
      * @return OpProp 操作符属性
      */
     OpProp get_op_prop() const {
-        static const util::Dict<util::String, OpProp> op_mp = {
+        static const util::Dict<CString, OpProp> op_mp = {
             {"+", {2, false}}, // 加法
             {"-", {2, false}}, // 减法
             {"*", {3, false}}, // 乘法
@@ -60,7 +60,7 @@ struct Token : public Object<Token> {
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         if (op_value.empty()) {
-            if (op_value == "u-"_s) {
+            if (op_value == "u-") {
                 stream << '-';
             } else {
                 stream << num_value;
@@ -79,12 +79,10 @@ class Expr : public Object<Expr> {
 public:
     using Self = Expr;
 
-    Expr(const util::String& expr) :
+    Expr(const CString& expr) :
             valid_(false) {
         try {
-            expr.remove_all([](const auto& cp) {
-                return cp.is_blank();
-            });
+            expr.remove_all(' ');
             tokenize(expr);
             this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
@@ -127,7 +125,7 @@ private:
     /**
      * @brief 分词函数，将表达式分解为tokens
      */
-    void tokenize(const util::String& expr) {
+    void tokenize(const CString& expr) {
         tokens_.clear();
         std::string num_str;
         auto handle_num = [&]() {
@@ -137,20 +135,20 @@ private:
             num_str.clear();
         };
 
-        for (const auto& c : expr) {
-            if (c.is_digit() || c == '.') {
+        for (char c : expr) {
+            if ((c >= '0' && c <= '9') || c == '.') {
                 num_str += c;
             } else {
                 handle_num();
                 if (is_unary_neg_sign(c)) {
-                    tokens_.append(Token::UNARY_OP, "u-"_s);
+                    tokens_.append(Token::UNARY_OP, "u-");
                 } else if (c == '(') {
-                    tokens_.append(Token::LEFT_PAREN, "("_s);
+                    tokens_.append(Token::LEFT_PAREN, "(");
                 } else if (c == ')') {
-                    tokens_.append(Token::RIGHT_PAREN, ")"_s);
+                    tokens_.append(Token::RIGHT_PAREN, ")");
                 } else if (is_op(c)) {
-                    tokens_.append(Token::OPERATOR, util::String(c));
-                } else if (!c.is_blank()) {
+                    tokens_.append(Token::OPERATOR, CString::of(c));
+                } else if (c != ' ') {
                     RuntimeError(std::format("Invalid character: {}", c));
                 }
             }
@@ -183,16 +181,16 @@ private:
     /**
      * @brief 判断是否为一元负号
      */
-    bool is_unary_neg_sign(const util::CodePoint& cp) const {
-        return cp == '-' && (tokens_.empty() || tokens_.back().type == Token::LEFT_PAREN || tokens_.back().type == Token::OPERATOR || tokens_.back().type == Token::UNARY_OP);
+    bool is_unary_neg_sign(char ch) const {
+        return ch == '-' && (tokens_.empty() || tokens_.back().type == Token::LEFT_PAREN || tokens_.back().type == Token::OPERATOR || tokens_.back().type == Token::UNARY_OP);
     }
 
     /**
      * @brief 判断是否为操作符
      */
-    bool is_op(const util::CodePoint& cp) const {
-        static const util::String ops("+-*/%^");
-        return ops.find(cp) != util::String::npos;
+    bool is_op(char ch) const {
+        static const CString ops = "+-*/%^";
+        return ops.find(ch) != npos;
     }
 
     /**
@@ -240,7 +238,7 @@ private:
             case Token::UNARY_OP:
                 while (!op_st.empty() && op_st.peek().type != Token::LEFT_PAREN && should_pop(token, op_st.peek())) {
                     ans.append(op_st.peek());
-                    op_st.pop(); // TODO 用 util::Stack 这里段错误
+                    op_st.pop();
                 }
                 op_st.push(token); // 当前操作符入栈
                 break;
@@ -308,21 +306,21 @@ private:
         return st.peek();
     }
 
-    static f64 eval_op(f64 a, f64 b, const util::String& op) {
-        if (op == "+"_s) {
+    static f64 eval_op(f64 a, f64 b, const CString& op) {
+        if (op == "+") {
             return a + b;
-        } else if (op == "-"_s) {
+        } else if (op == "-") {
             return a - b;
-        } else if (op == "*"_s) {
+        } else if (op == "*") {
             return a * b;
-        } else if (op == "/"_s) {
+        } else if (op == "/") {
             if (is_zero(b)) {
                 RuntimeError("Divide by zero");
             }
             return a / b;
-        } else if (op == "%"_s) {
+        } else if (op == "%") {
             return std::fmod(a, b);
-        } else if (op == "^"_s) {
+        } else if (op == "^") {
             return std::pow(a, b);
         } else {
             ValueError(std::format("Unknown operator: {}", op));
@@ -330,8 +328,8 @@ private:
         }
     }
 
-    static f64 eval_unary_op(f64 x, const util::String& op) {
-        if (op == "u-"_s) {
+    static f64 eval_unary_op(f64 x, const CString& op) {
+        if (op == "u-") {
             return -x;
         } else {
             ValueError(std::format("Unknown unary operator: {}", op));
@@ -343,7 +341,7 @@ private:
 } // namespace my::math
 
 fn operator""_expr(const char* str, size_t len)->my::math::Expr {
-    return my::math::Expr(my::util::String(str, len));
+    return my::math::Expr(my::CString(str, len));
 }
 
 #endif // EXPR_HPP

@@ -44,7 +44,7 @@ public:
      * @brief 获取队列的大小
      * @return 队列中元素的个数
      */
-    isize size() const {
+    usize size() const {
         return size_;
     }
 
@@ -157,7 +157,7 @@ public:
     }
 
 private:
-    isize size_;               // 队列中元素的个数
+    usize size_;               // 队列中元素的个数
     ChainNode<value_t>* tail_; // 指向虚拟尾节点的指针
     C creator_;                // 节点管理器，用于创建和销毁节点
 };

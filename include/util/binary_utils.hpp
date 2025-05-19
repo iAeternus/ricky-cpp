@@ -156,11 +156,11 @@ constexpr fn only_one(const B& x)->bool {
 /**
  * @brief 向上取整到2的幂
  */
-constexpr fn roundup2(isize x)->isize {
+constexpr fn roundup2(usize x)->usize {
     if (x <= 1) return 0LL;
 
     --x;
-    for (isize i = 1LL; i < isize(sizeof(isize)) * 8LL; i <<= 1LL) {
+    for (usize i = 1LL; i < usize(sizeof(usize)) * 8LL; i <<= 1LL) {
         x |= x >> 1LL;
     }
     return x + 1LL;

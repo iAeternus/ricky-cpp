@@ -47,7 +47,7 @@ constexpr i32 N = 1e6;
 
 fn speed_of_util_queue_push_and_pop = []() {
     util::Queue<CString> q;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         q.push(util::Random::instance().next_str(3));
     }
     while (!q.empty()) {
@@ -57,7 +57,7 @@ fn speed_of_util_queue_push_and_pop = []() {
 
 fn speed_of_std_queue_push_and_pop = []() {
     std::queue<CString> q;
-    for (i32 i = 0; i < N; ++i) {
+    for (usize i = 0; i < N; ++i) {
         q.push(util::Random::instance().next_str(3));
     }
     while (!q.empty()) {

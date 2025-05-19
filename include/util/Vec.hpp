@@ -9,6 +9,7 @@
 
 #include "Array.hpp"
 #include "Sequence.hpp"
+#include <iterator>
 
 namespace my::util {
 
@@ -40,9 +41,9 @@ public:
      * @param size 初始元素个数
      * @param val 用于填充的值，默认为值初始化
      */
-    Vec(isize size, const value_t& val = value_t{}) :
+    Vec(usize size, const value_t& val = value_t{}) :
             size_(size), capacity_(size_), data_(my_alloc<value_t>(capacity_)) {
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             my_construct(data_ + i, val);
         }
     }
@@ -53,7 +54,7 @@ public:
      */
     Vec(std::initializer_list<value_t>&& init_list) :
             size_(init_list.size()), capacity_(size_), data_(my_alloc<value_t>(capacity_)) {
-        isize pos = 0;
+        usize pos = 0;
         for (auto&& item : init_list) {
             my_construct(data_ + pos, std::forward<decltype(item)>(item));
             pos++;
@@ -68,7 +69,7 @@ public:
     template <Iterable I>
     Vec(I&& iter) :
             size_(iter.size()), capacity_(size_), data_(my_alloc<value_t>(capacity_)) {
-        isize pos = 0;
+        usize pos = 0;
         for (auto&& item : iter) {
             my_construct(data_ + pos, std::forward<value_t>(item));
             pos++;
@@ -81,7 +82,7 @@ public:
      */
     Vec(const Self& other) :
             size_(other.size_), capacity_(other.capacity_), data_(my_alloc<value_t>(capacity_)) {
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             my_construct(data_ + i, other.data_[i]);
         }
     }
@@ -135,7 +136,7 @@ public:
      * @brief 获取元素个数
      * @return 当前存储的元素个数
      */
-    isize size() const noexcept {
+    usize size() const noexcept {
         return size_;
     }
 
@@ -183,16 +184,16 @@ public:
      * @return 对应元素的引用
      * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    value_t& at(isize idx) {
+    value_t& at(usize idx) {
         return data_[idx];
     }
 
-    const value_t& at(isize idx) const {
+    const value_t& at(usize idx) const {
         return data_[idx];
     }
 
-    isize find(const value_t& value) const {
-        for (isize i = 0; i < size_; ++i) {
+    usize find(const value_t& value) const {
+        for (usize i = 0; i < size_; ++i) {
             if (data_[i] == value) {
                 return i;
             }
@@ -232,11 +233,11 @@ public:
      * @param item 要插入的元素
      */
     template <typename... Args>
-    void insert(isize idx, Args&&... args) {
-        if (idx < 0 || idx > size_) return;
+    void insert(usize idx, Args&&... args) {
+        if (idx > size_) return;
         try_expand();
-        for (isize i = size_ - 1; i >= idx; --i) {
-            data_[i + 1] = std::move(data_[i]);
+        for (auto it = end(); it >= begin() + idx; --it) {
+            *std::next(it) = std::move(*it);
         }
         my_construct(data_ + idx, std::forward<Args>(args)...);
         ++size_;
@@ -249,9 +250,9 @@ public:
     void pop(isize idx = -1) {
         if (empty()) return;
 
-        idx = neg_index(idx, size_);
-        for (isize i = idx + 1; i < size_; ++i) {
-            data_[i - 1] = std::move(data_[i]);
+        idx = neg_index(idx, static_cast<isize>(size_));
+        for (auto it = begin() + idx + 1; it != end(); ++it) {
+            *std::prev(it) = std::move(*it);
         }
         my_destroy(data_ + idx);
         --size_;
@@ -281,7 +282,7 @@ public:
      */
     Array<value_t> to_array() const {
         Array<value_t> arr(size_);
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             arr[i] = data_[i];
         }
         return arr;
@@ -294,7 +295,7 @@ public:
      */
     Array<value_t> to_array() {
         Array<value_t> arr(size_);
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             arr[i] = std::move(data_[i]);
         }
         clear();
@@ -357,15 +358,15 @@ public:
      * 若新容量小于原容量，缩容到新容量并拷贝原向量的前newsize个元素到新向量；
      * 若二者相等，则什么都不做
      */
-    void resize(isize new_capacity) {
+    void resize(usize new_capacity) {
         if (new_capacity == capacity_) return;
         value_t* ptr = my_alloc<value_t>(new_capacity);
-        isize min_size = std::min(size_, new_capacity);
+        usize min_size = std::min(size_, new_capacity);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
             std::memcpy(ptr, data_, min_size * sizeof(value_t));
         } else {
-            for (isize i = 0; i < min_size; ++i) {
+            for (usize i = 0; i < min_size; ++i) {
                 new (ptr + i) value_t(std::move(data_[i]));
                 data_[i].~value_t();
             }
@@ -381,7 +382,7 @@ public:
      * @return 返回包含数组大小和指针的 Pair
      * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
      */
-    Pair<isize, value_t*> separate() {
+    Pair<usize, value_t*> separate() {
         auto res = Pair{size_, data_};
         data_ = nullptr;
         size_ = capacity_ = 0;
@@ -391,7 +392,7 @@ public:
     /**
      * @brief 扩容
      */
-    void reserve(isize new_capacity) {
+    void reserve(usize new_capacity) {
         if (new_capacity > capacity_) {
             resize(new_capacity);
         }
@@ -404,7 +405,7 @@ public:
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (isize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < size_; ++i) {
             if (i) stream << ',';
             stream << at(i);
         }
@@ -436,7 +437,7 @@ public:
          * @param blockIndex 块索引
          * @param inblockIndex 块内索引
          */
-        Iterator(container_t* vec_ptr = nullptr, isize cur_idx = 0) :
+        Iterator(container_t* vec_ptr = nullptr, usize cur_idx = 0) :
                 vec_ptr_(vec_ptr), cur_idx_(cur_idx) {}
 
         /**
@@ -632,7 +633,7 @@ public:
         }
 
     private:
-        isize cur_idx_;        // 当前索引
+        usize cur_idx_;        // 当前索引
         container_t* vec_ptr_; // 当前指向当前向量的指针
     };
 
@@ -672,11 +673,11 @@ public:
     }
 
 private:
-    isize size_;     // 元素个数
-    isize capacity_; // 总容量
+    usize size_;     // 元素个数
+    usize capacity_; // 总容量
     value_t* data_;  // 指向数据首地址的指针
 
-    static constexpr isize DEFAULT_CAPACITY = 16;
+    static constexpr usize DEFAULT_CAPACITY = 16;
 
 private:
     fn try_expand() {
