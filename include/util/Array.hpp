@@ -329,7 +329,7 @@ public:
          * 将当前值增加步长，并返回自增前的迭代器
          * @return 返回自增前的迭代器
          */
-        Self operator++(int) {
+        Self operator++(i32) {
             Self tmp(*this);
             ++tmp;
             return tmp;
@@ -350,7 +350,7 @@ public:
          * 将当前值减少步长，并返回自减前的迭代器
          * @return 返回自减前的迭代器
          */
-        Self operator--(int) {
+        Self operator--(i32) {
             Self tmp(*this);
             --tmp;
             return tmp;

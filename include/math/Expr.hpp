@@ -7,7 +7,6 @@
 #ifndef EXPR_HPP
 #define EXPR_HPP
 
-#include "Printer.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
@@ -340,8 +339,18 @@ private:
 
 } // namespace my::math
 
-fn operator""_expr(const char* str, size_t len)->my::math::Expr {
-    return my::math::Expr(my::CString(str, len));
+namespace my {
+
+/**
+ * @brief 自定义字符串字面量，支持 `_expr` 后缀转换为 `math::Expr` 对象
+ * @param str C 风格字符串
+ * @param length 字符串长度
+ * @return 转换后的 `math::Expr` 对象
+ */
+fn operator""_expr(const char* str, size_t len)->math::Expr {
+    return math::Expr(CString(str, len));
 }
+
+} // namespace my
 
 #endif // EXPR_HPP

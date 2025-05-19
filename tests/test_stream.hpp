@@ -23,7 +23,7 @@ fn should_operates = []() {
 
 fn should_map_objects = []() {
     // Given
-    util::DynArray<std::pair<int, int>> pairs = {{1, 1}, {2, 2}, {3, 3}};
+    util::DynArray<std::pair<i32, i32>> pairs = {{1, 1}, {2, 2}, {3, 3}};
 
     // When
     auto res = util::stream(pairs)

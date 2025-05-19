@@ -614,7 +614,7 @@ public:
          * 移动迭代器到下一个键值对。
          * @return 返回自增前的迭代器。
          */
-        Self operator++(int) {
+        Self operator++(i32) {
             Self tmp = *this;
             update_kv(1);
             return tmp;
@@ -635,7 +635,7 @@ public:
          * 移动迭代器到上一个键值对。
          * @return 返回自减前的迭代器。
          */
-        Self operator--(int) {
+        Self operator--(i32) {
             Self tmp = *this;
             update_kv(-1);
             return tmp;

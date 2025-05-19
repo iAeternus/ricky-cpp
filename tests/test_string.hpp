@@ -189,7 +189,7 @@ fn should_maintain_encoding = []() {
 
 fn should_join_iterator = []() {
     // Given
-    util::Array<int> arr = {1, 2, 3, 4, 5};
+    util::Array<i32> arr = {1, 2, 3, 4, 5};
     util::Vec<CString> vec = {"aaa", "bbb", "ccc"};
 
     // When

@@ -149,7 +149,7 @@ public:
         return *this;
     }
 
-    Self operator++(int) {
+    Self operator++(i32) {
         iterator tmp(this);
         ++*this;
         return Self{tmp};
@@ -160,7 +160,7 @@ public:
         return *this;
     }
 
-    Self operator-(int) {
+    Self operator-(i32) {
         iterator tmp(this);
         --*this;
         return Self{tmp};

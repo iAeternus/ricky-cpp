@@ -213,7 +213,7 @@ public:
      * @param move_dist 需要比较的移动距离。
      * @return 如果当前管理器的移动距离更大返回 true，否则返回 false。
      */
-    bool move_gt(int move_dist) const {
+    bool move_gt(i32 move_dist) const {
         return this->move_dist_ > move_dist;
     }
 
@@ -231,7 +231,7 @@ public:
      * @param move_dist 需要比较的移动距离。
      * @return 如果当前管理器的移动距离小于或等于指定值返回 true，否则返回 false。
      */
-    bool move_le(int move_dist) const {
+    bool move_le(i32 move_dist) const {
         return this->move_dist_ <= move_dist;
     }
 
@@ -239,7 +239,7 @@ public:
      * @brief 增加当前管理器的移动距离。
      * @param d 增加的距离，默认为 1。
      */
-    void add_move_dist(int d = 1) {
+    void add_move_dist(i32 d = 1) {
         move_dist_ += d;
     }
 
@@ -254,11 +254,11 @@ public:
     }
 
 private:
-    int move_dist_;   // 目标桶与实际存放桶之间的距离
+    i32 move_dist_;   // 目标桶与实际存放桶之间的距离
     hash_t hash_val_; // 哈希值
     value_t value_;   // 维护的值
 
-    constexpr static int MOVED_NOTHING = INT_MAX; // 表示未被管理的特殊值
+    constexpr static i32 MOVED_NOTHING = INT_MAX; // 表示未被管理的特殊值
 };
 
 /**
@@ -572,7 +572,7 @@ public:
          * 移动迭代器到下一个有效的键值对。
          * @return 返回自增前的迭代器。
          */
-        Self operator++(int) {
+        Self operator++(i32) {
             Self tmp{*this};
             ++tmp;
             return tmp;

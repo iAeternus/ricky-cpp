@@ -80,7 +80,7 @@ public:
             return *this;
         }
 
-        Self operator++(int) {
+        Self operator++(i32) {
             Self tmp(*this);
             ++tmp;
             return tmp;

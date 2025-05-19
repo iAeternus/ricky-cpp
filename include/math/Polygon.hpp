@@ -22,7 +22,7 @@ public:
     f64 area() const {
         f64 ans = 0.0;
         auto n = points_.size() - 1;
-        for (int i = 1; i < n; ++i) {
+        for (i32 i = 1; i < n; ++i) {
             ans += math::cross(points_[i] - points_[0], points_[i + 1] - points_[0]);
         }
         return ans / 2.0;
@@ -30,7 +30,7 @@ public:
 
     bool is_included(const Point2& p) const {
         i32 wn = 0, n = points_.size();
-        for (int i = 0; i < n; ++i) {
+        for (i32 i = 0; i < n; ++i) {
             if (is_point_on_seg(p, points_[i], points_[(i + 1) % n])) return true;
             if (p == points_[i]) return true;
 

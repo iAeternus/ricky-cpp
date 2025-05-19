@@ -7,8 +7,8 @@
 
 namespace my::test::test_generator {
 
-my::coro::Generator<int> range(int start, int end) {
-    for (int i = start; i <= end; ++i) {
+my::coro::Generator<i32> range(i32 start, i32 end) {
+    for (i32 i = start; i <= end; ++i) {
         co_yield i;
     }
 }

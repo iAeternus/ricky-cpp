@@ -185,7 +185,7 @@ public:
         return *this;
     }
 
-    Self operator++(int) {
+    Self operator++(i32) {
         Self ans{*this};
         ++*this;
         return ans;
@@ -234,7 +234,7 @@ public:
         return *this;
     }
 
-    Self operator--(int) {
+    Self operator--(i32) {
         Self ans{*this};
         --*this;
         return ans;

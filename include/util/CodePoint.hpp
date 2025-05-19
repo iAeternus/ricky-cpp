@@ -30,7 +30,7 @@ public:
             code_size_(0), byte_code_(nullptr) {}
 
     CodePoint(char ch) :
-            code_size_(sizeof(char)), byte_code_(my_alloc<char>(code_size_)) {
+            code_size_(sizeof(u8)), byte_code_(my_alloc<char>(code_size_)) {
         byte_code_[0] = ch;
     }
 
@@ -66,7 +66,7 @@ public:
 
     Self& operator=(char ch) {
         my_destroy(byte_code_);
-        this->code_size_ = sizeof(char);
+        this->code_size_ = sizeof(u8);
         this->byte_code_ = my_alloc<char>(code_size_);
         byte_code_[0] = ch;
         return *this;
@@ -166,7 +166,7 @@ public:
     }
 
 private:
-    i8 code_size_;    // 字节码长度
+    u8 code_size_;    // 字节码长度
     char* byte_code_; // 字节码
 };
 
@@ -193,13 +193,13 @@ public:
     }
 
     std::shared_ptr<const CodePoint> get(char ch) {
-        hash_t hash = hash_t(ch);
+        auto hash = hash_t(ch);
         return get_impl(hash, [ch]() { return std::make_shared<CodePoint>(ch); });
     }
 
     std::shared_ptr<const CodePoint> get(const char* str, Encoding* encoding) {
-        i8 codeSize = encoding->byte_size(str);
-        hash_t hash = bytes_hash(str, codeSize);
+        auto codeSize = encoding->byte_size(str);
+        auto hash = bytes_hash(str, codeSize);
         return get_impl(hash, [str, encoding]() { return std::make_shared<CodePoint>(str, encoding); });
     }
 

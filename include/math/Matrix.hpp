@@ -468,10 +468,10 @@ public:
         value_t d, p;
         Self m = this->clone();
         usize n = std::min(rows_, cols_), is, js;
-        for (int k = 0; k < n; ++k) {
+        for (i32 k = 0; k < n; ++k) {
             p = 0.0;
-            for (int i = 1; i < rows_; ++i) {
-                for (int j = 1; j < cols_; ++j) {
+            for (i32 i = 1; i < rows_; ++i) {
+                for (i32 j = 1; j < cols_; ++j) {
                     d = std::fabs(m(i, j));
                     if (d > p) {
                         p = d;

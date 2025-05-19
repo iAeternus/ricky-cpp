@@ -61,7 +61,7 @@ public:
         return *this;
     }
 
-    Self operator++(int) {
+    Self operator++(i32) {
         Self tmp(*this);
         ++index_;
         return tmp;
@@ -72,7 +72,7 @@ public:
         return *this;
     }
 
-    Self operator--(int) {
+    Self operator--(i32) {
         Self tmp(*this);
         --index_;
         return tmp;

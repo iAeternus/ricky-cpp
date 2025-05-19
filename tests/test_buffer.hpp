@@ -8,7 +8,7 @@ namespace my::test::test_buffer {
 
 fn should_get_front_and_back = []() {
     // Given
-    util::Buffer<int> buf{3};
+    util::Buffer<i32> buf{3};
     buf.append(1), buf.append(2), buf.append(3);
 
     // When

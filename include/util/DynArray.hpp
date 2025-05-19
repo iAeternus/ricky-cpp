@@ -510,7 +510,7 @@ public:
          * 移动迭代器到下一个元素
          * @return 返回自增前的迭代器
          */
-        Self operator++(int) {
+        Self operator++(i32) {
             Self tmp(*this);
             ++tmp;
             return tmp;
@@ -536,7 +536,7 @@ public:
          * 移动迭代器到上一个元素
          * @return 返回自减前的迭代器
          */
-        Self operator--(int) {
+        Self operator--(i32) {
             Self tmp(*this);
             --tmp;
             return tmp;

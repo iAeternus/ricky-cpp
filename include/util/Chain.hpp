@@ -199,7 +199,7 @@ public:
         return *this;
     }
 
-    Self operator++(int) {
+    Self operator++(i32) {
         Self tmp{current_};
         ++tmp;
         return tmp;

@@ -391,7 +391,7 @@ public:
          * 移动迭代器到下一个元素
          * @return 返回自增前的迭代器
          */
-        Self operator++(int) {
+        Self operator++(i32) {
             Self tmp(*this);
             ++tmp;
             return tmp;
@@ -412,7 +412,7 @@ public:
          * 移动迭代器到上一个元素
          * @return 返回自减前的迭代器
          */
-        Self operator--(int) {
+        Self operator--(i32) {
             Self tmp(*this);
             --tmp;
             return tmp;
@@ -547,7 +547,7 @@ fn stdstr(const CString& value)->const char* {
  * @param ch 字符
  * @return 对应的整数值
  */
-fn c2i(char ch)->int {
+fn c2i(char ch)->i32 {
     return ch - '0';
 }
 
@@ -556,7 +556,7 @@ fn c2i(char ch)->int {
  * @param ch 整数
  * @return 对应的字符
  */
-fn i2c(int ch)->char {
+fn i2c(i32 ch)->char {
     return ch + '0';
 }
 
@@ -572,14 +572,18 @@ struct std::formatter<my::CString> : std::formatter<const char*> {
     }
 };
 
+namespace my {
+
 /**
  * @brief 自定义字符串字面量，支持 `_cs` 后缀转换为 CString 对象
  * @param str C 风格字符串
  * @param len 字符串长度
  * @return 转换后的 CString 对象
  */
-fn operator""_cs(const char* str, size_t len)->my::CString {
-    return my::CString{str, my::usize(len)};
+fn operator""_cs(const char* str, size_t len)->CString {
+    return CString{str, len};
 }
+
+} // namespace my
 
 #endif // CSTRING_HPP
