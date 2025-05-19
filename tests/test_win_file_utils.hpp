@@ -7,8 +7,8 @@
 namespace my::test::test_win_file_utils {
 
 static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
-const char* filepath = "F:\\develop\\ricky-cpp\\tests\\test_win_file_utils.hpp";
-const char* dir_path = "F:\\develop\\ricky-cpp\\tests";
+inline const char* filepath = "F:\\develop\\ricky-cpp\\tests\\test_win_file_utils.hpp";
+inline const char* dir_path = "F:\\develop\\ricky-cpp\\tests";
 
 fn should_judge_exists = []() {
     // Given

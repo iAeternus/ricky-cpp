@@ -5,7 +5,7 @@ CompileFlags:
     - "-Wall"
     - "-I${workspaceFolder}/include"
     - "-I${workspaceFolder}/src"
-  Compiler: clang++
+  Compiler: g++
 
 Diagnostics:
   ClangTidy:
