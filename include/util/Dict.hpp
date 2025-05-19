@@ -7,8 +7,8 @@
 #ifndef DICT_HPP
 #define DICT_HPP
 
-#include "ricky_memory.hpp"
 #include "binary_utils.hpp"
+#include "DynArray.hpp"
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "Pair.hpp"

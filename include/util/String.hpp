@@ -761,7 +761,7 @@ public:
     }
 
     cmp_t __cmp__(const Self& other) const {
-        isize min_size = math::min_(this->size(), other.size());
+        isize min_size = std::min(this->size(), other.size());
         for (auto i = 0; i < min_size; ++i) {
             auto cmp = this->at(i).__cmp__(other.at(i));
             if (cmp != 0) {

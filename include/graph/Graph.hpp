@@ -11,8 +11,8 @@
 #include "Dict.hpp"
 
 #include <any>
+#include <functional>
 #include <shared_mutex>
-#include <typeinfo>
 
 namespace my::graph {
 

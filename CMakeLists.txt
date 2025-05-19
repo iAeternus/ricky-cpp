@@ -1,7 +1,7 @@
 # ===================================================================
 # 主项目CMake配置
 # ===================================================================
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.20)
 project(RICKY_CPP VERSION 1.0
         LANGUAGES CXX
         DESCRIPTION "My C++ Utilities"
@@ -13,6 +13,7 @@ project(RICKY_CPP VERSION 1.0
 set(CMAKE_CXX_STANDARD 23)            # 强制使用C++23标准
 set(CMAKE_CXX_STANDARD_REQUIRED ON)   # 必须支持C++23
 set(CMAKE_CXX_EXTENSIONS OFF)         # 禁用编译器扩展
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ----------------------------------------
 # 并行编译配置（自动检测CPU核心数）

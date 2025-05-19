@@ -9,6 +9,7 @@
 
 #include "Creator.hpp"
 #include "ChainNode.hpp"
+#include "Array.hpp"
 
 namespace my::util {
 

@@ -7,7 +7,6 @@
 #ifndef PRINTER_HPP
 #define PRINTER_HPP
 
-#include "CString.hpp"
 #include "Object.hpp"
 #include "ricky_concepts.hpp"
 

@@ -7,10 +7,8 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#include "CString.hpp"
 #include "ricky_concepts.hpp"
-
-#include <sstream>
+#include "CString.hpp"
 
 namespace my {
 

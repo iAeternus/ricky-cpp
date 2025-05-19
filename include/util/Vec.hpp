@@ -7,6 +7,7 @@
 #ifndef VEC_HPP
 #define VEC_HPP
 
+#include "Array.hpp"
 #include "Sequence.hpp"
 
 namespace my::util {
@@ -359,7 +360,7 @@ public:
     void resize(isize new_capacity) {
         if (new_capacity == capacity_) return;
         value_t* ptr = my_alloc<value_t>(new_capacity);
-        isize min_size = math::min_(size_, new_capacity);
+        isize min_size = std::min(size_, new_capacity);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
             std::memcpy(ptr, data_, min_size * sizeof(value_t));

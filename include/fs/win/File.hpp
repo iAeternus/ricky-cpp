@@ -10,6 +10,8 @@
 #include "file_utils.hpp"
 #include "NoCopy.hpp"
 
+#include <winbase.h>
+
 namespace my::fs::win {
 
 class File : public Object<File>, public NoCopy {

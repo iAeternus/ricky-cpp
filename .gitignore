@@ -38,6 +38,7 @@ cmake-build-debug-mingw/*
 .clangd/*
 vcpkg/*
 .idea/*
+.cache/*
 
 # Others
 *.log

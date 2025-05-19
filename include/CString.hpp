@@ -282,25 +282,16 @@ public:
          * @brief 构造一个迭代器
          * @param current 当前位置指针
          */
-        Iterator(pointer current) :
+        explicit Iterator(pointer current) :
                 current_(current) {}
 
-        /**
-         * @brief 拷贝构造函数
-         * @param other 需要拷贝的迭代器
-         */
-        Iterator(const Self& other) :
-                Iterator(other.current_) {}
+        Iterator(const Self& other) = default;
+        Self& operator=(const Self& other) = default;
 
-        /**
-         * @brief 拷贝赋值操作符
-         * @param other 需要拷贝的迭代器
-         * @return 返回自身引用
-         */
-        Self& operator=(const Self& other) {
-            this->current_ = other.current_;
-            return *this;
-        }
+        Iterator(Self&&) = default;
+        Self& operator=(Self&&) = default;
+
+        ~Iterator() = default;
 
         /**
          * @brief 解引用运算符

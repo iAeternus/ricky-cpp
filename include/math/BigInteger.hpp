@@ -242,7 +242,7 @@ public:
 
     friend Self operator*(const Self& a, const Self& b) {
         isize a_size = a.num_.size(), b_size = b.num_.size();
-        util::DynArray<i64> res;
+        util::Vec<i64> res;
         for (isize i = 0; i < a_size; ++i) {
             for (isize j = 0; j < b_size; ++j) {
                 i64 tmp = i64(a.num_[i]) * i64(b.num_[j]);

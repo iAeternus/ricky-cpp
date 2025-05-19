@@ -8,6 +8,7 @@
 #define DELETER_HPP
 
 #include "ricky_memory.hpp"
+#include "Object.hpp"
 
 namespace my::util {
 

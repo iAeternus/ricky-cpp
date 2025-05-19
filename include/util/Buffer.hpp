@@ -7,7 +7,6 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
-#include "raise_error.hpp"
 #include "ricky_memory.hpp"
 #include "Array.hpp"
 

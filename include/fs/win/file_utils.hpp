@@ -7,8 +7,11 @@
 #ifndef WIN_FILE_UTILS_HPP
 #define WIN_FILE_UTILS_HPP
 
-#include "winlib.hpp"
-#include "raise_error.hpp"
+#include "DynArray.hpp"
+
+#include <fileapi.h>
+#include <handleapi.h>
+#include <winerror.h>
 
 namespace my::fs::win {
 

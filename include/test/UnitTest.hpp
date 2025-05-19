@@ -7,10 +7,7 @@
 #ifndef TEST_UTILS_HPP
 #define TEST_UTILS_HPP
 
-#include "Object.hpp"
-#include "CString.hpp"
 #include "Timer.hpp"
-#include "raise_error.hpp"
 #include "DynArray.hpp"
 #include "Function.hpp"
 

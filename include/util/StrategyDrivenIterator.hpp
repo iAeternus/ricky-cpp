@@ -7,7 +7,7 @@
 #ifndef STRATEGY_DRIVEN_ITERATOR_HPP
 #define STRATEGY_DRIVEN_ITERATOR_HPP
 
-#include "ricky_concepts.hpp"
+#include "Object.hpp"
 
 namespace my::util {
 

@@ -7,7 +7,6 @@
 #ifndef ASSERTIONS_HPP
 #define ASSERTIONS_HPP
 
-#include "ricky_concepts.hpp"
 #include "math_utils.hpp"
 #include "CString.hpp"
 #include "Object.hpp"

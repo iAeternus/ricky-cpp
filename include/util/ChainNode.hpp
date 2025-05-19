@@ -7,7 +7,7 @@
 #ifndef CHAIN_NODE_HPP
 #define CHAIN_NODE_HPP
 
-#include "raise_error.hpp"
+#include "Object.hpp"
 
 namespace my::util {
 

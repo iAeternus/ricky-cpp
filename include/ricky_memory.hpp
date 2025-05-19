@@ -9,8 +9,6 @@
 
 #include "ricky.hpp"
 
-#include <memory>
-
 namespace my {
 
 /**
@@ -19,7 +17,7 @@ namespace my {
  * @return 指向这段连续空间首地址的指针
  */
 template <typename T>
-fn my_alloc(size_t size)->T* {
+fn my_alloc(usize size)->T* {
     if (size == 0) return nullptr;
     return static_cast<T*>(::operator new(sizeof(T) * size));
 }
@@ -43,9 +41,9 @@ fn my_construct(T* ptr, Args&&... args)->T* {
  * @return void
  */
 template <typename T>
-fn my_destroy(T* ptr, size_t size = 1) {
+fn my_destroy(T* ptr, usize size = 1) {
     if (ptr == nullptr) return;
-    for (size_t i = 0; i < size; ++i, ++ptr) {
+    for (usize i = 0; i < size; ++i, ++ptr) {
         ptr->~T();
     }
 }
@@ -60,15 +58,6 @@ fn my_delloc(T*& ptr) {
     ::operator delete(ptr);
     ptr = nullptr;
 }
-
-template <typename T>
-struct Deleter {
-public:
-    void operator()(T* ptr) const {
-        my_destroy(ptr);
-        my_delloc(ptr);
-    }
-};
 
 } // namespace my
 

@@ -11,8 +11,6 @@
 #include "DynArray.hpp"
 
 #include <iterator>
-#include <execution>
-#include <mutex>
 
 namespace my::util {
 

@@ -11,7 +11,6 @@
 #include "raise_error.hpp"
 
 #include <cmath>
-#include <cfloat>
 
 namespace my::math {
 

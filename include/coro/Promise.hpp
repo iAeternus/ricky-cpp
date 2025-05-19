@@ -8,8 +8,6 @@
 #define PROMISE_HPP
 
 #include "co_utils.hpp"
-#include "Printer.hpp"
-#include "NoCopy.hpp"
 
 namespace my::coro {
 

@@ -7,7 +7,6 @@
 #ifndef GRAPH_ALGORITHM_HPP
 #define GRAPH_ALGORITHM_HPP
 
-#include "Graph.hpp"
 #include "Matrix.hpp"
 
 namespace my::graph {

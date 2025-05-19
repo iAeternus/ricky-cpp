@@ -7,6 +7,8 @@
 #ifndef FUNCTION_HPP
 #define FUNCTION_HPP
 
+#include "ricky.hpp"
+
 #include <functional>
 
 namespace my {

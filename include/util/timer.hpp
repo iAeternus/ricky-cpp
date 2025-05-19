@@ -15,16 +15,18 @@
 
 namespace my::util {
 
-template <typename Duration>
-class Timer {
+template <typename D>
+class Timer : public Object<Timer<D>> {
 public:
+    using Self = Timer<D>;
+
     void into() {
         startTime_ = std::chrono::high_resolution_clock::now();
     }
 
     long long escape() {
         auto endTime = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<Duration>(endTime - startTime_).count();
+        auto duration = std::chrono::duration_cast<D>(endTime - startTime_).count();
         return duration;
     }
 

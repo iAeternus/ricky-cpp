@@ -7,7 +7,6 @@
 #ifndef HASH_BUCKET_HPP
 #define HASH_BUCKET_HPP
 
-#include "hash.hpp"
 #include "Array.hpp"
 
 namespace my::util {

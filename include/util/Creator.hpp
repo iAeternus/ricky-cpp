@@ -9,6 +9,7 @@
 
 #include "ricky_memory.hpp"
 #include "NoCopy.hpp"
+#include "Object.hpp"
 
 namespace my::util {
 
@@ -24,7 +25,7 @@ public:
      * @return 指向新对象的指针，若失败返回 nullptr
      */
     template <typename... Args>
-    fn operator()(Args&&... args) -> value_t* {
+    fn operator()(Args&&... args)->value_t* {
         auto* ptr = my_alloc<value_t>(1);
         if (!ptr) return nullptr;
 
