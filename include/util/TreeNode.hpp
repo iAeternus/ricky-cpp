@@ -274,7 +274,7 @@ public:
             return this->key_ - other.key_;
         } else {
             KeyError(std::format("Key type[{}] is not sortable", dtype(key_t)));
-            return None<cmp_t>;
+            std::unreachable();
         }
     }
 

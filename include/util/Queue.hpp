@@ -112,7 +112,7 @@ public:
     value_t& front() {
         if (empty()) {
             RuntimeError("Queue is empty.");
-            return None<value_t>;
+            std::unreachable();
         }
         return tail_->next_->next_->value_;
     }
@@ -125,7 +125,7 @@ public:
     const value_t& front() const {
         if (empty()) {
             RuntimeError("Queue is empty.");
-            return None<value_t>;
+            std::unreachable();
         }
         return tail_->next_->next_->value_;
     }
@@ -138,7 +138,7 @@ public:
     value_t& tail() {
         if (empty()) {
             RuntimeError("Queue is empty.");
-            return None<value_t>;
+            std::unreachable();
         }
         return tail_->value_;
     }
@@ -151,7 +151,7 @@ public:
     const value_t& tail() const {
         if (empty()) {
             RuntimeError("Queue is empty.");
-            return None<value_t>;
+            std::unreachable();
         }
         return tail_->value_;
     }

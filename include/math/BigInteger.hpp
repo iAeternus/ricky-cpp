@@ -15,8 +15,8 @@ namespace my::math {
 class BigInteger : public Object<BigInteger> {
 public:
     using Self = BigInteger;
-    const static Self ZERO;
-    const static Self ONE;
+    static const Self ZERO;
+    static const Self ONE;
 
     BigInteger(i32 n = 0) {
         *this = n;

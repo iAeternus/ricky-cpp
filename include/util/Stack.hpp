@@ -70,7 +70,7 @@ public:
     const value_t& peek() const {
         if (empty()) {
             ValueError("Stack is empty.");
-            return None<value_t&>;
+            std::unreachable();
         }
         return data_.back();
     }

@@ -54,7 +54,7 @@ private:
         jsonStr = jsonStr.trim();
         if (jsonStr.size() == 0) {
             ValueError("Json string is empty");
-            return None<Pair<Json, JsonType::JsonStr>>;
+            std::unreachable();
         }
 
         JsonType::JsonStr match;
@@ -77,7 +77,7 @@ private:
         if (remain.size()) {
             if (remain[0] != stopSign) {
                 ValueError(std::format("Stop sign \'{}\' not found", stopSign));
-                return None<Pair<Json, JsonType::JsonStr>>;
+                std::unreachable();
             }
             remain = remain.split(1).trim();
         }
@@ -134,7 +134,7 @@ private:
     static fn parseNull(JsonType::JsonStr& jsonStr)->Json {
         if (jsonStr != JsonType::JsonStr{"null", 4}) {
             ValueError(std::format("Invalid null parse: {}", jsonStr));
-            return None<Json>;
+            std::unreachable();
         }
         return Json{JsonType::JsonNull{}};
     }
@@ -147,7 +147,7 @@ private:
             return Json{false};
         } else {
             ValueError(std::format("Invalid bool parse: {}", jsonStr));
-            return None<Json>;
+            std::unreachable();
         }
     }
 
@@ -160,7 +160,7 @@ private:
             return parseBool(jsonStr); // bool
         } else {
             ValueError(std::format("Invalid simple parse: {}", jsonStr));
-            return None<Json>;
+            std::unreachable();
         }
     }
 };

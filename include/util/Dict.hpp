@@ -168,7 +168,7 @@ public:
         auto* value = get_impl(hash_val);
         if (value == nullptr) {
             KeyError(std::format("Key '{}' not found in dict", key));
-            return None<value_t>;
+            std::unreachable();
         }
         return *value;
     }
@@ -183,7 +183,7 @@ public:
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
             KeyError(std::format("Key '{}' not found in dict", key));
-            return None<value_t>;
+            std::unreachable();
         }
         return *value;
     }

@@ -7,6 +7,7 @@
 #ifndef GENERATOR_HPP
 #define GENERATOR_HPP
 
+#include "NoCopy.hpp"
 #include "Promise.hpp"
 
 #include <exception>

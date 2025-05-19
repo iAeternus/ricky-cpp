@@ -138,7 +138,7 @@ public:
             return "JsonNull";
         default:
             ValueError(std::format("json type {} is not valid", id));
-            return None<CString>;
+            std::unreachable();
         }
     }
 
@@ -232,7 +232,7 @@ public:
             return transform<JsonType::JsonDict>().size();
         }
         RuntimeError("Json type is not JSON_ARRAY or JSON_DICT");
-        return None<isize>;
+        std::unreachable();
     }
 
     CString __str__() const {
@@ -254,7 +254,7 @@ public:
             return cstr("null");
         default:
             ValueError(std::format("json type {} is not valid", jsonType_));
-            return None<CString>;
+            std::unreachable();
         }
     }
 
@@ -304,7 +304,7 @@ fn constexpr make_int(T&& value)->JsonType::JsonInt {
     }
 
     RuntimeError(std::format("Unsupported {} for make int", dtype(T)));
-    return None<JsonType::JsonInt>;
+    std::unreachable();
 }
 
 template <typename T>
@@ -316,7 +316,7 @@ fn constexpr make_float(T&& value)->JsonType::JsonFloat {
     }
 
     RuntimeError(std::format("Unsupported {} for make f32", dtype(T)));
-    return None<JsonType::JsonFloat>;
+    std::unreachable();
 }
 
 template <typename T>

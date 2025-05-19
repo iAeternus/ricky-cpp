@@ -778,7 +778,7 @@ private:
             // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
             isize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
-            ++back_block_index_;               // 将最后一个块的索引递增，指向新块
+            ++back_block_index_;                   // 将最后一个块的索引递增，指向新块
             get_back_block().resize(new_capacity); // 调整新块的大小
         }
     }
@@ -800,14 +800,14 @@ template <typename T>
 fn opt(const DynArray<std::any>& args, isize idx)->T {
     if (idx < 0 || idx >= args.size()) {
         ValueError("Index out of range in opt function.");
-        return None<T>;
+        std::unreachable();
     }
 
     try {
         return std::any_cast<T>(args.at(idx));
     } catch (const std::bad_any_cast& e) {
         ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
-        return None<T>;
+        std::unreachable();
     }
 }
 

@@ -146,7 +146,7 @@ public:
     Self operator/(i64 divisor) const {
         if (divisor == 0) {
             RuntimeError("Division by zero");
-            return None<Self>;
+            std::unreachable();
         }
         i64 totalNanos = toNanos();
         return ofNanos(totalNanos / divisor);

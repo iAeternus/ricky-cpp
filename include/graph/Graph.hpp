@@ -142,7 +142,7 @@ public:
     bool add_edge(u64 from, u64 to, const E& weight = E{}) {
         if (!vertices_.contains(from) || !vertices_.contains(to)) {
             ValueError(std::format("Node from[{}] or to[{}] does not exist.", from, to));
-            return None<bool>;
+            std::unreachable();
         }
         auto tag = vertices_.get(from).connect(to, weight);
         ++edge_cnt_;

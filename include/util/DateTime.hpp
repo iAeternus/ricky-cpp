@@ -52,7 +52,7 @@ public:
         const bool isLeap = isLeapYear(year);
         if (dayOfYear < 1 || dayOfYear > (isLeap ? 366 : 365)) {
             ValueError("Day of year out of range");
-            return None<Self>;
+            std::unreachable();
         }
 
         static constexpr i32 leap[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
@@ -374,7 +374,7 @@ private:
     static i64 clampYear(i64 year) {
         if (year < -999999999 || year > 999999999) {
             ValueError("Year overflow");
-            return None<i64>;
+            std::unreachable();
         }
         return year;
     }
@@ -387,7 +387,7 @@ private:
     static i32 clampMonth(i32 month) {
         if (month < 1 || month > 12) {
             ValueError("Invalid month");
-            return None<i32>;
+            std::unreachable();
         }
         return month;
     }

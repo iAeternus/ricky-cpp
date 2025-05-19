@@ -125,7 +125,7 @@ public:
     cmp_t __cmp__(const Self& other) const {
         (void)other;
         RuntimeError("Complex numbers cannot compare sizes");
-        return None<cmp_t>;
+        std::unreachable();
     }
 
     bool __equals__(const Self& other) const {
@@ -178,7 +178,7 @@ private:
         }
         if (num.empty()) {
             ValueError("Invalid number format");
-            return None<f64>;
+            std::unreachable();
         }
         return std::stod(num);
     }

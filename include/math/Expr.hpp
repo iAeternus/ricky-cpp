@@ -326,7 +326,7 @@ private:
             return std::pow(a, b);
         } else {
             ValueError(std::format("Unknown operator: {}", op));
-            return None<f64>;
+            std::unreachable();
         }
     }
 
@@ -335,7 +335,7 @@ private:
             return -x;
         } else {
             ValueError(std::format("Unknown unary operator: {}", op));
-            return None<f64>;
+            std::unreachable();
         }
     }
 };

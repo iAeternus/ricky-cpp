@@ -149,7 +149,7 @@ public:
     value_t& at(isize i, isize j) {
         if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
             ValueError(std::format("Index[{}, {}] out of range", i, j));
-            return None<value_t>;
+            std::unreachable();
         }
         return at_impl(i, j);
     }
@@ -157,7 +157,7 @@ public:
     const value_t& at(isize i, isize j) const {
         if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
             ValueError(std::format("Index[{}, {}] out of range", i, j));
-            return None<value_t>;
+            std::unreachable();
         }
         return at_impl(i, j);
     }
@@ -173,7 +173,7 @@ public:
     RowProxy operator[](isize i) {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
-            return None<RowProxy>;
+            std::unreachable();
         }
         return RowProxy{data_, i * cols_, cols_};
     }
@@ -181,7 +181,7 @@ public:
     ConstRowProxy operator[](isize i) const {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
-            return None<ConstRowProxy>;
+            std::unreachable();
         }
         return ConstRowProxy{data_, i * cols_, cols_};
     }
@@ -193,7 +193,7 @@ public:
         if (i1 > i2 || j1 > j2 || i1 < 0 || j1 < 0 || i2 >= rows_ || j2 >= cols_) {
             ValueError(std::format("Cannot get submatrix [{}..{}] x [{}..{}] of a ({}x{}) matrix.",
                                    i1, i2, j1, j2, rows_, cols_));
-            return None<MatrixView<value_t>>;
+            std::unreachable();
         }
         return MatrixView<value_t>{*this, i1, j1, i2 - i1 + 1, j2 - j1 + 1};
     }
@@ -219,7 +219,7 @@ public:
     friend Self operator+(const Self& a, const Self& b) {
         if (!a.shape_equals(b)) {
             ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
-            return None<Self>;
+            std::unreachable();
         }
         Self ans(a.rows_, a.cols_);
         isize size = ans.data_.size();
@@ -233,7 +233,7 @@ public:
         if (!this->shape_equals(other)) {
             ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.",
                                    this->rows_, this->cols_, other.rows_, other.cols_));
-            return None<Self>;
+            std::unreachable();
         }
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
@@ -245,7 +245,7 @@ public:
     friend Self operator-(const Self& a, const Self& b) {
         if (!a.shape_equals(b)) {
             ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
-            return None<Self>;
+            std::unreachable();
         }
         Self ans(a.rows_, a.cols_);
         isize size = ans.data_.size();
@@ -259,7 +259,7 @@ public:
         if (!this->shape_equals(other)) {
             ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.",
                                    this->rows_, this->cols_, other.rows_, other.cols_));
-            return None<Self>;
+            std::unreachable();
         }
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
@@ -271,7 +271,7 @@ public:
     friend Self operator*(const Self& a, const Self& b) {
         if (a.cols_ != b.rows_) {
             ValueError("To be multiplied, the cols of matrix A must equals to the rows of matrix B.");
-            return None<Self>;
+            std::unreachable();
         }
         Self result(a.rows_, b.cols_);
         for (isize i = 0; i < a.rows_; ++i) {
@@ -297,7 +297,7 @@ public:
         if (!this->shape_equals(other)) {
             ValueError(std::format("Cannot dot a ({}x{}) matrix and a ({}x{}) matrix.",
                                    this->rows_, this->cols_, other.rows_, other.cols_));
-            return None<Self>;
+            std::unreachable();
         }
         Self ans(this->rows_, this->cols_);
         isize size = ans.data_.size();
@@ -339,7 +339,7 @@ public:
         if (i == j) return false;
         if (i < 0 || i >= rows_ || j < 0 || j >= rows_) {
             ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
-            return None<bool>;
+            std::unreachable();
         }
         for (isize k = 0; k < cols_; ++k) {
             std::swap(at_impl(i, k), at_impl(j, k));
@@ -357,7 +357,7 @@ public:
         if (i == j) return false;
         if (i < 0 || i >= cols_ || j < 0 || j >= cols_) {
             ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
-            return None<bool>;
+            std::unreachable();
         }
         for (isize k = 0; k < rows_; ++k) {
             std::swap(at_impl(k, i), at_impl(k, j));
@@ -371,7 +371,7 @@ public:
     Self inv() const {
         if (!is_sqr()) {
             ValueError("Only square matrices are LU decomposition.");
-            return None<Self>;
+            std::unreachable();
         }
 
         value_t p, d;
@@ -426,7 +426,7 @@ public:
     value_t det() const {
         if (!is_sqr()) {
             ValueError("Only square matrices are LU decomposition.");
-            return None<value_t>;
+            std::unreachable();
         }
 
         value_t d, p;
@@ -501,7 +501,7 @@ public:
     Pair<Self, Self> lu() const {
         if (!is_sqr()) {
             ValueError("Only square matrices are LU decomposition.");
-            return None<Pair<Self, Self>>;
+            std::unreachable();
         }
 
         Self q = this->clone();
@@ -554,7 +554,7 @@ public:
     cmp_t __cmp__(const Self& other) const {
         if (!this->shape_equals(other)) {
             ValueError("Only matrices of the same dimension are comparable");
-            return None<cmp_t>;
+            std::unreachable();
         }
         isize size = this->data_.size();
         for (isize i = 0; i < size; ++i) {
@@ -601,7 +601,7 @@ public:
         value_t& operator[](isize j) {
             if (j < 0 || j >= cols_) {
                 ValueError("Column index out of range");
-                return None<value_t>;
+                std::unreachable();
             }
             return data_[start_col_ + j];
         }
@@ -620,7 +620,7 @@ public:
         const value_t& operator[](isize j) const {
             if (j < 0 || j >= cols_) {
                 ValueError("Column index out of range");
-                return None<value_t>;
+                std::unreachable();
             }
             return data_[start_col_ + j];
         }

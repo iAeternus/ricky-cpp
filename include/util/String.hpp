@@ -609,7 +609,7 @@ public:
      */
     template <Iterable I>
     Self join(const I& iter) const {
-        if(iter.size() == 0) {
+        if (iter.size() == 0) {
             return Self{};
         }
 
@@ -698,7 +698,7 @@ public:
             }
         }
         ValueError("Unmatched parentheses, too many left parentheses");
-        return None<String>;
+        std::unreachable();
     }
 
     /**

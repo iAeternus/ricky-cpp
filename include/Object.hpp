@@ -25,7 +25,7 @@ public:
      */
     hash_t __hash__() const {
         static_assert(false, "NotImplementedError: not implemented __hash__()");
-        return None<hash_t>;
+        std::unreachable();
     }
 
     /**

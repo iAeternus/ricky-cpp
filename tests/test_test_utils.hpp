@@ -3,8 +3,6 @@
 
 #include "ricky_test.hpp"
 
-#include <iostream>
-#include <exception>
 #include <thread>
 #include <chrono>
 

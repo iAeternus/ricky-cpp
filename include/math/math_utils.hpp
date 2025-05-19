@@ -149,7 +149,7 @@ fn is_one(const T& num, T eps = EPS)->bool {
 fn reciprocal(f64 num)->f64 {
     if (is_zero(num)) {
         ValueError("Divided by 0.");
-        return None<f64>;
+        std::unreachable();
     }
     return 1.0 / num;
 }
