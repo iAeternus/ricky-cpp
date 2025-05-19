@@ -200,28 +200,28 @@ fn test_vec() {
 
 constexpr i32 N = 1e6;
 
-fn speed_of_vec_append_string = []() {
+fn speed_of_util_vec_append_string = []() {
     util::Vec<std::string> d;
     for (usize i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
-fn speed_of_vector_push_back_string = []() {
+fn speed_of_std_vector_push_back_string = []() {
     std::vector<std::string> v;
     for (usize i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
-fn speed_of_vec_append_i32 = []() {
+fn speed_of_util_vec_append_i32 = []() {
     util::Vec<i32> d;
     for (usize i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
-fn speed_of_vector_push_back_i32 = []() {
+fn speed_of_std_vector_push_back_i32 = []() {
     std::vector<i32> v;
     for (usize i = 0; i < N; ++i) {
         v.push_back(i);
@@ -231,10 +231,10 @@ fn speed_of_vector_push_back_i32 = []() {
 fn test_vec_speed() {
     UnitTestGroup group{"test_vec_speed"};
 
-    group.addTest("speed_of_vec_append_string", speed_of_vec_append_string);
-    group.addTest("speed_of_vector_push_back_string", speed_of_vector_push_back_string);
-    group.addTest("speed_of_vec_append_i32", speed_of_vec_append_i32);
-    group.addTest("speed_of_vector_push_back_i32", speed_of_vector_push_back_i32);
+    group.addTest("speed_of_util_vec_append_string", speed_of_util_vec_append_string);
+    group.addTest("speed_of_std_vector_push_back_string", speed_of_std_vector_push_back_string);
+    group.addTest("speed_of_util_vec_append_i32", speed_of_util_vec_append_i32);
+    group.addTest("speed_of_std_vector_push_back_i32", speed_of_std_vector_push_back_i32);
 
     group.startAll();
 }
