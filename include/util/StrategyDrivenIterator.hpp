@@ -18,7 +18,7 @@ template <std::input_or_output_iterator I>
 class IterStrategy : public Object<IterStrategy<I>> {
 public:
     using iterator = I;
-    using iterator_category = std::input_or_output_iterator;
+    using iterator_category = typename std::iterator_traits<I>::iterator_category;
     using value_type = std::remove_reference<decltype(*std::declval<iterator>())>;
 
     static iterator& next(iterator& iter) = delete;
@@ -62,7 +62,9 @@ public:
     using Super = IterStrategy<I>;
 
     using iterator = I;
-    using iterator_category = std::bidirectional_iterator;
+    using iterator_category = typename std::iterator_traits<I>::iterator_category;
+
+    static_assert(N > 0, "Step size must be positive");
 
     /**
      * @brief 跳跃步长，前向

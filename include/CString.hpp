@@ -253,9 +253,9 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const Self& pattern, usize pos = 0) const {
-        return npos; // TODO
-    }
+    // usize find(const Self& pattern, usize pos = 0) const {
+    //     return npos; // TODO
+    // }
 
     // TODO find_all
 
