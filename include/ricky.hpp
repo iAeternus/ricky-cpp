@@ -40,12 +40,12 @@ namespace my {
  * @brief 取模运算, 运算结果为 [0, size]
  */
 template <typename Index, typename Size>
-[[nodiscard]] constexpr auto neg_index(Index index, Size size) noexcept {
+[[nodiscard]] constexpr fn neg_index(Index index, Size size) noexcept {
     return (index == size) ? index : ((index + size) % size);
 }
 
 template <typename T, typename F>
-[[nodiscard]] constexpr decltype(auto) ifelse(bool expr, T&& t, F&& f) noexcept(
+[[nodiscard]] constexpr fr(decltype(auto)) ifelse(bool expr, T&& t, F&& f) noexcept(
     noexcept(expr ? std::forward<T>(t) : std::forward<F>(f))) {
     return expr ? std::forward<T>(t) : std::forward<F>(f);
 }
