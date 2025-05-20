@@ -83,18 +83,17 @@ using f32 = float;
 using f64 = double;
 using f128 = long double;
 
+using cmp_t = i64;  // compare type
+using hash_t = u64; // hash type
+
 #ifdef _WIN64
 // container size type
 using isize = i64;
 using usize = u64;
-using cmp_t = i64;  // compare type
-using hash_t = u64; // hash type
 #else
 // container size type
 using isize = i32;
 using usize = u32;
-using cmp_t = i32;  // compare type
-using hash_t = u32; // hash type
 #endif
 
 #ifdef min
