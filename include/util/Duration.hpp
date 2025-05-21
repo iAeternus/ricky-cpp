@@ -226,12 +226,6 @@ public:
     }
 
 private:
-    i64 seconds_; // 秒数
-    i32 nanos_;   // 纳秒数（0-999,999,999）
-
-    // 纳秒数每秒的纳秒数
-    static constexpr i32 NANOS_PER_SECOND = 1'000'000'000;
-
     /**
      * @brief 私有构造函数，用于创建时间间隔对象。
      * @param sec 秒数
@@ -285,6 +279,13 @@ private:
     i64 toNanos() const {
         return math::add_exact(seconds_ * NANOS_PER_SECOND, nanos_);
     }
+
+private:
+    i64 seconds_; // 秒数
+    i32 nanos_;   // 纳秒数（0-999,999,999）
+
+    // 纳秒数每秒的纳秒数
+    static constexpr i32 NANOS_PER_SECOND = 1'000'000'000;
 };
 
 const Duration Duration::ZERO = Duration{0LL, 0};

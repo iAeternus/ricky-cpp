@@ -673,18 +673,18 @@ public:
     }
 
 private:
-    usize size_;     // 元素个数
-    usize capacity_; // 总容量
-    value_t* data_;  // 指向数据首地址的指针
-
-    static constexpr usize DEFAULT_CAPACITY = 16;
-
-private:
     fn try_expand() {
         if (size_ == capacity_) {
             resize(capacity_ << 1);
         }
     }
+
+private:
+    usize size_;     // 元素个数
+    usize capacity_; // 总容量
+    value_t* data_;  // 指向数据首地址的指针
+
+    static constexpr usize DEFAULT_CAPACITY = 16;
 };
 
 } // namespace my::util

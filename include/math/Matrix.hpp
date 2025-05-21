@@ -88,8 +88,44 @@ public:
     using value_t = E;
     using Self = Matrix<value_t>;
 
-    class RowProxy;
-    class ConstRowProxy;
+public:
+    class RowProxy {
+    public:
+        RowProxy(util::Vec<value_t>& data, usize start_col, usize cols) :
+                data_(data), start_col_(start_col), cols_(cols) {}
+
+        value_t& operator[](usize j) {
+            if (j < 0 || j >= cols_) {
+                ValueError("Column index out of range");
+                std::unreachable();
+            }
+            return data_[start_col_ + j];
+        }
+
+    private:
+        util::Vec<value_t>& data_;
+        usize start_col_;
+        usize cols_;
+    };
+
+    class ConstRowProxy {
+    public:
+        ConstRowProxy(const util::Vec<value_t>& data, usize start_col, usize cols) :
+                data_(data), start_col_(start_col), cols_(cols) {}
+
+        const value_t& operator[](usize j) const {
+            if (j < 0 || j >= cols_) {
+                ValueError("Column index out of range");
+                std::unreachable();
+            }
+            return data_[start_col_ + j];
+        }
+
+    private:
+        const util::Vec<value_t>& data_;
+        usize start_col_;
+        usize cols_;
+    };
 
     Matrix(usize rows = 1, usize cols = 1, value_t value = 0.0) :
             rows_(rows), cols_(cols), data_(rows_ * cols_, value) {}
@@ -591,45 +627,6 @@ private:
             data_[i] = correct_float(data_[i]);
         }
     }
-
-public:
-    class RowProxy {
-    public:
-        RowProxy(util::Vec<value_t>& data, usize start_col, usize cols) :
-                data_(data), start_col_(start_col), cols_(cols) {}
-
-        value_t& operator[](usize j) {
-            if (j < 0 || j >= cols_) {
-                ValueError("Column index out of range");
-                std::unreachable();
-            }
-            return data_[start_col_ + j];
-        }
-
-    private:
-        util::Vec<value_t>& data_;
-        usize start_col_;
-        usize cols_;
-    };
-
-    class ConstRowProxy {
-    public:
-        ConstRowProxy(const util::Vec<value_t>& data, usize start_col, usize cols) :
-                data_(data), start_col_(start_col), cols_(cols) {}
-
-        const value_t& operator[](usize j) const {
-            if (j < 0 || j >= cols_) {
-                ValueError("Column index out of range");
-                std::unreachable();
-            }
-            return data_[start_col_ + j];
-        }
-
-    private:
-        const util::Vec<value_t>& data_;
-        usize start_col_;
-        usize cols_;
-    };
 
 private:
     usize rows_;              // 行数

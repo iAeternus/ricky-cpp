@@ -216,6 +216,8 @@ private:
     f64 im_; // 虚部
 };
 
+inline const Complex Complex::ZERO{};
+
 } // namespace my::math
 
 #endif // COMPLEX_HPP

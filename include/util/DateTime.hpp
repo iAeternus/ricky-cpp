@@ -326,10 +326,6 @@ public:
     }
 
 private:
-    i32 year_;  // 年份，范围 [-999999999, 999999999]
-    i32 month_; // 月份，范围 [1,12]
-    i32 day_;   // 日期，范围 [1,31]
-
     /**
      * @brief 私有构造函数，确保只能通过静态方法创建对象
      * @param year 年份
@@ -432,11 +428,16 @@ private:
         if (month == 2 && isLeapYear(year)) return 29;
         return days[month - 1];
     }
+
+private:
+    i32 year_;  // 年份，范围 [-999999999, 999999999]
+    i32 month_; // 月份，范围 [1,12]
+    i32 day_;   // 日期，范围 [1,31]
 };
 
-const Date Date::MIN{-999999999, 1, 1};
-const Date Date::MAX{999999999, 12, 31};
-const Date Date::EPOCH{1970, 1, 1};
+inline const Date Date::MIN{-999999999, 1, 1};
+inline const Date Date::MAX{999999999, 12, 31};
+inline const Date Date::EPOCH{1970, 1, 1};
 
 /**
  * @brief 时间类，描述时间相关功能
@@ -759,11 +760,6 @@ public:
     }
 
 private:
-    i32 hour_;   // 小时，范围 0-23
-    i32 minute_; // 分钟，范围 0-59
-    i32 second_; // 秒，范围 0-59
-    i32 nano_;   // 纳秒，范围 0-999999999
-
     /**
      * @brief 私有构造函数，确保只能通过静态方法创建对象
      * @param hour 小时
@@ -807,12 +803,18 @@ private:
             ValueError("Nano of day out of range");
         }
     }
+
+private:
+    i32 hour_;   // 小时，范围 0-23
+    i32 minute_; // 分钟，范围 0-59
+    i32 second_; // 秒，范围 0-59
+    i32 nano_;   // 纳秒，范围 0-999999999
 };
 
-const Time Time::MIN{0, 0, 0, 0};
-const Time Time::MAX{23, 59, 59, 999'999'999};
-const Time Time::MIDNIGHT(0, 0);
-const Time Time::NOON{12, 0};
+inline const Time Time::MIN{0, 0, 0, 0};
+inline const Time Time::MAX{23, 59, 59, 999'999'999};
+inline const Time Time::MIDNIGHT(0, 0);
+inline const Time Time::NOON{12, 0};
 
 /**
  * @brief 日期时间类，描述日期和时间的组合
@@ -1223,9 +1225,6 @@ public:
     }
 
 private:
-    Date date_; // 日期部分
-    Time time_; // 时间部分
-
     /**
      * @brief 私有构造函数，确保只能通过静态方法创建对象
      * @param date 日期对象
@@ -1233,6 +1232,10 @@ private:
      */
     DateTime(const Date& date, const Time& time) :
             date_(date), time_(time) {}
+
+private:
+    Date date_; // 日期部分
+    Time time_; // 时间部分
 };
 
 } // namespace my::util

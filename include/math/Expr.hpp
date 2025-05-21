@@ -117,10 +117,6 @@ public:
     }
 
 private:
-    util::Vec<Token> tokens_; // 表达式标记
-    bool valid_;              // 表达式是否有效
-
-private:
     /**
      * @brief 分词函数，将表达式分解为tokens
      */
@@ -335,6 +331,10 @@ private:
             std::unreachable();
         }
     }
+
+private:
+    util::Vec<Token> tokens_; // 表达式标记
+    bool valid_;              // 表达式是否有效
 };
 
 } // namespace my::math

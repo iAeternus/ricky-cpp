@@ -647,10 +647,6 @@ public:
     }
 
 private:
-    char* str_; // 存储字符串的动态数组
-    usize len_; // 字符串的长度
-
-private:
     /**
      * @brief 获取去除首尾空白后的索引范围
      * @return 首尾空白后的索引范围
@@ -715,6 +711,10 @@ private:
         while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
+
+private:
+    char* str_; // 存储字符串的动态数组
+    usize len_; // 字符串的长度
 };
 
 /**

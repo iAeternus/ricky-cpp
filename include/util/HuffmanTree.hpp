@@ -122,13 +122,6 @@ public:
     }
 
 private:
-    String text_;                  // 原始文本
-    String encoded_text_;          // 编码后的文本
-    Vec<Node> nodes_;              // 树结构
-    Dict<CodePoint, CString> key_; // 密钥
-    Dict<CodePoint, u32> freqs_;   // 字符出现频率
-    usize root_idx_ = NIL;         // 根索引
-
     void build_tree(std::priority_queue<Node>& pq) {
         if (pq.empty()) return;
 
@@ -180,6 +173,14 @@ private:
         const Node& node = nodes_[cur_idx];
         return 1 + std::max(height(node.lch), height(node.rch));
     }
+
+private:
+    String text_;                  // 原始文本
+    String encoded_text_;          // 编码后的文本
+    Vec<Node> nodes_;              // 树结构
+    Dict<CodePoint, CString> key_; // 密钥
+    Dict<CodePoint, u32> freqs_;   // 字符出现频率
+    usize root_idx_ = NIL;         // 根索引
 };
 
 } // namespace my::util

@@ -50,14 +50,6 @@ public:
     }
 
 private:
-    usize size_; // 节点个数
-    Node* root_; // 指向根节点的指针
-    C creator_;  // 节点创建管理器
-
-    // 哨兵：所有叶结点的孩子且是根节点的父亲
-    static inline Node* NIL = new Node(key_t{}, value_t{}, BLACK);
-
-private:
     static void destroy_node(Node* root) {
         if (root == NIL) return;
         destroy_node(root->lchild_);
@@ -71,6 +63,14 @@ private:
         print_node(root->lchild_, stream, prefix + "|   ");
         print_node(root->rchild_, stream, prefix + "|   ");
     }
+
+private:
+    usize size_; // 节点个数
+    Node* root_; // 指向根节点的指针
+    C creator_;  // 节点创建管理器
+
+    // 哨兵：所有叶结点的孩子且是根节点的父亲
+    static inline Node* NIL = new Node(key_t{}, value_t{}, BLACK);
 };
 
 /**

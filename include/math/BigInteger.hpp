@@ -426,8 +426,8 @@ private:
     static const i32 WIDTH = 8;
 };
 
-const BigInteger BigInteger::ZERO = 0;
-const BigInteger BigInteger::ONE = 1;
+inline const BigInteger BigInteger::ZERO = 0;
+inline const BigInteger BigInteger::ONE = 1;
 
 } // namespace my::math
 

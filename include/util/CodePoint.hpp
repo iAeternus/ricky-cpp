@@ -170,10 +170,10 @@ private:
     char* byte_code_; // 字节码
 };
 
-const Array<CodePoint> CodePoint::BLANK = {' ', '\0', '\t', '\n', '\r', '\v', '\f'};
-const Array<CodePoint> CodePoint::DIGIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-const Array<CodePoint> CodePoint::LOWER_CASE_LETTER = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+inline const Array<CodePoint> CodePoint::BLANK = {' ', '\0', '\t', '\n', '\r', '\v', '\f'};
+inline const Array<CodePoint> CodePoint::DIGIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+inline const Array<CodePoint> CodePoint::LOWER_CASE_LETTER = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+inline const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 /**
  * @brief 码点内存池
@@ -224,13 +224,13 @@ private:
         return cp;
     }
 
+private:
     static CodePointPool* instance_;
-
     mutable std::shared_mutex mutex_;
     Dict<hash_t, std::shared_ptr<const CodePoint>> pool_;
 };
 
-CodePointPool* CodePointPool::instance_ = nullptr;
+inline CodePointPool* CodePointPool::instance_ = nullptr;
 
 /**
  * @brief 获取字符串的所有码点

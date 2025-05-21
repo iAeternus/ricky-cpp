@@ -781,12 +781,7 @@ private:
         while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
-
-private:
-    usize length_;                           // 字符串的长度
-    CodePoint* code_points_;                 // 字符串的码点数组
-    std::shared_ptr<StringManager> manager_; // 字符串管理器
-private:
+    
     /**
      * @brief KMP辅助函数，求next数组
      * @param pattern 模式串
@@ -806,6 +801,11 @@ private:
         }
         return next;
     }
+
+private:
+    usize length_;                           // 字符串的长度
+    CodePoint* code_points_;                 // 字符串的码点数组
+    std::shared_ptr<StringManager> manager_; // 字符串管理器
 };
 
 } // namespace my::util

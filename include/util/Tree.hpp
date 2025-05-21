@@ -100,11 +100,6 @@ public:
     }
 
 private:
-    usize size_; // 节点个数
-    Node* root_; // 根节点
-    C creator_;  // 节点创建管理器
-
-private:
     void destroy_node(Node* root) {
         if (root == nullptr) return;
         for (auto* child : root->children_) {
@@ -112,6 +107,11 @@ private:
         }
         my_destroy(root);
     }
+
+private:
+    usize size_; // 节点个数
+    Node* root_; // 根节点
+    C creator_;  // 节点创建管理器
 };
 
 template <typename T>
