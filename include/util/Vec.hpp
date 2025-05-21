@@ -422,8 +422,8 @@ public:
         using Self = Iterator<IsConst>;
 
     public:
-        using container_t = std::conditional_t<IsConst, const Vec<value_t>, Vec<value_t>>;
         using iterator_category = std::random_access_iterator_tag;
+        using container_t = std::conditional_t<IsConst, const Vec<value_t>, Vec<value_t>>;
         using value_type = std::conditional_t<IsConst, const value_t, value_t>;
         using difference_type = std::ptrdiff_t;
         using pointer = value_type*;

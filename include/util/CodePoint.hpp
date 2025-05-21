@@ -7,12 +7,14 @@
 #ifndef CODE_POINT_HPP
 #define CODE_POINT_HPP
 
+#include "raise_error.hpp"
 #include "Encoding.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
 
 #include <mutex>
 #include <shared_mutex>
+#include <utility>
 
 namespace my::util {
 
@@ -124,21 +126,19 @@ public:
     }
 
     Self upper() const {
-        if (is_ascii()) {
-            return Self{static_cast<char>(std::toupper(byte_code_[0]))};
-        } else {
-            io::my_error("Not supported yet.");
-            return *this;
+        if (!is_ascii()) {
+            RuntimeError("Not supported yet.");
+            std::unreachable();
         }
+        return Self{static_cast<char>(std::toupper(byte_code_[0]))};
     }
 
     Self lower() const {
-        if (is_ascii()) {
-            return Self{static_cast<char>(std::tolower(byte_code_[0]))};
-        } else {
-            io::my_error("Not supported yet.");
-            return *this;
+        if (!is_ascii()) {
+            RuntimeError("Not supported yet.");
+            std::unreachable();
         }
+        return Self{static_cast<char>(std::tolower(byte_code_[0]))};
     }
 
     [[nodiscard]] CString __str__() const {

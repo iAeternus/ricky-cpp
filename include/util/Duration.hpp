@@ -288,7 +288,7 @@ private:
     static constexpr i32 NANOS_PER_SECOND = 1'000'000'000;
 };
 
-const Duration Duration::ZERO = Duration{0LL, 0};
+inline const Duration Duration::ZERO = Duration{0LL, 0};
 
 } // namespace my::util
 

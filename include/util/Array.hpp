@@ -7,7 +7,6 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
-#include "raise_error.hpp"
 #include "ricky_memory.hpp"
 #include "Sequence.hpp"
 #include "Pair.hpp"

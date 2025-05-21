@@ -141,14 +141,14 @@ private:
                 LogLevel::LEVEL_NAMES[evt.level_],
                 Color::CLOSE,
                 fileName, line);
-        fprintf(evt.output_, msg);
+        fprintf(evt.output_, "%s", msg);
         fprintf(evt.output_, "\n");
         fflush(evt.output_);
     }
 };
 
-std::mutex Log::mutex_;
-util::DynArray<Log::LogHandler> Log::handlers_{
+inline std::mutex Log::mutex_;
+inline util::DynArray<Log::LogHandler> Log::handlers_{
     Log::LogHandler(Log::LogLevel::TRACE_, stdout),
     Log::LogHandler(Log::LogLevel::DEBUG_, stdout),
     Log::LogHandler(Log::LogLevel::INFO_, stdout),
@@ -156,7 +156,7 @@ util::DynArray<Log::LogHandler> Log::handlers_{
     Log::LogHandler(Log::LogLevel::ERROR_, stdout),
     Log::LogHandler(Log::LogLevel::FATAL_, stdout),
 };
-i32 Log::minLevel_ = Log::LogLevel::INFO_;
+inline i32 Log::minLevel_ = Log::LogLevel::INFO_;
 
 } // namespace my::io
 

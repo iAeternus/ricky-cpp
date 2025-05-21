@@ -88,7 +88,7 @@ public:
         Vec<i32> elements;
 
         // 创建数组 [1, 2, ..., total_elements]
-        for (usize i = 1; i <= total_elements; ++i) {
+        for (i32 i = 1; i <= total_elements; ++i) {
             elements.append(i);
         }
 
@@ -96,7 +96,7 @@ public:
 
         // 选择前 n-1 个元素作为隔板位置
         Vec<i32> partitions;
-        for (usize i = 0; i < n - 1; ++i) {
+        for (i32 i = 0; i < n - 1; ++i) {
             partitions.append(elements[i]);
         }
 

@@ -54,7 +54,7 @@ protected:
     }
 
     void __print__(const char* obj) const {
-        std::fprintf(outputFile_, obj);
+        std::fprintf(outputFile_, "%s", obj);
     }
 
     void __print__(std::nullptr_t) const {
@@ -62,11 +62,11 @@ protected:
     }
 
     void __print__(const std::string& obj) const {
-        std::fprintf(outputFile_, obj.c_str());
+        std::fprintf(outputFile_, "%s", obj.c_str());
     }
 
     void __print__(const CString& obj) const {
-        std::fprintf(outputFile_, obj.data());
+        std::fprintf(outputFile_, "%s", obj.data());
     }
 
     template <typename T>

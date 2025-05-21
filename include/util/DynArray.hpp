@@ -8,6 +8,7 @@
 #define DYN_ARRAY_HPP
 
 #include "binary_utils.hpp"
+#include "raise_error.hpp"
 #include "Buffer.hpp"
 #include "Array.hpp"
 
