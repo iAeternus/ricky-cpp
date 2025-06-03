@@ -9,45 +9,81 @@
 
 #include "graph_helper.hpp"
 #include "Dict.hpp"
+#include "Vec.hpp"
 
-#include <any>
-#include <functional>
+#include <memory>
 #include <shared_mutex>
+#include <type_traits>
+#include <utility>
+#include <any>
 
 namespace my::graph {
 
+template <typename N, typename E, typename Idx>
+class Graph;
+
+/**
+ * @brief 基类算法接口，用于类型擦除
+ */
+template <typename N, typename E, typename Idx>
+class AlgorithmBase {
+public:
+    virtual ~AlgorithmBase() = default;
+    virtual std::any execute(const Graph<N, E, Idx>& g, util::Vec<std::any>& args) const = 0;
+};
+
 /**
  * @brief 图
- * @param ID 节点ID类型
- * @param V 点权类型
+ * @param N 点权类型
  * @param E 边权类型
  */
-template <typename V = f64, typename E = f64>
-class Graph : public Object<Graph<V, E>> {
+template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+class Graph : public Object<Graph<N, E>> {
 public:
-    using Self = Graph<V, E>;
-    using Algorithm = std::function<std::any(Graph&, util::DynArray<std::any>&&)>;
+    using Self = Graph<N, E>;
 
     explicit Graph(bool is_directed = true) :
             is_directed_(is_directed) {}
 
-    usize vertex_cnt() const {
-        return vertices_.size();
+    /**
+     * @brief 对于拷贝，不继承算法字典
+     */
+    Graph(const Self& other) :
+            edge_cnt_(other.edge_cnt_), is_directed_(other.is_directed_), nodes_(other.nodes_) {}
+
+    Self& operator=(const Self& other) {
+        if(this == &other) return *this;
+
+        this->edge_cnt_ = other.edge_cnt_;
+        this->is_directed_ = other.is_directed_;
+        this->nodes_ = other.nodes_;
+    }
+
+    usize node_cnt() const {
+        return nodes_.size();
     }
 
     usize edge_cnt() const {
         return edge_cnt_;
     }
 
+    bool has_node(Idx id) const {
+        return nodes_.contains(id);
+    }
+
+    bool has_edge(Idx from, Idx to) const {
+        return get_node(from).is_connected(to);
+    }
+
     /**
      * @brief 获取从ID节点出发的边的数量
      * @return 若节点不存在，则返回npos
      */
-    usize edge_cnt(u64 id) const {
-        if (!vertices_.contains(id)) {
+    usize edge_cnt(Idx id) const {
+        if (!has_node(id)) {
             return npos;
         }
-        return vertices_.get(id).out_deg();
+        return nodes_.get(id).out_deg();
     }
 
     /**
@@ -61,15 +97,19 @@ public:
     /**
      * @brief 根据ID获取节点
      */
-    Vertex<V, E>& get_vertex(u64 id) {
-        return vertices_.get(id);
+    Node<N, E>& get_node(Idx id) {
+        return nodes_.get(id);
+    }
+
+    Node<N, E> get_node(Idx id) const {
+        return nodes_.get(id);
     }
 
     /**
      * @brief 获取节点的迭代视图
      */
-    auto vertices() const {
-        return vertices_.values();
+    auto nodes() const {
+        return nodes_.values();
     }
 
     /**
@@ -77,7 +117,7 @@ public:
      */
     auto edges() const {
         util::DynArray<Edge<E>> edges;
-        for (const auto& vertex : vertices_.values()) {
+        for (const auto& vertex : nodes_.values()) {
             for (const auto& edge : vertex.edges) {
                 edges.append(edge);
             }
@@ -88,9 +128,9 @@ public:
     /**
      * @brief 获取节点的入度
      * @param id 节点ID
-     * @note 时间复杂度：O(|V| * |E|)
+     * @note 时间复杂度：O(|N| * |E|)
      */
-    usize in_deg(u64 id) const {
+    usize in_deg(Idx id) const {
         usize deg = 0;
         for_each([&](const auto& vertex) {
             if (id == vertex.id) return;
@@ -108,7 +148,7 @@ public:
      */
     template <typename C>
     void for_each(C&& consumer) {
-        for (auto& [id, vertex] : vertices_) {
+        for (auto& [id, vertex] : nodes_) {
             std::forward<C>(consumer)(vertex);
         }
     }
@@ -118,7 +158,7 @@ public:
      */
     template <typename C>
     void for_each(C&& consumer) const {
-        for (const auto& [id, vertex] : vertices_) {
+        for (const auto& [id, vertex] : nodes_) {
             std::forward<C>(consumer)(vertex);
         }
     }
@@ -127,11 +167,11 @@ public:
      * @brief 添加节点，若节点已存在，则什么都不做
      * @return true=节点不存在 false=节点已存在
      */
-    bool add_vertex(u64 id, const V& weight = V{}) {
-        if (vertices_.contains(id)) {
+    bool add_node(Idx id, const N& weight = N{}) {
+        if (has_node(id)) {
             return false;
         }
-        vertices_.insert(id, Vertex{id, weight});
+        nodes_.insert(id, Node{id, weight});
         return true;
     }
 
@@ -139,84 +179,108 @@ public:
      * @brief 添加边，若某一点不存在，则抛出异常，若边已存在，则什么都不做
      * @return true=边不存在 false=边已存在
      */
-    bool add_edge(u64 from, u64 to, const E& weight = E{}) {
-        if (!vertices_.contains(from) || !vertices_.contains(to)) {
+    bool add_edge(Idx from, Idx to, const E& weight = E{}) {
+        if (!has_node(from) || !has_node(to)) {
             ValueError(std::format("Node from[{}] or to[{}] does not exist.", from, to));
             std::unreachable();
         }
-        auto tag = vertices_.get(from).connect(to, weight);
+        auto tag = nodes_.get(from).connect(to, weight);
         ++edge_cnt_;
 
         if (!is_directed_) {
-            vertices_.get(to).connect(from, weight);
+            nodes_.get(to).connect(from, weight);
             ++edge_cnt_;
         }
         return tag;
     }
 
+private:
+    /**
+     * @brief 算法包装器，直接调用函数
+     */
+    template <typename Func>
+    class AlgorithmWrapper : public AlgorithmBase<N, E, Idx> {
+    public:
+        explicit AlgorithmWrapper(const Func& func) :
+                func_(func) {}
+
+        std::any execute(const Graph<N, E>& g, util::Vec<std::any>& args) const override {
+            if constexpr (std::is_void_v<decltype(func_(g, args))>) {
+                func_(g, args); // 无返回值类型
+                return {};
+            } else {
+                return std::any(func_(g, args)); // 有返回值类型
+            }
+        }
+
+    private:
+        Func func_;
+    };
+
+public:
     /**
      * @brief 注册算法插件
      * @param name 插件名称，若重复则覆盖已有算法
-     * @param func 算法，例如 [](auto& g, auto&& args) {}
+     * @param func 算法函数对象
      */
     template <typename Func>
-    void register_algo(const CString& name, Func&& func) {
-        std::unique_lock lock(algo_mutex_); // 写锁
-        algorithms_.insert(name, [func = std::forward<Func>(func)](const Graph& g, util::DynArray<std::any>&& args) -> std::any {
-            return func(g, std::move(args));
-        });
+    void register_algo(const CString& name, const Func& func) {
+        std::unique_lock lock(algo_mutex_);
+        algorithms_.insert(name, std::make_shared<AlgorithmWrapper<Func>>(func));
     }
 
     /**
      * @brief 调用算法插件
-     * @param RetType 返回值类型，默认void
+     * @param RetType 返回值类型
      * @param name 插件名称，若不存在则抛出ValueError
      * @param args 插件入参包
      */
     template <typename RetType = void, typename... Args>
-    RetType call_algo(const CString& name, Args&&... args) {
-        std::shared_lock lock(algo_mutex_); // 读锁
-        if (!algorithms_.contains(name)) {
-            ValueError(std::format("Algorithm[{}] not found.", name));
-        }
-        auto algorithm = algorithms_.get(name);
-        return std::any_cast<RetType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
-    }
-
-    template <typename RetType = void, typename... Args>
     RetType call_algo(const CString& name, Args&&... args) const {
-        std::shared_lock lock(algo_mutex_); // 读锁
+        std::shared_lock lock(algo_mutex_);
+
         if (!algorithms_.contains(name)) {
             ValueError(std::format("Algorithm[{}] not found.", name));
         }
-        auto algorithm = algorithms_.get(name);
-        return std::any_cast<RetType>(algorithm(*this, {std::any(std::forward<Args>(args))...}));
+
+        const auto& algorithm = algorithms_.get(name);
+        util::Vec<std::any> args_pack = {std::any(std::forward<Args>(args))...};
+        auto result = algorithm->execute(*this, args_pack);
+
+        if constexpr (std::is_same_v<RetType, void>) {
+            return;
+        } else {
+            return std::any_cast<RetType>(result);
+        }
     }
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << "Graph (" << (is_directed_ ? "Directed" : "Undirected") << ")\n";
-        stream << "Vertex count: " << vertex_cnt() << '\n';
-        stream << "Edge count: " << edge_cnt() << '\n';
-        stream << "Vertex value type: " << dtype(V) << '\n';
+        stream << "Node count: " << node_cnt() << '\n';
+        stream << "Edge count: " << (is_directed_ ? edge_cnt() : edge_cnt() >> 1) << '\n';
+        stream << "Node value type: " << dtype(N) << '\n';
         stream << "Edge value type: " << dtype(E) << '\n';
         stream << "Adjacency List:\n";
 
-        for (const auto& vertex : vertices_.values()) {
+        for (const auto& vertex : nodes_.values()) {
             stream << vertex.__str__().data() << '\n';
         }
         return CString{stream.str()};
     }
 
 private:
-    usize edge_cnt_ = 0;                     // 边数，无向图为双倍边
-    bool is_directed_;                       // 是否为有向图 true=是 false=否
-    util::Dict<u64, Vertex<V, E>> vertices_; // 邻接表
+    usize edge_cnt_ = 0;                // 边数，无向图为双倍边
+    bool is_directed_;                  // 是否为有向图 true=是 false=否
+    util::Dict<Idx, Node<N, E>> nodes_; // 邻接表
 
-    // 插件系统
-    mutable util::Dict<CString, Algorithm> algorithms_;
-    mutable std::shared_mutex algo_mutex_;
+    // 算法插件系统
+    mutable util::Dict<CString, std::shared_ptr<AlgorithmBase<N, E, Idx>>> algorithms_{};
+    mutable std::shared_mutex algo_mutex_{};
 };
+
+template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+using Tree = Graph<N, E, Idx>;
 
 } // namespace my::graph
 

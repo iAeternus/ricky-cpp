@@ -4,8 +4,8 @@
  * @date 2025/5/19
  * @version 1.0
  */
-#ifndef RICKY_API_HPP
-#define RICKY_API_HPP
+#ifndef RICKY_LIB_HPP
+#define RICKY_LIB_HPP
 
 /**
  * @brief 是否启用api整合包，以及是否启用扩展模块
@@ -142,4 +142,4 @@
 
 #endif // RICKY_CPP_API
 
-#endif // RICKY_API_HPP
+#endif // RICKY_LIB_HPP

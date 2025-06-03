@@ -2,6 +2,7 @@
 #define TEST_STRING_BUILDER_HPP
 
 #include "ricky_test.hpp"
+#include "Assertions.hpp"
 #include "StringBuilder.hpp"
 
 namespace my::test::test_string_builder {
@@ -14,13 +15,25 @@ fn it_works = []() {
     sb.append("aaa").append("bbb"_s).append("ccc").append("你好"_s).append('R');
 
     // Then
-    Assertions::assertEquals("aaabbbccc你好R"_s, sb.str());
+    Assertions::assertEquals("aaabbbccc你好R"_s, sb.build());
+};
+
+fn should_append_format_string = []() {
+    // Given
+    util::StringBuilder sb;
+
+    // When
+    sb.append_format("Case {}#: ", 1).append_format("{}+{}={}", 1, 1, 2);
+
+    // Then
+    Assertions::assertEquals("Case 1#: 1+1=2"_s, sb.build());
 };
 
 fn test_string_builder() {
     UnitTestGroup group{"test_string_builder"};
 
     group.addTest("it_works", it_works);
+    group.addTest("should_append_format_string", should_append_format_string);
 
     group.startAll();
 }
@@ -32,7 +45,7 @@ fn speed_of_string_builder_append_string = []() {
     for (usize i = 0; i < N; ++i) {
         sb.append("abcdef");
     }
-    auto str = sb.str();
+    auto str = sb.build();
     Assertions::assertEquals(N * 6, str.size());
 };
 

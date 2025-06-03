@@ -118,8 +118,8 @@
     "Wextra",
     "Wpedantic"
   ],
-  // "clangd.arguments": [
-  //   "--query-driver=F:\\application\\develop\\gcc\\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev0\\mingw64\\bin\\g++.exe", 
-  //   "--std=c++23"
-  // ]
+  "clangd.arguments": [
+    "--query-driver=F:\\application\\develop\\gcc\\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev0\\mingw64\\bin\\g*",
+    "--std=c++23"
+  ],
 }

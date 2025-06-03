@@ -82,8 +82,8 @@ public:
         this->after_each_ = after_each;
     }
 
-    void addTest(CString&& displayName, std::function<void(void)>&& testCase) {
-        auto* item = new UnitTest{std::forward<CString>(displayName), std::forward<std::function<void(void)>>(testCase)};
+    void addTest(CString&& displayName, Runnable&& testCase) {
+        auto* item = new UnitTest{std::forward<CString>(displayName), std::forward<Runnable>(testCase)};
         group_.append(item);
     }
 

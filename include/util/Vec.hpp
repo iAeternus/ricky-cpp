@@ -9,6 +9,8 @@
 
 #include "Array.hpp"
 #include "Sequence.hpp"
+
+#include <any>
 #include <iterator>
 
 namespace my::util {
@@ -132,6 +134,10 @@ public:
         capacity_ = 0;
     }
 
+    usize capacity() const {
+        return capacity_;
+    }
+
     /**
      * @brief 获取元素个数
      * @return 当前存储的元素个数
@@ -149,6 +155,10 @@ public:
     }
 
     value_t* data() {
+        return data_;
+    }
+
+    const value_t* data() const {
         return data_;
     }
 
@@ -686,6 +696,28 @@ private:
 
     static constexpr usize DEFAULT_CAPACITY = 16;
 };
+
+/**
+ * @brief 从动态数组中选择指定类型的参数
+ * @tparam T 目标类型
+ * @param args 动态数组
+ * @param idx 参数索引
+ * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
+ */
+template <typename T>
+fn opt(const Vec<std::any>& args, usize idx)->T {
+    if (idx < 0 || idx >= args.size()) {
+        ValueError("Index out of range in opt function.");
+        std::unreachable();
+    }
+
+    try {
+        return std::any_cast<T>(args.at(idx));
+    } catch (const std::bad_any_cast& e) {
+        ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
+        std::unreachable();
+    }
+}
 
 } // namespace my::util
 

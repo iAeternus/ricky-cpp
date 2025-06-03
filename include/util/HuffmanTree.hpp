@@ -63,7 +63,7 @@ public:
             }
             sb.append(key_[cp].data());
         }
-        encoded_text_ = sb.str();
+        encoded_text_ = sb.build();
         return encoded_text_;
     }
 
@@ -79,7 +79,7 @@ public:
                 cur = root_idx_;
             }
         }
-        return sb.str();
+        return sb.build();
     }
 
     fn get_key() const {

@@ -69,7 +69,7 @@ public:
      * @brief 判断两个元素是否属于同一组下
      * @return true=是 false=否
      */
-    bool is_connected(const value_t& elem1, const value_t& elem2) {
+    bool same_group(const value_t& elem1, const value_t& elem2) {
         return find(elem1) == find(elem2);
     }
 

@@ -8,21 +8,27 @@
 #define GRAPH_HELPER_HPP
 
 #include "math_utils.hpp"
-#include "DynArray.hpp"
+#include "Vec.hpp"
+#include "ricky.hpp"
 
 namespace my::graph {
 
 /**
+ * @brief 默认ID类型
+ */
+using DefaultIdx = u64;
+
+/**
  * @brief 边
  */
-template <typename E = f64>
+template <typename E = f64, typename Idx = DefaultIdx>
 struct Edge : public Object<Edge<E>> {
-    u64 end; // 终点ID
+    Idx end; // 终点ID
     E w;     // 边权
 
     using Self = Edge<E>;
 
-    Edge(u64 end, const E& w = E{}) :
+    Edge(Idx end, const E& w = E{}) :
             end(end), w(w) {}
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
@@ -37,7 +43,7 @@ struct Edge : public Object<Edge<E>> {
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << '(' << end << ',' << w << ')';
+        stream << '(' << end << ',' << w << ')'; // TODO 边权输出存在问题，不能输出其他类型
         return CString{stream.str()};
     }
 };
@@ -45,17 +51,17 @@ struct Edge : public Object<Edge<E>> {
 /**
  * @brief 节点
  */
-template <typename V = f64, typename E = f64>
-struct Vertex : public Object<Vertex<V, E>> {
-    u64 id;                        // 节点ID，唯一
-    V w;                           // 点权
-    util::DynArray<Edge<E>> edges; // 该节点对应的边。如果为有向图，则代表以这个节点为起点的边
+template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+struct Node : public Object<Node<N, E>> {
+    Idx id;                   // 节点ID，唯一
+    N w;                      // 点权
+    util::Vec<Edge<E>> edges; // 该节点对应的边。如果为有向图，则代表以这个节点为起点的边
 
-    using Self = Vertex<V, E>;
+    using Self = Node<N, E>;
 
-    Vertex() = default;
+    Node() = default;
 
-    Vertex(u64 id, const V& w = V{}) :
+    Node(Idx id, const N& w = N{}) :
             id(id), w(w) {}
 
     /**
@@ -69,7 +75,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 使用权值为w的边连接两个节点，若两个节点已连接，则不做任何事
      * @return true=两节点未连接 false=两节点已连接
      */
-    bool connect(u64 end, const E& w) {
+    bool connect(Idx end, const E& w) {
         for (auto&& edge : edges) {
             if (edge.end == end) {
                 return false;
@@ -83,7 +89,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 删除连接两节点的边，若两节点之间没有边，则什么都不做
      * @return true=两节点已连接 false=两节点未连接
      */
-    bool disconnect(u64 end) {
+    bool disconnect(Idx end) {
         auto size = edges.size();
         for (usize i = 0; i < size; ++i) {
             if (edges[i].end == end) {
@@ -98,7 +104,7 @@ struct Vertex : public Object<Vertex<V, E>> {
      * @brief 判断两节点是否连接
      * @return true=是 false=否
      */
-    bool is_connected(u64 end) const {
+    bool is_connected(Idx end) const {
         for (const auto& edge : edges) {
             if (edge.end == end) {
                 return true;
@@ -128,9 +134,9 @@ struct Vertex : public Object<Vertex<V, E>> {
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        if constexpr (math::FloatingPointType<V>) {
+        if constexpr (math::FloatingPointType<N>) {
             return math::fcmp(this->w, other.w);
-        } else if constexpr (Comparable<V>) {
+        } else if constexpr (Comparable<N>) {
             return this->w.__cmp__(other.w);
         } else {
             return this->w - other.w;
@@ -139,7 +145,7 @@ struct Vertex : public Object<Vertex<V, E>> {
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << '(' << id << ',' << w << ")->";
+        stream << '(' << id << ',' << w << ")->"; // TODO 点权输出有问题，不能适配其他类型
         if (edges.empty()) {
             stream << "null";
             return CString{stream.str()};
@@ -152,6 +158,39 @@ struct Vertex : public Object<Vertex<V, E>> {
             first = false;
         }
         return CString{stream.str()};
+    }
+};
+
+/**
+ * @brief 简单路径，点集
+ */
+template <typename Idx = DefaultIdx>
+struct SimplePath : public Object<SimplePath<Idx>> {
+    util::Vec<Idx> nodes{}; // 点集
+
+    /**
+     * @brief 添加顶点
+     */
+    void append_node(Idx node_id) {
+        nodes.append(node_id);
+    }
+
+    /**
+     * @brief 弹出顶点
+     */
+    void pop_node() {
+        nodes.pop();
+    }
+
+    /**
+     * @brief 请空点集
+     */
+    void clear() {
+        nodes.clear();
+    }
+
+    [[nodiscard]] CString __str__() const {
+        return nodes.__str__();
     }
 };
 

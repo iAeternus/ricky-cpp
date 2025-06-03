@@ -3,6 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "Graph.hpp"
+#include "graph_algorithm.hpp"
 
 namespace my::test::test_graph {
 
@@ -11,12 +12,12 @@ fn should_create_graph = []() {
     graph::Graph<char> g;
 
     // When
-    g.add_vertex(1, 'a');
-    g.add_vertex(2, 'b');
-    g.add_vertex(3, 'c');
-    g.add_vertex(4, 'd');
-    g.add_vertex(5, 'e');
-    g.add_vertex(6, 'f');
+    g.add_node(1, 'a');
+    g.add_node(2, 'b');
+    g.add_node(3, 'c');
+    g.add_node(4, 'd');
+    g.add_node(5, 'e');
+    g.add_node(6, 'f');
     g.add_edge(1, 2, 1);
     g.add_edge(1, 3, 7);
     g.add_edge(2, 1, 15);
@@ -30,22 +31,22 @@ fn should_create_graph = []() {
 
     // Then
     Assertions::assertTrue(g.is_directed());
-    Assertions::assertEquals(6, g.vertex_cnt());
+    Assertions::assertEquals(6, g.node_cnt());
     Assertions::assertEquals(10, g.edge_cnt());
     Assertions::assertEquals(2, g.edge_cnt(1));
     Assertions::assertEquals(npos, g.edge_cnt(7));
-    io::print(g);
+    io::println(g);
 };
 
 fn should_register = []() {
     // Given
     graph::Graph<char> g;
-    g.add_vertex(1, 'a');
-    g.add_vertex(2, 'b');
-    g.add_vertex(3, 'c');
-    g.add_vertex(4, 'd');
-    g.add_vertex(5, 'e');
-    g.add_vertex(6, 'f');
+    g.add_node(1, 'a');
+    g.add_node(2, 'b');
+    g.add_node(3, 'c');
+    g.add_node(4, 'd');
+    g.add_node(5, 'e');
+    g.add_node(6, 'f');
     g.add_edge(1, 2, 1);
     g.add_edge(1, 3, 7);
     g.add_edge(2, 1, 15);
@@ -58,9 +59,11 @@ fn should_register = []() {
     g.add_edge(5, 6, 20);
 
     // When
-    g.register_algo("filter_edge", [](const auto& g, auto&& args) -> util::DynArray<i64> {
-        auto min = opt<f64>(args, 0);
-        auto max = opt<f64>(args, 1);
+    // 注册自定义算法，使用新的插件系统
+    g.register_algo("filter_edge", [](const auto& g, auto&& args) {
+        using namespace my::graph;
+        auto min = util::opt<f64>(args, 0);
+        auto max = util::opt<f64>(args, 1);
 
         util::DynArray<i64> res;
         for (const auto& edge : g.edges()) {

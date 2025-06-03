@@ -797,27 +797,27 @@ private:
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
 
-/**
- * @brief 从动态数组中选择指定类型的参数
- * @tparam T 目标类型
- * @param args 动态数组
- * @param idx 参数索引
- * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
- */
-template <typename T>
-fn opt(const DynArray<std::any>& args, usize idx)->T {
-    if (idx < 0 || idx >= args.size()) {
-        ValueError("Index out of range in opt function.");
-        std::unreachable();
-    }
+// /**
+//  * @brief 从动态数组中选择指定类型的参数
+//  * @tparam T 目标类型
+//  * @param args 动态数组
+//  * @param idx 参数索引
+//  * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
+//  */
+// template <typename T>
+// fn opt(const DynArray<std::any>& args, usize idx)->T {
+//     if (idx < 0 || idx >= args.size()) {
+//         ValueError("Index out of range in opt function.");
+//         std::unreachable();
+//     }
 
-    try {
-        return std::any_cast<T>(args.at(idx));
-    } catch (const std::bad_any_cast& e) {
-        ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
-        std::unreachable();
-    }
-}
+//     try {
+//         return std::any_cast<T>(args.at(idx));
+//     } catch (const std::bad_any_cast& e) {
+//         ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
+//         std::unreachable();
+//     }
+// }
 
 } // namespace my::util
 

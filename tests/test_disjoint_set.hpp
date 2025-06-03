@@ -25,9 +25,9 @@ fn should_merge_and_find = []() {
     ds.merge(1, 5);
     io::println(ds.__str__());
 
-    Assertions::assertTrue(ds.is_connected(1, 5));
-    Assertions::assertTrue(ds.is_connected(1, 6));
-    Assertions::assertFalse(ds.is_connected(1, 8));
+    Assertions::assertTrue(ds.same_group(1, 5));
+    Assertions::assertTrue(ds.same_group(1, 6));
+    Assertions::assertFalse(ds.same_group(1, 8));
 
     for (usize i = 1; i <= 10; ++i) {
         io::print(ds.rank(i));
