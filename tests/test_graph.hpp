@@ -1,7 +1,8 @@
 #ifndef TEST_GRAPH_HPP
 #define TEST_GRAPH_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Graph.hpp"
 #include "graph_algorithm.hpp"
 

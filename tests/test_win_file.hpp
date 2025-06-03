@@ -1,7 +1,8 @@
 #ifndef TEST_WIN_FILE_HPP
 #define TEST_WIN_FILE_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "filesystem.hpp"
 
 namespace my::test::test_win_file {

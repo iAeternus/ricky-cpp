@@ -1,7 +1,8 @@
 #ifndef TEST_DURATION_HPP
 #define TEST_DURATION_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Duration.hpp"
 
 namespace my::test::test_duration {

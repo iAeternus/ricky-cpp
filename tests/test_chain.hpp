@@ -1,7 +1,8 @@
 #ifndef TEST_CHAIN_HPP
 #define TEST_CHAIN_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Chain.hpp"
 
 namespace my::test::test_chain {

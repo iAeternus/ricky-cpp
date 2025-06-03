@@ -1,7 +1,8 @@
 #ifndef TEST_BINARY_UTILS_HPP
 #define TEST_BINARY_UTILS_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "binary_utils.hpp"
 
 namespace my::test::test_binary_utils {

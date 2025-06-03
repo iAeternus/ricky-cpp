@@ -1,7 +1,8 @@
 #ifndef TEST_DATE_HPP
 #define TEST_DATE_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "DateTime.hpp"
 
 namespace my::test::test_date {

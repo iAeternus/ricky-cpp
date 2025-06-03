@@ -2,7 +2,8 @@
 #define TEST_HUFFMAN_TREE_HPP
 
 #include "Printer.hpp"
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "filesystem.hpp"
 #include "HuffmanTree.hpp"
 

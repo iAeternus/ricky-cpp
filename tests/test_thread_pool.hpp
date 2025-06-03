@@ -1,7 +1,8 @@
 #ifndef TEST_THREAD_POOL_HPP
 #define TEST_THREAD_POOL_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "ThreadPool.hpp"
 #include "Dict.hpp"
 

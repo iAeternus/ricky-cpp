@@ -1,7 +1,8 @@
 #ifndef TEST_CSTRING_HPP
 #define TEST_CSTRING_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 
 namespace my::test::test_cstring {
 

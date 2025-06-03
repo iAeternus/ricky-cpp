@@ -1,7 +1,8 @@
 #ifndef TEST_RANDOM_HPP
 #define TEST_RANDOM_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Random.hpp"
 #include "Printer.hpp"
 

@@ -1,7 +1,8 @@
 #ifndef TEST_BUFFER_HPP
 #define TEST_BUFFER_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Buffer.hpp"
 
 namespace my::test::test_buffer {

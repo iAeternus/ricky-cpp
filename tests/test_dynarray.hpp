@@ -1,7 +1,8 @@
 #ifndef TEST_DYNARRAY_HPP
 #define TEST_DYNARRAY_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "DynArray.hpp"
 
 namespace my::test::test_dynarray {

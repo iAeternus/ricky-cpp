@@ -1,7 +1,8 @@
 #ifndef TEST_LOG_HPP
 #define TEST_LOG_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Log.hpp"
 
 namespace my::test::test_log {

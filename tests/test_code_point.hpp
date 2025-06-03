@@ -1,7 +1,8 @@
 #ifndef TEST_CODE_POINT_HPP
 #define TEST_CODE_POINT_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "CodePoint.hpp"
 #include "Random.hpp"
 

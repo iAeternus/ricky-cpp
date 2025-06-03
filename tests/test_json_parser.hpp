@@ -1,7 +1,8 @@
 #ifndef TEST_JSON_PARSER_HPP
 #define TEST_JSON_PARSER_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "JsonParser.hpp"
 
 namespace my::test::test_json_parser {

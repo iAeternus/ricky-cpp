@@ -1,7 +1,8 @@
 #ifndef TEST_STRING_HPP
 #define TEST_STRING_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "String.hpp"
 #include "Array.hpp"
 #include "Vec.hpp"

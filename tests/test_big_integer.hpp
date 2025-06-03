@@ -1,7 +1,8 @@
 #ifndef TEST_BIG_INTEGER_HPP
 #define TEST_BIG_INTEGER_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "BigInteger.hpp"
 
 namespace my::test::test_big_integer {

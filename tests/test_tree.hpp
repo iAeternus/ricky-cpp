@@ -1,7 +1,8 @@
 #ifndef TEST_TREE_HPP
 #define TEST_TREE_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Tree.hpp"
 
 namespace my::test::test_tree {

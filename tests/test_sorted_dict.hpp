@@ -1,7 +1,8 @@
 #ifndef TEST_SORTED_DICT_HPP
 #define TEST_SORTED_DICT_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "SortedDict.hpp"
 
 namespace my::test::test_sorted_dict {

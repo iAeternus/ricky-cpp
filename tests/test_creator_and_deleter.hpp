@@ -1,7 +1,8 @@
 #ifndef TEST_CREATOR_AND_DELETER_HPP
 #define TEST_CREATOR_AND_DELETER_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Creator.hpp"
 #include "Deleter.hpp"
 

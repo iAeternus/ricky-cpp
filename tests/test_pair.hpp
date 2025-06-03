@@ -1,7 +1,8 @@
 #ifndef TEST_PAIR_HPP
 #define TEST_PAIR_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Pair.hpp"
 
 namespace my::test::test_pair {

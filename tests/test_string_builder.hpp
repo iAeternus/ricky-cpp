@@ -1,7 +1,8 @@
 #ifndef TEST_STRING_BUILDER_HPP
 #define TEST_STRING_BUILDER_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Assertions.hpp"
 #include "StringBuilder.hpp"
 

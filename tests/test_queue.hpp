@@ -1,7 +1,8 @@
 #ifndef TEST_QUEUE_HPP
 #define TEST_QUEUE_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Queue.hpp"
 #include "Random.hpp"
 

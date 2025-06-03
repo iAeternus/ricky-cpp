@@ -1,7 +1,8 @@
 #ifndef TEST_MATRIX_HPP
 #define TEST_MATRIX_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Matrix.hpp"
 
 namespace my::test::test_matrix {

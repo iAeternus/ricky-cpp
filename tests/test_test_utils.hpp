@@ -1,7 +1,8 @@
 #ifndef TEST_UNIT_TEST_HPP
 #define TEST_UNIT_TEST_HPP
 
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 
 #include <thread>
 #include <chrono>

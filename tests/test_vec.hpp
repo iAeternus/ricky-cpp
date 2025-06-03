@@ -2,7 +2,8 @@
 #define TEST_VEC_HPP
 
 #include "Printer.hpp"
-#include "ricky_test.hpp"
+#include "UnitTest.hpp"
+#include "Assertions.hpp"
 #include "Vec.hpp"
 
 namespace my::test::test_vec {
