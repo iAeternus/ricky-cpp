@@ -23,13 +23,13 @@ using DefaultIdx = u64;
  */
 template <typename E = f64, typename Idx = DefaultIdx>
 struct Edge : public Object<Edge<E>> {
-    Idx end; // 终点ID
+    Idx to; // 终点ID
     E w;     // 边权
 
     using Self = Edge<E>;
 
-    Edge(Idx end, const E& w = E{}) :
-            end(end), w(w) {}
+    Edge(Idx to, const E& w = E{}) :
+            to(to), w(w) {}
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (math::FloatingPointType<E>) {
@@ -43,7 +43,7 @@ struct Edge : public Object<Edge<E>> {
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << '(' << end << ',' << w << ')'; // TODO 边权输出存在问题，不能输出其他类型
+        stream << '(' << to << ',' << w << ')'; // TODO 边权输出存在问题，不能输出其他类型
         return CString{stream.str()};
     }
 };
@@ -75,13 +75,13 @@ struct Node : public Object<Node<N, E>> {
      * @brief 使用权值为w的边连接两个节点，若两个节点已连接，则不做任何事
      * @return true=两节点未连接 false=两节点已连接
      */
-    bool connect(Idx end, const E& w) {
+    bool connect(Idx to, const E& w) {
         for (auto&& edge : edges) {
-            if (edge.end == end) {
+            if (edge.to == to) {
                 return false;
             }
         }
-        edges.append(Edge{end, w});
+        edges.append(Edge{to, w});
         return true;
     }
 
@@ -89,10 +89,10 @@ struct Node : public Object<Node<N, E>> {
      * @brief 删除连接两节点的边，若两节点之间没有边，则什么都不做
      * @return true=两节点已连接 false=两节点未连接
      */
-    bool disconnect(Idx end) {
+    bool disconnect(Idx to) {
         auto size = edges.size();
         for (usize i = 0; i < size; ++i) {
-            if (edges[i].end == end) {
+            if (edges[i].to == to) {
                 edges.pop(i);
                 return true;
             }
@@ -104,9 +104,9 @@ struct Node : public Object<Node<N, E>> {
      * @brief 判断两节点是否连接
      * @return true=是 false=否
      */
-    bool is_connected(Idx end) const {
+    bool is_connected(Idx to) const {
         for (const auto& edge : edges) {
-            if (edge.end == end) {
+            if (edge.to == to) {
                 return true;
             }
         }
@@ -115,21 +115,23 @@ struct Node : public Object<Node<N, E>> {
 
     /**
      * @brief 遍历邻接边
+     * @param C 消费者类型（接受两个参数：Idx id, E weight）
      */
     template <typename C>
     void for_each(C&& consumer) {
         for (auto& edge : edges) {
-            std::forward<C>(consumer)(edge);
+            std::forward<C>(consumer)(edge.to, edge.w);
         }
     }
 
     /**
      * @brief 遍历邻接边，常量版本
+     * @param C 消费者类型（接受两个参数：Idx id, E weight）
      */
     template <typename C>
     void for_each(C&& consumer) const {
         for (const auto& edge : edges) {
-            std::forward<C>(consumer)(edge);
+            std::forward<C>(consumer)(edge.to, edge.w);
         }
     }
 

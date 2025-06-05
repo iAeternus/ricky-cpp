@@ -9,30 +9,32 @@ CompileFlags:
 
 Diagnostics:
   ClangTidy:
-    Checks: >
-      *,
-      -abseil*,
-      -fuchsia*,
-      -llvmlib*,
-      -zircon*,
-      -altera*,
-      -google-readability-*,
-      -readability-*,
-      -modernize-*,
-      -cppcoreguidelines-*,
-      -hicpp-*,
-      -llvm-*,
-      -misc-*,
-      -cert-*
+    # Checks: >
+    #   *,
+    #   -abseil*,
+    #   -fuchsia*,
+    #   -llvmlib*,
+    #   -zircon*,
+    #   -altera*,
+    #   -google-readability-*,
+    #   -readability-*,
+    #   -modernize-*,
+    #   -cppcoreguidelines-*,
+    #   -hicpp-*,
+    #   -llvm-*,
+    #   -misc-*,
+    #   -cert-*
     CheckOptions:
       readability-identifier-naming: off
       
 Index:
   Background: Build
-  Threads: 4
+  # Threads: 4
   
 InlayHints:
   Enabled: false
 
 If:
   PathMatch: .*/ricky-cpp/.*
+
+AsyncThreadsCount: 8

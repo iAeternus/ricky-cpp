@@ -2,28 +2,14 @@
 #define TEST_GRAPH_ALGORITHM_HPP
 
 #include "Assertions.hpp"
-#include "Printer.hpp"
 #include "graph_helper.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "Vec.hpp"
 #include "graph_algorithm.hpp"
 #include "Graph.hpp"
-#include <functional>
 
 namespace my::test::test_graph_algorithm {
-
-fn test_fake_algorithm = []() {
-    // Given
-    graph::Graph g;
-    g.register_algo("fake_algorithm", graph::fake_algorithm<>);
-
-    // When
-    auto res = g.call_algo<CString>("fake_algorithm", 1, 2, 3);
-
-    // Then
-    Assertions::assertEquals("Fake algorithm. Args are 1,2,3"_cs, res);
-};
 
 fn test_adj2matrix = []() {
     // Given
@@ -325,10 +311,41 @@ fn test_prim = []() {
     // Assertions::assertTrue(t3.has_edge(3, 5));
 };
 
+fn test_dijkstra = []() {
+    // Given
+    graph::Graph<char> g(false);
+    g.add_node(0, 'A');
+    g.add_node(1, 'B');
+    g.add_node(2, 'C');
+    g.add_node(3, 'D');
+    g.add_node(4, 'E');
+    g.add_node(5, 'F');
+    g.add_node(6, 'G');
+
+    g.add_edge(0, 1, 12);
+    g.add_edge(0, 5, 16);
+    g.add_edge(0, 6, 14);
+    g.add_edge(1, 2, 10);
+    g.add_edge(1, 5, 7);
+    g.add_edge(2, 3, 3);
+    g.add_edge(2, 4, 5);
+    g.add_edge(2, 5, 6);
+    g.add_edge(3, 4, 4);
+    g.add_edge(4, 5, 2);
+    g.add_edge(4, 6, 8);
+    g.add_edge(5, 6, 9);
+
+    // When
+    g.register_algo("dijkstra", graph::dijkstra<char>);
+    auto dis = g.call_algo<util::Vec<f64>>("dijkstra", 0ULL);
+
+    // Then
+    Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.__str__());
+};
+
 fn test_graph_algorithm() {
     UnitTestGroup group{"test_graph_algorithm"};
 
-    group.addTest("test_fake_algorithm", test_fake_algorithm);
     group.addTest("test_adj2matrix", test_adj2matrix);
     group.addTest("test_is_exist_el", test_is_exist_el);
     group.addTest("should_bfs", should_bfs);
@@ -337,6 +354,7 @@ fn test_graph_algorithm() {
     group.addTest("test_can_reach", test_can_reach);
     group.addTest("should_get_all_paths", should_get_all_paths);
     group.addTest("test_prim", test_prim);
+    group.addTest("test_dijkstra", test_dijkstra);
 
     group.startAll();
 }

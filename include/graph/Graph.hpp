@@ -134,8 +134,8 @@ public:
         usize deg = 0;
         for_each([&](const auto& vertex) {
             if (id == vertex.id) return;
-            vertex.for_each([&](const auto& edge) {
-                if (id == edge.end) {
+            vertex.for_each([&](Idx v, E _) {
+                if (id == v) {
                     ++deg;
                 }
             });

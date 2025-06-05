@@ -23,31 +23,16 @@ namespace my::graph {
 #define INF F64_MAX
 
 /**
- * @brief 样板算法
- */
-template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto fake_algorithm = [](const auto& g, auto&& args) -> CString {
-    auto a = util::opt<i32>(args, 0);
-    auto b = util::opt<i32>(args, 1);
-    auto c = util::opt<i32>(args, 2);
-
-    auto edges = g.edges();
-    io::println(edges);
-
-    return std::format("Fake algorithm. Args are {},{},{}", a, b, c);
-};
-
-/**
  * @brief 邻接表转邻接矩阵
  * @note 会丢失点权信息，要求顶点id从0开始
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto adj2matrix = [](const auto& g, auto&& args) -> math::Matrix<E> {
+auto adj2matrix = [](const auto& g, auto&& _) -> math::Matrix<E> {
     math::Matrix<E> m(g.node_cnt(), INF);
     g.for_each([&](const auto& vertex) {
         m[vertex.id][vertex.id] = 0;
-        vertex.for_each([&](const auto& edge) {
-            m[vertex.id][edge.end] = edge.w;
+        vertex.for_each([&](Idx v, E w) {
+            m[vertex.id][v] = w;
         });
     });
     return m;
@@ -60,7 +45,7 @@ auto adj2matrix = [](const auto& g, auto&& args) -> math::Matrix<E> {
  * @note 时间复杂度：O(|N|^2 * |E|)，若用邻接矩阵则为 O(|N|^2)
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto is_exist_el = [](const auto& g, auto&& args) -> bool {
+auto is_exist_el = [](const auto& g, auto&& _) -> bool {
     usize cnt = 0;
     g.for_each([&](const auto& vertex) {
         usize deg = vertex.out_deg() + g.in_deg(vertex.id);
@@ -93,11 +78,11 @@ auto bfs = [](const auto& g, auto&& args) {
     while (!q.empty()) {
         auto node = q.front();
         q.pop();
-        node.for_each([&](const auto& edge) {
-            if (vis[edge.end]) return;
-            auto adj = g.get_node(edge.end);
+        node.for_each([&](Idx v, E _) {
+            if (vis[v]) return;
+            auto adj = g.get_node(v);
             q.push(adj);
-            vis[edge.end] = true;
+            vis[v] = true;
             func(adj);
         });
     }
@@ -119,9 +104,9 @@ auto dfs = [](const auto& g, auto&& args) {
         auto node = g.get_node(s);
         func(node);
         vis[s] = true;
-        node.for_each([&](const auto& edge) {
-            if (vis[edge.end]) return;
-            dfs_helper(g, edge.end);
+        node.for_each([&](Idx v, E _) {
+            if (vis[v]) return;
+            dfs_helper(g, v);
         });
     };
 
@@ -133,7 +118,7 @@ auto dfs = [](const auto& g, auto&& args) {
  * @note 无向图g为树，当且仅当g是无回路的连通图或者是n-1条边的连通图（n为g的顶点数）
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto is_tree = [](const auto& g, auto&& args) -> bool {
+auto is_tree = [](const auto& g, auto&& _) -> bool {
     auto n = g.node_cnt();
     usize node_cnt = 0, edge_cnt = 0;
     util::Vec<bool> vis(n, false);
@@ -141,10 +126,10 @@ auto is_tree = [](const auto& g, auto&& args) -> bool {
         auto node = g.get_node(s);
         node_cnt++;
         vis[node.id] = true;
-        node.for_each([&](const auto& edge) {
-            if (vis[edge.end]) return;
+        node.for_each([&](Idx v, E _) {
+            if (vis[v]) return;
             edge_cnt++;
-            dfs_helper(g, edge.end);
+            dfs_helper(g, v);
         });
     };
 
@@ -177,9 +162,9 @@ auto can_reach_dfs = [](const auto& g, auto&& args) -> bool {
 
         vis[curr] = true;
         auto node = g.get_node(curr);
-        node.for_each([&](const auto& edge) {
-            if (vis[edge.end] || is_reach) return;
-            dfs_helper(edge.end);
+        node.for_each([&](Idx v, E _) {
+            if (vis[v] || is_reach) return;
+            dfs_helper(v);
         });
     };
 
@@ -209,11 +194,11 @@ auto can_reach_bfs = [](const auto& g, auto&& args) -> bool {
     while (!q.empty() && !vis[t]) {
         auto u = q.front();
         q.pop();
-        g.get_node(u).for_each([&](const auto& edge) {
-            if (vis[edge.end]) return;
-            vis[edge.end] = true;
-            q.push(edge.end);
-            if (edge.end == t) {
+        g.get_node(u).for_each([&](Idx v, E _) {
+            if (vis[v]) return;
+            vis[v] = true;
+            q.push(v);
+            if (v == t) {
                 return;
             }
         });
@@ -255,13 +240,13 @@ auto get_all_paths = [](const auto& g, auto&& args) -> util::Vec<SimplePath<Idx>
             return;
         }
 
-        g.get_node(curr).for_each([&](const auto& edge) {
-            if (vis[edge.end]) return;
-            curr_path.append_node(edge.end);
-            vis[edge.end] = true;
-            dfs_helper(edge.end);
+        g.get_node(curr).for_each([&](Idx v, E _) {
+            if (vis[v]) return;
+            curr_path.append_node(v);
+            vis[v] = true;
+            dfs_helper(v);
             curr_path.pop_node();
-            vis[edge.end] = false;
+            vis[v] = false;
         });
     };
 
@@ -275,7 +260,7 @@ auto get_all_paths = [](const auto& g, auto&& args) -> util::Vec<SimplePath<Idx>
  * @note 适合稠密图的最小生成树求解。假设图是连通的
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto prim = [](const auto& g, auto&& args) -> Tree<N, E, Idx> {
+auto prim = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     Tree<N, E, Idx> t{false};
     auto n = g.node_cnt();
     if (n == 0) return t;
@@ -307,9 +292,7 @@ auto prim = [](const auto& g, auto&& args) -> Tree<N, E, Idx> {
         }
 
         // 3. 更新邻接节点的距离
-        g.get_node(u).for_each([&](const auto& edge) {
-            Idx v = edge.end;
-            E w = edge.w;
+        g.get_node(u).for_each([&](Idx v, E w) {
             // 只更新未访问且距离更小的节点
             if (!vis[v] && w < dis[v]) {
                 dis[v] = w;
@@ -327,7 +310,7 @@ auto prim = [](const auto& g, auto&& args) -> Tree<N, E, Idx> {
  * @note 假设图是连通的
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto prim2 = [](const auto& g, auto&& args) -> Tree<N, E, Idx> {
+auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     Tree<N, E, Idx> t{false};
     auto n = g.node_cnt();
     if (n == 0) return t;
@@ -361,9 +344,7 @@ auto prim2 = [](const auto& g, auto&& args) -> Tree<N, E, Idx> {
         }
 
         // 3. 更新邻接节点的距离
-        g.get_node(u).for_each([&](const auto& edge) {
-            Idx v = edge.end;
-            E w = edge.w;
+        g.get_node(u).for_each([&](Idx v, E w) {
             // 只更新未访问且距离更小的节点
             if (!vis[v] && w < dis[v]) {
                 dis[v] = w;
@@ -382,7 +363,7 @@ auto prim2 = [](const auto& g, auto&& args) -> Tree<N, E, Idx> {
  * @note 适合于边稀疏而顶点较多的图
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto kruskal = [](const auto& g, auto&& args) -> Tree<N, E, Idx> { // TODO 段错误
+auto kruskal = [](const auto& g, auto&& _) -> Tree<N, E, Idx> { // TODO 段错误
     Tree<N, E, Idx> t{false};
     auto n = g.node_cnt();
     if (n == 0) return t;
@@ -414,16 +395,16 @@ auto kruskal = [](const auto& g, auto&& args) -> Tree<N, E, Idx> { // TODO 段�
 
     // 3. 遍历所有边并加入优先队列（无向图每条边只添加一次）
     g.for_each([&](const auto& node) {
-        node.for_each([&](const auto& edge) {
+        node.for_each([&](Idx v, E w) {
             // 只添加 u < v 的边，避免重复处理无向边
-            if (node.id < edge.end) {
-                pq.emplace(node.id, edge.end, edge.w);
+            if (node.id < v) {
+                pq.emplace(node.id, v, w);
             }
         });
     });
 
     // 4. 处理优先队列中的边
-    size_t edge_count = 0;
+    usize edge_count = 0;
     while (!pq.empty() && edge_count < n - 1) {
         auto edge = pq.top();
         pq.pop();
@@ -443,12 +424,40 @@ auto kruskal = [](const auto& g, auto&& args) -> Tree<N, E, Idx> { // TODO 段�
 
 /**
  * @brief Dijkstra 算法求解单源最短路径
- * @note 时间复杂度
+ * @note 时间复杂度 O(|E|log|E|)，若不用优先队列优化，时间复杂度为 O(|V|^2)
  * @note 假设图中没有负权边
+ * @param s 源点
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
 auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
-    
+    auto s = util::opt<Idx>(args, 0);
+
+    usize n = g.node_cnt();
+    util::Vec<E> dis(n, INF);
+    dis[s] = E{};
+
+    using Node = Pair<E, Idx>;
+    std::priority_queue<Node, std::vector<Node>, std::greater<>> pq;
+    pq.emplace(E{}, s);
+
+    while (!pq.empty()) {
+        auto [d, u] = pq.top();
+        pq.pop();
+
+        // 若当前距离大于已记录距离，跳过无效节点
+        if (d != dis[u]) continue;
+
+        g.get_node(u).for_each([&](Idx v, E w) {
+            auto new_dis = d + w;
+            // 松弛操作：发现更短路径时更新
+            if (new_dis < dis[v]) {
+                dis[v] = new_dis;
+                pq.emplace(new_dis, v);
+            }
+        });
+    }
+
+    return dis;
 };
 
 } // namespace my::graph

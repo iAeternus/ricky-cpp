@@ -8,6 +8,8 @@
 #define PAIR_HPP
 
 #include "Object.hpp"
+#include "raise_error.hpp"
+#include "ricky_concepts.hpp"
 
 #include <tuple>
 
@@ -85,6 +87,20 @@ public:
             return std::move(first_);
         } else if constexpr (I == 1) {
             return std::move(second_);
+        }
+    }
+
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+        if constexpr (Comparable<S> && Comparable<T>) {
+            auto cmp = first_.__cmp__(other.first_);
+            if (cmp != 0) return cmp;
+            return second_.__cmp__(other.second_);
+        } else if constexpr (Subtractble<S> && Subtractble<T>) {
+            auto cmp = first_ - other.first_;
+            if (cmp != 0) return cmp;
+            return second_ - other.second_;
+        } else {
+            RuntimeError("The comparison logic has not been implemented.");
         }
     }
 
