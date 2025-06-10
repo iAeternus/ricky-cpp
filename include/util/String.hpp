@@ -340,26 +340,13 @@ public:
         return length;
     }
 
-    // /**
-    //  * @brief 分割字符串，返回指定范围的子字符串
-    //  * @param start 起始索引
-    //  * @param end 结束索引（不包含）
-    //  * @return 子字符串
-    //  */
-    // Self split(usize start, isize end) {
-    //     auto m_size = size();
-    //     start = neg_index(start, m_size);
-    //     end = neg_index(end, static_cast<isize>(m_size));
-    //     return Self{code_points_ + start, end - start, manager_};
-    // }
-
     /**
-     * @brief 分割字符串，返回指定范围的子字符串（常量版本）
+     * @brief 字符串切片，返回指定范围的子字符串 TODO StringView类
      * @param start 起始索引
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-    Self split(usize start, isize end) const {
+    Self slice(usize start, isize end) const {
         auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
@@ -367,21 +354,12 @@ public:
     }
 
     /**
-     * @brief 分割字符串，返回从指定索引开始到末尾的子字符串
+     * @brief 字符串切片，返回从指定索引开始到末尾的子字符串
      * @param start 起始索引
      * @return 子字符串
      */
-    Self split(usize start) {
-        return split(start, size());
-    }
-
-    /**
-     * @brief 分割字符串，返回从指定索引开始到末尾的子字符串（常量版本）
-     * @param start 起始索引
-     * @return 子字符串
-     */
-    const Self split(usize start) const {
-        return split(start, size());
+    Self slice(usize start) const {
+        return slice(start, size());
     }
 
     /**
@@ -453,7 +431,7 @@ public:
         if (size() < prefix.size()) {
             return false;
         }
-        return split(0, prefix.size()) == prefix;
+        return slice(0, prefix.size()) == prefix;
     }
 
     /**
@@ -465,7 +443,7 @@ public:
         if (size() < suffix.size()) {
             return false;
         }
-        return split(size() - suffix.size()) == suffix;
+        return slice(size() - suffix.size()) == suffix;
     }
 
     /**
@@ -500,7 +478,7 @@ public:
      */
     Self trim() const {
         auto [l, r] = get_trim_index();
-        return split(l, r);
+        return slice(l, r);
     }
 
     /**
@@ -508,7 +486,7 @@ public:
      * @return 去除首部空白后的字符串
      */
     Self ltrim() const {
-        return split(get_ltrim_index());
+        return slice(get_ltrim_index());
     }
 
     /**
@@ -516,7 +494,7 @@ public:
      * @return 去除尾部空白后的字符串
      */
     Self rtrim() const {
-        return split(get_rtrim_index());
+        return slice(get_rtrim_index());
     }
 
     /**
@@ -526,7 +504,7 @@ public:
      */
     Self trim(const Self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
-        return split(l, r);
+        return slice(l, r);
     }
 
     /**
@@ -535,7 +513,7 @@ public:
      * @return 去除模式后的字符串
      */
     Self ltrim(const Self& pattern) const {
-        return split(get_ltrim_index(pattern));
+        return slice(get_ltrim_index(pattern));
     }
 
     /**
@@ -544,7 +522,7 @@ public:
      * @return 去除模式后的字符串
      */
     Self rtrim(const Self& pattern) const {
-        return split(get_rtrim_index(pattern));
+        return slice(get_rtrim_index(pattern));
     }
 
     /**
@@ -639,7 +617,7 @@ public:
             }
 
             if (match_cnt == 0) {
-                return split(l, r + 1);
+                return slice(l, r + 1);
             }
         }
         ValueError("Unmatched parentheses, too many left parentheses");
@@ -735,8 +713,8 @@ private:
      */
     std::pair<usize, usize> get_trim_index(const Self& pattern) const {
         usize l = 0, r = size(), p_size = pattern.size();
-        while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
-        while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
+        while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
+        while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return std::make_pair(l, r);
     }
 
@@ -757,7 +735,7 @@ private:
      */
     usize get_ltrim_index(const Self& pattern) const {
         usize l = 0, r = size(), p_size = pattern.size();
-        while (l + p_size <= r && split(l, l + p_size) == pattern) l += p_size;
+        while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         return l;
     }
 
@@ -778,10 +756,10 @@ private:
      */
     usize get_rtrim_index(const Self& pattern) const {
         usize l = 0, r = size(), p_size = pattern.size();
-        while (l + p_size <= r && split(r - p_size, r) == pattern) r -= p_size;
+        while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
-    
+
     /**
      * @brief KMP辅助函数，求next数组
      * @param pattern 模式串

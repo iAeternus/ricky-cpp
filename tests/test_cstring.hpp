@@ -47,14 +47,14 @@ fn should_compare = []() {
     Assertions::assertNotEquals(str2, str4);
 };
 
-fn should_split = []() {
+fn should_slice = []() {
     // Given
     CString s = "abcdef";
 
     // When
-    auto res = s.split(1, 2);
-    auto res2 = s.split(3);
-    auto res3 = s.split(1, -1);
+    auto res = s.slice(1, 2);
+    auto res2 = s.slice(3);
+    auto res3 = s.slice(1, -1);
 
     // Then
     Assertions::assertEquals(1, res.size());
@@ -199,7 +199,7 @@ fn test_cstring() {
     group.addTest("should_construct", should_construct);
     group.addTest("should_hash", should_hash);
     group.addTest("should_compare", should_compare);
-    group.addTest("should_split", should_split);
+    group.addTest("should_slice", should_slice);
     group.addTest("should_find", should_find);
     // group.addTest("should_find_all", should_find_all);
     group.addTest("should_judge_starts_with", should_judge_starts_with);

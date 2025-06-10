@@ -7,14 +7,14 @@
 #ifndef GRAPH_ALGORITHM_HPP
 #define GRAPH_ALGORITHM_HPP
 
+#include "graph_helper.hpp"
 #include "DisjointSet.hpp"
-#include "Graph.hpp"
 #include "Function.hpp"
 #include "Matrix.hpp"
+#include "Graph.hpp"
 #include "Queue.hpp"
-#include "Vec.hpp"
-#include "graph_helper.hpp"
 #include "Pair.hpp"
+#include "Vec.hpp"
 
 #include <queue>
 
@@ -458,6 +458,15 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
     }
 
     return dis;
+};
+
+/**
+ * @brief 所有点对最短路径，floyd 算法
+ * @note 时间复杂度 TODO
+ */
+template<typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+auto floyd = [](const auto& g, auto&& _) -> math::Matrix<E> {
+    // TODO
 };
 
 } // namespace my::graph

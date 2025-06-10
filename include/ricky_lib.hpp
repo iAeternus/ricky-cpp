@@ -121,6 +121,7 @@
  */
 #if RICKY_CPP_MATH == 1
 
+#include "BigDecimal.hpp"
 #include "BigInteger.hpp"
 #include "Complex.hpp"
 #include "Expr.hpp"

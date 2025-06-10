@@ -128,6 +128,22 @@ fn should_to_array = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
+fn should_slice = []() {
+    // Given
+    util::Vec<i32> v = {1, 2, 3, 4, 5, 6};
+
+    // When
+    auto res = v.slice(1, 2);
+    auto res2 = v.slice(3);
+    auto res3 = v.slice(1, -1);
+
+    // Then
+    Assertions::assertEquals(1, res.size());
+    Assertions::assertEquals("[2]"_cs, res.__str__());
+    Assertions::assertEquals("[4,5,6]"_cs, res2.__str__());
+    Assertions::assertEquals("[2,3,4,5]"_cs, res3.__str__());
+};
+
 fn should_extend = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5};
@@ -174,7 +190,7 @@ fn should_sort = []() {
     util::Vec<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
     // When
-    std::sort(d.begin(), d.end());
+    std::sort(d.begin(), d.end()); // clangd 误报
 
     // Then
     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
@@ -191,6 +207,7 @@ fn test_vec() {
     group.addTest("should_clear", should_clear);
     group.addTest("should_swap", should_swap);
     group.addTest("should_to_array", should_to_array);
+    group.addTest("should_slice", should_slice);
     group.addTest("should_extend", should_extend);
     group.addTest("should_at", should_at);
     group.addTest("should_find", should_find);

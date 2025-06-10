@@ -63,30 +63,30 @@ private:
         } else if (jsonStr[0] == util::CodePoint('{')) {
             match = jsonStr.match('{', '}');
         } else if (jsonStr[0] == util::CodePoint{'\"'}) {
-            match = jsonStr.split(0, jsonStr.split(1).find(util::CodePoint{'\"'}) + 2);
+            match = jsonStr.slice(0, jsonStr.slice(1).find(util::CodePoint{'\"'}) + 2);
         } else {
             auto stopSignIdx = jsonStr.find(stopSign);
             if (stopSignIdx == npos) {
                 match = jsonStr;
             } else {
-                match = jsonStr.split(0, stopSignIdx);
+                match = jsonStr.slice(0, stopSignIdx);
             }
         }
 
-        JsonType::JsonStr remain = jsonStr.split(match.size()).trim();
+        JsonType::JsonStr remain = jsonStr.slice(match.size()).trim();
         if (remain.size()) {
             if (remain[0] != stopSign) {
                 ValueError(std::format("Stop sign \'{}\' not found", stopSign));
                 std::unreachable();
             }
-            remain = remain.split(1).trim();
+            remain = remain.slice(1).trim();
         }
         return {parse(match), remain};
     }
 
     static fn parseDict(JsonType::JsonStr& jsonStr)->Json {
         JsonType::JsonDict dict;
-        jsonStr = jsonStr.split(1, -1).trim(); // 去掉 {}
+        jsonStr = jsonStr.slice(1, -1).trim(); // 去掉 {}
 
         while (jsonStr.size()) {
             auto [key, remain] = parseFirstObject(jsonStr, util::CodePoint{':'});
@@ -102,7 +102,7 @@ private:
 
     static fn parseArray(JsonType::JsonStr& jsonStr)->Json {
         JsonType::JsonArray arr;
-        jsonStr = jsonStr.split(1, -1).trim(); // 去掉 []
+        jsonStr = jsonStr.slice(1, -1).trim(); // 去掉 []
 
         while (jsonStr.size()) {
             auto [item, remain] = parseFirstObject(jsonStr, util::CodePoint{','});
@@ -113,7 +113,7 @@ private:
     }
 
     static fn parseStr(JsonType::JsonStr& jsonStr)->Json {
-        return Json{jsonStr.split(1, -1)}; // 去掉 ""
+        return Json{jsonStr.slice(1, -1)}; // 去掉 ""
     }
 
     static fn parseNum(JsonType::JsonStr& jsonStr)->Json {

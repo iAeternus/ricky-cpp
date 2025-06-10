@@ -68,6 +68,37 @@ fn should_judge_odd = []() {
     Assertions::assertFalse(res3);
 };
 
+fn should_left_shift = []() {
+    // Given
+    math::BigInteger bi = "123456789012345678901234567890"_cs;
+
+    // When
+    auto res = bi.left_shift(10);
+    auto res2 = bi.left_shift(0);
+
+    // Then
+    Assertions::assertEquals("1234567890123456789012345678900000000000"_cs, res.__str__());
+    Assertions::assertEquals("123456789012345678901234567890"_cs, res2.__str__());
+};
+
+fn should_right_shift = []() {
+    // Given
+    math::BigInteger bi = "123456789012345678901234567890";
+    math::BigInteger bi2 = "-123456789012345678901234567890";
+
+    // When
+    auto res = bi.right_shift(10);
+    auto res2 = bi.right_shift(30);
+    auto res3 = bi.right_shift(31);
+    auto res4 = bi2.right_shift(30);
+
+    // Then
+    Assertions::assertEquals("12345678901234567890"_cs, res.__str__());
+    Assertions::assertEquals(math::BigInteger::ZERO, res2);
+    Assertions::assertEquals(math::BigInteger::ZERO, res3);
+    Assertions::assertEquals(math::BigInteger::ZERO, res4);
+};
+
 fn should_add = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -183,10 +214,41 @@ fn should_power = []() {
     // When
     auto res = base ^ 10;
     auto res2 = base ^ 0;
+    auto res3 = base.pow(10);
+    auto res4 = base.pow(0);
 
     // Then
     Assertions::assertEquals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res.__str__());
     Assertions::assertEquals(math::BigInteger::ONE, res2);
+    Assertions::assertEquals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res3.__str__());
+    Assertions::assertEquals(math::BigInteger::ONE, res4);
+};
+
+fn should_slice = []() {
+    // Given
+    math::BigInteger bi = "123456789012345678901234567890";
+    math::BigInteger bi2 = "-123456789012345678901234567890";
+
+    // When
+    auto res = bi.slice(1, 1);
+    auto res2 = bi.slice(11, 20);
+    auto res3 = bi.slice(1);
+    auto res4 = bi.slice(11);
+
+    auto res5 = bi2.slice(1, 1);
+    auto res6 = bi2.slice(11, 20);
+    auto res7 = bi2.slice(1);
+    auto res8 = bi2.slice(11);
+
+    // Then
+    Assertions::assertEquals("0"_cs, res.__str__());
+    Assertions::assertEquals("1234567890"_cs, res2.__str__());
+    Assertions::assertEquals("123456789012345678901234567890"_cs, res3.__str__());
+    Assertions::assertEquals("12345678901234567890"_cs, res4.__str__());
+    Assertions::assertEquals("0"_cs, res5.__str__());
+    Assertions::assertEquals("-1234567890"_cs, res6.__str__());
+    Assertions::assertEquals("-123456789012345678901234567890"_cs, res7.__str__());
+    Assertions::assertEquals("-12345678901234567890"_cs, res8.__str__());
 };
 
 fn should_logical = []() {
@@ -239,12 +301,15 @@ fn test_big_integer() {
     group.addTest("should_construct_with_i64", should_construct_with_i64);
     group.addTest("should_construct_with_c_string", should_construct_with_c_string);
     group.addTest("should_judge_odd", should_judge_odd);
+    group.addTest("should_left_shift", should_left_shift);
+    group.addTest("should_right_shift", should_right_shift);
     group.addTest("should_add", should_add);
     group.addTest("should_subtract", should_subtract);
     group.addTest("should_multiply", should_multiply);
     group.addTest("should_divide", should_divide);
     group.addTest("should_modulus", should_modulus);
     group.addTest("should_power", should_power);
+    group.addTest("should_slice", should_slice);
     group.addTest("should_logical", should_logical);
     group.addTest("should_compare", should_compare);
 

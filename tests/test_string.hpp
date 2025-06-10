@@ -42,14 +42,14 @@ fn should_mul = []() {
     Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
 };
 
-fn should_split = []() {
+fn should_slice = []() {
     // Given
     util::String s = "abcdef";
 
     // When
-    auto res = s.split(1, 2);
-    auto res2 = s.split(3);
-    auto res3 = s.split(1, -1);
+    auto res = s.slice(1, 2);
+    auto res2 = s.slice(3);
+    auto res3 = s.slice(1, -1);
 
     // Then
     Assertions::assertEquals(1, res.size());
@@ -166,7 +166,7 @@ fn should_maintain_encoding = []() {
 
     // When
     util::String s2 = s;
-    util::String s3 = s2.split(0);
+    util::String s3 = s2.slice(0);
 
     // Then
     Assertions::assertEquals(s, s2);
@@ -179,7 +179,7 @@ fn should_maintain_encoding = []() {
     Assertions::assertEquals("你好世界"_s, s);
     Assertions::assertEquals("你a世界"_s, s2);
     Assertions::assertEquals("你a世界"_s, s3);
-    Assertions::assertEquals("你好世界"_s, s.split(0, s.size()));
+    Assertions::assertEquals("你好世界"_s, s.slice(0, s.size()));
 
     // When
     auto res = s.replace("你", "你们");
@@ -256,7 +256,7 @@ fn test_string() {
     group.addTest("should_construct", should_construct);
     group.addTest("should_add", should_add);
     group.addTest("should_mul", should_mul);
-    group.addTest("should_split", should_split);
+    group.addTest("should_slice", should_slice);
     group.addTest("should_find", should_find);
     group.addTest("should_find_all", should_find_all);
     group.addTest("should_judge_starts_with", should_judge_starts_with);

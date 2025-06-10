@@ -53,6 +53,7 @@
 #include "test_polygon.hpp"
 #include "test_huffman_tree.hpp"
 #include "test_creator_and_deleter.hpp"
+#include "test_big_decimal.hpp"
 #else
 #include "test_speed.hpp"
 #endif
@@ -104,6 +105,7 @@ int main() {
     test_polygon::test_polygon();
     test_huffman_tree::test_huffman_tree();
     test_creator_and_deleter::test_creator_and_deleter();
+    test_big_decimal::test_big_decimal();
 #else
     test_speed();
 #endif

@@ -313,6 +313,33 @@ public:
     }
 
     /**
+     * @brief 向量切片 TODO 新增 VecView 类
+     * @param start 起始索引
+     * @param end 结束索引（不包含）
+     * @return 子数组
+     */
+    Self slice(usize start, isize end) const {
+        auto m_size = size();
+        start = neg_index(start, m_size);
+        end = neg_index(end, static_cast<isize>(m_size));
+        Self ans(end - start);
+        usize pos = 0;
+        for (usize i = start; i < end; ++i) {
+            ans.at(pos++) = at(i);
+        }
+        return ans;
+    }
+
+    /**
+     * @brief 向量切片，返回从指定索引开始到末尾的子数组
+     * @param start 起始索引
+     * @return 子数组
+     */
+    Self slice(usize start) const {
+        return slice(start, size());
+    }
+
+    /**
      * @brief 将一个可迭代对象追加到动态数组末尾
      * @tparam I 可迭代对象的类型
      * @param other 可迭代对象，其元素将被追加到动态数组末尾
@@ -434,11 +461,11 @@ public:
     public:
         using iterator_category = std::random_access_iterator_tag;
         using container_t = std::conditional_t<IsConst, const Vec<value_t>, Vec<value_t>>;
-        using value_type = std::conditional_t<IsConst, const value_t, value_t>;
+        using value_type = value_t;
         using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
+        using pointer = std::conditional_t<IsConst, const value_t*, value_t*>;
         using const_pointer = const value_type*;
-        using reference = value_type&;
+        using reference = std::conditional_t<IsConst, const value_t&, value_t&>;
         using const_reference = const value_type&;
 
         /**

@@ -77,13 +77,37 @@ fn mul(const T& a, const T& b, T p = MOD)->T {
 }
 
 /**
+ * @brief 计算 a^n
+ */
+template <IntegerType T>
+fn pow(T a, T n)->T {
+    T res{1};
+    for(; n; n >>= 1, a *= a) {
+        if(n & 1) {
+            res *= a;
+        }
+    }
+    return res;
+}
+
+template <IntegerType T>
+fn pow2(T n) -> T {
+    return pow(T(2), n);
+}
+
+template <IntegerType T>
+fn pow10(T n) -> T {
+    return pow(T(10), n);
+}
+
+/**
  * @brief 计算 (a^n) % p
  */
 template <IntegerType T>
-fn pow(T a, T n, T p = MOD)->T {
+fn pow_mod(T a, T n, T p = MOD)->T {
     T res{1};
-    for (; n; n /= 2, a = mul(a, a, p)) {
-        if (n % 2) {
+    for (; n; n >>= 1, a = mul(a, a, p)) {
+        if (n & 1) {
             res = mul(res, a, p);
         }
     }

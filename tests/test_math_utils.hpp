@@ -63,8 +63,8 @@ fn should_cal_pow = []() {
     i32 a = 2, n = 10, n2 = 0;
 
     // When
-    i32 res = math::pow(a, n);
-    i32 res2 = math::pow(a, n2);
+    i32 res = math::pow_mod(a, n);
+    i32 res2 = math::pow_mod(a, n2);
 
     // Then
     Assertions::assertEquals(1024, res);

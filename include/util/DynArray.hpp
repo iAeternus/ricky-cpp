@@ -420,11 +420,11 @@ public:
 
         using container_t = std::conditional_t<IsConst, const DynArray<value_t>, DynArray<value_t>>;
         using iterator_category = std::random_access_iterator_tag;
-        using value_type = std::conditional_t<IsConst, const value_t, value_t>;
+        using value_type = value_t;
         using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
+        using pointer = std::conditional_t<IsConst, const value_t*, value_t*>;
         using const_pointer = const value_type*;
-        using reference = value_type&;
+        using reference = std::conditional_t<IsConst, const value_t&, value_t&>;
         using const_reference = const value_type&;
 
         /**
