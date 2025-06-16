@@ -184,11 +184,13 @@ fn should_divide = []() {
 
     // When
     auto res = bi2 / bi;
+    auto res2 = bi / math::BigInteger::TEN.pow(27);
     bi /= bi2;
     bi2 /= 2;
 
     // Then
     Assertions::assertEquals("8"_cs, res.__str__());
+    Assertions::assertEquals("123"_cs, res2.__str__());
     Assertions::assertEquals(math::BigInteger::ZERO, bi);
     Assertions::assertEquals("493827160549382716054938271605"_cs, bi2.__str__());
 };

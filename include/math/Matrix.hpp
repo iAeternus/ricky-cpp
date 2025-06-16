@@ -406,7 +406,7 @@ public:
      */
     Self inv() const {
         if (!is_sqr()) {
-            ValueError("Only square matrices are LU decomposition.");
+            ValueError("Only square matrices have inverse matrices.");
             std::unreachable();
         }
 
