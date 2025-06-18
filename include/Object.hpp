@@ -45,7 +45,7 @@ public:
     }
 
     /**
-     * @brief 转换为 字符串 类型
+     * @brief 转换为`字符串`类型
      */
     [[nodiscard]] CString __str__() const {
         std::string type_name = dtype(D);

@@ -35,7 +35,7 @@ public:
         return cols_;
     }
 
-    typename Matrix<value_t>::ConstRowProxy operator[](usize i) const {
+    typename Matrix<value_t>::ConstRowView operator[](usize i) const {
         return ref_[row_begin_ + i];
     }
 
@@ -89,9 +89,12 @@ public:
     using Self = Matrix<value_t>;
 
 public:
-    class RowProxy {
+    /**
+     * @brief 行视图
+     */
+    class RowView {
     public:
-        RowProxy(util::Vec<value_t>& data, usize start_col, usize cols) :
+        RowView(util::Vec<value_t>& data, usize start_col, usize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         value_t& operator[](usize j) {
@@ -108,9 +111,12 @@ public:
         usize cols_;
     };
 
-    class ConstRowProxy {
+    /**
+     * @brief 行视图，常量版本
+     */
+    class ConstRowView {
     public:
-        ConstRowProxy(const util::Vec<value_t>& data, usize start_col, usize cols) :
+        ConstRowView(const util::Vec<value_t>& data, usize start_col, usize cols) :
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         const value_t& operator[](usize j) const {
@@ -206,20 +212,20 @@ public:
         return at_impl(i, j);
     }
 
-    RowProxy operator[](usize i) {
+    RowView operator[](usize i) {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
             std::unreachable();
         }
-        return RowProxy{data_, i * cols_, cols_};
+        return RowView{data_, i * cols_, cols_};
     }
 
-    ConstRowProxy operator[](usize i) const {
+    ConstRowView operator[](usize i) const {
         if (i < 0 || i >= rows_) {
             ValueError(std::format("Row index[{}] out of range", i));
             std::unreachable();
         }
-        return ConstRowProxy{data_, i * cols_, cols_};
+        return ConstRowView{data_, i * cols_, cols_};
     }
 
     /**

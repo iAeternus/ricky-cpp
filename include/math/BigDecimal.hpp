@@ -12,6 +12,7 @@
 #include "CString.hpp"
 #include "raise_error.hpp"
 #include "Pair.hpp"
+#include <stdexcept>
 
 namespace my::math {
 
@@ -27,13 +28,17 @@ enum RoundingMode {
     HALF_UP  // 四舍五入（>=5向上舍入，<5向下舍入）
 };
 
+/**
+ * @brief 高精度十进制数
+ */
 class BigDecimal : public Object<BigDecimal> {
 public:
     using Self = BigDecimal;
 
-    static const BigDecimal ZERO;
-    static const BigDecimal ONE;
-    static const BigDecimal TEN;
+    static const Self ZERO;
+    static const Self ONE;
+    static const Self TWO;
+    static const Self TEN;
 
     BigDecimal(i32 val = 0) {
         *this = i64(val);
@@ -180,27 +185,27 @@ public:
             return ZERO;
         }
 
-        u32 current_prec = this->precision();
+        auto current_prec = this->precision();
         if (precision >= current_prec) {
             return *this;
         }
 
         // 计算需要移除的位数
-        u32 roundingPos = current_prec - precision;
-        BigInteger divisor = BigInteger(10).pow(roundingPos);
+        auto rounding_pos = current_prec - precision;
+        auto divisor = BigInteger::ONE.left_shift(rounding_pos);
 
         // 取绝对值处理
-        BigInteger abs_unscaled = unscaled_value_.abs();
+        auto abs_unscaled = unscaled_value_.abs();
         auto [quotient, remainder] = abs_unscaled.div_rem(divisor);
 
         // 应用舍入
-        BigInteger rounded_quotient = apply_rounding(quotient, mode, remainder, divisor);
+        auto rounded_quotient = apply_rounding(quotient, mode, remainder, divisor);
 
         // 恢复符号并构造新值
         if (unscaled_value_.is_neg()) {
             rounded_quotient = -rounded_quotient;
         }
-        BigInteger new_unscaled = rounded_quotient * divisor;
+        auto new_unscaled = rounded_quotient * divisor;
 
         return Self(new_unscaled, scale_);
     }
@@ -238,7 +243,7 @@ public:
 
     Self operator-() const {
         Self ans{*this};
-        if (ans != 0) {
+        if (!ans.is_zero()) {
             ans.unscaled_value_ = -ans.unscaled_value_;
         }
         return ans;
@@ -357,33 +362,30 @@ public:
      * @return 平方根结果
      */
     Self sqrt(u32 precision = 10) const {
-        if (is_neg())
-            RuntimeError("Cannot calculate square root of negative number");
-        if (is_zero())
-            return ZERO.scale(precision, HALF_UP);
+        if (is_neg()) throw std::runtime_error("Cannot calculate square root of negative number");
+        if (is_zero()) return ZERO.scale(precision, HALF_UP);
 
         // 初始估计值（保持足够精度）
-        Self x = *this * Self(10).pow(precision * 2);
+        Self x = *this * TEN.pow(precision << 1);
         Self last;
-        Self two(2);
-        u32 calc_precision = precision * 2; // 计算时使用双倍精度
+        u32 calc_precision = precision << 1; // 计算时使用双倍精度
 
         do {
             last = x;
-            x = (x + *this / x) / two;
+            x = (x + *this / x) / TWO;
             x = x.scale(calc_precision, HALF_UP);
         } while (last != x);
 
         return x.scale(precision, HALF_UP);
     }
 
-    friend bool operator==(const Self& a, const Self& b) {
-        return a.__equals__(b);
-    }
+    // friend bool operator==(const Self& a, const Self& b) {
+    //     return a.__equals__(b);
+    // }
 
-    friend bool operator!=(const Self& a, const Self& b) {
-        return !a.__equals__(b);
-    }
+    // friend bool operator!=(const Self& a, const Self& b) {
+    //     return !a.__equals__(b);
+    // }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         // 比较零值
@@ -434,7 +436,7 @@ public:
     }
 
     /**
-     * @brief 小数点左移
+     * @brief 小数点左移，相当于除以10^n
      * @param n 左移位数
      * @return 移动后的新BigDecimal对象
      */
@@ -444,7 +446,7 @@ public:
     }
 
     /**
-     * @brief 小数点右移
+     * @brief 小数点右移，相当于乘10^n
      * @param n 右移位数
      * @return 移动后的新BigDecimal对象
      */
@@ -607,6 +609,7 @@ private:
 
 inline const BigDecimal BigDecimal::ZERO{0};
 inline const BigDecimal BigDecimal::ONE{1};
+inline const BigDecimal BigDecimal::TWO{2};
 inline const BigDecimal BigDecimal::TEN{10};
 
 } // namespace my::math

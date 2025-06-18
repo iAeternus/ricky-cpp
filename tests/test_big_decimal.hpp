@@ -184,14 +184,9 @@ fn test_sqrt = []() {
     Assertions::assertEquals("1.41421356237309504880"_cs, bd.sqrt(20).__str__());
     
     // 测试负数
-    bool caught = false;
-    try {
-        math::BigDecimal neg_bd("-1");
-        neg_bd.sqrt();
-    } catch (...) {
-        caught = true;
-    }
-    Assertions::assertTrue(caught);
+    Assertions::assertThrows("Cannot calculate square root of negative number", []() {
+        math::BigDecimal(-1).sqrt();
+    });
 };
 
 fn test_precision = []() {

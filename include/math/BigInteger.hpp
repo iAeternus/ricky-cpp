@@ -480,14 +480,6 @@ public:
         return Pair{*this / other, *this % other};
     }
 
-    friend bool operator==(const Self& a, const Self& b) {
-        return a.__equals__(b);
-    }
-
-    friend bool operator!=(const Self& a, const Self& b) {
-        return !a.__equals__(b);
-    }
-
     friend bool operator||(const BigInteger& a, const BigInteger& b) {
         return a != ZERO || b != ZERO;
     }
