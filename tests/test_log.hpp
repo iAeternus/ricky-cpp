@@ -10,7 +10,7 @@ namespace my::test::test_log {
 using namespace my::io;
 
 fn it_works = []() {
-    Log::setLevel(io::Log::LogLevel::INFO_);
+    Log::set_level(io::Log::LogLevel::INFO_);
     Log::trace("This is a trace log.");
     Log::debug("This is a debug log.");
     Log::info("This is an info log.");
@@ -20,8 +20,8 @@ fn it_works = []() {
 
     io::println("-----------------------------");
 
-    Log::setLevel(io::Log::LogLevel::INFO_);
-    Log::addHandler(io::Log::LogHandler(io::Log::LogLevel::FATAL_, stdout, false));
+    Log::set_level(io::Log::LogLevel::INFO_);
+    Log::add_handler(io::Log::LogHandler(io::Log::LogLevel::FATAL_, stdout, false));
     Log::trace("This is a trace log.");
     Log::debug("This is a debug log.");
     Log::info("This is an info log.");

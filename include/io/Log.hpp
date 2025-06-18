@@ -15,9 +15,9 @@
 namespace my::io {
 
 class Log : public Object<Log> {
+public:
     using Self = Log;
 
-public:
     /**
      * @brief 日志级别
      */
@@ -30,11 +30,8 @@ public:
         static constexpr i32 FATAL_ = 5;
         static constexpr i32 INACTIVE_ = I32_MAX;
 
-        static constexpr const char* LEVEL_NAMES[] = {
-            "TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-
-        static constexpr const char* LEVEL_COLORS[] = {
-            Color::AQUA, Color::DEEPGREEN, Color::GREEN, Color::YELLOW, Color::RED, Color::PURPLE};
+        static constexpr const char* LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
+        static constexpr const char* LEVEL_COLORS[] = {Color::AQUA, Color::DEEPGREEN, Color::GREEN, Color::YELLOW, Color::RED, Color::PURPLE};
     };
 
     /**
@@ -44,22 +41,22 @@ public:
     class LogHandler : public Object<LogHandler> {
     public:
         constexpr LogHandler(i32 level = LogLevel::INACTIVE_, FILE* output = nullptr, bool enable_color = true) :
-                level_(level), output_(output), enableColor_(enable_color) {}
+                level_(level), output_(output), enable_color_(enable_color) {}
 
-        i32 level_;        // 日志等级
-        FILE* output_;     // 指向输出文件的指针
-        bool enableColor_; // 是否允许颜色打印
+        i32 level_;         // 日志等级
+        FILE* output_;      // 指向输出文件的指针
+        bool enable_color_; // 是否允许颜色打印
     };
 
     /**
      * @brief 添加日志配置
      */
-    static void addHandler(const LogHandler& handler) {
+    static void add_handler(const LogHandler& handler) {
         std::lock_guard<std::mutex> lock(mutex_);
         try {
             handlers_.append(handler);
-            if (handler.level_ < minLevel_) {
-                minLevel_ = handler.level_;
+            if (handler.level_ < min_level_) {
+                min_level_ = handler.level_;
             }
         } catch (...) {
             fprintf(stderr, "[ERROR] Failed to add log handler\n");
@@ -69,9 +66,9 @@ public:
     /**
      * @brief 设置最低日志级别
      */
-    static void setLevel(i32 level) {
+    static void set_level(i32 level) {
         std::lock_guard<std::mutex> lock(mutex_);
-        minLevel_ = level;
+        min_level_ = level;
     }
 
     template <ConvertibleToCstr Str>
@@ -107,23 +104,23 @@ public:
 private:
     static std::mutex mutex_;
     static util::DynArray<LogHandler> handlers_;
-    static i32 minLevel_;
+    static i32 min_level_;
 
     template <ConvertibleToCstr Str>
-    static void log_impl(const Str msg, i32 level, std::source_location loc = std::source_location::current(), util::DateTime dateTime = util::DateTime::now()) {
-        if (level < minLevel_) return;
+    static void log_impl(const Str msg, i32 level, std::source_location loc = std::source_location::current(), util::DateTime date_time = util::DateTime::now()) {
+        if (level < min_level_) return;
 
         // 获取当前配置快照
-        util::DynArray<LogHandler> localHandlers;
+        util::DynArray<LogHandler> local_handlers;
         {
             std::lock_guard<std::mutex> lock(mutex_);
-            localHandlers = handlers_;
+            local_handlers = handlers_;
         }
 
         // 通知所有级别等于给定级别的处理器打印日志
-        for (const auto& handler : localHandlers) {
+        for (const auto& handler : local_handlers) {
             if (handler.level_ == level) {
-                print_LogHandler(handler, msg, dateTime, get_basename(loc.file_name()), loc.line());
+                print_log_handler(handler, msg, date_time, get_basename(loc.file_name()), loc.line());
             }
         }
     }
@@ -134,13 +131,13 @@ private:
         return slash ? slash + 1 : path;
     }
 
-    static void print_LogHandler(const LogHandler& evt, const char* msg, const util::DateTime& dateTime, const char* fileName, i32 line) {
+    static void print_log_handler(const LogHandler& evt, const char* msg, const util::DateTime& date_time, const char* file_name, i32 line) {
         fprintf(evt.output_, "%s %s%-5s%s %s:%d ",
-                dateTime.__str__().data(),
-                evt.enableColor_ ? LogLevel::LEVEL_COLORS[evt.level_] : Color::CLOSE,
+                date_time.__str__().data(),
+                evt.enable_color_ ? LogLevel::LEVEL_COLORS[evt.level_] : Color::CLOSE,
                 LogLevel::LEVEL_NAMES[evt.level_],
                 Color::CLOSE,
-                fileName, line);
+                file_name, line);
         fprintf(evt.output_, "%s", msg);
         fprintf(evt.output_, "\n");
         fflush(evt.output_);
@@ -156,7 +153,7 @@ inline util::DynArray<Log::LogHandler> Log::handlers_{
     Log::LogHandler(Log::LogLevel::ERROR_, stdout),
     Log::LogHandler(Log::LogLevel::FATAL_, stdout),
 };
-inline i32 Log::minLevel_ = Log::LogLevel::INFO_;
+inline i32 Log::min_level_ = Log::LogLevel::INFO_;
 
 } // namespace my::io
 

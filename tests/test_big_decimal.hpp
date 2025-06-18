@@ -1,7 +1,6 @@
 #ifndef TEST_BIG_DECIMAL_HPP
 #define TEST_BIG_DECIMAL_HPP
 
-#include "Printer.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "BigDecimal.hpp"
