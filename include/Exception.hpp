@@ -44,7 +44,6 @@ enum class ExceptionType {
     // 计算
     ArithmeticException,
     OverflowException,
-    DivisionByZero,
     // 状态
     StateException,
     UninitializedException,
@@ -116,12 +115,14 @@ public:
             {ExceptionType::ValueException, "ValueException"},
             {ExceptionType::TypeException, "TypeException"},
             {ExceptionType::ArgumentException, "ArgumentException"},
+            {ExceptionType::NullPointerException, "NullPointerException"},
+            {ExceptionType::NotFoundException, "NotFoundException"},
+            {ExceptionType::IndexOutOfBoundsException, "IndexOutOfBoundsException"},
             {ExceptionType::ResourceException, "ResourceException"},
             {ExceptionType::IOException, "IOException"},
             {ExceptionType::MemoryException, "MemoryException"},
             {ExceptionType::ArithmeticException, "ArithmeticException"},
             {ExceptionType::OverflowException, "OverflowException"},
-            {ExceptionType::DivisionByZero, "DivisionByZero"},
             {ExceptionType::StateException, "StateException"},
             {ExceptionType::UninitializedException, "UninitializedException"},
             {ExceptionType::SystemException, "SystemException"},
