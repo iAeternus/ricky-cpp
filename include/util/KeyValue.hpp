@@ -7,6 +7,7 @@
 #ifndef KEY_VALUE_HPP
 #define KEY_VALUE_HPP
 
+#include "Exception.hpp"
 #include "Object.hpp"
 
 namespace my::util {
@@ -36,14 +37,14 @@ public:
 
     const key_t& key() const {
         if (key_ == nullptr) {
-            KeyError("key is null");
+            null_pointer_exception("key is null");
         }
         return *key_;
     }
 
     const value_t& value() const {
         if (value_ == nullptr) {
-            ValueError("value is null");
+            null_pointer_exception("value is null");
         }
         return *value_;
     }

@@ -10,7 +10,7 @@
 
 #include "BigInteger.hpp"
 #include "CString.hpp"
-#include "raise_error.hpp"
+#include "Exception.hpp"
 #include "Pair.hpp"
 #include <stdexcept>
 
@@ -362,7 +362,7 @@ public:
      * @return 平方根结果
      */
     Self sqrt(u32 precision = 10) const {
-        if (is_neg()) throw std::runtime_error("Cannot calculate square root of negative number");
+        if (is_neg()) my::arithmetic_exception("Cannot calculate square root of negative number");
         if (is_zero()) return ZERO.scale(precision, HALF_UP);
 
         // 初始估计值（保持足够精度）

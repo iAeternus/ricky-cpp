@@ -8,7 +8,6 @@
 #define PRINTER_HPP
 
 #include "Object.hpp"
-#include "ricky_concepts.hpp"
 
 namespace my::io {
 

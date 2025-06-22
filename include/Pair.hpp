@@ -7,9 +7,7 @@
 #ifndef PAIR_HPP
 #define PAIR_HPP
 
-#include "Object.hpp"
-#include "raise_error.hpp"
-#include "ricky_concepts.hpp"
+#include "Exception.hpp"
 
 #include <tuple>
 
@@ -100,7 +98,7 @@ public:
             if (cmp != 0) return cmp;
             return second_ - other.second_;
         } else {
-            RuntimeError("The comparison logic has not been implemented.");
+            runtime_exception("The comparison logic has not been implemented.");
         }
     }
 

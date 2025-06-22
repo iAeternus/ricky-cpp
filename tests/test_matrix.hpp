@@ -173,6 +173,21 @@ fn should_lu_decomposition = []() {
     Assertions::assertEquals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.__str__());
 };
 
+fn test_matrix_view = []() {
+    // Given
+    math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+
+    // When
+    auto v = m.sub_mat(1, 1, 2, 2);
+    auto v2 = v.sub_view(1, 1, 1, 1);
+
+    // Then
+    Assertions::assertEquals("[[5,6],[8,9]]"_cs, v.__str__());
+    Assertions::assertEquals("[[9]]"_cs, v2.__str__());
+    Assertions::assertEquals(8, v.at(1, 0));
+    Assertions::assertEquals(8, v.at_abs(2, 1));
+};
+
 fn test_matrix() {
     UnitTestGroup group{"test_matrix"};
 
@@ -189,6 +204,7 @@ fn test_matrix() {
     group.addTest("should_calculate_det", should_calculate_det);
     group.addTest("should_calculate_rank", should_calculate_rank);
     group.addTest("should_lu_decomposition", should_lu_decomposition);
+    group.addTest("test_matrix_view", test_matrix_view);
 
     group.startAll();
 }

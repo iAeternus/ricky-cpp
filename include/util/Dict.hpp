@@ -7,11 +7,13 @@
 #ifndef DICT_HPP
 #define DICT_HPP
 
+#include "Exception.hpp"
 #include "binary_utils.hpp"
 #include "DynArray.hpp"
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "Pair.hpp"
+#include <source_location>
 
 namespace my::util {
 
@@ -159,7 +161,7 @@ public:
 
     /**
      * @brief 获取指定键对应的值。
-     * 如果键不存在，抛出 KeyError 异常。
+     * 如果键不存在，抛出 not_found_exception
      * @param key 键。
      * @return 返回对应值的引用。
      */
@@ -167,30 +169,28 @@ public:
         auto hash_val = my_hash(key);
         auto* value = get_impl(hash_val);
         if (value == nullptr) {
-            KeyError(std::format("Key '{}' not found in dict", key));
-            std::unreachable();
+            not_found_exception("key '{}' not found in dict", SRC_LOC, key);
         }
         return *value;
     }
 
     /**
      * @brief 获取指定键对应的值（常量版本）。
-     * 如果键不存在，抛出 KeyError 异常。
+     * 如果键不存在，抛出 not_found_exception
      * @param key 键。
      * @return 返回对应值的常量引用。
      */
     const value_t& get(const key_t& key) const {
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
-            KeyError(std::format("Key '{}' not found in dict", key));
-            std::unreachable();
+            not_found_exception("key '{}' not found in dict", SRC_LOC, key);
         }
         return *value;
     }
 
     /**
      * @brief 重载 [] 运算符，返回指定键对应的值。
-     * 如果键不存在，抛出 KeyError 异常。
+     * 如果键不存在，抛出 not_found_exception
      * @param key 键。
      * @return 返回对应值的常量引用。
      */

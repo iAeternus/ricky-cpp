@@ -1,6 +1,7 @@
 #ifndef TEST_THREAD_POOL_HPP
 #define TEST_THREAD_POOL_HPP
 
+#include "Exception.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "ThreadPool.hpp"
@@ -13,7 +14,7 @@ fn add = [](i32 a, i32 b) {
 };
 
 fn throw_exception = []() {
-    throw std::runtime_error("wa");
+    my::runtime_exception("wa");
 };
 
 fn should_push = []() {
@@ -47,7 +48,7 @@ fn should_push_tasks_with_exception = []() {
     // When
     auto future = tp.push(throw_exception);
     auto future2 = tp.push([]() {
-        throw std::runtime_error("wa2");
+        my::runtime_exception("wa2");
     });
 
     // Then

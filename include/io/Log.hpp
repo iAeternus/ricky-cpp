@@ -155,6 +155,10 @@ inline util::DynArray<Log::LogHandler> Log::handlers_{
 };
 inline i32 Log::min_level_ = Log::LogLevel::INFO_;
 
+fn log_exception(const char* msg)->void {
+    io::Log::error(msg);
+}
+
 } // namespace my::io
 
 #endif // LOG_HPP

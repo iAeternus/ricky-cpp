@@ -1,7 +1,5 @@
-// #include "ricky_lib.hpp"
-
-// using namespace my;
+#include "Printer.hpp"
 
 int main() {
-    // io::println("Hello, World!");
+    my::io::println(__cplusplus);
 }

@@ -8,12 +8,7 @@
 #define ASSERTIONS_HPP
 
 #include "math_utils.hpp"
-#include "CString.hpp"
-#include "Object.hpp"
-#include "Function.hpp"
-
-#include <stdexcept>
-#include <type_traits>
+#include "Exception.hpp"
 
 namespace my::test {
 
@@ -99,9 +94,9 @@ public:
         try {
             func();
             fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
-        } catch (const std::exception& ex) {
-            if (expectedMessage != ex.what()) {
-                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.what()));
+        } catch (const Exception& ex) {
+            if (expectedMessage != ex.message()) {
+                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.message()));
             }
         } catch (...) {
             fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage));
@@ -112,9 +107,9 @@ public:
         try {
             func();
             fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
-        } catch (const std::exception& ex) {
-            if (std::strcmp(expectedMessage, ex.what())) {
-                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.what()));
+        } catch (const Exception& ex) {
+            if (std::strcmp(expectedMessage, ex.message())) {
+                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.message()));
             }
         } catch (...) {
             fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage));

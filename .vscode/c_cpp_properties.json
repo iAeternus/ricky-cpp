@@ -11,7 +11,7 @@
                 "_UNICODE"
             ],
             "intelliSenseMode": "windows-gcc-x64",
-            "compilerPath": "F:\\application\\develop\\gcc\\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev0\\mingw64\\bin\\g++.exe",
+            "compilerPath": "F:\\application\\develop\\LLVM\\bin\\clang++.exe",
             "cStandard": "c23",
             "cppStandard": "c++23",
             "configurationProvider": "ms-vscode.cmake-tools"

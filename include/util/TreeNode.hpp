@@ -8,6 +8,7 @@
 #define TREE_NODE_HPP
 
 #include "DynArray.hpp"
+#include "Exception.hpp"
 #include "KeyValue.hpp"
 #include "Function.hpp"
 
@@ -273,8 +274,7 @@ public:
         } else if constexpr (Subtractble<key_t>) {
             return this->key_ - other.key_;
         } else {
-            KeyError(std::format("Key type[{}] is not sortable", dtype(key_t)));
-            std::unreachable();
+            type_exception("key type[{}] is not sortable", SRC_LOC, dtype(key_t));
         }
     }
 

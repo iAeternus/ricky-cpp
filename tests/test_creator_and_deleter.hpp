@@ -1,6 +1,7 @@
 #ifndef TEST_CREATOR_AND_DELETER_HPP
 #define TEST_CREATOR_AND_DELETER_HPP
 
+#include "Exception.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "Creator.hpp"
@@ -43,7 +44,7 @@ class ExceptionProne : public Object<ExceptionProne> {
 public:
     explicit ExceptionProne(bool should_throw) {
         if (should_throw) {
-            throw std::runtime_error("Construction failed");
+            my::runtime_exception("Construction failed");
         }
     }
 };

@@ -39,8 +39,25 @@ public:
         return ref_[row_begin_ + i];
     }
 
+    /**
+     * @brief 相对下标访问
+     */
     value_t at(usize i, usize j) const {
         return ref_.at(row_begin_ + i, col_begin_ + j);
+    }
+
+    /**
+     * @brief 绝对下标访问
+     */
+    value_t at_abs(usize i, usize j) const {
+        return ref_.at(i, j);
+    }
+
+    /**
+     * @brief 视图的子视图，行列从0开始均为闭区间
+     */
+    Self sub_view(usize i1, usize j1, usize i2, usize j2) const {
+        return Self{ref_, row_begin_ + i1, col_begin_ + j1, i2 - i1 + 1, j2 - j1 + 1};
     }
 
     Matrix<value_t> to_matrix() const {
@@ -164,6 +181,12 @@ public:
         }
     }
 
+    Matrix(const Self& other) = default;
+    Matrix(Self&& other) noexcept = default;
+
+    Self& operator=(const Self& other) = default;
+    Self& operator=(Self& other) = default;
+
     usize rows() const {
         return rows_;
     }
@@ -229,10 +252,10 @@ public:
     }
 
     /**
-     * @brief 获取当前矩阵的子矩阵，行列均为闭区间
+     * @brief 获取当前矩阵的子矩阵，行列从0开始均为闭区间
      */
     MatrixView<value_t> sub_mat(usize i1, usize j1, usize i2, usize j2) const {
-        if (i1 > i2 || j1 > j2 || i1 < 0 || j1 < 0 || i2 >= rows_ || j2 >= cols_) {
+        if (i1 > i2 || j1 > j2 || i2 >= rows_ || j2 >= cols_) {
             ValueError(std::format("Cannot get submatrix [{}..{}] x [{}..{}] of a ({}x{}) matrix.",
                                    i1, i2, j1, j2, rows_, cols_));
             std::unreachable();

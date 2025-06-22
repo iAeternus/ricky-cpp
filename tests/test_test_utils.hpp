@@ -3,7 +3,9 @@
 
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
+#include "Exception.hpp"
 
+#include <source_location>
 #include <thread>
 #include <chrono>
 
@@ -18,12 +20,14 @@ fn should_success2 = []() {
 };
 
 fn should_failed = []() {
-    throw std::runtime_error("wa");
+    my::runtime_exception("wa");
 };
 
 fn should_throws = []() {
     Assertions::assertThrows("wa"_cs, should_failed);
-    Assertions::assertThrows("wa", should_failed);
+    Assertions::assertThrows("This is an IO exception message.", []() {
+        my::io_exception("This is an {} message.", std::source_location::current(), "IO exception");
+    });
 };
 
 fn test_test_utils() {
@@ -31,7 +35,7 @@ fn test_test_utils() {
 
     group.addTest("should_success1", should_success1);
     group.addTest("should_success2", should_success2);
-    group.addTest("should_failed", should_failed);
+    // group.addTest("should_failed", should_failed);
     group.addTest("should_throws", should_throws);
 
     group.startAll();

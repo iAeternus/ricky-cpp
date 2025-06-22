@@ -12,8 +12,6 @@
 #include "Buffer.hpp"
 #include "Array.hpp"
 
-#include <any>
-
 namespace my::util {
 
 /**

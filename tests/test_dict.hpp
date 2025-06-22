@@ -45,6 +45,16 @@ fn should_get_or_default = []() {
     Assertions::assertEquals(0, res3);
 };
 
+fn should_fail_to_get_if_key_not_found = []() {
+    // Given
+    util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}};
+
+    // When & Then
+    Assertions::assertThrows("key '6' not found in dict", [d]() {
+        d.get(6);
+    });
+};
+
 fn should_set_default = []() {
     // Given
     util::Dict<i32, i32> d;
@@ -113,6 +123,7 @@ fn test_dict() {
 
     group.addTest("should_insert", should_insert);
     group.addTest("should_get_or_default", should_get_or_default);
+    group.addTest("should_fail_to_get_if_key_not_found", should_fail_to_get_if_key_not_found);
     group.addTest("should_set_default", should_set_default);
     group.addTest("should_update", should_update);
     group.addTest("should_operator", should_operator);
