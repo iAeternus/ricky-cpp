@@ -11,6 +11,7 @@
 #include "DynArray.hpp"
 
 #include <mutex>
+#include <source_location>
 
 namespace my::io {
 
@@ -155,8 +156,8 @@ inline util::DynArray<Log::LogHandler> Log::handlers_{
 };
 inline i32 Log::min_level_ = Log::LogLevel::INFO_;
 
-fn log_exception(const char* msg)->void {
-    io::Log::error(msg);
+fn log_exception(const char* msg, std::source_location loc)->void {
+    io::Log::error(msg, loc);
 }
 
 } // namespace my::io

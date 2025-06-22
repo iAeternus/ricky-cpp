@@ -17,7 +17,7 @@
 // 前向声明
 namespace my::io {
 
-void log_exception(const char* msg);
+void log_exception(const char*, std::source_location);
 
 } // namespace my::io
 
@@ -67,8 +67,10 @@ public:
      * @param message 异常消息
      * @param loc 异常位置
      */
-    Exception(ExceptionType type, CString&& message, std::source_location loc = std::source_location::current()) :
-            type_(type), message_(std::move(message)), loc_(loc), formatted_message_(format_message()) {}
+    Exception(ExceptionType type, CString&& message,
+              std::source_location loc = std::source_location::current(),
+              std::exception_ptr nested = nullptr) :
+            type_(type), message_(std::move(message)), loc_(loc), nested_(nested), formatted_message_(format_message()) {}
 
     /**
      * @brief 获取异常信息
@@ -102,7 +104,7 @@ public:
      * @brief 记录异常到日志
      */
     void log() const {
-        io::log_exception(what());
+        io::log_exception(what(), loc_);
     }
 
     /**
@@ -137,14 +139,27 @@ public:
     }
 
 private:
-    CString format_message() const {
+    CString format_message() const noexcept {
         try {
-            return std::format("{} [{}:{} in {}]: {}",
-                               type_to_string(type_),
-                               loc_.file_name(),
-                               loc_.line(),
-                               loc_.function_name(),
-                               message_);
+            auto msg = std::format("{} [{}:{} in {}]: {}",
+                                   type_to_string(type_),
+                                   loc_.file_name(),
+                                   loc_.line(),
+                                   loc_.function_name(),
+                                   message_);
+            // 处理嵌套异常
+            if (nested_) {
+                try {
+                    std::rethrow_exception(nested_);
+                } catch (const std::exception& e) {
+                    msg += std::format("\n  Caused by: {}", e.what());
+                } catch (...) {
+                    msg += "\n  Caused by: unknown exception";
+                }
+            }
+            return CString(msg);
+        } catch (const std::bad_alloc&) {
+            return "Memory error in exception formatting";
         } catch (...) {
             // 格式失败时回退
             return CString("Exception formatting failed");
@@ -155,13 +170,16 @@ private:
     ExceptionType type_;
     CString message_;
     std::source_location loc_;
+    std::exception_ptr nested_; // 嵌套异常
     CString formatted_message_;
 };
+
+#define SRC_LOC std::source_location::current()
 
 /**
  * @brief 基本异常工厂
  */
-fn exception(ExceptionType type, CString&& message, std::source_location loc = std::source_location::current()) {
+fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) {
     throw Exception(type, std::move(message), loc);
 }
 
@@ -174,7 +192,7 @@ fn exception(ExceptionType type, std::string_view fmt, std::source_location loc,
 /**
  * @brief 条件检查
  */
-fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = std::source_location::current()) {
+fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) {
     if (!condition) {
         exception(type, std::move(message), loc);
     }
@@ -226,8 +244,6 @@ DEFINE_EXCEPTION_FACTORY(network, ExceptionType::NetworkException)              
 DEFINE_EXCEPTION_FACTORY(custom, ExceptionType::CustomException)                        // 自定义异常
 
 #undef DEFINE_EXCEPTION_FACTORY // 防止宏污染
-
-#define SRC_LOC std::source_location::current()
 
 } // namespace my
 
