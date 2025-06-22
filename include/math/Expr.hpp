@@ -310,7 +310,7 @@ private:
             return a * b;
         } else if (op == "/") {
             if (is_zero(b)) {
-                RuntimeError("Divide by zero");
+                arithmetic_exception("/ by zero");
             }
             return a / b;
         } else if (op == "%") {
@@ -318,8 +318,7 @@ private:
         } else if (op == "^") {
             return std::pow(a, b);
         } else {
-            ValueError(std::format("Unknown operator: {}", op));
-            std::unreachable();
+            runtime_exception("unknown operator: {}", SRC_LOC, op);
         }
     }
 
@@ -327,8 +326,7 @@ private:
         if (op == "u-") {
             return -x;
         } else {
-            ValueError(std::format("Unknown unary operator: {}", op));
-            std::unreachable();
+            runtime_exception("unknown unary operator: {}", SRC_LOC, op);
         }
     }
 

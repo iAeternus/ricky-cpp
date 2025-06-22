@@ -40,9 +40,9 @@ inline void error_exec(const T& msg, const STD source_location& loc = STD source
 
 #define Error(errorname, msg) error_exec(STD format("{}: {}", errorname, msg))
 
-#define KeyError(msg) Error("KeyError", msg)
+// #define KeyError(msg) Error("KeyError", msg)
 
-#define ValueError(msg) Error("ValueError", msg)
+// #define ValueError(msg) Error("ValueError", msg)
 
 #define TypeError(msg) Error("TypeError", msg)
 

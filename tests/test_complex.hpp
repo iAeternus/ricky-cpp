@@ -28,6 +28,12 @@ fn should_construct = []() {
     Assertions::assertEquals("i"_cs, c9.__str__());
 };
 
+fn should_fail_to_parse_if_invalid_format = []() {
+    Assertions::assertThrows("invalid complex number format", []() {
+        math::Complex c = "-1a + 2i";
+    });
+};
+
 fn should_calc_modulus = []() {
     // Given
     math::Complex a = "3 + 4i";
@@ -106,6 +112,7 @@ fn test_complex() {
     UnitTestGroup group{"test_complex"};
 
     group.addTest("should_construct", should_construct);
+    group.addTest("should_fail_to_parse_if_invalid_format", should_fail_to_parse_if_invalid_format);
     group.addTest("should_calc_modulus", should_calc_modulus);
     group.addTest("should_calc_arg", should_calc_arg);
     group.addTest("should_add", should_add);

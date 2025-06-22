@@ -7,6 +7,7 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
+#include "Exception.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 
@@ -116,8 +117,7 @@ public:
 
         value_t& operator[](usize j) {
             if (j < 0 || j >= cols_) {
-                ValueError("Column index out of range");
-                std::unreachable();
+                index_out_of_bounds_exception("column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
             }
             return data_[start_col_ + j];
         }
@@ -138,8 +138,7 @@ public:
 
         const value_t& operator[](usize j) const {
             if (j < 0 || j >= cols_) {
-                ValueError("Column index out of range");
-                std::unreachable();
+                index_out_of_bounds_exception("column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
             }
             return data_[start_col_ + j];
         }
@@ -153,15 +152,15 @@ public:
     Matrix(usize rows = 1, usize cols = 1, value_t value = 0.0) :
             rows_(rows), cols_(cols), data_(rows_ * cols_, value) {}
 
-    Matrix(usize n, value_t value = 0.0) :
-            rows_(n), cols_(n), data_(rows_ * cols_, value) {}
+    // Matrix(usize n, value_t value = 0.0) :
+    //         rows_(n), cols_(n), data_(rows_ * cols_, value) {}
 
     Matrix(std::initializer_list<std::initializer_list<value_t>>&& init_list) :
             rows_(init_list.size()), cols_(rows_ > 0 ? init_list.begin()->size() : 0), data_(rows_ * cols_) {
         size_t index = 0;
         for (auto&& row : init_list) {
             if (usize(row.size()) != cols_) {
-                ValueError("Inconsistent row sizes in initializer list");
+                argument_exception("inconsistent row sizes in initializer list");
             }
             for (auto&& item : row) {
                 data_.at(index++) = std::move(item);
@@ -213,16 +212,14 @@ public:
 
     value_t& at(usize i, usize j) {
         if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
-            ValueError(std::format("Index[{}, {}] out of range", i, j));
-            std::unreachable();
+            index_out_of_bounds_exception("index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
         }
         return at_impl(i, j);
     }
 
     const value_t& at(usize i, usize j) const {
         if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
-            ValueError(std::format("Index[{}, {}] out of range", i, j));
-            std::unreachable();
+            index_out_of_bounds_exception("index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
         }
         return at_impl(i, j);
     }
@@ -237,16 +234,14 @@ public:
 
     RowView operator[](usize i) {
         if (i < 0 || i >= rows_) {
-            ValueError(std::format("Row index[{}] out of range", i));
-            std::unreachable();
+            index_out_of_bounds_exception("row index {} out of range [0..{}]", SRC_LOC, i, rows_);
         }
         return RowView{data_, i * cols_, cols_};
     }
 
     ConstRowView operator[](usize i) const {
         if (i < 0 || i >= rows_) {
-            ValueError(std::format("Row index[{}] out of range", i));
-            std::unreachable();
+            index_out_of_bounds_exception("row index {} out of range [0..{}]", SRC_LOC, i, rows_);
         }
         return ConstRowView{data_, i * cols_, cols_};
     }
@@ -256,9 +251,8 @@ public:
      */
     MatrixView<value_t> sub_mat(usize i1, usize j1, usize i2, usize j2) const {
         if (i1 > i2 || j1 > j2 || i2 >= rows_ || j2 >= cols_) {
-            ValueError(std::format("Cannot get submatrix [{}..{}] x [{}..{}] of a ({}x{}) matrix.",
-                                   i1, i2, j1, j2, rows_, cols_));
-            std::unreachable();
+            arithmetic_exception("cannot get submatrix [{}..{}] x [{}..{}] of a ({}x{}) matrix.", SRC_LOC,
+                                 i1, i2, j1, j2, rows_, cols_);
         }
         return MatrixView<value_t>{*this, i1, j1, i2 - i1 + 1, j2 - j1 + 1};
     }
@@ -283,8 +277,8 @@ public:
 
     friend Self operator+(const Self& a, const Self& b) {
         if (!a.shape_equals(b)) {
-            ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
-            std::unreachable();
+            arithmetic_exception("cannot add a ({}x{}) matrix and a ({}x{}) matrix.", SRC_LOC,
+                                 a.rows_, a.cols_, b.rows_, b.cols_);
         }
         Self ans(a.rows_, a.cols_);
         usize size = ans.data_.size();
@@ -296,9 +290,8 @@ public:
 
     Self& operator+=(const Self& other) {
         if (!this->shape_equals(other)) {
-            ValueError(std::format("Cannot add a ({}x{}) matrix and a ({}x{}) matrix.",
-                                   this->rows_, this->cols_, other.rows_, other.cols_));
-            std::unreachable();
+            arithmetic_exception("cannot add a ({}x{}) matrix and a ({}x{}) matrix.", SRC_LOC,
+                                 this->rows_, this->cols_, other.rows_, other.cols_);
         }
         usize size = this->data_.size();
         for (usize i = 0; i < size; ++i) {
@@ -309,8 +302,8 @@ public:
 
     friend Self operator-(const Self& a, const Self& b) {
         if (!a.shape_equals(b)) {
-            ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.", a.rows_, a.cols_, b.rows_, b.cols_));
-            std::unreachable();
+            arithmetic_exception("cannot substract a ({}x{}) matrix and a ({}x{}) matrix.", SRC_LOC,
+                                 a.rows_, a.cols_, b.rows_, b.cols_);
         }
         Self ans(a.rows_, a.cols_);
         usize size = ans.data_.size();
@@ -322,9 +315,8 @@ public:
 
     Self& operator-=(const Self& other) {
         if (!this->shape_equals(other)) {
-            ValueError(std::format("Cannot substract a ({}x{}) matrix and a ({}x{}) matrix.",
-                                   this->rows_, this->cols_, other.rows_, other.cols_));
-            std::unreachable();
+            arithmetic_exception("cannot substract a ({}x{}) matrix and a ({}x{}) matrix.", SRC_LOC,
+                                 this->rows_, this->cols_, other.rows_, other.cols_);
         }
         usize size = this->data_.size();
         for (usize i = 0; i < size; ++i) {
@@ -335,8 +327,8 @@ public:
 
     friend Self operator*(const Self& a, const Self& b) {
         if (a.cols_ != b.rows_) {
-            ValueError("To be multiplied, the cols of matrix A must equals to the rows of matrix B.");
-            std::unreachable();
+            arithmetic_exception("cannot multiply a ({}x{}) matrix and a ({}x{}) matrix.", SRC_LOC,
+                                 a.rows_, a.cols_, b.rows_, b.cols_);
         }
         Self result(a.rows_, b.cols_);
         for (usize i = 0; i < a.rows_; ++i) {
@@ -360,9 +352,8 @@ public:
      */
     Self dot(const Self& other) const {
         if (!this->shape_equals(other)) {
-            ValueError(std::format("Cannot dot a ({}x{}) matrix and a ({}x{}) matrix.",
-                                   this->rows_, this->cols_, other.rows_, other.cols_));
-            std::unreachable();
+            arithmetic_exception("cannot dot a ({}x{}) matrix and a ({}x{}) matrix.", SRC_LOC,
+                                 this->rows_, this->cols_, other.rows_, other.cols_);
         }
         Self ans(this->rows_, this->cols_);
         usize size = ans.data_.size();
@@ -403,8 +394,7 @@ public:
     bool swap_row(usize i, usize j) {
         if (i == j) return false;
         if (i < 0 || i >= rows_ || j < 0 || j >= rows_) {
-            ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
-            std::unreachable();
+            index_out_of_bounds_exception("row index {} or {} out of range [0..{}]", SRC_LOC, i, j, rows_);
         }
         for (usize k = 0; k < cols_; ++k) {
             std::swap(at_impl(i, k), at_impl(j, k));
@@ -421,8 +411,7 @@ public:
     bool swap_col(usize i, usize j) {
         if (i == j) return false;
         if (i < 0 || i >= cols_ || j < 0 || j >= cols_) {
-            ValueError(std::format("Invalid line number [{}] or [{}]", i, j));
-            std::unreachable();
+            index_out_of_bounds_exception("column index {} or {} out of range [0..{}]", SRC_LOC, i, j, cols_);
         }
         for (usize k = 0; k < rows_; ++k) {
             std::swap(at_impl(k, i), at_impl(k, j));
@@ -435,8 +424,7 @@ public:
      */
     Self inv() const {
         if (!is_sqr()) {
-            ValueError("Only square matrices have inverse matrices.");
-            std::unreachable();
+            arithmetic_exception("only square matrices have inverse matrices.");
         }
 
         value_t p, d;
@@ -490,8 +478,7 @@ public:
      */
     value_t det() const {
         if (!is_sqr()) {
-            ValueError("Only square matrices are LU decomposition.");
-            std::unreachable();
+            arithmetic_exception("only square matrices can have their determinants calculated.");
         }
 
         value_t d, p;
@@ -565,8 +552,7 @@ public:
      */
     Pair<Self, Self> lu() const {
         if (!is_sqr()) {
-            ValueError("Only square matrices are LU decomposition.");
-            std::unreachable();
+            arithmetic_exception("only square matrices are LU decomposition.");
         }
 
         Self q = this->clone();
@@ -618,8 +604,7 @@ public:
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if (!this->shape_equals(other)) {
-            ValueError("Only matrices of the same dimension are comparable");
-            std::unreachable();
+            runtime_exception("only matrices of the same dimension are comparable");
         }
         usize size = this->data_.size();
         for (usize i = 0; i < size; ++i) {
@@ -646,7 +631,7 @@ private:
      */
     static void check_pivot(value_t pivot) {
         if (is_zero(pivot)) {
-            ValueError("Pivot entries cannot be 0.");
+            runtime_exception("pivot entries cannot be 0.");
         }
     }
 

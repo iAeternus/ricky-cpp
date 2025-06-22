@@ -28,10 +28,20 @@ fn should_parse = []() {
     io::println(jsonStr);
 };
 
+fn should_fail_to_parse_if_json_str_is_empty = []() {
+    // Given
+    util::String s = "   ";
+
+    Assertions::assertThrows("invalid simple parse: ", [&]() {
+        json::JsonParser::parse(s);
+    });
+};
+
 fn test_json_parser() {
     UnitTestGroup group{"test_json_parser"};
 
     group.addTest("should_parse", should_parse);
+    group.addTest("should_fail_to_parse_if_json_str_is_empty", should_fail_to_parse_if_json_str_is_empty);
 
     group.startAll();
 }

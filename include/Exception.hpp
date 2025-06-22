@@ -36,6 +36,7 @@ enum class ExceptionType {
     ArgumentException,
     NullPointerException,
     NotFoundException,
+    IndexOutOfBoundsException,
     // 资源
     ResourceException,
     IOException,
@@ -190,13 +191,13 @@ fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_l
  * @brief 异常工厂
  */
 #define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                     \
-    inline void NAME##_exception(                                                \
+    fn NAME##_exception(                                                         \
         CString&& message,                                                       \
         std::source_location loc = std::source_location::current()) {            \
         exception(TYPE, std::move(message), loc);                                \
     }                                                                            \
     template <typename... Args>                                                  \
-    inline void NAME##_exception(                                                \
+    fn NAME##_exception(                                                         \
         std::string_view fmt,                                                    \
         std::source_location loc,                                                \
         Args&&... args) {                                                        \
@@ -204,24 +205,24 @@ fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_l
         exception(TYPE, std::move(message), loc);                                \
     }
 
-DEFINE_EXCEPTION_FACTORY(runtime, ExceptionType::RuntimeException)             // 运行时异常
-DEFINE_EXCEPTION_FACTORY(logic, ExceptionType::LogicException)                 // 逻辑异常
-DEFINE_EXCEPTION_FACTORY(value, ExceptionType::ValueException)                 // 数值异常
-DEFINE_EXCEPTION_FACTORY(type, ExceptionType::TypeException)                   // 类型异常
-DEFINE_EXCEPTION_FACTORY(argument, ExceptionType::ArgumentException)           // 参数异常
-DEFINE_EXCEPTION_FACTORY(null_pointer, ExceptionType::NullPointerException)    // 空指针异常
-DEFINE_EXCEPTION_FACTORY(not_found, ExceptionType::NotFoundException)          // not_found异常
-DEFINE_EXCEPTION_FACTORY(resource, ExceptionType::ResourceException)           // 资源异常
-DEFINE_EXCEPTION_FACTORY(io, ExceptionType::IOException)                       // IO异常
-DEFINE_EXCEPTION_FACTORY(memory, ExceptionType::MemoryException)               // 内存异常
-DEFINE_EXCEPTION_FACTORY(arithmetic, ExceptionType::ArithmeticException)       // 算术异常
-DEFINE_EXCEPTION_FACTORY(overflow, ExceptionType::OverflowException)           // 溢出异常
-DEFINE_EXCEPTION_FACTORY(division_by_zero, ExceptionType::DivisionByZero)      // 除零异常
-DEFINE_EXCEPTION_FACTORY(state, ExceptionType::StateException)                 // 状态异常
-DEFINE_EXCEPTION_FACTORY(uninitialized, ExceptionType::UninitializedException) // 未初始化异常
-DEFINE_EXCEPTION_FACTORY(system, ExceptionType::SystemException)               // 系统异常
-DEFINE_EXCEPTION_FACTORY(network, ExceptionType::NetworkException)             // 网络异常
-DEFINE_EXCEPTION_FACTORY(custom, ExceptionType::CustomException)               // 自定义异常
+DEFINE_EXCEPTION_FACTORY(runtime, ExceptionType::RuntimeException)                      // 运行时异常
+DEFINE_EXCEPTION_FACTORY(logic, ExceptionType::LogicException)                          // 逻辑异常
+DEFINE_EXCEPTION_FACTORY(value, ExceptionType::ValueException)                          // 数值异常
+DEFINE_EXCEPTION_FACTORY(type, ExceptionType::TypeException)                            // 类型异常
+DEFINE_EXCEPTION_FACTORY(argument, ExceptionType::ArgumentException)                    // 参数异常
+DEFINE_EXCEPTION_FACTORY(null_pointer, ExceptionType::NullPointerException)             // 空指针异常
+DEFINE_EXCEPTION_FACTORY(not_found, ExceptionType::NotFoundException)                   // not_found异常
+DEFINE_EXCEPTION_FACTORY(index_out_of_bounds, ExceptionType::IndexOutOfBoundsException) // 下标越界异常
+DEFINE_EXCEPTION_FACTORY(resource, ExceptionType::ResourceException)                    // 资源异常
+DEFINE_EXCEPTION_FACTORY(io, ExceptionType::IOException)                                // IO异常
+DEFINE_EXCEPTION_FACTORY(memory, ExceptionType::MemoryException)                        // 内存异常
+DEFINE_EXCEPTION_FACTORY(arithmetic, ExceptionType::ArithmeticException)                // 算术异常
+DEFINE_EXCEPTION_FACTORY(overflow, ExceptionType::OverflowException)                    // 溢出异常
+DEFINE_EXCEPTION_FACTORY(state, ExceptionType::StateException)                          // 状态异常
+DEFINE_EXCEPTION_FACTORY(uninitialized, ExceptionType::UninitializedException)          // 未初始化异常
+DEFINE_EXCEPTION_FACTORY(system, ExceptionType::SystemException)                        // 系统异常
+DEFINE_EXCEPTION_FACTORY(network, ExceptionType::NetworkException)                      // 网络异常
+DEFINE_EXCEPTION_FACTORY(custom, ExceptionType::CustomException)                        // 自定义异常
 
 #undef DEFINE_EXCEPTION_FACTORY // 防止宏污染
 

@@ -7,6 +7,7 @@
 #ifndef JSON_HPP
 #define JSON_HPP
 
+#include "Exception.hpp"
 #include "json_trait.hpp"
 
 namespace my::json {
@@ -47,7 +48,7 @@ public:
             this->json_item_ = new JsonType::JsonNull(other.transform<JsonType::JsonNull>());
             break;
         default:
-            ValueError(std::format("json type {} is not valid", json_type_));
+            type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
     }
 
@@ -90,7 +91,7 @@ public:
             this->json_item_ = new JsonType::JsonNull(other.transform<JsonType::JsonNull>());
             break;
         default:
-            ValueError(std::format("json type {} is not valid", json_type_));
+            type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
         return *this;
     }
@@ -137,8 +138,8 @@ public:
         case GetJsonTypeID<JsonType::JsonNull>::ID:
             return "JsonNull";
         default:
-            ValueError(std::format("json type {} is not valid", id));
-            std::unreachable();
+            type_exception("json type {} is not valid", SRC_LOC, id);
+            break;
         }
     }
 
@@ -149,7 +150,7 @@ public:
     template <JsonTypeStrictConcept T>
     T* transform_ptr() {
         if (!is<T>()) {
-            ValueError(std::format("Json type is not {} but {}", type_name(GetJsonTypeID<T>::ID), type_name(json_type_)));
+            type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
         }
         return reinterpret_cast<T*>(json_item_);
     }
@@ -157,7 +158,7 @@ public:
     template <JsonTypeStrictConcept T>
     const T* transform_ptr() const {
         if (!is<T>()) {
-            ValueError(std::format("Json type is not {} but {}", type_name(GetJsonTypeID<T>::ID), type_name(json_type_)));
+            type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
         }
         return reinterpret_cast<T*>(json_item_);
     }
@@ -253,8 +254,8 @@ public:
         case GetJsonTypeID<JsonType::JsonNull>::ID:
             return cstr("null");
         default:
-            ValueError(std::format("json type {} is not valid", json_type_));
-            std::unreachable();
+            type_exception("json type {} is not valid", SRC_LOC, json_type_);
+            break;
         }
     }
 
@@ -286,7 +287,7 @@ private:
             delete transform_ptr<JsonType::JsonNull>();
             break;
         default:
-            ValueError(std::format("Json type {} is not valid", json_type_));
+            type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
     }
 

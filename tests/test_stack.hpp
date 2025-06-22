@@ -25,10 +25,21 @@ fn it_works = []() {
     Assertions::assertEquals(0, st.size());
 };
 
+fn should_fail_to_peek_if_stack_is_empty = []() {
+    // Given
+    util::Stack<i32> st;
+
+    // When & Then
+    Assertions::assertThrows("stack is empty.", [&]() {
+        st.peek();
+    });
+};
+
 fn test_stack() {
     UnitTestGroup group{"test_stack"};
 
     group.addTest("it_works", it_works);
+    group.addTest("should_fail_to_peek_if_stack_is_empty", should_fail_to_peek_if_stack_is_empty);
 
     group.startAll();
 }

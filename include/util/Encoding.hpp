@@ -8,6 +8,7 @@
 #define ENCODING_HPP
 
 #include "Dict.hpp"
+#include "Exception.hpp"
 
 namespace my::util {
 
@@ -82,7 +83,7 @@ public:
         } else if ((data[0] & 0xF8) == 0xF0) {
             return 4; // 以11110开头（11110xxx），4字节编码
         } else {
-            ValueError("Invalid CodePoint");
+            runtime_exception("invalid CodePoint");
         }
         return 0;
     }

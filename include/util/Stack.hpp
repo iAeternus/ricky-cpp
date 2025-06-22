@@ -7,6 +7,7 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
+#include "Exception.hpp"
 #include "Vec.hpp"
 
 namespace my::util {
@@ -52,25 +53,24 @@ public:
 
     /**
      * @brief 查看栈顶元素
-     * @note 若栈空，则抛出ValueError
+     * @note 若栈空，则抛出 runtime_exception
      * @return 栈顶元素的引用
      */
     value_t& peek() {
         if (empty()) {
-            ValueError("Stack is empty.");
+            runtime_exception("stack is empty.");
         }
         return data_.back();
     }
 
     /**
      * @brief 查看栈顶元素（常量版本）
-     * @note 若栈空，则抛出ValueError
+     * @note 若栈空，则抛出 runtime_exception
      * @return 栈顶元素的引用
      */
     const value_t& peek() const {
         if (empty()) {
-            ValueError("Stack is empty.");
-            std::unreachable();
+            runtime_exception("stack is empty.");
         }
         return data_.back();
     }

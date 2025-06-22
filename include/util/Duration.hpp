@@ -8,7 +8,7 @@
 #ifndef DURATION_HPP
 #define DURATION_HPP
 
-#include "Object.hpp"
+#include "Exception.hpp"
 #include "math_utils.hpp"
 
 namespace my::util {
@@ -145,8 +145,7 @@ public:
      */
     Self operator/(i64 divisor) const {
         if (divisor == 0) {
-            RuntimeError("Division by zero");
-            std::unreachable();
+            arithmetic_exception("/ by zero");
         }
         i64 totalNanos = toNanos();
         return ofNanos(totalNanos / divisor);
@@ -243,7 +242,7 @@ private:
      */
     static void validateNanos(i32 nanos_) {
         if (nanos_ < 0 || nanos_ >= NANOS_PER_SECOND)
-            ValueError("Nanoseconds out of range");
+            runtime_exception("nanoseconds out of range");
     }
 
     /**

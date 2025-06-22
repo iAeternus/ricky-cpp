@@ -8,6 +8,7 @@
 #ifndef BIG_INTEGER_HPP
 #define BIG_INTEGER_HPP
 
+#include "Exception.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 
@@ -106,7 +107,7 @@ public:
      * @brief 从字符串赋值
      */
     Self& operator=(const char* str) {
-        if (!str || !*str) RuntimeError("Invalid string");
+        if (!str || !*str) runtime_exception("invalid string");
 
         i32 len = strlen(str);
         i32 tmp = 0, ten = 1, stop = 0;
@@ -115,7 +116,7 @@ public:
         if (!sign_) stop = 1;
 
         for (isize i = len; i > stop; --i) {
-            if (!std::isdigit(str[i - 1])) RuntimeError("Invalid character in string");
+            if (!std::isdigit(str[i - 1])) runtime_exception("invalid character in string");
             tmp += c2i(str[i - 1]) * ten;
             ten *= 10;
             if ((len - i) % WIDTH + 1 == WIDTH) {
@@ -364,7 +365,7 @@ public:
 
     friend Self operator/(const Self& a, const Self& b) {
         if (b.is_zero()) {
-            ValueError("Divide by zero");
+            arithmetic_exception("/ by zero");
         }
         Self aa = a.abs();
         Self bb = b.abs();

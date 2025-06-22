@@ -190,10 +190,41 @@ fn should_sort = []() {
     util::Vec<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
     // When
-    std::sort(d.begin(), d.end()); // clangd 误报
+    std::sort(d.begin(), d.end()); // TODO clangd 误报
 
     // Then
     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
+};
+
+fn test_opt = []() {
+    // Given
+    util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
+
+    // When
+    auto res = util::opt<i32>(v, 2);
+
+    // Then
+    Assertions::assertEquals(7, res);
+};
+
+fn should_fail_to_opt_if_index_out_of_bounds = []() {
+    // Given
+    util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
+
+    // When & Then
+    Assertions::assertThrows("index 10 out of bounds [0..10] in opt function.", [&]() {
+        util::opt<i32>(v, 10);
+    });
+};
+
+fn should_fail_to_opt_if_type_mismatch = []() {
+    // Given
+    util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
+
+    // When & Then
+    Assertions::assertThrows("type mismatch in opt function: expected[d], got[i]", [&]() {
+        util::opt<f64>(v, 9);
+    });
 };
 
 fn test_vec() {
@@ -212,6 +243,9 @@ fn test_vec() {
     group.addTest("should_at", should_at);
     group.addTest("should_find", should_find);
     group.addTest("should_sort", should_sort);
+    group.addTest("test_opt", test_opt);
+    group.addTest("should_fail_to_opt_if_index_out_of_bounds", should_fail_to_opt_if_index_out_of_bounds);
+    group.addTest("should_fail_to_opt_if_type_mismatch", should_fail_to_opt_if_type_mismatch);
 
     group.startAll();
 }

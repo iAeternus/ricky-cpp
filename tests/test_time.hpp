@@ -15,6 +15,22 @@ fn should_construct = []() {
     Assertions::assertEquals("12:34:56.000000789"_cs, t2.__str__());
 };
 
+fn should_fail_to_construct_by_hour_minute_and_second_if_args_invalid = []() {
+    Assertions::assertThrows("hour out of range", []() { util::Time::of(-1); });
+    Assertions::assertThrows("hour out of range", []() { util::Time::of(25); });
+    Assertions::assertThrows("minute out of range", []() { util::Time::of(12, -1); });
+    Assertions::assertThrows("minute out of range", []() { util::Time::of(12, 61); });
+    Assertions::assertThrows("second out of range", []() { util::Time::of(12, 30, -1); });
+    Assertions::assertThrows("second out of range", []() { util::Time::of(12, 30, 61); });
+    Assertions::assertThrows("nano out of range", []() { util::Time::of(12, 30, 30, -1); });
+    Assertions::assertThrows("nano out of range", []() { util::Time::of(12, 30, 30, 1000000000); });
+};
+
+fn should_fail_to_construct_by_second_of_day_if_args_invalid = []() {
+    Assertions::assertThrows("second of day out of range", []() { util::Time::ofSecondOfDay(-1); });
+    Assertions::assertThrows("second of day out of range", []() { util::Time::ofSecondOfDay(86401); });
+};
+
 fn should_parse = []() {
     // Given
     CString str = "20:32:06";
@@ -26,6 +42,11 @@ fn should_parse = []() {
     Assertions::assertEquals(20, t.hour());
     Assertions::assertEquals(32, t.minute());
     Assertions::assertEquals(6, t.second());
+};
+
+fn should_fail_to_parse_if_format_invalid = []() {
+    Assertions::assertThrows("invalid date time format", []() { util::Time::parse("12:30:31:1000"); });
+    Assertions::assertThrows("invalid date time format", []() { util::Time::parse("12:30"); });
 };
 
 fn should_fetch_now = []() {
@@ -113,7 +134,10 @@ fn test_time() {
     UnitTestGroup group{"test_time"};
 
     group.addTest("should_construct", should_construct);
+    group.addTest("should_fail_to_construct_by_hour_minute_and_second_if_args_invalid", should_fail_to_construct_by_hour_minute_and_second_if_args_invalid);
+    group.addTest("should_fail_to_construct_by_second_of_day_if_args_invalid", should_fail_to_construct_by_second_of_day_if_args_invalid);
     group.addTest("should_parse", should_parse);
+    // group.addTest("should_fail_to_parse_if_format_invalid", should_fail_to_parse_if_format_invalid);
     group.addTest("should_fetch_now", should_fetch_now);
     group.addTest("should_calc_second_of_day", should_calc_second_of_day);
     group.addTest("should_calc_nanos_of_day", should_calc_nanos_of_day);

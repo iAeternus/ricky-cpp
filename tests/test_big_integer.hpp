@@ -51,6 +51,18 @@ fn should_construct_with_c_string = []() {
     Assertions::assertEquals(30, bi4.size());
 };
 
+fn should_fail_to_construct_if_str_invalid = []() {
+    Assertions::assertThrows("invalid string", []() {
+        math::BigInteger bi = nullptr;
+    });
+};
+
+fn should_fail_to_construct_if_invalid_char_in_str = []() {
+    Assertions::assertThrows("invalid character in string", []() {
+        math::BigInteger bi = "123a456";
+    });
+};
+
 fn should_judge_odd = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -195,6 +207,12 @@ fn should_divide = []() {
     Assertions::assertEquals("493827160549382716054938271605"_cs, bi2.__str__());
 };
 
+fn should_fail_to_divide_if_divide_by_zero = []() {
+    Assertions::assertThrows("/ by zero", []() {
+        math::BigInteger(123) / math::BigInteger::ZERO;
+    });
+};
+
 fn should_modulus = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
@@ -302,6 +320,8 @@ fn test_big_integer() {
 
     group.addTest("should_construct_with_i64", should_construct_with_i64);
     group.addTest("should_construct_with_c_string", should_construct_with_c_string);
+    group.addTest("should_fail_to_construct_if_str_invalid", should_fail_to_construct_if_str_invalid);
+    group.addTest("should_fail_to_construct_if_invalid_char_in_str", should_fail_to_construct_if_invalid_char_in_str);
     group.addTest("should_judge_odd", should_judge_odd);
     group.addTest("should_left_shift", should_left_shift);
     group.addTest("should_right_shift", should_right_shift);
@@ -309,6 +329,7 @@ fn test_big_integer() {
     group.addTest("should_subtract", should_subtract);
     group.addTest("should_multiply", should_multiply);
     group.addTest("should_divide", should_divide);
+    group.addTest("should_fail_to_divide_if_divide_by_zero", should_fail_to_divide_if_divide_by_zero);
     group.addTest("should_modulus", should_modulus);
     group.addTest("should_power", should_power);
     group.addTest("should_slice", should_slice);

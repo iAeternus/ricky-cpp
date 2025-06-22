@@ -295,7 +295,7 @@ public:
      */
     Self divide(const Self& other, u32 scale, RoundingMode mode = HALF_UP) const {
         if (other.is_zero()) {
-            RuntimeError("Division by zero");
+            arithmetic_exception("/ by zero");
         }
 
         // 如果被除数为0，直接返回0

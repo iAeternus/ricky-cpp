@@ -4,6 +4,7 @@
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "filesystem.hpp"
+#include "win/File.hpp"
 
 namespace my::test::test_win_file {
 
@@ -26,6 +27,16 @@ fn should_write_win_file = []() {
 
     // Final
     fs::win::remove(path);
+};
+
+fn should_fail_to_construct_if_mode_invalid = []() {
+    // Given
+    const char* path = fs::win::join(CLASS_PATH, "test1.txt");
+
+    // When & Then
+    Assertions::assertThrows("invalid value x, that only support [w, r, a]", [path]() {
+        fs::win::File(path, "x");
+    });
 };
 
 fn should_append_win_file = []() {
@@ -51,6 +62,7 @@ fn test_win_file() {
     UnitTestGroup group{"test_win_file"};
 
     group.addTest("should_write_win_file", should_write_win_file);
+    group.addTest("should_fail_to_construct_if_mode_invalid", should_fail_to_construct_if_mode_invalid);
     group.addTest("should_append_win_file", should_append_win_file);
 
     group.startAll();

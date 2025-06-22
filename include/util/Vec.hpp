@@ -8,6 +8,7 @@
 #define VEC_HPP
 
 #include "Array.hpp"
+#include "Exception.hpp"
 #include "Sequence.hpp"
 
 #include <any>
@@ -734,15 +735,13 @@ private:
 template <typename T>
 fn opt(const Vec<std::any>& args, usize idx)->T {
     if (idx < 0 || idx >= args.size()) {
-        ValueError("Index out of range in opt function.");
-        std::unreachable();
+        index_out_of_bounds_exception("index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
     }
 
     try {
         return std::any_cast<T>(args.at(idx));
     } catch (const std::bad_any_cast& e) {
-        ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
-        std::unreachable();
+        type_exception("type mismatch in opt function: expected[{}], got[{}]", SRC_LOC, dtype(T), args[idx].type().name());
     }
 }
 

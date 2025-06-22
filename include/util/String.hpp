@@ -620,8 +620,8 @@ public:
                 return slice(l, r + 1);
             }
         }
-        ValueError("Unmatched parentheses, too many left parentheses");
-        std::unreachable();
+        
+        runtime_exception("unmatched parentheses, too many left parentheses");
     }
 
     /**

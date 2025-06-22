@@ -39,6 +39,18 @@ fn should_create_graph = []() {
     io::println(g);
 };
 
+fn should_fail_to_add_edge_if_node_not_found = []() {
+    // Given
+    graph::Graph g;
+    g.add_node(0);
+    g.add_node(1);
+
+    // When & Then
+    Assertions::assertThrows("node from[1] or to[2] does not exist.", [&]() {
+        g.add_edge(1, 2);
+    });
+};
+
 fn should_register = []() {
     // Given
     graph::Graph<char> g;
@@ -82,11 +94,23 @@ fn should_register = []() {
     Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());
 };
 
+fn should_fail_to_call_algo_if_algorithm_is_not_found = []() {
+    // Given
+    graph::Graph g;
+
+    // When & Then
+    Assertions::assertThrows("algorithm[dij] not found.", [g]() {
+        g.call_algo("dij", 1, 100);
+    });
+};
+
 fn test_graph() {
     UnitTestGroup group{"test_graph"};
 
     group.addTest("should_create_graph", should_create_graph);
+    group.addTest("should_fail_to_add_edge_if_node_not_found", should_fail_to_add_edge_if_node_not_found);
     group.addTest("should_register", should_register);
+    group.addTest("should_fail_to_call_algo_if_algorithm_is_not_found", should_fail_to_call_algo_if_algorithm_is_not_found);
 
     group.startAll();
 }

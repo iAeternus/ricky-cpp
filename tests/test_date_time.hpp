@@ -33,6 +33,13 @@ fn should_parse = []() {
     Assertions::assertEquals("2025-02-05T20:20:20.000000000Z"_cs, dt.__str__());
 };
 
+fn should_fail_to_parse_if_format_invalid = []() {
+    Assertions::assertThrows("invalid date time format", []() { util::Date::parse("2025-1-1-1 12:30:31"); });
+    Assertions::assertThrows("invalid date time format", []() { util::Date::parse("2025-1 12:30:31"); });
+    Assertions::assertThrows("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30:31:1000"); });
+    Assertions::assertThrows("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30"); });
+};
+
 fn should_fetch_now = []() {
     auto dt = util::DateTime::now();
 
@@ -106,6 +113,7 @@ fn test_date_time() {
 
     group.addTest("should_construct", should_construct);
     group.addTest("should_parse", should_parse);
+    // group.addTest("should_fail_to_parse_if_format_invalid", should_fail_to_parse_if_format_invalid);
     group.addTest("should_fetch_now", should_fetch_now);
     group.addTest("should_construct_by_epoch_second", should_construct_by_epoch_second);
     group.addTest("should_plus", should_plus);

@@ -7,6 +7,7 @@
 #ifndef JSON_PARSER_HPP
 #define JSON_PARSER_HPP
 
+#include "Exception.hpp"
 #include "Json.hpp"
 
 namespace my::json {
@@ -53,8 +54,7 @@ private:
     static fn parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint& stopSign)->Pair<Json, JsonType::JsonStr> {
         jsonStr = jsonStr.trim();
         if (jsonStr.size() == 0) {
-            ValueError("Json string is empty");
-            std::unreachable();
+            argument_exception("json string is empty");
         }
 
         JsonType::JsonStr match;
@@ -76,8 +76,7 @@ private:
         JsonType::JsonStr remain = jsonStr.slice(match.size()).trim();
         if (remain.size()) {
             if (remain[0] != stopSign) {
-                ValueError(std::format("Stop sign \'{}\' not found", stopSign));
-                std::unreachable();
+                not_found_exception("stop sign \'{}\' not found", SRC_LOC, stopSign);
             }
             remain = remain.slice(1).trim();
         }
@@ -123,7 +122,7 @@ private:
                 if (c == util::CodePoint{'.'} && !isFloat) {
                     isFloat = true;
                 } else {
-                    ValueError(std::format("Invalid number parse: {}", jsonStr));
+                    runtime_exception("invalid number parse: {}", SRC_LOC, jsonStr);
                 }
             }
         }
@@ -133,8 +132,7 @@ private:
 
     static fn parseNull(JsonType::JsonStr& jsonStr)->Json {
         if (jsonStr != JsonType::JsonStr{"null", 4}) {
-            ValueError(std::format("Invalid null parse: {}", jsonStr));
-            std::unreachable();
+            runtime_exception("invalid null parse: {}", SRC_LOC, jsonStr);
         }
         return Json{JsonType::JsonNull{}};
     }
@@ -146,8 +144,7 @@ private:
         } else if (jsonStr == "false"_s) {
             return Json{false};
         } else {
-            ValueError(std::format("Invalid bool parse: {}", jsonStr));
-            std::unreachable();
+            runtime_exception("invalid bool parse: {}", SRC_LOC, jsonStr);
         }
     }
 
@@ -159,8 +156,7 @@ private:
         } else if (jsonStr[0] == util::CodePoint{'t'} || jsonStr[0] == util::CodePoint{'f'}) {
             return parseBool(jsonStr); // bool
         } else {
-            ValueError(std::format("Invalid simple parse: {}", jsonStr));
-            std::unreachable();
+            runtime_exception("invalid simple parse: {}", SRC_LOC, jsonStr);
         }
     }
 };

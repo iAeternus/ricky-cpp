@@ -18,6 +18,20 @@ fn should_construct = []() {
     Assertions::assertEquals("2025-02-03"_cs, d2.__str__());
 };
 
+fn should_fail_to_construct_by_month_and_day_if_args_invalid = []() {
+    Assertions::assertThrows("invalid month", []() { util::Date::of(2025, 0); });
+    Assertions::assertThrows("invalid month", []() { util::Date::of(2025, 13); });
+    Assertions::assertThrows("invalid day", []() { util::Date::of(2025, 2, 0); });
+    Assertions::assertThrows("invalid day", []() { util::Date::of(2025, 2, 29); });
+    Assertions::assertThrows("year out of range", []() { util::Date::of(1000000000, 2); });
+};
+
+fn should_fail_to_construct_by_day_of_year_if_args_invalid = []() {
+    Assertions::assertThrows("day of year out of range", []() { util::Date::ofYearDay(2025, 0); });
+    Assertions::assertThrows("day of year out of range", []() { util::Date::ofYearDay(2025, 366); });
+    Assertions::assertThrows("day of year out of range", []() { util::Date::ofYearDay(2024, 367); });
+};
+
 fn should_parse = []() {
     // Given
     CString str = "2025-02-04";
@@ -29,6 +43,11 @@ fn should_parse = []() {
     Assertions::assertEquals(2025, d.year());
     Assertions::assertEquals(2, d.month());
     Assertions::assertEquals(4, d.day());
+};
+
+fn should_fail_to_parse_if_format_invalid = []() {
+    Assertions::assertThrows("invalid date format", []() { util::Date::parse("2025-1-1-1"); });
+    Assertions::assertThrows("invalid date format", []() { util::Date::parse("2025-1"); });
 };
 
 fn should_fetch_now = []() {
@@ -139,7 +158,10 @@ fn test_date() {
     UnitTestGroup group{"test_date"};
 
     group.addTest("should_construct", should_construct);
+    group.addTest("should_fail_to_construct_by_month_and_day_if_args_invalid", should_fail_to_construct_by_month_and_day_if_args_invalid);
+    group.addTest("should_fail_to_construct_by_day_of_year_if_args_invalid", should_fail_to_construct_by_day_of_year_if_args_invalid);
     group.addTest("should_parse", should_parse);
+    // group.addTest("should_fail_to_parse_if_format_invalid", should_fail_to_parse_if_format_invalid);
     group.addTest("should_fetch_now", should_fetch_now);
     group.addTest("should_calc_day_of_year", should_calc_day_of_year);
     group.addTest("should_calc_day_of_week", should_calc_day_of_week);

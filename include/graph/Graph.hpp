@@ -7,6 +7,7 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
+#include "Exception.hpp"
 #include "graph_helper.hpp"
 #include "Dict.hpp"
 #include "Vec.hpp"
@@ -176,13 +177,12 @@ public:
     }
 
     /**
-     * @brief 添加边，若某一点不存在，则抛出异常，若边已存在，则什么都不做
+     * @brief 添加边，若某一点不存在，则抛出not_found_exception，若边已存在，则什么都不做
      * @return true=边不存在 false=边已存在
      */
     bool add_edge(Idx from, Idx to, const E& weight = E{}) {
         if (!has_node(from) || !has_node(to)) {
-            ValueError(std::format("Node from[{}] or to[{}] does not exist.", from, to));
-            std::unreachable();
+            not_found_exception("node from[{}] or to[{}] does not exist.", SRC_LOC, from, to);
         }
         auto tag = nodes_.get(from).connect(to, weight);
         ++edge_cnt_;
@@ -232,7 +232,7 @@ public:
     /**
      * @brief 调用算法插件
      * @param RetType 返回值类型
-     * @param name 插件名称，若不存在则抛出ValueError
+     * @param name 插件名称，若不存在则抛出not_found_exception
      * @param args 插件入参包
      */
     template <typename RetType = void, typename... Args>
@@ -240,7 +240,7 @@ public:
         std::shared_lock lock(algo_mutex_);
 
         if (!algorithms_.contains(name)) {
-            ValueError(std::format("Algorithm[{}] not found.", name));
+            not_found_exception("algorithm[{}] not found.", SRC_LOC, name);
         }
 
         const auto& algorithm = algorithms_.get(name);

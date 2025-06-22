@@ -32,7 +32,7 @@ public:
      * @param year 年份
      * @param month 月份（1-12，默认为1月）
      * @param dayOfMonth 日期（1-31，默认为1日）
-     * @return 有效的日期对象，若参数无效，则抛出 ValueError
+     * @return 有效的日期对象，若参数无效，则抛出 runtime_exception
      * @example Date::of(2025, 2, 14) 创建日期 2025-02-14
      */
     static Self of(i32 year, i32 month = 1, i32 dayOfMonth = 1) {
@@ -51,8 +51,7 @@ public:
         validateYear(year);
         const bool isLeap = isLeapYear(year);
         if (dayOfYear < 1 || dayOfYear > (isLeap ? 366 : 365)) {
-            ValueError("Day of year out of range");
-            std::unreachable();
+            runtime_exception("day of year out of range");
         }
 
         static constexpr i32 leap[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
@@ -77,13 +76,13 @@ public:
      * @brief 解析 "yyyy-MM-dd" 格式的日期字符串
      * @param str 日期字符串
      * @return 解析成功的日期对象
-     * @exception ValueError 若字符串格式不正确
+     * @exception runtime_exception 若字符串格式不正确
      * @example Date::parse("2025-02-14") 解析为 2025-02-14
      */
     static Self parse(const CString& str) {
         i32 year, month, day;
-        if (sscanf(str.data(), "%d-%d-%d", &year, &month, &day) != 3) {
-            ValueError("Invalid date format");
+        if (sscanf_s(str.data(), "%d-%d-%d", &year, &month, &day) != 3) {
+            runtime_exception("invalid date format");
         }
         return Self::of(year, month, day);
     }
@@ -91,7 +90,7 @@ public:
     /**
      * @brief 获取当前日期（基于 UTC 时间，线程不安全实现）
      * @return 当前日期对象
-     * @note 该实现依赖于 `localtime` 函数，是线程不安全的
+     * @note 该实现依赖于 `localtime` 函数，是线程不安全的 TODO
      */
     static Self now() {
         auto now = std::chrono::system_clock::now();
@@ -369,8 +368,7 @@ private:
      */
     static i64 clampYear(i64 year) {
         if (year < -999999999 || year > 999999999) {
-            ValueError("Year overflow");
-            std::unreachable();
+            runtime_exception("year overflow");
         }
         return year;
     }
@@ -382,8 +380,7 @@ private:
      */
     static i32 clampMonth(i32 month) {
         if (month < 1 || month > 12) {
-            ValueError("Invalid month");
-            std::unreachable();
+            runtime_exception("invalid month");
         }
         return month;
     }
@@ -393,7 +390,7 @@ private:
      * @param year 年份
      */
     static void validateYear(i32 year) {
-        if (year < -999999999 || year > 999999999) ValueError("Year out of range");
+        if (year < -999999999 || year > 999999999) runtime_exception("year out of range");
     }
 
     /**
@@ -404,8 +401,8 @@ private:
      */
     static void validate(i32 year, i32 month, i32 day) {
         validateYear(year);
-        if (month < 1 || month > 12) ValueError("Invalid month");
-        if (day < 1 || day > daysInMonth(year, month)) ValueError("Invalid day");
+        if (month < 1 || month > 12) runtime_exception("invalid month");
+        if (day < 1 || day > daysInMonth(year, month)) runtime_exception("invalid day");
     }
 
     /**
@@ -472,7 +469,7 @@ public:
      * @param second 秒（0-59）
      * @param nanoOfSecond 纳秒（0-999999999）
      * @return 时间对象
-     * @exception ValueError 参数无效时
+     * @exception runtime_exception 参数无效时
      * @example Time::of(12, 30, 45) 创建时间 12:30:45
      */
     static Self of(i32 hour, i32 minute = 0, i32 second = 0, i32 nanoOfSecond = 0) {
@@ -484,7 +481,7 @@ public:
      * @brief 根据当日秒数创建时间对象
      * @param secondOfDay 当日秒数（0-86399）
      * @return 时间对象
-     * @exception ValueError 若秒数超出范围
+     * @exception runtime_exception 若秒数超出范围
      */
     static Self ofSecondOfDay(i64 secondOfDay) {
         validateSecondOfDay(secondOfDay);
@@ -499,7 +496,7 @@ public:
      * @brief 根据当日纳秒数创建时间对象
      * @param nanoOfDay 当日纳秒数（0-86399999999999）
      * @return 时间对象
-     * @exception ValueError 若纳秒数超出范围
+     * @exception runtime_exception 若纳秒数超出范围
      */
     static Self ofNanoOfDay(i64 nanoOfDay) {
         validateNanoOfDay(nanoOfDay);
@@ -516,13 +513,13 @@ public:
      * @brief 解析 "hh:mm:ss" 格式的时间字符串
      * @param str 时间字符串
      * @return 解析成功的时间对象
-     * @exception ValueError 格式无效
+     * @exception runtime_exception 格式无效
      * @example Time::parse("12:30:45") 解析为 12:30:45
      */
     static Self parse(const CString& str) {
         i32 hour, minute, second;
         if (sscanf(str.data(), "%d:%d:%d", &hour, &minute, &second) != 3) {
-            ValueError("Invalid time format");
+            runtime_exception("invalid time format");
         }
         return Self::of(hour, minute, second);
     }
@@ -530,7 +527,7 @@ public:
     /**
      * @brief 获取当前系统时间（线程不安全）
      * @return 当前时间对象
-     * @note 该实现依赖于 `localtime` 函数，是线程不安全的
+     * @note 该实现依赖于 `localtime` 函数，是线程不安全的 TODO
      */
     static Self now() {
         auto now = std::chrono::system_clock::now();
@@ -778,10 +775,10 @@ private:
      * @param nanoOfSecond 纳秒
      */
     static void validate(i32 hour, i32 minute, i32 second, i32 nanoOfSecond) {
-        if (hour < 0 || hour >= 24) ValueError("Hour out of range");
-        if (minute < 0 || minute >= 60) ValueError("Minute out of range");
-        if (second < 0 || second >= 60) ValueError("Second out of range");
-        if (nanoOfSecond < 0 || nanoOfSecond >= 999'999'999) ValueError("Nano out of range");
+        if (hour < 0 || hour >= 24) runtime_exception("hour out of range");
+        if (minute < 0 || minute >= 60) runtime_exception("minute out of range");
+        if (second < 0 || second >= 60) runtime_exception("second out of range");
+        if (nanoOfSecond < 0 || nanoOfSecond >= 999'999'999) runtime_exception("nano out of range");
     }
 
     /**
@@ -790,7 +787,7 @@ private:
      */
     static void validateSecondOfDay(i64 secondOfDay) {
         if (secondOfDay < 0 || secondOfDay >= 86400) {
-            ValueError("Second of day out of range");
+            runtime_exception("second of day out of range");
         }
     }
 
@@ -800,7 +797,7 @@ private:
      */
     static void validateNanoOfDay(i64 nanoOfDay) {
         if (nanoOfDay < 0 || nanoOfDay >= 86400 * 1000'000'000LL) {
-            ValueError("Nano of day out of range");
+            runtime_exception("nano of day out of range");
         }
     }
 
@@ -834,7 +831,7 @@ public:
      * @param second 秒
      * @param nanoOfSecond 纳秒
      * @return 日期时间对象
-     * @exception ValueError 参数无效时
+     * @exception runtime_exception 参数无效时
      * @example DateTime::of(2025, 2, 14, 12, 30) 创建日期时间 2025-02-14 12:30:00
      */
     static Self of(i32 year, i32 month, i32 dayOfMonth, i32 hour, i32 minute = 0, i32 second = 0, i32 nanoOfSecond = 0) {
@@ -858,11 +855,11 @@ public:
      * @param epochSecond 纪元秒
      * @param nanoOfSecond 纳秒（可选）
      * @return 日期时间对象
-     * @exception ValueError 若纳秒超出范围
+     * @exception runtime_exception 若纳秒超出范围
      * @todo 考虑时差的影响
      */
     static Self ofEpochSecond(i64 epochSecond, i32 nanoOfSecond = 0) {
-        if (nanoOfSecond < 0 || nanoOfSecond >= 999'999'999) ValueError("Nano out of range");
+        if (nanoOfSecond < 0 || nanoOfSecond >= 999'999'999) runtime_exception("nano out of range");
         i32 epochDay = epochSecond / Time::SECONDS_PER_DAY;
         i32 secsOfDay = epochSecond % Time::SECONDS_PER_DAY;
         auto date = Date::ofEpochDay(epochDay);
@@ -874,13 +871,13 @@ public:
      * @brief 解析 "yyyy-MM-dd hh:mm:ss" 格式的日期时间字符串
      * @param str 日期时间字符串
      * @return 解析成功的时间对象
-     * @exception ValueError 格式无效
+     * @exception runtime_exception 格式无效
      * @example DateTime::parse("2025-02-14 12:30:45") 解析为 2025-02-14 12:30:45
      */
     static Self parse(const CString& str) {
         i32 year, month, day, hour, minute, second;
         if (sscanf(str.data(), "%d-%d-%d %d:%d:%d", &year, &month, &day, &hour, &minute, &second) != 6) {
-            ValueError("Invalid date time format");
+            runtime_exception("invalid date time format");
         }
         return Self::of(year, month, day, hour, minute, second);
     }
@@ -888,7 +885,7 @@ public:
     /**
      * @brief 获取当前日期时间（基于 UTC 时间）
      * @return 当前日期时间对象
-     * @note 该实现依赖于 `localtime` 函数，是线程不安全的
+     * @note 该实现依赖于 `localtime` 函数，是线程不安全的 TODO
      */
     static Self now() {
         auto now = std::chrono::system_clock::now();

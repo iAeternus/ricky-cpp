@@ -9,6 +9,7 @@
 
 #include "math_utils.hpp"
 #include "Exception.hpp"
+#include <exception>
 
 namespace my::test {
 

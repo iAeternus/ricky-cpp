@@ -215,6 +215,21 @@ fn should_match_parentheses = []() {
     Assertions::assertEquals("[1, 2, 3]"_s, res2);
 };
 
+fn should_fail_match_if_str_invalid = []() {
+    // Given
+    util::String s = "{a";
+    util::String s2 = "a]";
+
+    // When & Then
+    Assertions::assertThrows("unmatched parentheses, too many left parentheses", [&]() {
+        s.match('{', '}');
+    });
+
+    Assertions::assertThrows("unmatched parentheses, too many left parentheses", [&]() {
+        s2.match('[', ']');
+    });
+};
+
 fn should_compare = []() {
     // Given
     util::String s = "abc";
@@ -268,6 +283,7 @@ fn test_string() {
     group.addTest("should_maintain_encoding", should_maintain_encoding);
     group.addTest("should_join_iterator", should_join_iterator);
     group.addTest("should_match_parentheses", should_match_parentheses);
+    group.addTest("should_fail_match_if_str_invalid", should_fail_match_if_str_invalid);
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
 

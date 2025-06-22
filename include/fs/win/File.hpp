@@ -7,6 +7,7 @@
 #ifndef WIN_FILE_HPP
 #define WIN_FILE_HPP
 
+#include "Exception.hpp"
 #include "file_utils.hpp"
 #include "NoCopy.hpp"
 
@@ -31,7 +32,7 @@ public:
             dwCreationDisposition = OPEN_ALWAYS;
             SetFilePointer(fh_, 0, nullptr, FILE_END);
         } else {
-            ValueError(std::format("Invalid value {}, that only support [w, r, a]", mode));
+            argument_exception("invalid value {}, that only support [w, r, a]", SRC_LOC, mode);
         }
 
         fh_ = CreateFileA(
@@ -44,7 +45,7 @@ public:
             nullptr);
 
         if (fh_ == INVALID_HANDLE_VALUE) {
-            SystemError("Invalid HANDLE value, Failed to create or open file");
+            system_exception("invalid HANDLE value, Failed to create or open file");
         }
     }
 

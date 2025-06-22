@@ -7,8 +7,8 @@
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
+#include "Exception.hpp"
 #include "math_utils.hpp"
-#include "Object.hpp"
 
 namespace my::math {
 
@@ -124,8 +124,7 @@ public:
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         (void)other;
-        RuntimeError("Complex numbers cannot compare sizes");
-        std::unreachable();
+        runtime_exception("complex numbers cannot compare sizes");
     }
 
     [[nodiscard]] bool __equals__(const Self& other) const {
@@ -160,7 +159,7 @@ private:
             ++i;
         }
         if (i != trim_str.size()) {
-            ValueError("Invalid complex number format");
+            runtime_exception("invalid complex number format");
         }
     }
 
@@ -177,8 +176,7 @@ private:
             num += str[i++];
         }
         if (num.empty()) {
-            ValueError("Invalid number format");
-            std::unreachable();
+            runtime_exception("invalid complex number format");
         }
         return std::stod(num);
     }
