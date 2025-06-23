@@ -7,6 +7,7 @@
 #ifndef EXPR_HPP
 #define EXPR_HPP
 
+#include "Exception.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
@@ -85,7 +86,7 @@ public:
             tokenize(expr);
             this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
-            RuntimeError(std::format("Tokenization error: {}", std::string(ex.what())));
+            runtime_exception("tokenization error: {}", SRC_LOC, ex.what());
         }
     }
 
@@ -100,7 +101,7 @@ public:
      * @brief 转为后缀表达式
      */
     util::Vec<Token> to_post() const {
-        if (!valid_) RuntimeError("Invalid expression");
+        if (!valid_) runtime_exception("invalid expression");
         return in2post();
     }
 
@@ -108,7 +109,7 @@ public:
      * @brief 计算表达式值
      */
     f64 eval() const {
-        if (!valid_) RuntimeError("Invalid expression");
+        if (!valid_) runtime_exception("invalid expression");
         return eval_post(in2post());
     }
 
@@ -144,7 +145,7 @@ private:
                 } else if (is_op(c)) {
                     tokens_.append(Token::OPERATOR, CString::of(c));
                 } else if (c != ' ') {
-                    RuntimeError(std::format("Invalid character: {}", c));
+                    runtime_exception("invalid character: {}", SRC_LOC, c);
                 }
             }
         }
@@ -161,15 +162,15 @@ private:
         if (dot_pos != std::string::npos) {
             // 还有其他小数点
             if (num.find('.', dot_pos + 1) != std::string::npos) {
-                RuntimeError(std::format("Invalid number (multiple dots): {}", num));
+                runtime_exception("invalid number (multiple dots): {}", SRC_LOC, num);
             }
             // 小数点在开头或结尾
             if (dot_pos == 0 || dot_pos == num.length() - 1) {
-                RuntimeError(std::format("Invalid number (misplaced dot): {}", num));
+                runtime_exception("invalid number (misplaced dot): {}", SRC_LOC, num);
             }
         }
         if (num[0] == '-' && num.size() == 1) {
-            RuntimeError(std::format("Invalid operator position: {}", num));
+            runtime_exception("invalid operator position: {}", SRC_LOC, num);
         }
     }
 
@@ -226,7 +227,7 @@ private:
                     ans.append(op_st.peek());
                     op_st.pop();
                 }
-                if (op_st.empty()) RuntimeError("Mismatched parentheses");
+                if (op_st.empty()) runtime_exception("mismatched parentheses");
                 op_st.pop(); // pop左括号
                 break;
             case Token::OPERATOR:
@@ -238,14 +239,14 @@ private:
                 op_st.push(token); // 当前操作符入栈
                 break;
             default:
-                RuntimeError("Unexpected token type");
+                runtime_exception("unexpected token type");
             }
         }
 
         // 处理剩下的操作符
         while (!op_st.empty()) {
             if (op_st.peek().type == Token::LEFT_PAREN) {
-                RuntimeError("Mismatched parentheses");
+                runtime_exception("mismatched parentheses");
             }
             ans.append(op_st.peek());
             op_st.pop();
@@ -281,7 +282,7 @@ private:
                 st.push(token.num_value);
                 break;
             case Token::OPERATOR:
-                if (st.size() < 2) RuntimeError("Insufficient operands");
+                if (st.size() < 2) runtime_exception("insufficient operands");
                 b = st.peek();
                 st.pop();
                 a = st.peek();
@@ -294,10 +295,10 @@ private:
                 st.push(eval_unary_op(x, token.op_value));
                 break;
             default:
-                RuntimeError("Unexpected token in postfix");
+                runtime_exception("unexpected token in postfix");
             }
         }
-        if (st.size() != 1) RuntimeError("Malformed expression");
+        if (st.size() != 1) runtime_exception("malformed expression");
         return st.peek();
     }
 

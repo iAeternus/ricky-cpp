@@ -13,6 +13,7 @@
 #include <source_location>
 #include <format>
 #include <unordered_map>
+#include <utility>
 
 // 前向声明
 namespace my::io {
@@ -47,6 +48,7 @@ enum class ExceptionType {
     // 状态
     StateException,
     UninitializedException,
+    AssertionFailedException,
     // 系统
     SystemException,
     NetworkException,
@@ -127,6 +129,7 @@ public:
             {ExceptionType::OverflowException, "OverflowException"},
             {ExceptionType::StateException, "StateException"},
             {ExceptionType::UninitializedException, "UninitializedException"},
+            {ExceptionType::AssertionFailedException, "AssertionFailedException"},
             {ExceptionType::SystemException, "SystemException"},
             {ExceptionType::NetworkException, "NetworkException"},
             {ExceptionType::CustomException, "CustomException"}};
@@ -181,12 +184,14 @@ private:
  */
 fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) {
     throw Exception(type, std::move(message), loc);
+    std::unreachable();
 }
 
 template <typename... Args>
 fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) {
     std::string message = std::vformat(fmt, std::make_format_args(args...));
     throw Exception(type, std::move(message), loc);
+    std::unreachable();
 }
 
 /**
@@ -239,6 +244,7 @@ DEFINE_EXCEPTION_FACTORY(arithmetic, ExceptionType::ArithmeticException)        
 DEFINE_EXCEPTION_FACTORY(overflow, ExceptionType::OverflowException)                    // 溢出异常
 DEFINE_EXCEPTION_FACTORY(state, ExceptionType::StateException)                          // 状态异常
 DEFINE_EXCEPTION_FACTORY(uninitialized, ExceptionType::UninitializedException)          // 未初始化异常
+DEFINE_EXCEPTION_FACTORY(assertion_failed, ExceptionType::AssertionFailedException)     // 断言失败异常
 DEFINE_EXCEPTION_FACTORY(system, ExceptionType::SystemException)                        // 系统异常
 DEFINE_EXCEPTION_FACTORY(network, ExceptionType::NetworkException)                      // 网络异常
 DEFINE_EXCEPTION_FACTORY(custom, ExceptionType::CustomException)                        // 自定义异常

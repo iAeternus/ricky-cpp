@@ -8,10 +8,12 @@
 #define WIN_FILE_UTILS_HPP
 
 #include "DynArray.hpp"
+#include "Exception.hpp"
 
 #include <fileapi.h>
 #include <handleapi.h>
 #include <winerror.h>
+#include <wingdi.h>
 
 namespace my::fs::win {
 
@@ -22,7 +24,7 @@ static constexpr char PATH_SEP = '\\';
  * @return true=存在 false=不存在
  */
 fn exists(const char* path)->bool {
-    DWORD attributes = GetFileAttributesA(path);
+    auto attributes = GetFileAttributesA(path);
     return (attributes != INVALID_FILE_ATTRIBUTES);
 }
 
@@ -31,7 +33,7 @@ fn exists(const char* path)->bool {
  * @return true=是 false=否
  */
 fn isfile(const char* path)->bool {
-    DWORD attr = GetFileAttributesA(path);
+    auto attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
 
@@ -40,7 +42,7 @@ fn isfile(const char* path)->bool {
  * @return true=是 false=否
  */
 fn isdir(const char* path)->bool {
-    DWORD attr = GetFileAttributesA(path);
+    auto attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0);
 }
 
@@ -49,16 +51,16 @@ fn isdir(const char* path)->bool {
  * @return void
  */
 fn mkdir(const char* path, bool exist_ok = false) {
-    BOOL state = CreateDirectoryA(path, nullptr);
+    auto state = CreateDirectoryA(path, nullptr);
 
     switch (state) {
     case ERROR_ALREADY_EXISTS:
         if (!exist_ok) {
-            RuntimeError(std::format("Directory already exists: {}", path));
+            runtime_exception("directory already exists: {}", SRC_LOC, path);
         }
         break;
     case ERROR_PATH_NOT_FOUND:
-        FileNotFoundError(std::format("Path not found: {}", path));
+        not_found_exception("path not found: {}", SRC_LOC, path);
         break;
     }
 }
@@ -69,13 +71,13 @@ fn mkdir(const char* path, bool exist_ok = false) {
  */
 fn remove(const char* path) {
     if (!exists(path)) {
-        FileNotFoundError(std::format("File or Directory not found in {}", path));
+        not_found_exception("file or directory not found in {}", SRC_LOC, path);
     }
 
     if (isfile(path) && !DeleteFileA(path)) {
-        SystemError("Failed to remove file");
+        system_exception("failed to remove file");
     } else if (isdir(path) && !RemoveDirectoryA(path)) {
-        SystemError("Failed to remove directory");
+        system_exception("failed to remove directory");
     }
 }
 
@@ -84,9 +86,9 @@ fn remove(const char* path) {
  * @return 拼接后的路径
  */
 fn join(const char* path1, const char* path2)->CString {
-    usize length1 = std::strlen(path1);
-    usize length2 = std::strlen(path2);
-    usize length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
+    auto length1 = std::strlen(path1);
+    auto length2 = std::strlen(path2);
+    auto length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
 
     CString result{length};
     std::memcpy(result.data(), path1, length1);
@@ -105,10 +107,10 @@ fn join(const char* path1, const char* path2)->CString {
  */
 fn listdir(const char* path)->util::DynArray<CString> {
     WIN32_FIND_DATAA find_data;
-    HANDLE handle = FindFirstFileA(join(path, "*"), &find_data);
+    auto handle = FindFirstFileA(join(path, "*"), &find_data);
 
     if (handle == INVALID_HANDLE_VALUE) {
-        SystemError(std::format("Failed to list directory: {}", path));
+        system_exception("failed to list directory: {}", SRC_LOC, path);
     }
 
     util::DynArray<CString> results;

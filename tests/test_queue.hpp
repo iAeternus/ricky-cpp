@@ -36,10 +36,43 @@ fn it_works = []() {
     Assertions::assertEquals(0, q.size());
 };
 
+fn should_fail_to_pop_if_queue_is_empty = []() {
+    // Given
+    util::Queue<i32> q;
+
+    // When & Then
+    Assertions::assertThrows("queue is empty.", [&]() {
+        q.pop();
+    });
+};
+
+fn should_fail_to_get_front_if_queue_is_empty = []() {
+    // Given
+    util::Queue<i32> q;
+
+    // When & Then
+    Assertions::assertThrows("queue is empty.", [&]() {
+        q.front();
+    });
+};
+
+fn should_fail_to_get_tail_if_queue_is_empty = []() {
+    // Given
+    util::Queue<i32> q;
+
+    // When & Then
+    Assertions::assertThrows("queue is empty.", [&]() {
+        q.tail();
+    });
+};
+
 fn test_queue() {
     UnitTestGroup group{"test_queue"};
 
     group.addTest("it_works", it_works);
+    group.addTest("should_fail_to_pop_if_queue_is_empty", should_fail_to_pop_if_queue_is_empty);
+    group.addTest("should_fail_to_get_front_if_queue_is_empty", should_fail_to_get_front_if_queue_is_empty);
+    group.addTest("should_fail_to_get_tail_if_queue_is_empty", should_fail_to_get_tail_if_queue_is_empty);
 
     group.startAll();
 }

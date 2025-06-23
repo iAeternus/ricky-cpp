@@ -7,6 +7,7 @@
 #ifndef STRING_BUILDER_HPP
 #define STRING_BUILDER_HPP
 
+#include "Exception.hpp"
 #include "Vec.hpp"
 #include "String.hpp"
 #include <cstring>
@@ -243,7 +244,7 @@ private:
      */
     void check_encoding(util::Encoding* other) const {
         if (other != encoding_) {
-            EncodingError("Encoding mismatch in StringBuilder");
+            runtime_exception("encoding mismatch in StringBuilder");
         }
     }
 

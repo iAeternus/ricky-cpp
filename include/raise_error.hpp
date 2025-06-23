@@ -44,21 +44,21 @@ inline void error_exec(const T& msg, const STD source_location& loc = STD source
 
 // #define ValueError(msg) Error("ValueError", msg)
 
-#define TypeError(msg) Error("TypeError", msg)
+// #define TypeError(msg) Error("TypeError", msg)
 
-#define RuntimeError(msg) Error("RuntimeError", msg)
+// #define RuntimeError(msg) Error("RuntimeError", msg)
 
-#define NotImplementedError(msg) Error("NotImplementedError", msg)
+// #define NotImplementedError(msg) Error("NotImplementedError", msg)
 
-#define FileNotFoundError(msg) Error("FileNotFoundError", msg)
+// #define FileNotFoundError(msg) Error("FileNotFoundError", msg)
 
-#define PermissionError(msg) Error("PermissionError", msg)
+// #define PermissionError(msg) Error("PermissionError", msg)
 
-#define EncodingError(msg) Error("EncodingError", msg)
+// #define EncodingError(msg) Error("EncodingError", msg)
 
-#define SystemError(msg) Error("SystemError", msg)
+// #define SystemError(msg) Error("SystemError", msg)
 
-#define TestError(msg) Error("TestError", msg)
+// #define TestError(msg) Error("TestError", msg)
 
 } // namespace my
 

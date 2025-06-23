@@ -8,6 +8,7 @@
 #define HASH_BUCKET_HPP
 
 #include "Array.hpp"
+#include "Exception.hpp"
 
 namespace my::util {
 
@@ -454,7 +455,7 @@ public:
             }
             value_manager.add_move_dist();
         }
-        RuntimeError("RobinHashBucket set_value failed, bucket is full");
+        runtime_exception("bucket is full");
         return nullptr;
     }
 

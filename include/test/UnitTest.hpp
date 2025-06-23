@@ -7,6 +7,7 @@
 #ifndef TEST_UTILS_HPP
 #define TEST_UTILS_HPP
 
+#include "Exception.hpp"
 #include "Timer.hpp"
 #include "DynArray.hpp"
 #include "Function.hpp"
@@ -41,11 +42,11 @@ public:
         try {
             test_passed(std::format("[{}] Test passed in {}ms", displayName_, timer_(testCase_)));
             return true;
-        } catch (const std::runtime_error& re) {
-            test_failed(std::format("[{}] Test failed! Exception: {}", displayName_, re.what()));
+        } catch (const Exception& ex) {
+            test_failed(std::format("[{}] Test failed!\nCaused by:\n{}", displayName_, ex.what()));
             return false;
         } catch (...) {
-            test_failed(std::format("[{}] Test failed! Test failed! Unknown exception.", displayName_));
+            test_failed(std::format("[{}] Test failed! Unknown exception.", displayName_));
             return false;
         }
     }

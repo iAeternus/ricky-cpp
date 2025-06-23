@@ -9,39 +9,41 @@
 
 #include "math_utils.hpp"
 #include "Exception.hpp"
-#include <exception>
+#include <format>
+#include <source_location>
 
 namespace my::test {
 
-/**
- * @brief 断言异常，断言失败时抛出
- */
-class AssertionFailedException : public std::runtime_error {
-public:
-    explicit AssertionFailedException(const CString& message) :
-            std::runtime_error(message.data()) {}
+// /**
+//  * @brief 断言异常，断言失败时抛出
+//  */
+// class AssertionFailedException : public std::runtime_error {
+// public:
+//     explicit AssertionFailedException(const CString& message) :
+//             std::runtime_error(message.data()) {}
 
-    explicit AssertionFailedException(CString&& message) :
-            std::runtime_error(std::move(message).data()) {}
-};
+//     explicit AssertionFailedException(CString&& message) :
+//             std::runtime_error(std::move(message).data()) {}
+// };
 
 class Assertions : public Object<Assertions> {
 public:
     /**
      * @brief 断言表达式是否为true，否则抛出异常
      */
-    static void assertTrue(bool expression, CString&& message = "") {
+    static void assertTrue(bool expression, CString&& message = "", std::source_location loc = SRC_LOC) {
         if (!expression) {
-            fail("Expected true, but got false.", std::forward<CString>(message));
+            // fail("Expected true, but got false.", std::forward<CString>(message), loc);
+            fail(std::format("Expected true, but got false. {}", std::forward<CString>(message)), loc);
         }
     }
 
     /**
      * @brief 断言表达式是否为false，否则抛出异常
      */
-    static void assertFalse(bool expression, CString&& message = "") {
+    static void assertFalse(bool expression, CString&& message = "", std::source_location loc = SRC_LOC) {
         if (expression) {
-            fail("Expected false, but got true.", std::forward<CString>(message));
+            fail(std::format("Expected false, but got true. {}", std::forward<CString>(message)), loc);
         }
     }
 
@@ -49,21 +51,21 @@ public:
      * @brief 断言两个值相等，否则抛出异常
      */
     template <Assertable T, Assertable U>
-    static void assertEquals(const T& expected, const U& actual, CString&& message = "") {
+    static void assertEquals(const T& expected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
         if (expected.__cmp__(actual) != 0) {
-            fail(std::format("Expected {}, but got {}", expected.__str__(), actual.__str__(), std::forward<CString>(message)));
+            fail(std::format("Expected {}, but got {}. {}", expected.__str__(), actual.__str__(), std::forward<CString>(message)), loc);
         }
     }
 
     template <StdPrintable T, StdPrintable U>
-    static void assertEquals(const T& expected, const U& actual, CString&& message = "") {
+    static void assertEquals(const T& expected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
         if constexpr (is_same<T, f32, f64, f128>) {
             if (math::fcmp(expected, actual) != 0) {
-                fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
+                fail(std::format("Expected {}, but got {}. {}", expected, actual, std::forward<CString>(message)), loc);
             }
         } else {
             if (expected != actual) {
-                fail(std::format("Expected {}, but got {}", expected, actual, std::forward<CString>(message)));
+                fail(std::format("Expected {}, but got {}. {}", expected, actual, std::forward<CString>(message)), loc);
             }
         }
     }
@@ -72,59 +74,64 @@ public:
      * @brief 断言两个值不相等，否则抛出异常
      */
     template <Assertable T, Assertable U>
-    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "") {
+    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
         if (unexpected.__cmp__(actual) == 0) {
-            fail(std::format("Expected not {}, but got {}", unexpected.__str__(), actual.__str__()), std::forward<CString>(message));
+            fail(std::format("Expected not {}, but got {}. {}", unexpected.__str__(), actual.__str__(), std::forward<CString>(message)), loc);
         }
     }
 
     template <StdPrintable T, StdPrintable U>
-    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "") {
+    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
         if constexpr (is_same<T, f32, f64, f128>) {
             if (math::fcmp(unexpected, actual) == 0) {
-                fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
+                fail(std::format("Expected not {}, but got {}. {}", unexpected, actual, std::forward<CString>(message)), loc);
             }
         } else {
             if (unexpected == actual) {
-                fail(std::format("Expected not {}, but got {}", unexpected, actual), std::forward<CString>(message));
+                fail(std::format("Expected not {}, but got {}. {}", unexpected, actual, std::forward<CString>(message)), loc);
             }
         }
     }
 
-    static void assertThrows(CString&& expectedMessage, Runnable&& func) {
+    static void assertThrows(CString&& expectedMessage, Runnable&& func, std::source_location loc = SRC_LOC) {
+        bool no_exception_throw = false;
         try {
             func();
-            fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
+            no_exception_throw = true;
         } catch (const Exception& ex) {
             if (expectedMessage != ex.message()) {
-                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.message()));
+                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.message()), loc);
             }
         } catch (...) {
-            fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage));
+            fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage), loc);
+        }
+
+        if (no_exception_throw) {
+            fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage), loc);
         }
     }
 
-    static void assertThrows(const char* expectedMessage, Runnable&& func) {
+    static void assertThrows(const char* expectedMessage, Runnable&& func, std::source_location loc = SRC_LOC) {
+        bool no_exception_throw = false;
         try {
             func();
-            fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage));
+            no_exception_throw = true;
         } catch (const Exception& ex) {
             if (std::strcmp(expectedMessage, ex.message())) {
-                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.message()));
+                fail(std::format("Expected exception message \"{}\" but got \"{}\"", expectedMessage, ex.message()), loc);
             }
         } catch (...) {
-            fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage));
+            fail(std::format("Expected exception with message \"{}\" but got an unknown exception", expectedMessage), loc);
+        }
+
+        if (no_exception_throw) {
+            fail(std::format("Expected exception with message \"{}\" but no exception was thrown", expectedMessage), loc);
         }
     }
 
 private:
-    static void fail(const CString& failureMessage, const CString& additionalMessage = "") {
-        std::stringstream stream;
-        stream << "Assertion Failed: " << failureMessage;
-        if (!additionalMessage.empty()) {
-            stream << " " << additionalMessage;
-        }
-        throw AssertionFailedException(stream.str());
+    static void fail(const CString& failureMessage, std::source_location loc) {
+        assertion_failed_exception("{}", loc, failureMessage);
     }
 };
 

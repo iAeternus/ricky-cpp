@@ -24,7 +24,7 @@ public:
      * 计算hash编码
      */
     [[nodiscard]] hash_t __hash__() const {
-        static_assert(false, "NotImplementedError: not implemented __hash__()");
+        static_assert(false, "NotImplementedException: not implemented __hash__()");
         std::unreachable();
     }
 

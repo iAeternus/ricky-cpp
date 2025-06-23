@@ -66,7 +66,7 @@ public:
     void write(const char* c) const {
         DWORD written_bytes = 0;
         if (!WriteFile(fh_, c, strlen(c), &written_bytes, nullptr)) {
-            SystemError("Failed to write from file");
+            system_exception("failed to write from file");
         }
     }
 
@@ -76,7 +76,7 @@ public:
         CString buffer{buffer_size};
 
         if (!ReadFile(fh_, buffer.data(), buffer_size, &read_bytes, nullptr))
-            SystemError("Failed to read from file");
+            system_exception("failed to read from file");
 
         return buffer;
     }

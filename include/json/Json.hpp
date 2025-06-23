@@ -9,6 +9,7 @@
 
 #include "Exception.hpp"
 #include "json_trait.hpp"
+#include "ricky.hpp"
 
 namespace my::json {
 
@@ -232,8 +233,7 @@ public:
         if (is<JsonType::JsonDict>()) {
             return transform<JsonType::JsonDict>().size();
         }
-        RuntimeError("Json type is not JSON_ARRAY or JSON_DICT");
-        std::unreachable();
+        runtime_exception("json type is not JSON_ARRAY or JSON_DICT");
     }
 
     [[nodiscard]] CString __str__() const {
@@ -304,8 +304,7 @@ fn constexpr make_int(T&& value)->JsonType::JsonInt {
         return static_cast<JsonType::JsonInt>(value);
     }
 
-    RuntimeError(std::format("Unsupported {} for make int", dtype(T)));
-    std::unreachable();
+    runtime_exception("unsupported {} for make int", SRC_LOC, dtype(T));
 }
 
 template <typename T>
@@ -316,8 +315,7 @@ fn constexpr make_float(T&& value)->JsonType::JsonFloat {
         return static_cast<JsonType::JsonFloat>(value);
     }
 
-    RuntimeError(std::format("Unsupported {} for make f32", dtype(T)));
-    std::unreachable();
+    runtime_exception("unsupported {} for make float", SRC_LOC, dtype(T));
 }
 
 template <typename T>

@@ -88,7 +88,7 @@ public:
     // }
 
     Self& operator=(const CString& val) {
-        if (val.empty()) RuntimeError("Empty string");
+        if (val.empty()) runtime_exception("empty string");
         parse_string(val);
         return *this;
     }

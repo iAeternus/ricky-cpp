@@ -141,7 +141,7 @@ public:
      * @brief 时间间隔除法运算。
      * @param divisor 除数
      * @return 除法结果的时间间隔对象（*this / divisor）
-     * @exception RuntimeError 除数为零
+     * @exception arithmetic_exception 除数为零
      */
     Self operator/(i64 divisor) const {
         if (divisor == 0) {

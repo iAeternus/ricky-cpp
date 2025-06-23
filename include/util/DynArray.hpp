@@ -7,6 +7,7 @@
 #ifndef DYN_ARRAY_HPP
 #define DYN_ARRAY_HPP
 
+#include "Exception.hpp"
 #include "binary_utils.hpp"
 #include "raise_error.hpp"
 #include "Buffer.hpp"
@@ -622,7 +623,7 @@ public:
         difference_type operator-(const Self& other) const {
             if (this->__cmp__(other) < 0) return -(other - *this);
             if (this->dynarray_ != other.dynarray_) {
-                RuntimeError("Iterator not belong to the same container.");
+                runtime_exception("iterator not belong to the same container.");
             }
 
             if (this->block_idx_ == other.block_idx_) {

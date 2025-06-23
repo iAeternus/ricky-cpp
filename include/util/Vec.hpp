@@ -628,7 +628,7 @@ public:
         difference_type operator-(const Self& other) const {
             if (this->__cmp__(other) < 0) return -(other - *this);
             if (this->vec_ptr_ != other.vec_ptr_) {
-                RuntimeError("Iterator not belong to the same container.");
+                runtime_exception("iterator not belong to the same container.");
             }
 
             return this->cur_idx_ - other.cur_idx_;

@@ -10,6 +10,7 @@
 
 #include "ChainNode.hpp"
 #include "Creator.hpp"
+#include "Exception.hpp"
 
 namespace my::util {
 
@@ -91,7 +92,7 @@ public:
      */
     void pop() {
         if (empty()) {
-            RuntimeError("Queue is empty.");
+            runtime_exception("queue is empty.");
             return;
         }
         auto* p = tail_->next_;
@@ -111,8 +112,7 @@ public:
      */
     value_t& front() {
         if (empty()) {
-            RuntimeError("Queue is empty.");
-            std::unreachable();
+            runtime_exception("queue is empty.");
         }
         return tail_->next_->next_->value_;
     }
@@ -124,8 +124,7 @@ public:
      */
     const value_t& front() const {
         if (empty()) {
-            RuntimeError("Queue is empty.");
-            std::unreachable();
+            runtime_exception("queue is empty.");
         }
         return tail_->next_->next_->value_;
     }
@@ -137,8 +136,7 @@ public:
      */
     value_t& tail() {
         if (empty()) {
-            RuntimeError("Queue is empty.");
-            std::unreachable();
+            runtime_exception("queue is empty.");
         }
         return tail_->value_;
     }
@@ -150,8 +148,7 @@ public:
      */
     const value_t& tail() const {
         if (empty()) {
-            RuntimeError("Queue is empty.");
-            std::unreachable();
+            runtime_exception("queue is empty.");
         }
         return tail_->value_;
     }

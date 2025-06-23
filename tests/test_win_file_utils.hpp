@@ -4,6 +4,7 @@
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "filesystem.hpp"
+#include "win/file_utils.hpp"
 
 namespace my::test::test_win_file_utils {
 
@@ -69,6 +70,24 @@ fn should_mkdir_and_remove = []() {
     Assertions::assertFalse(fs::win::exists(path));
 };
 
+fn should_fail_to_mkdir_if_dir_already_exists = []() {
+    Assertions::assertThrows("directory already exists: F:\\develop\\ricky-cpp\\tests\\resources", []() {
+        fs::win::mkdir(CLASS_PATH, false);
+    });
+};
+
+fn should_fail_to_mkdir_if_path_not_found = []() {
+    Assertions::assertThrows("path not found: F:\\develop\\ricky-cpp\\tests\\resources\\tmp1\\tmp2", []() {
+        fs::win::mkdir(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
+    });
+};
+
+fn should_fail_to_remove_if_file_or_dir_not_found = []() {
+    Assertions::assertThrows("file or directory not found in F:\\develop\\ricky-cpp\\tests\\resources\\tmp1\\tmp2", []() {
+        fs::win::remove(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
+    });
+};
+
 fn should_join = []() {
     // Given
     const char* path = "C:";
@@ -101,6 +120,9 @@ fn test_win_file_utils() {
     group.addTest("should_judge_is_file", should_judge_is_file);
     group.addTest("should_judge_is_dir", should_judge_is_dir);
     group.addTest("should_mkdir_and_remove", should_mkdir_and_remove);
+    group.addTest("should_fail_to_mkdir_if_dir_already_exists", should_fail_to_mkdir_if_dir_already_exists);
+    group.addTest("should_fail_to_mkdir_if_path_not_found", should_fail_to_mkdir_if_path_not_found);
+    group.addTest("should_fail_to_remove_if_file_or_dir_not_found", should_fail_to_remove_if_file_or_dir_not_found);
     group.addTest("should_join", should_join);
     group.addTest("should_list_dir", should_list_dir);
 

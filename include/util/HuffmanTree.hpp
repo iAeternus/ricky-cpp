@@ -7,6 +7,7 @@
 #ifndef HUFFMAN_TREE_HPP
 #define HUFFMAN_TREE_HPP
 
+#include "Exception.hpp"
 #include "String.hpp"
 #include "StringBuilder.hpp"
 #include "Dict.hpp"
@@ -59,7 +60,7 @@ public:
         StringBuilder sb;
         for (const auto& cp : text_) {
             if (!key_.contains(cp)) {
-                RuntimeError("Missing code for character");
+                runtime_exception("missing code for character");
             }
             sb.append(key_[cp].data());
         }
@@ -72,7 +73,7 @@ public:
         usize cur = root_idx_;
         for (char bit : encoded_text_) {
             cur = (bit == '0') ? nodes_[cur].lch : nodes_[cur].rch;
-            if (cur == NIL) RuntimeError("Invalid encoded stream");
+            if (cur == NIL) runtime_exception("invalid encoded stream");
 
             if (nodes_[cur].lch == NIL && nodes_[cur].rch == NIL) {
                 sb.append(nodes_[cur].data);
@@ -117,7 +118,7 @@ public:
      * @brief 计算树高
      */
     usize height() const {
-        if (root_idx_ == NIL) RuntimeError("Please build the tree first.");
+        if (root_idx_ == NIL) runtime_exception("please build the tree first.");
         return height(root_idx_);
     }
 

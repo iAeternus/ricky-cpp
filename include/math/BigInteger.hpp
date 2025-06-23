@@ -475,7 +475,7 @@ public:
      * @brief 计算除法的商和余数
      * @param other 除数
      * @return 包含商和余数的pair
-     * @throws RuntimeError 当除数为零时
+     * @throws runtime_exception 当除数为零时
      */
     Pair<BigInteger, BigInteger> div_rem(const Self& other) const {
         return Pair{*this / other, *this % other};
