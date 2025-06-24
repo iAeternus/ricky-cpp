@@ -2,14 +2,12 @@
 #define TEST_GRAPH_ALGORITHM_HPP
 
 #include "Assertions.hpp"
-#include "graph_helper.hpp"
 #include "UnitTest.hpp"
-#include "Assertions.hpp"
-#include "Vec.hpp"
 #include "graph_algorithm.hpp"
-#include "Graph.hpp"
 
 namespace my::test::test_graph_algorithm {
+
+#define INF TYPE_MAX(f64)
 
 fn test_adj2matrix = []() {
     // Given
@@ -39,7 +37,6 @@ fn test_adj2matrix = []() {
     auto res = g.call_algo<math::Matrix<f64>>("adj2matrix");
 
     // Then
-    using namespace my::graph;
     Assertions::assertEquals(math::Matrix<f64>{
                                  {0, 15, 2, 12, INF, INF, INF},
                                  {INF, 0, INF, INF, 6, INF, INF},

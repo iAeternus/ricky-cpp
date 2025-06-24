@@ -88,7 +88,7 @@ public:
     // }
 
     Self& operator=(const CString& val) {
-        if (val.empty()) runtime_exception("empty string");
+        if (val.empty()) throw runtime_exception("empty string");
         parse_string(val);
         return *this;
     }
@@ -295,7 +295,7 @@ public:
      */
     Self divide(const Self& other, u32 scale, RoundingMode mode = HALF_UP) const {
         if (other.is_zero()) {
-            arithmetic_exception("/ by zero");
+            throw arithmetic_exception("/ by zero");
         }
 
         // 如果被除数为0，直接返回0
@@ -362,7 +362,7 @@ public:
      * @return 平方根结果
      */
     Self sqrt(u32 precision = 10) const {
-        if (is_neg()) my::arithmetic_exception("Cannot calculate square root of negative number");
+        if (is_neg()) throw arithmetic_exception("Cannot calculate square root of negative number");
         if (is_zero()) return ZERO.scale(precision, HALF_UP);
 
         // 初始估计值（保持足够精度）

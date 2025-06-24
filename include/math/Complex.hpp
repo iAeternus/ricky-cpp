@@ -124,7 +124,7 @@ public:
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         (void)other;
-        runtime_exception("complex numbers cannot compare sizes");
+        throw runtime_exception("complex numbers cannot compare sizes");
     }
 
     [[nodiscard]] bool __equals__(const Self& other) const {
@@ -159,7 +159,7 @@ private:
             ++i;
         }
         if (i != trim_str.size()) {
-            runtime_exception("invalid complex number format");
+            throw runtime_exception("invalid complex number format");
         }
     }
 
@@ -176,7 +176,7 @@ private:
             num += str[i++];
         }
         if (num.empty()) {
-            runtime_exception("invalid complex number format");
+            throw runtime_exception("invalid complex number format");
         }
         return std::stod(num);
     }

@@ -98,7 +98,7 @@ public:
             if (cmp != 0) return cmp;
             return second_ - other.second_;
         } else {
-            runtime_exception("The comparison logic has not been implemented.");
+            throw runtime_exception("The comparison logic has not been implemented.");
         }
     }
 

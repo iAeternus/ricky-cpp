@@ -7,10 +7,9 @@
 #ifndef TEST_UTILS_HPP
 #define TEST_UTILS_HPP
 
-#include "Exception.hpp"
+#include "Vec.hpp"
 #include "Timer.hpp"
-#include "DynArray.hpp"
-#include "Function.hpp"
+#include "Printer.hpp"
 
 namespace my::test {
 
@@ -109,7 +108,7 @@ private:
     Runnable teardown_;
     Runnable before_each_;
     Runnable after_each_;
-    util::DynArray<UnitTest*> group_;
+    util::Vec<UnitTest*> group_;
 };
 
 } // namespace my::test

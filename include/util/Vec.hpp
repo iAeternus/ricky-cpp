@@ -628,7 +628,7 @@ public:
         difference_type operator-(const Self& other) const {
             if (this->__cmp__(other) < 0) return -(other - *this);
             if (this->vec_ptr_ != other.vec_ptr_) {
-                runtime_exception("iterator not belong to the same container.");
+                throw runtime_exception("iterator not belong to the same container.");
             }
 
             return this->cur_idx_ - other.cur_idx_;
@@ -735,13 +735,13 @@ private:
 template <typename T>
 fn opt(const Vec<std::any>& args, usize idx)->T {
     if (idx < 0 || idx >= args.size()) {
-        index_out_of_bounds_exception("index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
+        throw index_out_of_bounds_exception("index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
     }
 
     try {
         return std::any_cast<T>(args.at(idx));
     } catch (const std::bad_any_cast& e) {
-        type_exception("type mismatch in opt function: expected[{}], got[{}]", SRC_LOC, dtype(T), args[idx].type().name());
+        throw type_exception("type mismatch in opt function: expected[{}], got[{}]", SRC_LOC, dtype(T), args[idx].type().name());
     }
 }
 

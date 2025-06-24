@@ -69,9 +69,9 @@ public:
      * @param message 异常消息
      * @param loc 异常位置
      */
-    Exception(ExceptionType type, CString&& message,
-              std::source_location loc = std::source_location::current(),
-              std::exception_ptr nested = nullptr) :
+    explicit Exception(ExceptionType type, CString&& message,
+                       std::source_location loc = std::source_location::current(),
+                       std::exception_ptr nested = nullptr) :
             type_(type), message_(std::move(message)), loc_(loc), nested_(nested), formatted_message_(format_message()) {}
 
     /**
@@ -164,7 +164,7 @@ private:
         } catch (const std::bad_alloc&) {
             return "Memory error in exception formatting";
         } catch (...) {
-            // 格式失败时回退
+            // 格式化失败时回退
             return CString("Exception formatting failed");
         }
     }
@@ -182,51 +182,44 @@ private:
 /**
  * @brief 基本异常工厂
  */
-fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) {
-    throw Exception(type, std::move(message), loc);
-    std::unreachable();
+fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC)->Exception {
+    return Exception(type, std::move(message), loc);
 }
 
 template <typename... Args>
-fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) {
+fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args)->Exception {
     std::string message = std::vformat(fmt, std::make_format_args(args...));
-    throw Exception(type, std::move(message), loc);
-    std::unreachable();
+    return Exception(type, std::move(message), loc);
 }
 
 /**
  * @brief 条件检查
  */
-fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) {
+fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC)->void {
     if (!condition) {
-        exception(type, std::move(message), loc);
+        throw exception(type, std::move(message), loc);
     }
 }
 
 template <typename... Args>
-fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) {
+fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args)->void {
     if (!condition) {
         std::string message = std::vformat(fmt, std::make_format_args(args...));
-        exception(type, std::move(message), loc);
+        throw exception(type, std::move(message), loc);
     }
 }
 
 /**
  * @brief 异常工厂
  */
-#define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                     \
-    fn NAME##_exception(                                                         \
-        CString&& message,                                                       \
-        std::source_location loc = std::source_location::current()) {            \
-        exception(TYPE, std::move(message), loc);                                \
-    }                                                                            \
-    template <typename... Args>                                                  \
-    fn NAME##_exception(                                                         \
-        std::string_view fmt,                                                    \
-        std::source_location loc,                                                \
-        Args&&... args) {                                                        \
-        std::string message = std::vformat(fmt, std::make_format_args(args...)); \
-        exception(TYPE, std::move(message), loc);                                \
+#define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                         \
+    fn NAME##_exception(CString&& message, std::source_location loc = SRC_LOC)->Exception {          \
+        return exception(TYPE, std::move(message), loc);                                             \
+    }                                                                                                \
+    template <typename... Args>                                                                      \
+    fn NAME##_exception(std::string_view fmt, std::source_location loc, Args&&... args)->Exception { \
+        std::string message = std::vformat(fmt, std::make_format_args(args...));                     \
+        return exception(TYPE, std::move(message), loc);                                             \
     }
 
 DEFINE_EXCEPTION_FACTORY(runtime, ExceptionType::RuntimeException)                      // 运行时异常

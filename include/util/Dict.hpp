@@ -161,7 +161,7 @@ public:
 
     /**
      * @brief 获取指定键对应的值。
-     * 如果键不存在，抛出 not_found_exception
+     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键。
      * @return 返回对应值的引用。
      */
@@ -169,28 +169,28 @@ public:
         auto hash_val = my_hash(key);
         auto* value = get_impl(hash_val);
         if (value == nullptr) {
-            not_found_exception("key '{}' not found in dict", SRC_LOC, key);
+            throw not_found_exception("key '{}' not found in dict", SRC_LOC, key);
         }
         return *value;
     }
 
     /**
      * @brief 获取指定键对应的值（常量版本）。
-     * 如果键不存在，抛出 not_found_exception
+     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键。
      * @return 返回对应值的常量引用。
      */
     const value_t& get(const key_t& key) const {
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
-            not_found_exception("key '{}' not found in dict", SRC_LOC, key);
+            throw not_found_exception("key '{}' not found in dict", SRC_LOC, key);
         }
         return *value;
     }
 
     /**
      * @brief 重载 [] 运算符，返回指定键对应的值。
-     * 如果键不存在，抛出 not_found_exception
+     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键。
      * @return 返回对应值的常量引用。
      */

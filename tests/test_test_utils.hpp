@@ -20,13 +20,13 @@ fn should_success2 = []() {
 };
 
 fn should_failed = []() {
-    my::runtime_exception("wa");
+    throw runtime_exception("wa");
 };
 
 fn should_throws = []() {
     Assertions::assertThrows("wa"_cs, should_failed);
     Assertions::assertThrows("This is an IO exception message.", []() {
-        my::io_exception("This is an {} message.", std::source_location::current(), "IO exception");
+        throw io_exception("This is an {} message.", std::source_location::current(), "IO exception");
     });
 };
 

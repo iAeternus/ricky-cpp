@@ -141,11 +141,11 @@ public:
      * @brief 时间间隔除法运算。
      * @param divisor 除数
      * @return 除法结果的时间间隔对象（*this / divisor）
-     * @exception arithmetic_exception 除数为零
+     * @exception throw arithmetic_exception 除数为零
      */
     Self operator/(i64 divisor) const {
         if (divisor == 0) {
-            arithmetic_exception("/ by zero");
+            throw arithmetic_exception("/ by zero");
         }
         i64 totalNanos = toNanos();
         return ofNanos(totalNanos / divisor);
@@ -242,7 +242,7 @@ private:
      */
     static void validateNanos(i32 nanos_) {
         if (nanos_ < 0 || nanos_ >= NANOS_PER_SECOND)
-            runtime_exception("nanoseconds out of range");
+            throw runtime_exception("nanoseconds out of range");
     }
 
     /**

@@ -274,7 +274,7 @@ public:
         } else if constexpr (Subtractble<key_t>) {
             return this->key_ - other.key_;
         } else {
-            type_exception("key type[{}] is not sortable", SRC_LOC, dtype(key_t));
+            throw type_exception("key type[{}] is not sortable", SRC_LOC, dtype(key_t));
         }
     }
 

@@ -107,7 +107,7 @@ public:
      * @brief 从字符串赋值
      */
     Self& operator=(const char* str) {
-        if (!str || !*str) runtime_exception("invalid string");
+        if (!str || !*str) throw runtime_exception("invalid string");
 
         i32 len = strlen(str);
         i32 tmp = 0, ten = 1, stop = 0;
@@ -116,7 +116,7 @@ public:
         if (!sign_) stop = 1;
 
         for (isize i = len; i > stop; --i) {
-            if (!std::isdigit(str[i - 1])) runtime_exception("invalid character in string");
+            if (!std::isdigit(str[i - 1])) throw runtime_exception("invalid character in string");
             tmp += c2i(str[i - 1]) * ten;
             ten *= 10;
             if ((len - i) % WIDTH + 1 == WIDTH) {
@@ -365,7 +365,7 @@ public:
 
     friend Self operator/(const Self& a, const Self& b) {
         if (b.is_zero()) {
-            arithmetic_exception("/ by zero");
+            throw arithmetic_exception("/ by zero");
         }
         Self aa = a.abs();
         Self bb = b.abs();
@@ -475,7 +475,7 @@ public:
      * @brief 计算除法的商和余数
      * @param other 除数
      * @return 包含商和余数的pair
-     * @throws runtime_exception 当除数为零时
+     * @throws throw runtime_exception 当除数为零时
      */
     Pair<BigInteger, BigInteger> div_rem(const Self& other) const {
         return Pair{*this / other, *this % other};

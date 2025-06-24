@@ -39,7 +39,7 @@ public:
      */
     Self& append(const String& str) {
         check_encoding(str.encoding());
-        
+
         // 直接获取String的底层字节表示并添加到缓冲区
         CString cs = str.__str__();
         char_buf_.reserve(char_buf_.size() + cs.size());
@@ -51,7 +51,7 @@ public:
 
     Self& append(String&& str) {
         check_encoding(str.encoding());
-        
+
         // 直接获取String的底层字节表示并添加到缓冲区
         CString cs = str.__str__();
         char_buf_.reserve(char_buf_.size() + cs.size());
@@ -67,10 +67,10 @@ public:
      */
     Self& append(const char* cstr) {
         if (!cstr) return *this;
-        
+
         const usize len = std::strlen(cstr);
         char_buf_.reserve(char_buf_.size() + len);
-        
+
         // 直接批量添加字节
         for (usize i = 0; i < len; ++i) {
             char_buf_.append(cstr[i]);
@@ -86,7 +86,7 @@ public:
 
         const usize len = sv.length();
         char_buf_.reserve(char_buf_.size() + len);
-        
+
         // 直接批量添加字节
         for (usize i = 0; i < len; ++i) {
             char_buf_.append(sv[i]);
@@ -101,7 +101,7 @@ public:
     Self& append(const CodePoint& cp) {
         const usize size = cp.size();
         char_buf_.reserve(char_buf_.size() + size);
-        
+
         // 直接添加码点的字节表示
         for (usize i = 0; i < size; ++i) {
             char_buf_.append(cp.data()[i]);
@@ -112,14 +112,14 @@ public:
     Self& append(CodePoint&& cp) {
         const usize size = cp.size();
         char_buf_.reserve(char_buf_.size() + size);
-        
+
         // 直接添加码点的字节表示
         for (usize i = 0; i < size; ++i) {
             char_buf_.append(cp.data()[i]);
         }
         return *this;
     }
-    
+
     /**
      * @brief 追加单个字符
      */
@@ -127,7 +127,7 @@ public:
         char_buf_.append(ch);
         return *this;
     }
-    
+
     /**
      * @brief 追加整数
      */
@@ -136,7 +136,7 @@ public:
         int len = std::snprintf(buffer, sizeof(buffer), "%d", value);
         return append(buffer, len);
     }
-    
+
     /**
      * @brief 追加无符号整数
      */
@@ -145,7 +145,7 @@ public:
         int len = std::snprintf(buffer, sizeof(buffer), "%u", value);
         return append(buffer, len);
     }
-    
+
     /**
      * @brief 追加64位整数
      */
@@ -154,7 +154,7 @@ public:
         int len = std::snprintf(buffer, sizeof(buffer), "%lld", (long long)value);
         return append(buffer, len);
     }
-    
+
     /**
      * @brief 追加无符号64位整数
      */
@@ -163,20 +163,20 @@ public:
         int len = std::snprintf(buffer, sizeof(buffer), "%llu", (unsigned long long)value);
         return append(buffer, len);
     }
-    
+
     /**
      * @brief 追加特定长度的C字符串
      */
     Self& append(const char* str, usize len) {
         if (!str || len == 0) return *this;
-        
+
         char_buf_.reserve(char_buf_.size() + len);
         for (usize i = 0; i < len; ++i) {
             char_buf_.append(str[i]);
         }
         return *this;
     }
-    
+
     /**
      * @brief 追加格式化字符串
      * @tparam Args 格式化参数类型
@@ -223,14 +223,14 @@ public:
     void reserve(usize new_cap) {
         char_buf_.reserve(new_cap);
     }
-    
+
     /**
      * @brief 获取当前缓冲区大小
      */
     usize size() const noexcept {
         return char_buf_.size();
     }
-    
+
     /**
      * @brief 判断缓冲区是否为空
      */
@@ -244,7 +244,7 @@ private:
      */
     void check_encoding(util::Encoding* other) const {
         if (other != encoding_) {
-            runtime_exception("encoding mismatch in StringBuilder");
+            throw runtime_exception("encoding mismatch in StringBuilder");
         }
     }
 

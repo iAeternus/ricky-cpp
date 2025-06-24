@@ -172,7 +172,7 @@ fn is_one(const T& num, T eps = EPS)->bool {
  */
 fn reciprocal(f64 num)->f64 {
     if (is_zero(num)) {
-        arithmetic_exception("/ by zero");
+        throw arithmetic_exception("/ by zero");
     }
     return 1.0 / num;
 }
@@ -195,7 +195,7 @@ fn add_exact(i64 x, i64 y)->i64 {
     i64 r = x + y;
     // HD 2-12 Overflow iff both arguments have the opposite sign of the result
     if (((x ^ r) & (y ^ r)) < 0) {
-        overflow_exception("i64 overflow");
+        throw overflow_exception("i64 overflow");
     }
     return r;
 }
@@ -208,7 +208,7 @@ fn sub_exact(i64 x, i64 y)->i64 {
     // HD 2-12 Overflow iff the arguments have different signs and
     // the sign of the result is different from the sign of x
     if (((x ^ y) & (x ^ r)) < 0) {
-        overflow_exception("i64 overflow");
+        throw overflow_exception("i64 overflow");
     }
     return r;
 }
@@ -219,7 +219,7 @@ fn sub_exact(i64 x, i64 y)->i64 {
 fn mul_exact(i32 x, i32 y)->i32 {
     i64 r = i64(x) * i64(y);
     if (i32(r) != r) {
-        overflow_exception("i32 overflow");
+        throw overflow_exception("i32 overflow");
     }
     return i32(r);
 }
@@ -233,7 +233,7 @@ fn mul_exact(i64 x, i64 y)->i64 {
         // Check the result using the divide operator
         // and check for the special case of I64_MIN * -1
         if (((y != 0) && (r / y != x)) || (x == I64_MIN && y == -1)) {
-            overflow_exception("i64 overflow");
+            throw overflow_exception("i64 overflow");
         }
     }
     return r;

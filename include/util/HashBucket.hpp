@@ -455,7 +455,7 @@ public:
             }
             value_manager.add_move_dist();
         }
-        runtime_exception("bucket is full");
+        throw runtime_exception("bucket is full");
         return nullptr;
     }
 

@@ -92,7 +92,7 @@ public:
      */
     void pop() {
         if (empty()) {
-            runtime_exception("queue is empty.");
+            throw runtime_exception("queue is empty.");
             return;
         }
         auto* p = tail_->next_;
@@ -112,7 +112,7 @@ public:
      */
     value_t& front() {
         if (empty()) {
-            runtime_exception("queue is empty.");
+            throw runtime_exception("queue is empty.");
         }
         return tail_->next_->next_->value_;
     }
@@ -124,7 +124,7 @@ public:
      */
     const value_t& front() const {
         if (empty()) {
-            runtime_exception("queue is empty.");
+            throw runtime_exception("queue is empty.");
         }
         return tail_->next_->next_->value_;
     }
@@ -136,7 +136,7 @@ public:
      */
     value_t& tail() {
         if (empty()) {
-            runtime_exception("queue is empty.");
+            throw runtime_exception("queue is empty.");
         }
         return tail_->value_;
     }
@@ -148,7 +148,7 @@ public:
      */
     const value_t& tail() const {
         if (empty()) {
-            runtime_exception("queue is empty.");
+            throw runtime_exception("queue is empty.");
         }
         return tail_->value_;
     }

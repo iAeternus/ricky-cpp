@@ -56,11 +56,11 @@ fn mkdir(const char* path, bool exist_ok = false) {
     switch (state) {
     case ERROR_ALREADY_EXISTS:
         if (!exist_ok) {
-            runtime_exception("directory already exists: {}", SRC_LOC, path);
+            throw runtime_exception("directory already exists: {}", SRC_LOC, path);
         }
         break;
     case ERROR_PATH_NOT_FOUND:
-        not_found_exception("path not found: {}", SRC_LOC, path);
+        throw not_found_exception("path not found: {}", SRC_LOC, path);
         break;
     }
 }
@@ -71,13 +71,13 @@ fn mkdir(const char* path, bool exist_ok = false) {
  */
 fn remove(const char* path) {
     if (!exists(path)) {
-        not_found_exception("file or directory not found in {}", SRC_LOC, path);
+        throw not_found_exception("file or directory not found in {}", SRC_LOC, path);
     }
 
     if (isfile(path) && !DeleteFileA(path)) {
-        system_exception("failed to remove file");
+        throw system_exception("failed to remove file");
     } else if (isdir(path) && !RemoveDirectoryA(path)) {
-        system_exception("failed to remove directory");
+        throw system_exception("failed to remove directory");
     }
 }
 
@@ -110,7 +110,7 @@ fn listdir(const char* path)->util::DynArray<CString> {
     auto handle = FindFirstFileA(join(path, "*"), &find_data);
 
     if (handle == INVALID_HANDLE_VALUE) {
-        system_exception("failed to list directory: {}", SRC_LOC, path);
+        throw system_exception("failed to list directory: {}", SRC_LOC, path);
     }
 
     util::DynArray<CString> results;

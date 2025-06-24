@@ -83,7 +83,7 @@ public:
         } else if ((data[0] & 0xF8) == 0xF0) {
             return 4; // 以11110开头（11110xxx），4字节编码
         } else {
-            runtime_exception("invalid CodePoint");
+            throw runtime_exception("invalid CodePoint");
         }
         return 0;
     }

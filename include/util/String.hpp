@@ -620,8 +620,8 @@ public:
                 return slice(l, r + 1);
             }
         }
-        
-        runtime_exception("unmatched parentheses, too many left parentheses");
+
+        throw runtime_exception("unmatched parentheses, too many left parentheses");
     }
 
     /**

@@ -37,14 +37,14 @@ public:
 
     const key_t& key() const {
         if (key_ == nullptr) {
-            null_pointer_exception("key is null");
+            throw null_pointer_exception("key is null");
         }
         return *key_;
     }
 
     const value_t& value() const {
         if (value_ == nullptr) {
-            null_pointer_exception("value is null");
+            throw null_pointer_exception("value is null");
         }
         return *value_;
     }

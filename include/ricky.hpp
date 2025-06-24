@@ -24,6 +24,11 @@ namespace my {
 
 #define fr(R) inline R
 
+/**
+ * @brief 标准库命名空间
+ */
+#define STD ::std::
+
 // /**
 //  * @brief rust-like `let` 关键字
 //  * @note 规范：
@@ -132,6 +137,9 @@ inline constexpr f32 F32_MAX = FLT_MAX; // 最大正有限数
 inline constexpr f64 F64_MIN = DBL_MIN; // 最小正正规化数
 inline constexpr f64 F64_MAX = DBL_MAX; // 最大正有限数
 
+#define TYPE_MAX(T) STD numeric_limits<T>().max()
+#define TYPE_MIN(T) STD numeric_limits<T>().min()
+
 /**
  * @brief 空值, 不会被使用, 仅用于占位符
  */
@@ -142,11 +150,6 @@ T& None = *reinterpret_cast<T*>(NULL);
  * @brief 无效的索引位置
  */
 inline constexpr usize npos = static_cast<usize>(-1);
-
-/**
- * @brief 标准库命名空间
- */
-#define STD ::std::
 
 } // namespace my
 

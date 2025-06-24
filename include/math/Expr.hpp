@@ -86,7 +86,7 @@ public:
             tokenize(expr);
             this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
-            runtime_exception("tokenization error: {}", SRC_LOC, ex.what());
+            throw runtime_exception("tokenization error: {}", SRC_LOC, ex.what());
         }
     }
 
@@ -101,7 +101,7 @@ public:
      * @brief 转为后缀表达式
      */
     util::Vec<Token> to_post() const {
-        if (!valid_) runtime_exception("invalid expression");
+        if (!valid_) throw runtime_exception("invalid expression");
         return in2post();
     }
 
@@ -109,7 +109,7 @@ public:
      * @brief 计算表达式值
      */
     f64 eval() const {
-        if (!valid_) runtime_exception("invalid expression");
+        if (!valid_) throw runtime_exception("invalid expression");
         return eval_post(in2post());
     }
 
@@ -145,7 +145,7 @@ private:
                 } else if (is_op(c)) {
                     tokens_.append(Token::OPERATOR, CString::of(c));
                 } else if (c != ' ') {
-                    runtime_exception("invalid character: {}", SRC_LOC, c);
+                    throw runtime_exception("invalid character: {}", SRC_LOC, c);
                 }
             }
         }
@@ -162,15 +162,15 @@ private:
         if (dot_pos != std::string::npos) {
             // 还有其他小数点
             if (num.find('.', dot_pos + 1) != std::string::npos) {
-                runtime_exception("invalid number (multiple dots): {}", SRC_LOC, num);
+                throw runtime_exception("invalid number (multiple dots): {}", SRC_LOC, num);
             }
             // 小数点在开头或结尾
             if (dot_pos == 0 || dot_pos == num.length() - 1) {
-                runtime_exception("invalid number (misplaced dot): {}", SRC_LOC, num);
+                throw runtime_exception("invalid number (misplaced dot): {}", SRC_LOC, num);
             }
         }
         if (num[0] == '-' && num.size() == 1) {
-            runtime_exception("invalid operator position: {}", SRC_LOC, num);
+            throw runtime_exception("invalid operator position: {}", SRC_LOC, num);
         }
     }
 
@@ -227,7 +227,7 @@ private:
                     ans.append(op_st.peek());
                     op_st.pop();
                 }
-                if (op_st.empty()) runtime_exception("mismatched parentheses");
+                if (op_st.empty()) throw runtime_exception("mismatched parentheses");
                 op_st.pop(); // pop左括号
                 break;
             case Token::OPERATOR:
@@ -239,14 +239,14 @@ private:
                 op_st.push(token); // 当前操作符入栈
                 break;
             default:
-                runtime_exception("unexpected token type");
+                throw runtime_exception("unexpected token type");
             }
         }
 
         // 处理剩下的操作符
         while (!op_st.empty()) {
             if (op_st.peek().type == Token::LEFT_PAREN) {
-                runtime_exception("mismatched parentheses");
+                throw runtime_exception("mismatched parentheses");
             }
             ans.append(op_st.peek());
             op_st.pop();
@@ -282,7 +282,7 @@ private:
                 st.push(token.num_value);
                 break;
             case Token::OPERATOR:
-                if (st.size() < 2) runtime_exception("insufficient operands");
+                if (st.size() < 2) throw runtime_exception("insufficient operands");
                 b = st.peek();
                 st.pop();
                 a = st.peek();
@@ -295,10 +295,10 @@ private:
                 st.push(eval_unary_op(x, token.op_value));
                 break;
             default:
-                runtime_exception("unexpected token in postfix");
+                throw runtime_exception("unexpected token in postfix");
             }
         }
-        if (st.size() != 1) runtime_exception("malformed expression");
+        if (st.size() != 1) throw runtime_exception("malformed expression");
         return st.peek();
     }
 
@@ -311,7 +311,7 @@ private:
             return a * b;
         } else if (op == "/") {
             if (is_zero(b)) {
-                arithmetic_exception("/ by zero");
+                throw arithmetic_exception("/ by zero");
             }
             return a / b;
         } else if (op == "%") {
@@ -319,7 +319,7 @@ private:
         } else if (op == "^") {
             return std::pow(a, b);
         } else {
-            runtime_exception("unknown operator: {}", SRC_LOC, op);
+            throw runtime_exception("unknown operator: {}", SRC_LOC, op);
         }
     }
 
@@ -327,7 +327,7 @@ private:
         if (op == "u-") {
             return -x;
         } else {
-            runtime_exception("unknown unary operator: {}", SRC_LOC, op);
+            throw runtime_exception("unknown unary operator: {}", SRC_LOC, op);
         }
     }
 

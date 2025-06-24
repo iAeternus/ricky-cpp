@@ -128,7 +128,7 @@ public:
 
     Self upper() const {
         if (!is_ascii()) {
-            runtime_exception("not supported yet.");
+            throw runtime_exception("not supported yet.");
             std::unreachable();
         }
         return Self{static_cast<char>(std::toupper(byte_code_[0]))};
@@ -136,7 +136,7 @@ public:
 
     Self lower() const {
         if (!is_ascii()) {
-            runtime_exception("not supported yet.");
+            throw runtime_exception("not supported yet.");
             std::unreachable();
         }
         return Self{static_cast<char>(std::tolower(byte_code_[0]))};
@@ -242,7 +242,7 @@ fn get_code_points(const char* str, usize len, Encoding* encoding)->Vec<CodePoin
     while (i < len) {
         cps.append(CodePoint{str + i, encoding});
         i += cps[-1].size();
-        if (i > len) runtime_exception("invalid encoding, code point out of range");
+        if (i > len) throw runtime_exception("invalid encoding, code point out of range");
     }
     return cps;
 }

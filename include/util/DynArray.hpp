@@ -623,7 +623,7 @@ public:
         difference_type operator-(const Self& other) const {
             if (this->__cmp__(other) < 0) return -(other - *this);
             if (this->dynarray_ != other.dynarray_) {
-                runtime_exception("iterator not belong to the same container.");
+                throw runtime_exception("iterator not belong to the same container.");
             }
 
             if (this->block_idx_ == other.block_idx_) {

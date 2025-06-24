@@ -9,22 +9,8 @@
 
 #include "math_utils.hpp"
 #include "Exception.hpp"
-#include <format>
-#include <source_location>
 
 namespace my::test {
-
-// /**
-//  * @brief 断言异常，断言失败时抛出
-//  */
-// class AssertionFailedException : public std::runtime_error {
-// public:
-//     explicit AssertionFailedException(const CString& message) :
-//             std::runtime_error(message.data()) {}
-
-//     explicit AssertionFailedException(CString&& message) :
-//             std::runtime_error(std::move(message).data()) {}
-// };
 
 class Assertions : public Object<Assertions> {
 public:
@@ -131,7 +117,7 @@ public:
 
 private:
     static void fail(const CString& failureMessage, std::source_location loc) {
-        assertion_failed_exception("{}", loc, failureMessage);
+        throw assertion_failed_exception("{}", loc, failureMessage);
     }
 };
 

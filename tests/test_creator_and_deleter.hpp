@@ -34,8 +34,8 @@ private:
     i32 value_;
 };
 
-i32 TrackedObject::construct_count = 0;
-i32 TrackedObject::destruct_count = 0;
+inline i32 TrackedObject::construct_count = 0;
+inline i32 TrackedObject::destruct_count = 0;
 
 /**
  * @brief 异常测试类：构造函数可能抛出异常
@@ -44,7 +44,7 @@ class ExceptionProne : public Object<ExceptionProne> {
 public:
     explicit ExceptionProne(bool should_throw) {
         if (should_throw) {
-            my::runtime_exception("Construction failed");
+            throw runtime_exception("Construction failed");
         }
     }
 };

@@ -14,7 +14,7 @@ fn add = [](i32 a, i32 b) {
 };
 
 fn throw_exception = []() {
-    my::runtime_exception("wa");
+    throw runtime_exception("wa");
 };
 
 fn should_push = []() {
@@ -48,7 +48,7 @@ fn should_push_tasks_with_exception = []() {
     // When
     auto future = tp.push(throw_exception);
     auto future2 = tp.push([]() {
-        my::runtime_exception("wa2");
+        throw runtime_exception("wa2");
     });
 
     // Then

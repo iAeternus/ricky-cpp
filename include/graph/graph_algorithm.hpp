@@ -7,20 +7,17 @@
 #ifndef GRAPH_ALGORITHM_HPP
 #define GRAPH_ALGORITHM_HPP
 
-#include "graph_helper.hpp"
 #include "DisjointSet.hpp"
-#include "Function.hpp"
 #include "Matrix.hpp"
 #include "Graph.hpp"
 #include "Queue.hpp"
-#include "Pair.hpp"
 #include "Vec.hpp"
 
 #include <queue>
 
 namespace my::graph {
 
-#define INF F64_MAX
+// #define INF F64_MAX
 
 /**
  * @brief 邻接表转邻接矩阵
@@ -28,7 +25,7 @@ namespace my::graph {
  */
 template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
 auto adj2matrix = [](const auto& g, auto&& _) -> math::Matrix<E> {
-    math::Matrix<E> m(g.node_cnt(), INF);
+    math::Matrix<E> m(g.node_cnt(), g.node_cnt(), TYPE_MAX(E)); // TODO
     g.for_each([&](const auto& vertex) {
         m[vertex.id][vertex.id] = 0;
         vertex.for_each([&](Idx v, E w) {
@@ -266,14 +263,14 @@ auto prim = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     if (n == 0) return t;
 
     util::Vec<bool> vis(n, false);
-    util::Vec<E> dis(n, INF);   // 到树的最小距离
+    util::Vec<E> dis(n, TYPE_MAX(E));   // 到树的最小距离
     util::Vec<Idx> fa(n, npos); // MST父节点ID
 
     dis[0] = 0; // TODO 任选一个节点开始
     for (Idx i = 0; i < n; ++i) {
         // 1. 找到未访问节点中距离最小的节点
         Idx u = npos;
-        E min_dis = INF;
+        E min_dis = TYPE_MAX(E);
         g.for_each([&](const auto& node) {
             if (!vis[node.id] && dis[node.id] < min_dis) {
                 min_dis = dis[node.id];
@@ -316,7 +313,7 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     if (n == 0) return t;
 
     util::Vec<bool> vis(n, false);
-    util::Vec<E> dis(n, INF);   // 到树的最小距离
+    util::Vec<E> dis(n, TYPE_MAX(E));   // 到树的最小距离
     util::Vec<Idx> fa(n, npos); // MST父节点ID
 
     // 优先队列：存储 (距离, 节点ID) ，最小距离优先
@@ -433,7 +430,7 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
     auto s = util::opt<Idx>(args, 0);
 
     usize n = g.node_cnt();
-    util::Vec<E> dis(n, INF);
+    util::Vec<E> dis(n, TYPE_MAX(E));
     dis[s] = E{};
 
     using Node = Pair<E, Idx>;

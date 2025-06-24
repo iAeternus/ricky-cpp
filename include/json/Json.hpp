@@ -49,7 +49,7 @@ public:
             this->json_item_ = new JsonType::JsonNull(other.transform<JsonType::JsonNull>());
             break;
         default:
-            type_exception("json type {} is not valid", SRC_LOC, json_type_);
+            throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
     }
 
@@ -92,7 +92,7 @@ public:
             this->json_item_ = new JsonType::JsonNull(other.transform<JsonType::JsonNull>());
             break;
         default:
-            type_exception("json type {} is not valid", SRC_LOC, json_type_);
+            throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
         return *this;
     }
@@ -139,7 +139,7 @@ public:
         case GetJsonTypeID<JsonType::JsonNull>::ID:
             return "JsonNull";
         default:
-            type_exception("json type {} is not valid", SRC_LOC, id);
+            throw type_exception("json type {} is not valid", SRC_LOC, id);
             break;
         }
     }
@@ -151,7 +151,7 @@ public:
     template <JsonTypeStrictConcept T>
     T* transform_ptr() {
         if (!is<T>()) {
-            type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
+            throw type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
         }
         return reinterpret_cast<T*>(json_item_);
     }
@@ -159,7 +159,7 @@ public:
     template <JsonTypeStrictConcept T>
     const T* transform_ptr() const {
         if (!is<T>()) {
-            type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
+            throw type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
         }
         return reinterpret_cast<T*>(json_item_);
     }
@@ -233,7 +233,7 @@ public:
         if (is<JsonType::JsonDict>()) {
             return transform<JsonType::JsonDict>().size();
         }
-        runtime_exception("json type is not JSON_ARRAY or JSON_DICT");
+        throw runtime_exception("json type is not JSON_ARRAY or JSON_DICT");
     }
 
     [[nodiscard]] CString __str__() const {
@@ -254,7 +254,7 @@ public:
         case GetJsonTypeID<JsonType::JsonNull>::ID:
             return cstr("null");
         default:
-            type_exception("json type {} is not valid", SRC_LOC, json_type_);
+            throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
             break;
         }
     }
@@ -287,7 +287,7 @@ private:
             delete transform_ptr<JsonType::JsonNull>();
             break;
         default:
-            type_exception("json type {} is not valid", SRC_LOC, json_type_);
+            throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
     }
 
@@ -304,7 +304,7 @@ fn constexpr make_int(T&& value)->JsonType::JsonInt {
         return static_cast<JsonType::JsonInt>(value);
     }
 
-    runtime_exception("unsupported {} for make int", SRC_LOC, dtype(T));
+    throw runtime_exception("unsupported {} for make int", SRC_LOC, dtype(T));
 }
 
 template <typename T>
@@ -315,7 +315,7 @@ fn constexpr make_float(T&& value)->JsonType::JsonFloat {
         return static_cast<JsonType::JsonFloat>(value);
     }
 
-    runtime_exception("unsupported {} for make float", SRC_LOC, dtype(T));
+    throw runtime_exception("unsupported {} for make float", SRC_LOC, dtype(T));
 }
 
 template <typename T>
