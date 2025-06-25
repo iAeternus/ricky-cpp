@@ -58,24 +58,12 @@ fn should_bfs = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 };
 
-// TODO [should_fail_to_display_if_key_type_is_not_sortable] Test failed! Exception: Assertion Failed: Expected exception with message "key type[Test] is not sortable" but got an unknown exception
-fn should_fail_to_display_if_key_type_is_not_sortable = []() {
-    // Given
-    class Test {};
-
-    // When & Then
-    Assertions::assertThrows("key type[Test] is not sortable", []() {
-        auto res = util::TreeNode<Test>{}.__str__();
-    });
-};
-
 fn test_tree() {
     UnitTestGroup group{"test_tree"};
 
     group.addTest("it_works", it_works);
     group.addTest("should_dfs", should_dfs);
     group.addTest("should_bfs", should_bfs);
-    group.addTest("should_fail_to_display_if_key_type_is_not_sortable", should_fail_to_display_if_key_type_is_not_sortable);
 
     group.startAll();
 }

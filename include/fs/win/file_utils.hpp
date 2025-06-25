@@ -51,7 +51,7 @@ fn isdir(const char* path)->bool {
  * @return void
  */
 fn mkdir(const char* path, bool exist_ok = false) {
-    auto state = CreateDirectoryA(path, nullptr);
+    auto state = CreateDirectoryA(path, nullptr); // TODO 由于win api的问题，这里返回值只有0或1，不知道为什么
 
     switch (state) {
     case ERROR_ALREADY_EXISTS:

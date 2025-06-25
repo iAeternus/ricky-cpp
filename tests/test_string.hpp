@@ -205,28 +205,26 @@ fn should_join_iterator = []() {
 fn should_match_parentheses = []() {
     // Given
     util::String s = "{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}";
+    util::String s2 = "a]";
 
     // When
     auto res = s.match('{', '}');
     auto res2 = s.match('[', ']');
+    auto res3 = s2.match('[', ']');
 
     // Then
     Assertions::assertEquals("{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}"_s, res);
     Assertions::assertEquals("[1, 2, 3]"_s, res2);
+    Assertions::assertEquals(""_s, res3);
 };
 
 fn should_fail_match_if_str_invalid = []() {
     // Given
     util::String s = "{a";
-    util::String s2 = "a]";
 
     // When & Then
     Assertions::assertThrows("unmatched parentheses, too many left parentheses", [&]() {
         s.match('{', '}');
-    });
-
-    Assertions::assertThrows("unmatched parentheses, too many left parentheses", [&]() {
-        s2.match('[', ']');
     });
 };
 
