@@ -26,7 +26,7 @@ fn should_failed = []() {
 fn should_throws = []() {
     Assertions::assertThrows("wa"_cs, should_failed);
     Assertions::assertThrows("This is an IO exception message.", []() {
-        throw io_exception("This is an {} message.", std::source_location::current(), "IO exception");
+        throw io_exception("This is an {} message.", SRC_LOC, "IO exception");
     });
 };
 

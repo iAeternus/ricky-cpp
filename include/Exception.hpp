@@ -70,7 +70,7 @@ public:
      * @param loc 异常位置
      */
     explicit Exception(ExceptionType type, CString&& message,
-                       std::source_location loc = std::source_location::current(),
+                       std::source_location loc = SRC_LOC,
                        std::exception_ptr nested = nullptr) :
             type_(type), message_(std::move(message)), loc_(loc), nested_(nested), formatted_message_(format_message()) {}
 
@@ -176,8 +176,6 @@ private:
     std::exception_ptr nested_; // 嵌套异常
     CString formatted_message_;
 };
-
-#define SRC_LOC std::source_location::current()
 
 /**
  * @brief 基本异常工厂

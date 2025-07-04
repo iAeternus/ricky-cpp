@@ -9,6 +9,7 @@
 
 #include "DateTime.hpp"
 #include "DynArray.hpp"
+#include "Printer.hpp"
 
 #include <mutex>
 #include <source_location>
@@ -73,32 +74,32 @@ public:
     }
 
     template <ConvertibleToCstr Str>
-    static void trace(const Str& msg, std::source_location loc = std::source_location::current()) {
+    static void trace(const Str& msg, std::source_location loc = SRC_LOC) {
         log_impl(msg, LogLevel::TRACE_, loc);
     }
 
     template <ConvertibleToCstr Str>
-    static void debug(const Str& msg, std::source_location loc = std::source_location::current()) {
+    static void debug(const Str& msg, std::source_location loc = SRC_LOC) {
         log_impl(msg, LogLevel::DEBUG_, loc);
     }
 
     template <ConvertibleToCstr Str>
-    static void info(const Str& msg, std::source_location loc = std::source_location::current()) {
+    static void info(const Str& msg, std::source_location loc = SRC_LOC) {
         log_impl(msg, LogLevel::INFO_, loc);
     }
 
     template <ConvertibleToCstr Str>
-    static void warn(const Str& msg, std::source_location loc = std::source_location::current()) {
+    static void warn(const Str& msg, std::source_location loc = SRC_LOC) {
         log_impl(msg, LogLevel::WARN_, loc);
     }
 
     template <ConvertibleToCstr Str>
-    static void error(const Str& msg, std::source_location loc = std::source_location::current()) {
+    static void error(const Str& msg, std::source_location loc = SRC_LOC) {
         log_impl(msg, LogLevel::ERROR_, loc);
     }
 
     template <ConvertibleToCstr Str>
-    static void fatal(const Str& msg, std::source_location loc = std::source_location::current()) {
+    static void fatal(const Str& msg, std::source_location loc = SRC_LOC) {
         log_impl(msg, LogLevel::FATAL_, loc);
     }
 
@@ -108,7 +109,7 @@ private:
     static i32 min_level_;
 
     template <ConvertibleToCstr Str>
-    static void log_impl(const Str msg, i32 level, std::source_location loc = std::source_location::current(), util::DateTime date_time = util::DateTime::now()) {
+    static void log_impl(const Str msg, i32 level, std::source_location loc = SRC_LOC, util::DateTime date_time = util::DateTime::now()) {
         if (level < min_level_) return;
 
         // 获取当前配置快照

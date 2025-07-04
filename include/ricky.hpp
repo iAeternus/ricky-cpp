@@ -151,6 +151,8 @@ T& None = *reinterpret_cast<T*>(NULL);
  */
 inline constexpr usize npos = static_cast<usize>(-1);
 
+#define SRC_LOC std::source_location::current()
+
 } // namespace my
 
 #endif // RICKY_HPP
