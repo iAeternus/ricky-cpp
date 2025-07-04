@@ -7,16 +7,15 @@
 #ifndef BUFFER_HPP
 #define BUFFER_HPP
 
-#include "ricky_memory.hpp"
 #include "Array.hpp"
 
 namespace my::util {
 
-template <typename T>
+template <typename T, typename Alloc = Allocator<T>>
 class Buffer : public Sequence<Buffer<T>, T> {
 public:
     using value_t = T;
-    using Self = Buffer<value_t>;
+    using Self = Buffer<value_t, Alloc>;
     using Super = Sequence<Buffer<value_t>, value_t>;
 
     using iterator = Super::iterator;
@@ -26,36 +25,39 @@ public:
             size_(0), capacity_(0), buf_(nullptr) {}
 
     Buffer(usize capacity) :
-            size_(0), capacity_(capacity), buf_(my_alloc<value_t>(capacity_)) {}
+            size_(0), capacity_(capacity), buf_(alloc_.allocate(capacity_)) {}
 
     Buffer(const Self& other) :
-            size_(other.size_), capacity_(other.capacity_), buf_(my_alloc<value_t>(capacity_)) {
+            alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), buf_(alloc_.allocate(capacity_)) {
         for (usize i = 0; i < other.size(); ++i) {
-            my_construct(data() + i, other.data()[i]);
+            alloc_.construct(buf_ + i, other.buf_[i]);
         }
     }
 
     Buffer(Self&& other) noexcept :
-            size_(other.size_), capacity_(other.capacity_), buf_(other.buf_) {
+            alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), buf_(other.buf_) {
         other.size_ = other.capacity_ = 0;
         other.buf_ = nullptr;
     }
 
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
-        my_destroy(this);
-        return *my_construct(this, other);
+        alloc_.destroy(this);
+        alloc_.construct(this, other);
+        return *this;
     }
 
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
-        my_destroy(this);
-        return *my_construct(this, std::move(other));
+
+        alloc_.destroy(this);
+        alloc_.construct(this, std::move(other));
+        return *this;
     }
 
     ~Buffer() {
-        my_destroy(buf_, size_);
-        my_delloc(buf_);
+        alloc_.destroy(buf_, size_);
+        alloc_.deallocate(buf_, size_);
         size_ = capacity_ = 0;
     }
 
@@ -101,12 +103,12 @@ public:
      */
     template <typename... Args>
     value_t& append(Args&&... args) {
-        my_construct(buf_ + size_, std::forward<Args>(args)...);
+        alloc_.construct(buf_ + size_, std::forward<Args>(args)...);
         return buf_[size_++];
     }
 
     void pop_back() {
-        my_destroy(buf_ + size_);
+        alloc_.destroy(buf_ + size_);
         --size_;
     }
 
@@ -115,8 +117,8 @@ public:
      */
     void resize(usize new_capacity) {
         if (new_capacity == capacity_) return;
-        my_destroy(this);
-        my_construct(this, new_capacity);
+        alloc_.destroy(this);
+        alloc_.construct(this, new_capacity);
     }
 
     value_t& at(usize index) {
@@ -151,6 +153,7 @@ public:
     }
 
 private:
+    Alloc alloc_{};
     usize size_, capacity_;
     value_t* buf_;
 };

@@ -7,8 +7,8 @@
 #ifndef CODE_POINT_HPP
 #define CODE_POINT_HPP
 
+#include "Allocator.hpp"
 #include "Exception.hpp"
-#include "raise_error.hpp"
 #include "Encoding.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
@@ -23,6 +23,7 @@ class CodePoint : public Object<CodePoint> {
 public:
     using Self = CodePoint;
     using Super = Object<Self>;
+    using Alloc = Allocator<char>;
 
     static const Array<CodePoint> BLANK;
     static const Array<CodePoint> DIGIT;
@@ -33,22 +34,22 @@ public:
             code_size_(0), byte_code_(nullptr) {}
 
     CodePoint(char ch) :
-            code_size_(sizeof(u8)), byte_code_(my_alloc<char>(code_size_)) {
+            code_size_(sizeof(u8)), byte_code_(alloc_.allocate(code_size_)) {
         byte_code_[0] = ch;
     }
 
     CodePoint(const char* str, Encoding* encoding) :
-            code_size_(encoding->byte_size(str)), byte_code_(my_alloc<char>(code_size_)) {
+            code_size_(encoding->byte_size(str)), byte_code_(alloc_.allocate(code_size_)) {
         std::memcpy(data(), str, code_size_);
     }
 
     CodePoint(const Self& other) :
-            code_size_(other.code_size_), byte_code_(my_alloc<char>(this->code_size_)) {
+            alloc_(other.alloc_), code_size_(other.code_size_), byte_code_(alloc_.allocate(this->code_size_)) {
         std::memcpy(this->data(), other.data(), this->code_size_);
     }
 
     CodePoint(Self&& other) noexcept :
-            code_size_(other.code_size_), byte_code_(other.byte_code_) {
+            alloc_(other.alloc_), code_size_(other.code_size_), byte_code_(other.byte_code_) {
         other.code_size_ = 0;
         other.byte_code_ = nullptr;
     }
@@ -56,28 +57,30 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        my_destroy(byte_code_);
-        return *my_construct(this, other);
+        alloc_.destroy(byte_code_);
+        alloc_.construct(this, other);
+        return *this;
     }
 
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        my_destroy(byte_code_);
-        return *my_construct(this, std::move(other));
+        alloc_.destroy(byte_code_);
+        alloc_.construct(this, std::move(other));
+        return *this;
     }
 
     Self& operator=(char ch) {
-        my_destroy(byte_code_);
+        alloc_.destroy(byte_code_);
         this->code_size_ = sizeof(u8);
-        this->byte_code_ = my_alloc<char>(code_size_);
+        this->byte_code_ = alloc_.allocate(code_size_);
         byte_code_[0] = ch;
         return *this;
     }
 
     ~CodePoint() {
         code_size_ = 0;
-        my_delloc(byte_code_);
+        alloc_.deallocate(byte_code_, code_size_);
     }
 
     /**
@@ -167,6 +170,7 @@ public:
     }
 
 private:
+    Alloc alloc_{};   // 内存分配器
     u8 code_size_;    // 字节码长度
     char* byte_code_; // 字节码
 };

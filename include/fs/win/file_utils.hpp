@@ -86,18 +86,33 @@ fn remove(const char* path) {
  * @return 拼接后的路径
  */
 fn join(const char* path1, const char* path2)->CString {
-    auto length1 = std::strlen(path1);
-    auto length2 = std::strlen(path2);
-    auto length = length1 + length2 + (path1[length1 - 1] != '\\' && path1[length1 - 1] != '/');
+    auto len1 = std::strlen(path1);
+    auto len2 = std::strlen(path2);
+    if (len1 == 0) return CString(path2);
+    if (len2 == 0) return CString(path1);
 
-    CString result{length};
-    std::memcpy(result.data(), path1, length1);
-
-    if (length1 + length2 != length) {
-        result[length1] = PATH_SEP;
+    // 检查是否需要分隔符
+    bool needs_sep = true;
+    char last_char = path1[len1 - 1];
+    if (last_char == '\\' || last_char == '/') {
+        needs_sep = false;
     }
 
-    std::memcpy(result.data() + length - length2, path2, length2);
+    usize total_chars = len1 + len2 + (needs_sep ? 1 : 0);
+    CString result(total_chars); // 分配 total_chars + 1 的内存
+
+    char* str = result.data();
+    std::memcpy(str, path1, len1);
+    str += len1;
+
+    if (needs_sep) {
+        *str = PATH_SEP;
+        str++;
+    }
+
+    std::memcpy(str, path2, len2);
+
+    result[total_chars] = '\0';
     return result;
 }
 

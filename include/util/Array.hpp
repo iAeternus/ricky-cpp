@@ -7,7 +7,7 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
-#include "ricky_memory.hpp"
+#include "Allocator.hpp"
 #include "Sequence.hpp"
 #include "Pair.hpp"
 
@@ -24,11 +24,11 @@ namespace my::util {
  *
  * @tparam T 数组元素的类型
  */
-template <typename T>
+template <typename T, typename Alloc = Allocator<T>>
 class Array : public Sequence<Array<T>, T> {
 public:
     using value_t = T;
-    using Self = Array<value_t>;
+    using Self = Array<value_t, Alloc>;
     using Super = Sequence<Array<value_t>, value_t>;
 
     /**
@@ -39,9 +39,9 @@ public:
      */
     template <typename... Args>
     Array(usize size, const Args&... args) :
-            size_(size), arr_(my_alloc<T>(size_)) {
+            size_(size), arr_(alloc_.allocate(size_)) {
         for (usize i = 0; i < size_; ++i) {
-            my_construct(data() + i, args...);
+            alloc_.construct(arr_ + i, args...);
         }
     }
 
@@ -50,10 +50,10 @@ public:
      * @param init_list 初始化列表，包含数组的初始元素
      */
     Array(std::initializer_list<T>&& init_list) :
-            size_(init_list.size()), arr_(my_alloc<T>(size_)) {
+            size_(init_list.size()), arr_(alloc_.allocate(size_)) {
         usize idx = 0;
         for (const T& item : init_list) {
-            my_construct(data() + idx++, item);
+            alloc_.construct(arr_ + idx++, item);
         }
     }
 
@@ -62,9 +62,9 @@ public:
      * @param other 需要拷贝的静态数组
      */
     Array(const Self& other) :
-            size_(other.size_), arr_(my_alloc<T>(size_)) {
+            alloc_(other.alloc_), size_(other.size_), arr_(alloc_.allocate(size_)) {
         for (usize i = 0; i < size_; ++i) {
-            my_construct(data() + i, other.data()[i]);
+            alloc_.construct(arr_ + i, other.arr_[i]);
         }
     }
 
@@ -73,7 +73,7 @@ public:
      * @param other 需要移动的静态数组
      */
     Array(Self&& other) noexcept :
-            size_(other.size_), arr_(other.arr_) {
+            alloc_(other.alloc_), size_(other.size_), arr_(other.arr_) {
         other.size_ = 0;
         other.arr_ = nullptr;
     }
@@ -86,9 +86,10 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        my_destroy(arr_, size_);
-        my_delloc(arr_);
-        return *my_construct(this, other);
+        alloc_.destroy(arr_, size_);
+        alloc_.deallocate(arr_, size_);
+        alloc_.construct(this, other);
+        return *this;
     }
 
     /**
@@ -99,8 +100,8 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        my_destroy(arr_, size_);
-        my_delloc(arr_);
+        alloc_.destroy(arr_, size_);
+        alloc_.deallocate(arr_, size_);
 
         this->size_ = other.size_;
         this->arr_ = std::move(other.arr_);
@@ -114,8 +115,8 @@ public:
      * 销毁数组中的所有元素并释放内存
      */
     ~Array() {
-        my_destroy(arr_, size_);
-        my_delloc(arr_);
+        alloc_.destroy(arr_, size_);
+        alloc_.deallocate(arr_, size_);
         size_ = 0;
     }
 
@@ -174,6 +175,37 @@ public:
         return size_ == 0;
     }
 
+    void swap(Self& other) noexcept {
+        std::swap(alloc_, other.alloc_);
+        std::swap(size_, other.size_);
+        std::swap(arr_, other.arr_);
+    }
+
+    /**
+     * @brief 重新分配内存，不保留原有数据
+     * @tparam Args 用于初始化数组元素的参数
+     * @param new_size 新的数组大小
+     * @param args 用于初始化新数组的参数
+     * @note 调用此方法会销毁原数组中的所有元素并释放内存
+     */
+    template <typename... Args>
+    void resize(usize new_size, const Args&... args) {
+        alloc_.destroy(this);
+        alloc_.construct(this, new_size, args...);
+    }
+
+    /**
+     * @brief 分离数组，返回数组指针和大小，并将数组置空
+     * @return 返回包含数组大小和指针的 Pair
+     * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
+     */
+    Pair<usize, value_t*> separate() {
+        Pair<usize, value_t*> res{size_, arr_};
+        size_ = 0;
+        arr_ = nullptr;
+        return res;
+    }
+
     /**
      * @brief 获取数组的字符串表示
      * @return 返回数组的 CSV 格式的字符串
@@ -189,34 +221,10 @@ public:
         return CString{stream.str()};
     }
 
-    /**
-     * @brief 重新分配内存，不保留原有数据
-     * @tparam Args 用于初始化数组元素的参数
-     * @param new_size 新的数组大小
-     * @param args 用于初始化新数组的参数
-     * @note 调用此方法会销毁原数组中的所有元素并释放内存
-     */
-    template <typename... Args>
-    void resize(usize new_size, const Args&... args) {
-        my_destroy(this);
-        my_construct(this, new_size, args...);
-    }
-
-    /**
-     * @brief 分离数组，返回数组指针和大小，并将数组置空
-     * @return 返回包含数组大小和指针的 Pair
-     * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
-     */
-    Pair<usize, value_t*> separate() {
-        auto res = Pair{size_, arr_};
-        size_ = 0;
-        arr_ = nullptr;
-        return res;
-    }
-
 private:
-    usize size_;   // 静态数组长度
-    value_t* arr_; // 指向静态数组首地址的指针
+    Alloc alloc_{}; // 内存分配器
+    usize size_;    // 静态数组长度
+    value_t* arr_;  // 指向静态数组首地址的指针
 };
 
 /**

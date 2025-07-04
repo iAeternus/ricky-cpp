@@ -8,9 +8,11 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include "Allocator.hpp"
 #include "ChainNode.hpp"
 #include "Creator.hpp"
 #include "Exception.hpp"
+#include "Object.hpp"
 
 namespace my::util {
 
@@ -19,10 +21,10 @@ namespace my::util {
  * @tparam Node 指定链表节点类型
  * @tparam C 指定节点管理器类型，用于创建和销毁节点，默认为 `Creator<Node>`
  */
-template <ChainNodeType Node, typename C = Creator<Node>>
-class ChainQueue {
+template <ChainNodeType Node, typename C = Creator<Node>, typename Alloc = Allocator<Node>>
+class ChainQueue : public Object<ChainQueue<Node, C, Alloc>> {
 public:
-    using Self = ChainQueue<Node, C>;
+    using Self = ChainQueue<Node, C, Alloc>;
     using value_t = typename Node::value_t;
 
     /**
@@ -38,7 +40,7 @@ public:
      */
     ~ChainQueue() {
         clear();
-        my_destroy(tail_);
+        alloc_.destroy(tail_);
     }
 
     /**
@@ -65,7 +67,7 @@ public:
         while (p != tail_) {
             auto* d = p;
             p = p->next_;
-            my_destroy(d);
+            alloc_.destroy(d);
         }
         tail_->next_ = tail_;
         size_ = 0;
@@ -101,7 +103,7 @@ public:
             tail_ = p;      // 更新尾节点为起始节点
         }
         p->next_ = d->next_;
-        my_destroy(d);
+        alloc_.destroy(d);
         --size_;
     }
 
@@ -154,6 +156,7 @@ public:
     }
 
 private:
+    Alloc alloc_{};            // 内存分配器
     usize size_;               // 队列中元素的个数
     ChainNode<value_t>* tail_; // 指向虚拟尾节点的指针
     C creator_;                // 节点管理器，用于创建和销毁节点
@@ -164,7 +167,7 @@ private:
  * @tparam T 节点存储的值类型
  */
 template <typename T>
-using Queue = ChainQueue<ChainNode<T>, Creator<ChainNode<T>>>;
+using Queue = ChainQueue<ChainNode<T>, Creator<ChainNode<T>>, Allocator<ChainNode<T>>>;
 
 } // namespace my::util
 

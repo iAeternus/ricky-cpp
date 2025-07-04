@@ -7,6 +7,7 @@
 #ifndef CHAIN_HPP
 #define CHAIN_HPP
 
+#include "Allocator.hpp"
 #include "Creator.hpp"
 #include "ChainNode.hpp"
 #include "Array.hpp"
@@ -19,10 +20,10 @@ class ChainIterator;
 /**
  * @brief 链
  */
-template <ChainNodeType Node, typename C = Creator<Node>>
-class Chain : public Object<Chain<Node, C>> {
+template <ChainNodeType Node, typename C = Creator<Node>, typename Alloc = Allocator<Node>>
+class Chain : public Object<Chain<Node, C, Alloc>> {
 public:
-    using Self = Chain<Node, C>;
+    using Self = Chain<Node, C, Alloc>;
     using Super = Object<Self>;
     using value_t = typename Node::value_t;
     friend class ChainIterator<Node>;
@@ -69,7 +70,7 @@ public:
         Node* next_node = nullptr;
         while (cur) {
             next_node = cur->next_;
-            my_destroy(cur);
+            alloc_.destroy(cur);
             cur = next_node;
         }
         head_ = tail_ = nullptr;
@@ -151,6 +152,7 @@ public:
     }
 
 protected:
+    Alloc alloc_{};
     Node *head_, *tail_;
     usize size_;
     C creator_;
@@ -222,7 +224,7 @@ protected:
 };
 
 template <typename T>
-using ChainList = Chain<ChainNode<T>, Creator<ChainNode<T>>>;
+using ChainList = Chain<ChainNode<T>, Creator<ChainNode<T>>, Allocator<ChainNode<T>>>;
 
 } // namespace my::util
 

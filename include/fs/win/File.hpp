@@ -21,13 +21,13 @@ class File : public Object<File>, public NoCopy {
 public:
     File(const char* filename, CString mode) {
         i32 dwDesiredAccess = 0, dwCreationDisposition = 0;
-        if (mode == cstr("w")) {
+        if (mode == "w") {
             dwDesiredAccess = GENERIC_WRITE;
             dwCreationDisposition = CREATE_ALWAYS;
-        } else if (mode == cstr("r")) {
+        } else if (mode == "r") {
             dwDesiredAccess = GENERIC_READ;
             dwCreationDisposition = OPEN_EXISTING;
-        } else if (mode == cstr("a")) {
+        } else if (mode == "a") {
             dwDesiredAccess = FILE_APPEND_DATA;
             dwCreationDisposition = OPEN_ALWAYS;
             SetFilePointer(fh_, 0, nullptr, FILE_END);

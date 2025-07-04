@@ -8,8 +8,7 @@
 #define CSTRING_HPP
 
 #include "hash.hpp"
-#include "ricky.hpp"
-#include "ricky_memory.hpp"
+#include "Allocator.hpp"
 #include "Function.hpp"
 
 #include <cctype>
@@ -25,22 +24,16 @@ namespace my {
 class CString {
 public:
     using Self = CString;
-
-    /**
-     * @brief 默认构造函数，创建一个空字符串
-     */
-    CString() :
-            str_(my_alloc<char>(1)), len_(sizeof(char)) {
-        std::memset(str_, 0, 1);
-    }
+    using Alloc = Allocator<char>;
 
     /**
      * @brief 根据指定长度创建字符串
      * @param len 字符串的长度
      */
-    CString(usize len) :
-            str_(my_alloc<char>(len + 1)), len_(len) {
+    CString(usize len = 1) :
+            str_(alloc_.allocate(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
+        str_[len_] = '\0';
     }
 
     /**
@@ -48,7 +41,7 @@ public:
      * @param str C 风格字符串
      */
     CString(const char* str) :
-            CString(str, std::strlen(str)) {}
+            Self(str, std::strlen(str)) {}
 
     /**
      * @brief 根据 C 风格字符串和指定长度创建字符串
@@ -56,7 +49,7 @@ public:
      * @param len 字符串的长度
      */
     CString(const char* str, usize len) :
-            CString(len) {
+            Self(len) {
         std::memcpy(data(), str, len);
     }
 
@@ -65,13 +58,13 @@ public:
      * @param str std::basic_string 对象
      */
     CString(const std::basic_string<char>& str) :
-            CString(str.c_str(), str.size()) {}
+            Self(str.c_str(), str.size()) {}
 
     /**
      * @brief 析构函数，释放动态分配的内存
      */
     ~CString() {
-        my_delloc(str_);
+        alloc_.deallocate(str_, len_ + 1);
     }
 
     /**
@@ -79,14 +72,14 @@ public:
      * @param other 要拷贝的 CString 对象
      */
     CString(const Self& other) :
-            CString(other.data(), other.size()) {}
+            Self(other.data(), other.size()) {}
 
     /**
      * @brief 移动构造函数
      * @param other 要移动的 CString 对象
      */
     CString(Self&& other) noexcept :
-            str_(other.str_), len_(other.len_) {
+            alloc_(std::move(other.alloc_)), str_(other.str_), len_(other.len_) {
         other.str_ = nullptr;
         other.len_ = 0;
     }
@@ -99,8 +92,14 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        my_delloc(str_);
-        return *my_construct(this, other);
+        char* new_str = alloc_.allocate(other.len_ + 1);
+        std::memcpy(new_str, other.str_, other.len_ + 1);
+        alloc_.deallocate(str_, len_ + 1);
+
+        str_ = new_str;
+        len_ = other.len_;
+
+        return *this;
     }
 
     /**
@@ -111,8 +110,15 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        my_delloc(str_);
-        return *my_construct(this, std::forward<Self>(other));
+        alloc_.deallocate(str_, len_ + 1);
+        str_ = other.str_;
+        len_ = other.len_;
+        alloc_ = std::move(other.alloc_);
+
+        other.str_ = nullptr;
+        other.len_ = 0;
+
+        return *this;
     }
 
     /**
@@ -129,7 +135,7 @@ public:
      */
     [[nodiscard]] static Self of(usize size, char ch) {
         Self str(size);
-        for(usize i = 0; i < size; ++i) {
+        for (usize i = 0; i < size; ++i) {
             str[i] = ch;
         }
         return str;
@@ -378,27 +384,39 @@ public:
     }
 
     Self remove_all(char ch) const {
-        auto m_size = size();
-        auto* new_str = my_alloc<char>(m_size);
-        usize pos = 0;
-        for (usize i = 0; i < m_size; ++i) {
+        usize new_len = 0;
+        for (usize i = 0; i < len_; ++i) {
             if (str_[i] != ch) {
-                new_str[pos++] = str_[i];
+                new_len++;
             }
         }
-        return Self(new_str, pos);
+
+        Self result(new_len);
+        usize pos = 0;
+        for (usize i = 0; i < len_; ++i) {
+            if (str_[i] != ch) {
+                result[pos++] = str_[i];
+            }
+        }
+        return result;
     }
 
     Self remove_all(Pred<char>&& pred) const {
-        auto m_size = size();
-        auto* new_str = my_alloc<char>(m_size);
-        usize pos = 0;
-        for (usize i = 0; i < m_size; ++i) {
+        usize new_len = 0;
+        for (usize i = 0; i < len_; ++i) {
             if (!pred(str_[i])) {
-                new_str[pos++] = str_[i];
+                new_len++;
             }
         }
-        return Self{new_str, pos};
+
+        Self result(new_len);
+        usize pos = 0;
+        for (usize i = 0; i < len_; ++i) {
+            if (!pred(str_[i])) {
+                result[pos++] = str_[i];
+            }
+        }
+        return result;
     }
 
     /**
@@ -407,22 +425,21 @@ public:
      * @return 拼接后的新字符串
      */
     Self operator+(const Self& other) const {
-        auto m_size = this->size(), o_size = other.size();
-        CString res{m_size + o_size};
-        for (usize i = 0; i < m_size; ++i) {
-            res[i] = this->str_[i];
-        }
-        for (usize i = 0; i < o_size; ++i) {
-            res[m_size + i] = other.str_[i];
-        }
+        Self res(len_ + other.len_);
+        std::memcpy(res.str_, str_, len_);
+        std::memcpy(res.str_ + len_, other.str_, other.len_ + 1);
         return res;
+    }
+
+    Self operator+(const char* str) const {
+        return *this + Self{str};
     }
 
     /**
      * @brief 转为字符串
      * @return 自身对象
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] Self __str__() const {
         return *this;
     }
 
@@ -728,9 +745,12 @@ private:
     }
 
 private:
-    char* str_; // 存储字符串的动态数组
-    usize len_; // 字符串的长度
+    Alloc alloc_{}; // 内存分配器
+    char* str_;     // 存储字符串的动态数组
+    usize len_;     // 字符串的长度
 };
+
+// using CString = BaseCString<Allocator<char>>;
 
 /**
  * @brief 根据不同类型转换为 CString 对象（适用于自定义可打印类型）

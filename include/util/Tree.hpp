@@ -7,16 +7,17 @@
 #ifndef TREE_HPP
 #define TREE_HPP
 
+#include "Allocator.hpp"
 #include "TreeNode.hpp"
 #include "Creator.hpp"
 #include "Queue.hpp"
 
 namespace my::util {
 
-template <TreeNodeType Node, typename C = Creator<Node>>
-class TreeImpl : public Object<TreeImpl<Node, C>> {
+template <TreeNodeType Node, typename C = Creator<Node>, typename Alloc = Allocator<Node>>
+class TreeImpl : public Object<TreeImpl<Node, C, Alloc>> {
 public:
-    using Self = TreeImpl<Node, C>;
+    using Self = TreeImpl<Node, C, Alloc>;
     using value_t = typename Node::value_t;
     using Callback = typename Node::Callback;
 
@@ -105,17 +106,18 @@ private:
         for (auto* child : root->children_) {
             destroy_node(child);
         }
-        my_destroy(root);
+        alloc_.destroy(root);
     }
 
 private:
-    usize size_; // 节点个数
-    Node* root_; // 根节点
-    C creator_;  // 节点创建管理器
+    Alloc alloc_{}; // 内存分配器
+    usize size_;  // 节点个数
+    Node* root_;  // 根节点
+    C creator_;   // 节点创建管理器
 };
 
 template <typename T>
-using Tree = TreeImpl<TreeNode<T>, Creator<TreeNode<T>>>;
+using Tree = TreeImpl<TreeNode<T>, Creator<TreeNode<T>>, Allocator<TreeNode<T>>>;
 
 } // namespace my::util
 

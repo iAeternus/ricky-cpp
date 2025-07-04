@@ -7,17 +7,17 @@
 #ifndef CREATOR_HPP
 #define CREATOR_HPP
 
-#include "ricky_memory.hpp"
+#include "Allocator.hpp"
 #include "NoCopy.hpp"
 #include "Object.hpp"
 
 namespace my::util {
 
-template <typename T>
-class Creator : public Object<Creator<T>>, public NoCopy {
+template <typename T, typename Alloc = Allocator<T>>
+class Creator : public Object<Creator<T, Alloc>>, public NoCopy {
 public:
     using value_t = T;
-    using Self = Creator<value_t>;
+    using Self = Creator<value_t, Alloc>;
 
     /**
      * @brief 安全创建对象，返回构造好的指针
@@ -26,18 +26,21 @@ public:
      */
     template <typename... Args>
     fn operator()(Args&&... args)->value_t* {
-        auto* ptr = my_alloc<value_t>(1);
+        auto* ptr = alloc_.allocate(1);
         if (!ptr) return nullptr;
 
         try {
-            my_construct(ptr, std::forward<Args>(args)...);
+            alloc_.construct(ptr, std::forward<Args>(args)...);
         } catch (...) {
-            my_delloc(ptr);
+            alloc_.destroy(ptr);
             throw;
         }
 
         return ptr;
     }
+
+private:
+    Alloc alloc_{};
 };
 
 } // namespace my::util

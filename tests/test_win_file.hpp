@@ -12,7 +12,7 @@ static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resour
 
 fn should_write_win_file = []() {
     // Given
-    const char* path = fs::win::join(CLASS_PATH, "test1.txt");
+    auto path = fs::win::join(CLASS_PATH, "test1.txt");
     fs::win::File file{path, "w"};
 
     // When
@@ -31,7 +31,7 @@ fn should_write_win_file = []() {
 
 fn should_fail_to_construct_if_mode_invalid = []() {
     // Given
-    const char* path = fs::win::join(CLASS_PATH, "test1.txt");
+    auto path = fs::win::join(CLASS_PATH, "test1.txt");
 
     // When & Then
     Assertions::assertThrows("invalid value x, that only support [w, r, a]", [path]() {
@@ -41,7 +41,7 @@ fn should_fail_to_construct_if_mode_invalid = []() {
 
 fn should_append_win_file = []() {
     // Given
-    const char* path = fs::win::join(CLASS_PATH, "test2.txt");
+    auto path = fs::win::join(CLASS_PATH, "test2.txt");
     fs::win::File file{path, "a"};
 
     // When

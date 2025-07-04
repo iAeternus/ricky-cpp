@@ -1,6 +1,7 @@
 #ifndef TEST_WIN_FILE_UTILS_HPP
 #define TEST_WIN_FILE_UTILS_HPP
 
+#include "Printer.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "filesystem.hpp"
@@ -49,7 +50,7 @@ fn should_judge_is_dir = []() {
 
 fn should_mkdir_and_remove = []() {
     // Given
-    const char* path = fs::win::join(CLASS_PATH, "test");
+    auto path = fs::win::join(CLASS_PATH, "test");
 
     // When
     fs::win::mkdir(path);

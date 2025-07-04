@@ -1,5 +1,5 @@
 /**
- * @brief 自定义字符串类，支持 Unicode 编码
+ * @brief 自定义字符串类，支持 Unicode 编码 TODO 仍然不能改为Allocator管理内存分配
  * @author Ricky
  * @date 2024/12/19
  * @version 1.0
@@ -7,9 +7,9 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
-#include <utility>
-
+#include "Allocator.hpp"
 #include "CodePoint.hpp"
+#include "Encoding.hpp"
 #include "NoCopy.hpp"
 #include "Vec.hpp"
 #include "Function.hpp"
@@ -22,6 +22,7 @@ namespace my::util {
 class StringManager : public Object<StringManager>, public NoCopy {
 public:
     using Self = StringManager;
+    using Alloc = Allocator<CodePoint>;
 
     /**
      * @brief 构造函数
@@ -29,15 +30,15 @@ public:
      * @param shared_head 共享的码点数组
      * @param encoding 字符串的编码
      */
-    StringManager(usize length, CodePoint* shared_head, util::Encoding* encoding) :
+    StringManager(usize length, CodePoint* shared_head, Encoding* encoding) :
             length_(length), shared_head_(shared_head), encoding_(encoding) {}
 
     /**
      * @brief 析构函数，释放共享的码点数组
      */
     ~StringManager() {
-        my_destroy(shared_head_, length_);
-        my_delloc(shared_head_);
+        alloc_.destroy(shared_head_, length_);
+        alloc_.deallocate(shared_head_, length_);
         length_ = 0;
     }
 
@@ -53,7 +54,7 @@ public:
      * @brief 获取字符串的编码
      * @return 字符串的编码
      */
-    util::Encoding* encoding() const {
+    Encoding* encoding() const {
         return encoding_;
     }
 
@@ -63,56 +64,34 @@ public:
      * @param shared_head 新的共享码点数组
      */
     void reset(usize length, CodePoint* shared_head) {
-        my_destroy(shared_head_, length_);
-        my_delloc(shared_head_);
+        alloc_.destroy(shared_head_, length_);
+        alloc_.deallocate(shared_head_, length_);
         this->shared_head_ = shared_head;
         this->length_ = length;
     }
 
 private:
+    Alloc alloc_{};            // 内存分配器
     usize length_;             // 字符串的长度
     CodePoint* shared_head_;   // 共享的码点数组
-    util::Encoding* encoding_; // 字符串的编码
+    Encoding* encoding_; // 字符串的编码
 };
 
 /**
  * @brief 字符串，支持 Unicode 编码和多种操作
  */
-class String : public util::Sequence<String, CodePoint> {
-    friend class StringBuilder;
-
-    /**
-     * @brief 内部构造函数，用于创建字符串对象
-     * @param code_points 字符串的码点数组
-     * @param length 字符串的长度
-     * @param manager 字符串管理器
-     */
-    String(CodePoint* code_points, usize length, std::shared_ptr<StringManager> manager) :
-            length_(length), code_points_(code_points), manager_(std::move(manager)) {}
-
-    /**
-     * @brief 内部构造函数，用于根据编码创建字符串对象
-     * @param length 字符串的长度
-     * @param encoding 字符串的编码
-     */
-    String(usize length, util::Encoding* encoding) :
-            String(nullptr, length, std::make_shared<StringManager>(length, my_alloc<CodePoint>(length), encoding)) {
-        for (usize i = 0; i < length_; ++i) {
-            my_construct(manager_->shared_head() + i);
-        }
-        this->code_points_ = manager_->shared_head();
-    }
-
+class String : public Sequence<String, CodePoint> {
 public:
     using Self = String;
-    using Super = util::Sequence<Self, CodePoint>;
+    using Super = Sequence<Self, CodePoint>;
+    using Alloc = Allocator<CodePoint>;
 
     /**
      * @brief 默认构造函数，创建一个空字符串，并指定编码
      * @param encoding 字符串的编码（可选）
      */
-    String(const CString& encoding = util::UTF8) :
-            String(0, util::encoding_map(encoding)) {}
+    String(const CString& encoding = UTF8) :
+            String(0, encoding_map(encoding)) {}
 
     /**
      * @brief 构造函数，根据 C 风格字符串创建字符串
@@ -120,8 +99,8 @@ public:
      * @param length 字符串的长度（可选）
      * @param encoding 字符串的编码（可选）
      */
-    String(const char* str, usize length = npos, const CString& encoding = util::UTF8) :
-            String(0, util::encoding_map(encoding)) {
+    String(const char* str, usize length = npos, const CString& encoding = UTF8) :
+            String(0, encoding_map(encoding)) {
         length = ifelse(length != npos, length, std::strlen(str));
         auto [size, arr] = get_code_points(str, length, manager_->encoding()).separate();
         this->length_ = size;
@@ -134,7 +113,7 @@ public:
      * @param cstr 自定义字符串
      * @param encoding 字符串的编码（可选）
      */
-    String(const CString& cstr, const CString& encoding = util::UTF8) :
+    String(const CString& cstr, const CString& encoding = UTF8) :
             String(cstr.data(), cstr.size(), encoding) {}
 
     /**
@@ -142,7 +121,7 @@ public:
      * @param cp 码点
      * @param encoding 字符串的编码（可选）
      */
-    String(const CodePoint& cp, const CString& encoding = util::UTF8) :
+    String(const CodePoint& cp, const CString& encoding = UTF8) :
             String(cp.data(), cp.size(), encoding) {}
 
     /**
@@ -176,8 +155,9 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        my_destroy(&manager_);
-        return *my_construct(this, other);
+        alloc_.destroy(&manager_);
+        alloc_.construct(this, other);
+        return *this;
     }
 
     /**
@@ -188,8 +168,9 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        my_destroy(&manager_);
-        return *my_construct(this, std::move(other));
+        alloc_.destroy(&manager_);
+        alloc_.construct(this, std::move(other));
+        return *this;
     }
 
     /**
@@ -324,7 +305,7 @@ public:
      * @brief 获取字符串的编码
      * @return 字符串的编码
      */
-    util::Encoding* encoding() const {
+    Encoding* encoding() const {
         return manager_->encoding();
     }
 
@@ -402,8 +383,8 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    util::Vec<usize> find_all(const Self& pattern) const {
-        util::Vec<usize> res;
+    Vec<usize> find_all(const Self& pattern) const {
+        Vec<usize> res;
         if (pattern.empty()) return res;
         auto m_size = size(), p_size = pattern.size();
         auto next = get_next(pattern);
@@ -536,7 +517,7 @@ public:
             return Self{};
         }
 
-        util::Vec<CString> elem_strs;
+        Vec<CString> elem_strs;
         usize total_len = 0;
         for (auto&& elem : iter) {
             elem_strs.append(cstr(elem));
@@ -695,6 +676,31 @@ public:
     }
 
 private:
+    friend class StringBuilder;
+
+    /**
+     * @brief 内部构造函数，用于创建字符串对象
+     * @param code_points 字符串的码点数组
+     * @param length 字符串的长度
+     * @param manager 字符串管理器
+     */
+    String(CodePoint* code_points, usize length, std::shared_ptr<StringManager> manager) :
+            length_(length), code_points_(code_points), manager_(std::move(manager)) {}
+
+    /**
+     * @brief 内部构造函数，用于根据编码创建字符串对象
+     * @param length 字符串的长度
+     * @param encoding 字符串的编码
+     */
+    String(usize length, Encoding* encoding) :
+            length_(length), code_points_(nullptr) {
+        this->manager_ = std::make_shared<StringManager>(length, alloc_.allocate(length), encoding);
+        for (usize i = 0; i < length_; ++i) {
+            alloc_.construct(manager_->shared_head() + i);
+        }
+        this->code_points_ = manager_->shared_head();
+    }
+
     /**
      * @brief 获取去除首尾空白后的索引范围
      * @return 首尾空白后的索引范围
@@ -766,9 +772,9 @@ private:
      * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
-    static util::Vec<usize> get_next(const Self& pattern) {
+    static Vec<usize> get_next(const Self& pattern) {
         auto p_size = pattern.size();
-        util::Vec<usize> next(p_size, 0);
+        Vec<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
             // 失配，j按照next数组回跳
             while (j > 0 && pattern[i] != pattern[j]) {
@@ -781,6 +787,7 @@ private:
     }
 
 private:
+    Alloc alloc_{};                          // 内存分配器
     usize length_;                           // 字符串的长度
     CodePoint* code_points_;                 // 字符串的码点数组
     std::shared_ptr<StringManager> manager_; // 字符串管理器

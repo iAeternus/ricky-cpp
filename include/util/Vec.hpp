@@ -10,6 +10,7 @@
 #include "Array.hpp"
 #include "Exception.hpp"
 #include "Sequence.hpp"
+#include "Allocator.hpp"
 
 #include <any>
 #include <iterator>
@@ -25,11 +26,11 @@ namespace my::util {
  * - 末尾插入/删除：均摊 O(1)
  * - 中间插入/删除：O(n)
  */
-template <typename T>
+template <typename T, typename Alloc = Allocator<T>>
 class Vec : public Sequence<Vec<T>, T> {
 public:
     using value_t = T;
-    using Self = Vec<value_t>;
+    using Self = Vec<value_t, Alloc>;
     using Super = Sequence<Vec<value_t>, value_t>;
 
     /**
@@ -37,7 +38,7 @@ public:
      * @note 创建一个空向量，容量为0
      */
     Vec() :
-            size_(0), capacity_(DEFAULT_CAPACITY), data_(my_alloc<value_t>(capacity_)) {}
+            size_(0), capacity_(DEFAULT_CAPACITY), data_(alloc_.allocate(capacity_)) {}
 
     /**
      * @brief 构造指定大小的向量并用默认值填充
@@ -45,9 +46,9 @@ public:
      * @param val 用于填充的值，默认为值初始化
      */
     Vec(usize size, const value_t& val = value_t{}) :
-            size_(size), capacity_(size_), data_(my_alloc<value_t>(capacity_)) {
+            size_(size), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         for (usize i = 0; i < size_; ++i) {
-            my_construct(data_ + i, val);
+            alloc_.construct(data_ + i, val);
         }
     }
 
@@ -56,10 +57,10 @@ public:
      * @param init_list 初始化列表，元素将被拷贝
      */
     Vec(std::initializer_list<value_t>&& init_list) :
-            size_(init_list.size()), capacity_(size_), data_(my_alloc<value_t>(capacity_)) {
+            size_(init_list.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : init_list) {
-            my_construct(data_ + pos, std::forward<decltype(item)>(item));
+            alloc_.construct(data_ + pos, std::forward<decltype(item)>(item));
             pos++;
         }
     }
@@ -71,10 +72,10 @@ public:
      */
     template <Iterable I>
     Vec(I&& iter) :
-            size_(iter.size()), capacity_(size_), data_(my_alloc<value_t>(capacity_)) {
+            size_(iter.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : iter) {
-            my_construct(data_ + pos, std::forward<value_t>(item));
+            alloc_.construct(data_ + pos, std::forward<value_t>(item));
             pos++;
         }
     }
@@ -84,9 +85,9 @@ public:
      * @param other 被拷贝的向量
      */
     Vec(const Self& other) :
-            size_(other.size_), capacity_(other.capacity_), data_(my_alloc<value_t>(capacity_)) {
+            alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), data_(alloc_.allocate(capacity_)) {
         for (usize i = 0; i < size_; ++i) {
-            my_construct(data_ + i, other.data_[i]);
+            alloc_.construct(data_ + i, other.data_[i]);
         }
     }
 
@@ -95,7 +96,7 @@ public:
      * @param other 被移动的向量
      */
     Vec(Self&& other) noexcept :
-            size_(other.size_), capacity_(other.capacity_), data_(other.data_) {
+            alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), data_(other.data_) {
         other.data_ = nullptr;
         other.size_ = other.capacity_ = 0;
     }
@@ -108,8 +109,9 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        my_destroy(this);
-        return *my_construct(this, other);
+        alloc_.destroy(this);
+        alloc_.construct(this, other);
+        return *this;
     }
 
     /**
@@ -120,8 +122,9 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        my_destroy(this);
-        return *my_construct(this, std::move(other));
+        alloc_.destroy(this);
+        alloc_.construct(this, std::move(other));
+        return *this;
     }
 
     /**
@@ -130,7 +133,7 @@ public:
     ~Vec() {
         clear();
         if (data_) {
-            my_delloc(data_);
+            alloc_.deallocate(data_, size_);
         }
         capacity_ = 0;
     }
@@ -219,7 +222,7 @@ public:
      */
     value_t& append(const value_t& item) {
         try_expand();
-        my_construct(data_ + size_, item);
+        alloc_.construct(data_ + size_, item);
         ++size_;
         return back();
     }
@@ -232,7 +235,7 @@ public:
     template <typename... Args>
     value_t& append(Args&&... args) {
         try_expand();
-        my_construct(data_ + size_, std::forward<Args>(args)...);
+        alloc_.construct(data_ + size_, std::forward<Args>(args)...);
         ++size_;
         return back();
     }
@@ -250,7 +253,7 @@ public:
         for (auto it = end(); it >= begin() + idx; --it) {
             *std::next(it) = std::move(*it);
         }
-        my_construct(data_ + idx, std::forward<Args>(args)...);
+        alloc_.construct(data_ + idx, std::forward<Args>(args)...);
         ++size_;
     }
 
@@ -265,7 +268,7 @@ public:
         for (auto it = begin() + idx + 1; it != end(); ++it) {
             *std::prev(it) = std::move(*it);
         }
-        my_destroy(data_ + idx);
+        alloc_.destroy(data_ + idx);
         --size_;
     }
 
@@ -273,7 +276,7 @@ public:
      * @brief 清空所有元素（容量不变）
      */
     void clear() {
-        my_destroy(data_, size_);
+        alloc_.destroy(data_, size_);
         size_ = 0;
     }
 
@@ -398,7 +401,7 @@ public:
      */
     void resize(usize new_capacity) {
         if (new_capacity == capacity_) return;
-        value_t* ptr = my_alloc<value_t>(new_capacity);
+        value_t* ptr = alloc_.allocate(new_capacity);
         usize min_size = std::min(size_, new_capacity);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
@@ -410,7 +413,7 @@ public:
             }
         }
 
-        my_delloc(data_);
+        alloc_.deallocate(data_, size_);
         data_ = ptr;
         capacity_ = new_capacity;
     }
@@ -718,6 +721,7 @@ private:
     }
 
 private:
+    Alloc alloc_{};  // 内存分配器
     usize size_;     // 元素个数
     usize capacity_; // 总容量
     value_t* data_;  // 指向数据首地址的指针
