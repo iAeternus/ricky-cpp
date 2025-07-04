@@ -19,7 +19,7 @@ public:
     using Self = Allocator<T>;
     using value_type = T;
     using size_type = usize;
-    
+
     using pointer = T*;
     using const_pointer = const T*;
     using void_pointer = void*;
@@ -52,7 +52,7 @@ public:
      * @return void
      */
     fn deallocate(T* p, size_type n) noexcept {
-        if(p != nullptr) {
+        if (p != nullptr) {
             ::operator delete(p, n * sizeof(T));
         }
     }

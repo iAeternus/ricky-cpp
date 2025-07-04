@@ -1,5 +1,5 @@
 /**
- * @brief 提示错误信息
+ * @brief 提示错误信息，TODO 已弃用！
  * @author Ricky
  * @date 2024/11/27
  * @version 1.0

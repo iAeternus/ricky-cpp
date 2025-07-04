@@ -1,8 +1,8 @@
 /**
- * @brief 内存分配与回收工具
+ * @brief 内存分配与回收工具 TODO 已弃用！
  * @author Ricky
  * @date 2024/11/24
- * @version 1.0 TODO 已被弃用！
+ * @version 1.0
  */
 #ifndef RICKY_MEMORY_HPP
 #define RICKY_MEMORY_HPP
