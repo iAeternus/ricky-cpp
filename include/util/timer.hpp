@@ -20,11 +20,11 @@ class Timer : public Object<Timer<D>> {
 public:
     using Self = Timer<D>;
 
-    void into() {
+    void start() {
         startTime_ = std::chrono::high_resolution_clock::now();
     }
 
-    long long escape() {
+    long long end() {
         auto endTime = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<D>(endTime - startTime_).count();
         return duration;
@@ -32,9 +32,9 @@ public:
 
     template <typename F, typename... Args>
     long long operator()(F&& call, Args&&... args) {
-        into();
+        start();
         std::invoke(std::forward<F>(call), std::forward<Args>(args)...);
-        return escape();
+        return end();
     }
 
 private:
