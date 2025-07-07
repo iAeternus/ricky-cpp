@@ -8,7 +8,6 @@
 #ifndef BIG_INTEGER_HPP
 #define BIG_INTEGER_HPP
 
-#include "Exception.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 

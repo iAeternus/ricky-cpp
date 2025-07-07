@@ -232,6 +232,17 @@ public:
      * @param item 要移动的元素
      * @return 被追加元素的引用
      */
+    value_t& append(value_t&& item) {
+        try_expand();
+        alloc_.construct(data_ + size_, item);
+        ++size_;
+        return back();
+    }
+
+    /**
+     * @brief 构造并在末尾追加元素
+     * @param args 构造元素的参数
+     */
     template <typename... Args>
     value_t& append(Args&&... args) {
         try_expand();
@@ -399,10 +410,10 @@ public:
      * 若新容量小于原容量，缩容到新容量并拷贝原向量的前newsize个元素到新向量；
      * 若二者相等，则什么都不做
      */
-    void resize(usize new_capacity) {
-        if (new_capacity == capacity_) return;
-        value_t* ptr = alloc_.allocate(new_capacity);
-        usize min_size = std::min(size_, new_capacity);
+    void resize(usize new_cap) {
+        if (new_cap == capacity_) return;
+        value_t* ptr = alloc_.allocate(new_cap);
+        usize min_size = std::min(size_, new_cap);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
             std::memcpy(ptr, data_, min_size * sizeof(value_t));
@@ -415,7 +426,7 @@ public:
 
         alloc_.deallocate(data_, size_);
         data_ = ptr;
-        capacity_ = new_capacity;
+        capacity_ = new_cap;
     }
 
     /**
@@ -431,11 +442,12 @@ public:
     }
 
     /**
-     * @brief 扩容
+     * @brief 预留存储空间
+     * @param new_cap 新的容量
      */
-    void reserve(usize new_capacity) {
-        if (new_capacity > capacity_) {
-            resize(new_capacity);
+    void reserve(usize new_cap) {
+        if (new_cap > capacity_) {
+            resize(new_cap);
         }
     }
 

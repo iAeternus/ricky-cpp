@@ -7,7 +7,6 @@
 
 namespace my::test::test_json_parser {
 
-// TODO 这个测试可能会导致程序崩溃
 fn should_parse = []() {
     // Given
     util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })"_s;

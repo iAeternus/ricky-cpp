@@ -10,9 +10,7 @@
 
 #include "BigInteger.hpp"
 #include "CString.hpp"
-#include "Exception.hpp"
 #include "Pair.hpp"
-#include <stdexcept>
 
 namespace my::math {
 
@@ -358,25 +356,25 @@ public:
 
     /**
      * @brief 计算平方根
-     * @param precision 结果的精度（小数位数）
+     * @param scale 结果小数位数（即结果的scale）
      * @return 平方根结果
      */
-    Self sqrt(u32 precision = 10) const {
+    Self sqrt(u32 scale = 10) const {
         if (is_neg()) throw arithmetic_exception("Cannot calculate square root of negative number");
-        if (is_zero()) return ZERO.scale(precision, HALF_UP);
+        if (is_zero()) return ZERO.scale(scale, HALF_UP);
 
-        // 初始估计值（保持足够精度）
-        Self x = *this * TEN.pow(precision << 1);
+        // 初始估计值（保持足够位数）
+        Self x = *this * TEN.pow(scale << 1);
         Self last;
-        u32 calc_precision = precision << 1; // 计算时使用双倍精度
+        u32 calc_scale = scale << 1; // 计算时使用双倍位数
 
         do {
             last = x;
             x = (x + *this / x) / TWO;
-            x = x.scale(calc_precision, HALF_UP);
+            x = x.scale(calc_scale, HALF_UP);
         } while (last != x);
 
-        return x.scale(precision, HALF_UP);
+        return x.scale(scale, HALF_UP);
     }
 
     // friend bool operator==(const Self& a, const Self& b) {
@@ -574,7 +572,7 @@ private:
         }
 
         // 计算余数的两倍，用于HALF_UP模式的比较
-        BigInteger double_remainder = remainder.abs() * 2;
+        BigInteger double_remainder = remainder.abs() * BigInteger::TWO;
         bool should_round_up = false;
 
         switch (mode) {
@@ -596,7 +594,7 @@ private:
         }
 
         if (should_round_up) {
-            return quotient + (quotient.is_neg() ? -1 : 1);
+            return quotient + (quotient.is_neg() ? -BigInteger::ONE : BigInteger::ONE);
         }
         return quotient;
     }

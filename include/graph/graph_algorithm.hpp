@@ -11,9 +11,7 @@
 #include "Matrix.hpp"
 #include "Graph.hpp"
 #include "Queue.hpp"
-#include "Vec.hpp"
-
-#include <queue>
+#include "PriorityQueue.hpp"
 
 namespace my::graph {
 
@@ -319,12 +317,13 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     // 优先队列：存储 (距离, 节点ID) ，最小距离优先
     using Elem = Pair<E, Idx>;
     auto cmp = [](const Elem& a, const Elem& b) {
-        return a.first() > b.first(); // 最小堆
+        return a.first() < b.first(); // 最小堆
     };
-    std::priority_queue<Elem, std::vector<Elem>, decltype(cmp)> pq(cmp);
+    // std::priority_queue<Elem, std::vector<Elem>, decltype(cmp)> pq(cmp);
+    util::PriorityQueue<Elem, decltype(cmp)> pq;
 
     dis[0] = 0; // TODO 任选一个节点开始
-    pq.emplace(0, 0);
+    pq.push(0, 0);
     while (!pq.empty()) {
         // 1. 取出距离最小的未访问节点
         auto [min_dis, u] = pq.top();
@@ -346,7 +345,7 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
             if (!vis[v] && w < dis[v]) {
                 dis[v] = w;
                 fa[v] = u;
-                pq.emplace(w, v); // 将更新后的节点加入队列
+                pq.push(w, v); // 将更新后的节点加入队列
             }
         });
     }
@@ -385,17 +384,18 @@ auto kruskal = [](const auto& g, auto&& _) -> Tree<N, E, Idx> { // TODO 段错�
     };
 
     auto cmp = [](const Edge& a, const Edge& b) {
-        return a.w > b.w; // 最小堆：权重小的优先级高
+        return a.w < b.w; // 最小堆：权重小的优先级高
     };
 
-    std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> pq(cmp);
+    // std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> pq(cmp);
+    util::PriorityQueue<Edge, decltype(cmp)> pq;
 
     // 3. 遍历所有边并加入优先队列（无向图每条边只添加一次）
     g.for_each([&](const auto& node) {
         node.for_each([&](Idx v, E w) {
             // 只添加 u < v 的边，避免重复处理无向边
             if (node.id < v) {
-                pq.emplace(node.id, v, w);
+                pq.push(node.id, v, w);
             }
         });
     });
@@ -434,8 +434,9 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
     dis[s] = E{};
 
     using Node = Pair<E, Idx>;
-    std::priority_queue<Node, std::vector<Node>, std::greater<>> pq;
-    pq.emplace(E{}, s);
+    // std::priority_queue<Node, std::vector<Node>, std::greater<>> pq;
+    util::PriorityQueue<Node, std::greater<>> pq;
+    pq.push(E{}, s);
 
     while (!pq.empty()) {
         auto [d, u] = pq.top();
@@ -449,7 +450,7 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
             // 松弛操作：发现更短路径时更新
             if (new_dis < dis[v]) {
                 dis[v] = new_dis;
-                pq.emplace(new_dis, v);
+                pq.push(new_dis, v);
             }
         });
     }
