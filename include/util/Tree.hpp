@@ -9,15 +9,14 @@
 
 #include "Allocator.hpp"
 #include "TreeNode.hpp"
-#include "Creator.hpp"
 #include "Queue.hpp"
 
 namespace my::util {
 
-template <TreeNodeType Node, typename C = Creator<Node>, typename Alloc = Allocator<Node>>
-class TreeImpl : public Object<TreeImpl<Node, C, Alloc>> {
+template <TreeNodeType Node, typename Alloc = Allocator<Node>>
+class TreeImpl : public Object<TreeImpl<Node, Alloc>> {
 public:
-    using Self = TreeImpl<Node, C, Alloc>;
+    using Self = TreeImpl<Node, Alloc>;
     using value_t = typename Node::value_t;
     using Callback = typename Node::Callback;
 
@@ -44,7 +43,7 @@ public:
 
     template <typename... Args>
     Node* set_root(Args&&... args) {
-        root_ = creator_(std::forward<Args>(args)...);
+        root_ = alloc_.create(std::forward<Args>(args)...);
         root_->parent_ = root_;
         size_ = 1;
         return root_;
@@ -52,7 +51,7 @@ public:
 
     template <typename... Args>
     Node* add_child(Node* parent, Args&&... args) {
-        Node* child = creator_(std::forward<Args>(args)...);
+        Node* child = alloc_.create(std::forward<Args>(args)...);
         child->parent_ = parent;
         parent->children_.append(std::move(child));
         ++size_;
@@ -113,11 +112,10 @@ private:
     Alloc alloc_{}; // 内存分配器
     usize size_;  // 节点个数
     Node* root_;  // 根节点
-    C creator_;   // 节点创建管理器
 };
 
 template <typename T>
-using Tree = TreeImpl<TreeNode<T>, Creator<TreeNode<T>>, Allocator<TreeNode<T>>>;
+using Tree = TreeImpl<TreeNode<T>, Allocator<TreeNode<T>>>;
 
 } // namespace my::util
 

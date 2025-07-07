@@ -7,8 +7,6 @@
 #ifndef CHAIN_HPP
 #define CHAIN_HPP
 
-#include "Allocator.hpp"
-#include "Creator.hpp"
 #include "ChainNode.hpp"
 #include "Array.hpp"
 
@@ -20,10 +18,10 @@ class ChainIterator;
 /**
  * @brief 链
  */
-template <ChainNodeType Node, typename C = Creator<Node>, typename Alloc = Allocator<Node>>
-class Chain : public Object<Chain<Node, C, Alloc>> {
+template <ChainNodeType Node, typename Alloc = Allocator<Node>>
+class Chain : public Object<Chain<Node, Alloc>> {
 public:
-    using Self = Chain<Node, C, Alloc>;
+    using Self = Chain<Node, Alloc>;
     using Super = Object<Self>;
     using value_t = typename Node::value_t;
     friend class ChainIterator<Node>;
@@ -54,7 +52,7 @@ public:
 
     template <typename... Args>
     void append(Args&&... args) {
-        auto* new_node = creator_(std::forward<Args>(args)...);
+        auto* new_node = alloc_.create(std::forward<Args>(args)...);
 
         if (size_ == 0) {
             head_ = new_node;
@@ -155,7 +153,6 @@ protected:
     Alloc alloc_{};
     Node *head_, *tail_;
     usize size_;
-    C creator_;
 };
 
 /**
@@ -224,7 +221,7 @@ protected:
 };
 
 template <typename T>
-using ChainList = Chain<ChainNode<T>, Creator<ChainNode<T>>, Allocator<ChainNode<T>>>;
+using ChainList = Chain<ChainNode<T>, Allocator<ChainNode<T>>>;
 
 } // namespace my::util
 

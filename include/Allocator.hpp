@@ -16,12 +16,12 @@ namespace my {
 template <typename T>
 class Allocator {
 public:
-    using Self = Allocator<T>;
     using value_type = T;
     using size_type = usize;
+    using Self = Allocator<value_type>;
 
-    using pointer = T*;
-    using const_pointer = const T*;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
     using void_pointer = void*;
     using const_void_pointer = const void*;
     using difference_type = std::ptrdiff_t;
@@ -39,10 +39,10 @@ public:
      * @param size 分配多少个T的内存
      * @return 指向内存块首地址的指针
      */
-    fn allocate(size_type n)->T* {
+    fn allocate(size_type n)->value_type* {
         if (n == 0) return nullptr;
         if (n > max_size()) throw std::bad_alloc();
-        return static_cast<T*>(::operator new(sizeof(T) * n));
+        return static_cast<value_type*>(::operator new(sizeof(value_type) * n));
     }
 
     /**
@@ -51,9 +51,9 @@ public:
      * @param n 内存块大小
      * @return void
      */
-    fn deallocate(T* p, size_type n) noexcept {
+    fn deallocate(value_type* p, size_type n) noexcept {
         if (p != nullptr) {
-            ::operator delete(p, n * sizeof(T));
+            ::operator delete(p, n * sizeof(value_type));
         }
     }
 
@@ -70,12 +70,43 @@ public:
         }
     }
 
+    /**
+     * @brief 安全创建对象，返回构造好的指针
+     * @param args 构造参数
+     * @return 指向新对象的指针，若失败返回 nullptr
+     */
+    template <typename... Args>
+    fn create(Args&&... args)->value_type* {
+        auto* ptr = allocate(1);
+        if (!ptr) return nullptr;
+
+        try {
+            construct(ptr, std::forward<Args>(args)...);
+        } catch (...) {
+            destroy(ptr);
+            throw;
+        }
+
+        return ptr;
+    }
+
+    // /**
+    //  * @brief 安全析构对象并释放内存
+    //  * @param ptr 指向对象的指针
+    //  */
+    // fn destruct(T* ptr) const noexcept {
+    //     if (ptr != nullptr) {
+    //         destroy(ptr);
+    //         deallocate(ptr, 1);
+    //     }
+    // }
+
 private:
     /**
      * @brief 能分配的最大内存大小
      */
     fn max_size() const noexcept {
-        return size_type(-1) / sizeof(T);
+        return size_type(-1) / sizeof(value_type);
     }
 };
 

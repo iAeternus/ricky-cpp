@@ -10,28 +10,26 @@
 
 #include "Allocator.hpp"
 #include "ChainNode.hpp"
-#include "Creator.hpp"
 #include "Exception.hpp"
-#include "Object.hpp"
 
 namespace my::util {
 
 /**
  * @brief 基于带尾指针的循环单链表实现的队列
  * @tparam Node 指定链表节点类型
- * @tparam C 指定节点管理器类型，用于创建和销毁节点，默认为 `Creator<Node>`
+ * @tparam Alloc 内存分配器类型
  */
-template <ChainNodeType Node, typename C = Creator<Node>, typename Alloc = Allocator<Node>>
-class ChainQueue : public Object<ChainQueue<Node, C, Alloc>> {
+template <ChainNodeType Node, typename Alloc = Allocator<Node>>
+class ChainQueue : public Object<ChainQueue<Node, Alloc>> {
 public:
-    using Self = ChainQueue<Node, C, Alloc>;
+    using Self = ChainQueue<Node, Alloc>;
     using value_t = typename Node::value_t;
 
     /**
      * @brief 构造函数，初始化队列
      */
     ChainQueue() :
-            size_(0), tail_(new ChainNode<value_t>()) {
+            size_(0), tail_(alloc_.create()) {
         tail_->next_ = tail_;
     }
 
@@ -81,7 +79,7 @@ public:
      */
     template <typename... Args>
     void push(Args&&... args) {
-        auto* new_node = creator_(std::forward<Args>(args)...);
+        auto* new_node = alloc_.create(std::forward<Args>(args)...);
         new_node->next_ = tail_->next_;
         tail_->next_ = new_node;
         tail_ = new_node;
@@ -159,7 +157,6 @@ private:
     Alloc alloc_{};            // 内存分配器
     usize size_;               // 队列中元素的个数
     ChainNode<value_t>* tail_; // 指向虚拟尾节点的指针
-    C creator_;                // 节点管理器，用于创建和销毁节点
 };
 
 /**
@@ -167,7 +164,7 @@ private:
  * @tparam T 节点存储的值类型
  */
 template <typename T>
-using Queue = ChainQueue<ChainNode<T>, Creator<ChainNode<T>>, Allocator<ChainNode<T>>>;
+using Queue = ChainQueue<ChainNode<T>, Allocator<ChainNode<T>>>;
 
 } // namespace my::util
 

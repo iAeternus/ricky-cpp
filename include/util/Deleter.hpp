@@ -1,5 +1,5 @@
 /**
- * @brief 自动管理内存释放
+ * @brief 自动管理内存释放 TODO 即将弃用！
  * @author Ricky
  * @date 2025/5/18
  * @version 1.0

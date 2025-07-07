@@ -16,7 +16,7 @@
 namespace my::util {
 
 /**
- * @brief 字符串构建器，高性能实现
+ * @brief 字符串构建器 TODO 性能极差，可能修改为直接添加码点会好些
  * @class StringBuilder
  */
 class StringBuilder : public Object<StringBuilder> {

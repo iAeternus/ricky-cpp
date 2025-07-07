@@ -1,5 +1,5 @@
 /**
- * @brief 自动管理对象创建
+ * @brief 自动管理对象创建 TODO 即将弃用！
  * @author Ricky
  * @date 2024/12/14
  * @version 1.0

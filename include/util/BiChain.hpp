@@ -17,11 +17,11 @@ class BiChainIterator;
 /**
  * @brief 双向链
  */
-template <BiChainNodeType BiNode, typename C = Creator<BiNode>>
-class BiChain : public Chain<BiNode, C> {
+template <BiChainNodeType BiNode, typename Alloc = Allocator<BiNode>>
+class BiChain : public Chain<BiNode, Alloc> {
 public:
-    using Self = BiChain<BiNode, C>;
-    using Super = Chain<BiNode, C>;
+    using Self = BiChain<BiNode, Alloc>;
+    using Super = Chain<BiNode, Alloc>;
     friend class BiChainIterator<BiNode>;
 
     BiChain() :
@@ -29,7 +29,7 @@ public:
 
     template <typename... Args>
     void append(Args&&... args) {
-        BiNode* new_node = Super::creator_(std::forward<Args>(args)...);
+        BiNode* new_node = alloc_.create(std::forward<Args>(args)...);
         if (Super::size_ == 0) {
             Super::head_ = Super::tail_ = new_node;
         } else {
@@ -42,7 +42,7 @@ public:
 
     template <typename... Args>
     void prepend(Args&&... args) {
-        BiNode* new_node = Super::creator_(std::forward<Args>(args)...);
+        BiNode* new_node = alloc_.create(std::forward<Args>(args)...);
         if (Super::size_ == 0) {
             Super::head_ = Super::tail_ = new_node;
         } else {
@@ -90,6 +90,9 @@ public:
     reverse_iterator rend() const {
         return reverse_iterator{iterator{nullptr}};
     }
+
+private:
+    Alloc alloc_{};
 };
 
 /**
@@ -142,7 +145,7 @@ public:
 };
 
 template <typename T>
-using BiChainList = BiChain<BiChainNode<T>, Creator<BiChainNode<T>>>;
+using BiChainList = BiChain<BiChainNode<T>, Allocator<BiChainNode<T>>>;
 
 } // namespace my::util
 

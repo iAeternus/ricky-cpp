@@ -39,7 +39,7 @@ fn test_string_builder() {
     group.startAll();
 }
 
-constexpr i32 N = 1e6;
+constexpr i32 N = 1e5;
 
 fn speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
