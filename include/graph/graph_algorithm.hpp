@@ -460,11 +460,41 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
 
 /**
  * @brief 所有点对最短路径，floyd 算法
- * @note 时间复杂度 TODO
+ * @note 时间复杂度 O(|N|^3)
+ * @note 可适用于负权图，不适用于有负环的图
  */
-template<typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
 auto floyd = [](const auto& g, auto&& _) -> math::Matrix<E> {
-    // TODO
+    auto n = g.node_cnt();
+    math::Matrix<E> dis(n, n, TYPE_MAX(E));
+    for (usize i = 0; i < n; ++i) {
+        dis[i][i] = E{};
+    }
+
+    g.for_each([&](const auto& node) {
+        node.for_each([&](Idx v, E w) {
+            dis[node.id][v] = w;
+        });
+    });
+
+    for (usize k = 0; k < n; ++k) {
+        for (usize u = 0; u < n; ++u) {
+            if (dis[u][k] == TYPE_MAX(E)) continue;
+            for (usize v = 0; v < n; ++v) {
+                dis[u][v] = std::min(dis[u][v], dis[u][k] + dis[k][v]);
+            }
+        }
+    }
+    return dis;
+};
+
+/**
+ * @brief 拓扑排序，生成其中一条拓扑序
+ * @note 时间复杂度 O(|N| + |E|)
+ */
+template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+auto topological_sort_bfs = [](const auto& g, auto&& _) -> util::Vec<Idx> {
+    // TODO  
 };
 
 } // namespace my::graph

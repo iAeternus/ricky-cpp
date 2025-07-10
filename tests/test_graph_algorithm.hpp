@@ -340,6 +340,27 @@ fn test_dijkstra = []() {
     Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.__str__());
 };
 
+fn test_floyd = []() {
+    // Given
+    graph::Graph g;
+    g.add_node(0);
+    g.add_node(1);
+    g.add_node(2);
+
+    g.add_edge(0, 1, 6);
+    g.add_edge(0, 2, 13);
+    g.add_edge(1, 0, 10);
+    g.add_edge(1, 2, 4);
+    g.add_edge(2, 0, 5);
+
+    // When
+    g.register_algo("floyd", graph::floyd<>);
+    auto res = g.call_algo<math::Matrix<f64>>("floyd");
+
+    // Then
+    Assertions::assertEquals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.__str__());
+};
+
 fn test_graph_algorithm() {
     UnitTestGroup group{"test_graph_algorithm"};
 
@@ -352,6 +373,7 @@ fn test_graph_algorithm() {
     group.addTest("should_get_all_paths", should_get_all_paths);
     group.addTest("test_prim", test_prim);
     group.addTest("test_dijkstra", test_dijkstra);
+    group.addTest("test_floyd", test_floyd);
 
     group.startAll();
 }

@@ -52,7 +52,7 @@ public:
     Dict(std::initializer_list<Pair<key_t, value_t>>&& init_list) :
             Dict(roundup2(init_list.size() / MAX_LOAD_FACTOR)) {
         for (auto&& [key, val] : init_list) {
-            insert(key, val);
+            insert(std::move(key), std::move(val));
         }
     }
 
@@ -528,7 +528,7 @@ public:
             stream << ',';
         }
 
-        std::string str = stream.str();
+        auto str = stream.str();
         if (str.size() > 1) {
             str.pop_back();
         }

@@ -33,16 +33,19 @@ concept TreeNodeType = requires(T a, const T& b, T&& c) {
 
 template <typename T>
 concept BiTreeNodeType = requires(T a, const T& b, T&& c) {
+    typename T::key_t;
+    typename T::value_t;
+
     { T() }
     ->std::same_as<T>;
     { a = std::move(c) }
     ->std::same_as<T&>;
     { T(std::move(c)) }
     ->std::same_as<T>;
-    {a.value_};
+    {a.key_};
     {a.lch_};
     {a.rch_};
-    {a.parent_};
+    {a.p_};
 };
 
 template <typename T>
@@ -132,19 +135,20 @@ private:
 template <typename T>
 class BiTreeNode : public Object<BiTreeNode<T>> {
 public:
+    using key_t = T;
     using value_t = T;
-    using Self = BiTreeNode<value_t>;
-    using Callback = Consumer<const value_t&>;
+    using Self = BiTreeNode<key_t>;
+    using Callback = Consumer<const key_t&>;
 
-    value_t value_; // 值
-    Self* lch_;  // 指向左孩子的指针
-    Self* rch_;  // 指向右孩子的指针
-    Self* parent_;  // 指向父节点的指针，定义根节点的父指针指向自身
+    key_t key_; // 关键字
+    Self* lch_; // 指向左孩子的指针
+    Self* rch_; // 指向右孩子的指针
+    Self* p_;   // 指向父节点的指针，定义根节点的父指针指向自身
 
-    explicit BiTreeNode(value_t value = value_t{}, Self* parent = nullptr) :
-            value_(value), lch_(nullptr), rch_(nullptr), parent_(parent) {
+    explicit BiTreeNode(key_t key = key_t{}, Self* parent = nullptr) :
+            key_(key), lch_(nullptr), rch_(nullptr), p_(parent) {
         if (parent == nullptr) {
-            parent_ = this; // 根节点指向自身
+            p_ = this; // 根节点指向自身
         }
     }
 
@@ -152,18 +156,18 @@ public:
     Self& operator=(const Self&) = delete;
 
     BiTreeNode(Self&& other) noexcept :
-            value_(std::move(other.value)), lch_(other.lch_), rch_(other.rch_), parent_(other.parent_) {
-        other.lch_ = other.rch_ = other.parent_ = nullptr;
+            key_(std::move(other.key)), lch_(other.lch_), rch_(other.rch_), p_(other.p_) {
+        other.lch_ = other.rch_ = other.p_ = nullptr;
     }
 
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        this->value_ = std::move(other.value_);
+        this->key_ = std::move(other.key_);
         this->lch_ = other.lch_;
         this->rch_ = other.rch_;
-        this->parent_ = other.parent_;
-        other.lch_ = other.rch_ = other.parent_ = nullptr;
+        this->p_ = other.p_;
+        other.lch_ = other.rch_ = other.p_ = nullptr;
         return *this;
     }
 
@@ -171,7 +175,7 @@ public:
      * @brief 遍历本节点之下的所有子节点，按照先序遍历排列
      */
     void for_each(Callback callback) const {
-        callback(this->value_);
+        callback(this->key_);
         if (lch_) lch_->for_each(callback);
         if (rch_) rch_->for_each(callback);
     }
@@ -182,7 +186,7 @@ public:
     void for_each_rev(Callback callback) const {
         if (lch_) lch_->for_each_rev(callback);
         if (rch_) rch_->for_each_rev(callback);
-        callback(this->value_);
+        callback(this->key_);
     }
 
     /**
@@ -190,9 +194,9 @@ public:
      */
     void for_each_parent(Callback callback) const {
         const Self* p = this;
-        while (p != nullptr && p != p->parent_) {
-            callback(p->value_);
-            p = p->parent_;
+        while (p != nullptr && p != p->p_) {
+            callback(p->key_);
+            p = p->p_;
         }
     }
 
@@ -204,7 +208,7 @@ public:
 
 private:
     void print(std::stringstream& stream, const CString& prefix) const {
-        stream << prefix.data() << "+-- " << value_ << '\n';
+        stream << prefix.data() << "+-- " << key_ << '\n';
         if (lch_) lch_->print(stream, prefix + "|   ");
         if (rch_) rch_->print(stream, prefix + "|   ");
     }
@@ -213,7 +217,7 @@ private:
 /**
  * @brief 红黑树节点颜色
  */
-enum Color {
+enum class Color : bool {
     BLACK, // 黑 = 0
     RED,   // 红 = 1
 };
@@ -229,19 +233,19 @@ public:
     using Self = RBTreeNode<key_t, value_t>;
     using Callback = Consumer<const KeyValueView<key_t, value_t>&>;
 
-    key_t key_;     // 键
-    value_t value_; // 值
-    Color color_;   // 颜色
-    Self* lch_;  // 指向左孩子的指针
-    Self* rch_;  // 指向右孩子的指针
-    Self* parent_;  // 指向父节点的指针，定义根节点的父指针指向NIL
+    key_t key_;   // 键
+    value_t val_; // 值
+    Color color_; // 颜色
+    Self* lch_;   // 指向左孩子的指针
+    Self* rch_;   // 指向右孩子的指针
+    Self* p_;     // 指向父节点的指针，定义根节点的父指针指向NIL
 
-    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, Color color = RED,
+    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, Color color = Color::RED,
                         Self* lchild = nullptr, Self* rchild = nullptr, Self* parent = nullptr) :
-            key_(key), value_(value), color_(color), lch_(lchild), rch_(rchild), parent_(parent) {}
+            key_(key), val_(value), color_(color), lch_(lchild), rch_(rchild), p_(parent) {}
 
-    explicit RBTreeNode(key_t&& key, value_t&& value, Color color = RED) :
-            key_(std::move(key)), value_(std::move(value)), color_(color), lch_(nullptr), rch_(nullptr), parent_(nullptr) {}
+    explicit RBTreeNode(key_t&& key, value_t&& value, Color color = Color::RED) :
+            key_(std::move(key)), val_(std::move(value)), color_(color), lch_(nullptr), rch_(nullptr), p_(nullptr) {}
 
     RBTreeNode(const Self&) = delete;
     Self& operator=(const Self&) = delete;
@@ -249,11 +253,11 @@ public:
     RBTreeNode(Self&& other) noexcept :
             color_(other.color_),
             key_(std::move(other.key_)),
-            value_(std::move(other.value)),
+            val_(std::move(other.value)),
             lch_(other.lch_),
             rch_(other.rch_),
-            parent_(other.parent_) {
-        other.lch_ = other.rch_ = other.parent_ = nullptr;
+            p_(other.p_) {
+        other.lch_ = other.rch_ = other.p_ = nullptr;
     }
 
     Self& operator=(Self&& other) noexcept {
@@ -261,11 +265,11 @@ public:
 
         this->color_ = other.color_;
         this->key_ = std::move(other.key_);
-        this->value_ = std::move(other.value_);
+        this->val_ = std::move(other.val_);
         this->lch_ = other.lch_;
         this->rch_ = other.rch_;
-        this->parent_ = other.parent_;
-        other.lch_ = other.rch_ = other.parent_ = nullptr;
+        this->p_ = other.p_;
+        other.lch_ = other.rch_ = other.p_ = nullptr;
         return *this;
     }
 
@@ -281,7 +285,7 @@ public:
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << (color_ == RED ? io::Color::RED : "") << '(' << key_ << ',' << value_ << ')' << io::Color::CLOSE << '\n';
+        stream << (color_ == Color::RED ? io::Color::RED : "") << '(' << key_ << ',' << val_ << ')' << io::Color::CLOSE << '\n';
         return CString{stream.str()};
     }
 };

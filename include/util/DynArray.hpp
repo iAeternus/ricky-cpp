@@ -10,7 +10,6 @@
 #include "Exception.hpp"
 #include "binary_utils.hpp"
 #include "Buffer.hpp"
-#include "Array.hpp"
 
 namespace my::util {
 

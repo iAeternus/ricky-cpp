@@ -37,7 +37,7 @@ public:
     }
 
     void clear() {
-        destroy_node(root_);
+        clear(root_);
         size_ = 0;
     }
 
@@ -100,18 +100,19 @@ public:
     }
 
 private:
-    void destroy_node(Node* root) {
+    void clear(Node* root) {
         if (root == nullptr) return;
         for (auto* child : root->children_) {
-            destroy_node(child);
+            clear(child);
         }
         alloc_.destroy(root);
+        alloc_.deallocate(root, 1);
     }
 
 private:
     Alloc alloc_{}; // 内存分配器
-    usize size_;  // 节点个数
-    Node* root_;  // 根节点
+    usize size_;    // 节点个数
+    Node* root_;    // 根节点
 };
 
 template <typename T>
