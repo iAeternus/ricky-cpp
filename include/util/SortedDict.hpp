@@ -43,22 +43,24 @@ public:
     /**
      * @brief 通过初始化成员列表构造
      */
-    RBTree(std::initializer_list<Pair<key_t, key_t>>&& init_list) :
-            comp_(Comp{}), size_(init_list.size()) {
+    RBTree(std::initializer_list<Pair<key_t, value_t>>&& init_list) :
+            comp_(Comp{}), size_(0) {
         create_nil();
+        this->root_ = nil_;
         for (auto&& [key, val] : init_list) {
             insert(std::move(key), std::move(val));
         }
     }
 
     /**
-     * @brief 拷贝构造 TODO 段错误
+     * @brief 拷贝构造
      */
     RBTree(const Self& other) :
             alloc_(other.alloc_),
             comp_(other.comp_),
             size_(other.size_) {
         create_nil();
+        this->root_ = nil_;
         other.for_each([&](const auto& key, const auto& val) {
             this->insert(key, val);
         });
@@ -93,6 +95,7 @@ public:
         this->comp_ = other.comp_;
         this->size_ = other.size_;
         create_nil();
+        this->root_ = nil_;
         other.for_each([&](const auto& key, const auto& val) {
             this->insert(key, val);
         });
@@ -186,6 +189,11 @@ public:
      * @param key 键
      */
     void remove(const key_t& key);
+
+    /**
+     * @brief 删除节点（移动语义）
+     * @param key 键
+     */
     void remove(key_t&& key);
 
     /**
@@ -197,8 +205,20 @@ public:
         size_ = 0;
     }
 
+    /**
+     * @brief 遍历所有键值对
+     * @param callback 遍历时的回调函数
+     */
     void for_each(Callback callback) const {
         inorder_for_each(root_, callback);
+    }
+
+    /**
+     * @brief 逆序遍历所有键值对
+     * @param callback 遍历时的回调函数
+     */
+    void for_each_rev(Callback callback) const {
+        inorder_for_each_rev(root_, callback);
     }
 
     /**
@@ -293,7 +313,7 @@ private:
     void create_nil() {
         nil_ = alloc_.allocate(1);
         alloc_.construct(nil_, key_t{}, value_t{}, Color::BLACK);
-        nil_->lch_ = nil_->rch_ = nil_;
+        nil_->lch_ = nil_->rch_ = nil_->p_ = nil_;
     }
 
     /**
@@ -325,6 +345,16 @@ private:
         inorder_for_each(node->lch_, callback);
         callback(node->key_, node->val_);
         inorder_for_each(node->rch_, callback);
+    }
+
+    /**
+     * @brief 逆中序遍历
+     */
+    void inorder_for_each_rev(Node* node, Callback callback) const {
+        if (node == nil_) return;
+        inorder_for_each_rev(node->rch_, callback);
+        callback(node->key_, node->val_);
+        inorder_for_each_rev(node->lch_, callback);
     }
 
     /**

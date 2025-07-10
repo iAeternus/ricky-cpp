@@ -5,6 +5,7 @@
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "SortedDict.hpp"
+#include "Vec.hpp"
 #include <functional>
 
 namespace my::test::test_sorted_dict {
@@ -119,13 +120,32 @@ fn should_clone = []() {
     // When
     util::SortedDict<i32, i32> res(sd);
 
-    // util::SortedDict<i32, i32> res2;
-    // res2 = sd;
+    util::SortedDict<i32, i32> res2;
+    res2 = sd;
 
     // Then
-    // Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, sd.__str__());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, sd.__str__());
     Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res.__str__());
-    // Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res2.__str__());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res2.__str__());
+};
+
+fn should_for_each = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+    util::Vec<i32> res, res2;
+
+    // When
+    sd.for_each([&](const auto& k, const auto& v) {
+        res.append(k);
+    });
+
+    sd.for_each_rev([&](const auto& k, const auto& v) {
+        res2.append(k);
+    });
+
+    // Then
+    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, res.__str__());
+    Assertions::assertEquals("[34,27,25,23,18,17,15,9,8,6,5]"_cs, res2.__str__());
 };
 
 fn test_sorted_dict() {
@@ -134,7 +154,9 @@ fn test_sorted_dict() {
     group.addTest("it_works", it_works);
     group.addTest("should_insert", should_insert);
     group.addTest("should_insert_rev", should_insert_rev);
-    // group.addTest("should_clone", should_clone);
+    group.addTest("should_construct_by_initializer_list", should_construct_by_initializer_list);
+    group.addTest("should_clone", should_clone);
+    group.addTest("should_for_each", should_for_each);
 
     group.startAll();
 }
