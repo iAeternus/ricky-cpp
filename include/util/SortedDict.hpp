@@ -1,16 +1,13 @@
 /**
  * @brief 有序字典，红黑树实现
  * @author Ricky
- * @date 2025/1/13
+ * @date 2025/7/11
  * @version 1.0
  */
 #ifndef SORTED_DICT_HPP
 #define SORTED_DICT_HPP
 
-#include "Pair.hpp"
 #include "TreeNode.hpp"
-#include <initializer_list>
-#include <utility>
 
 namespace my::util {
 
@@ -43,6 +40,9 @@ public:
         this->root_ = nil_;
     }
 
+    /**
+     * @brief 通过初始化成员列表构造
+     */
     RBTree(std::initializer_list<Pair<key_t, key_t>>&& init_list) :
             comp_(Comp{}), size_(init_list.size()) {
         create_nil();
@@ -51,7 +51,18 @@ public:
         }
     }
 
-    // TODO 拷贝构造
+    /**
+     * @brief 拷贝构造 TODO 段错误
+     */
+    RBTree(const Self& other) :
+            alloc_(other.alloc_),
+            comp_(other.comp_),
+            size_(other.size_) {
+        create_nil();
+        other.for_each([&](const auto& key, const auto& val) {
+            this->insert(key, val);
+        });
+    }
 
     /**
      * @brief 移动构造
@@ -66,7 +77,27 @@ public:
         other.root_ = other.nil_ = nullptr;
     }
 
-    // TODO 拷贝赋值
+    /**
+     * @brief 拷贝赋值
+     */
+    Self& operator=(const Self& other) {
+        if (this == &other) return *this;
+
+        clear();
+        if (nil_) {
+            alloc_.destroy(nil_);
+            alloc_.deallocate(nil_, 1);
+        }
+
+        this->alloc_ = other.alloc_;
+        this->comp_ = other.comp_;
+        this->size_ = other.size_;
+        create_nil();
+        other.for_each([&](const auto& key, const auto& val) {
+            this->insert(key, val);
+        });
+        return *this;
+    }
 
     /**
      * @brief 移动赋值
@@ -125,7 +156,7 @@ public:
      */
     template <typename... Args>
     void insert(Args&&... args) {
-        auto* z = alloc_.create(std::forward<Args>(args)...); // 新节点
+        Node* z = alloc_.create(std::forward<Args>(args)...); // 新节点
         Node* y = nil_;
         Node* x = root_;
         while (x != nil_) {
