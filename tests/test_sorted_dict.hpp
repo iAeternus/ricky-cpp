@@ -1,55 +1,36 @@
 #ifndef TEST_SORTED_DICT_HPP
 #define TEST_SORTED_DICT_HPP
 
+#include "Function.hpp"
 #include "Printer.hpp"
+#include "Random.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "SortedDict.hpp"
 #include "Vec.hpp"
+
 #include <functional>
+#include <map>
 
 namespace my::test::test_sorted_dict {
 
 fn it_works = []() {
     util::SortedDict<i32, i32> sd;
+    util::Vec<i32> keys = {17, 18, 23, 34, 27, 15, 9, 6, 8, 5, 25};
+    i32 idx = 1;
 
-    sd.insert(17, 1);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(18, 2);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(23, 3);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(34, 4);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(27, 5);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(15, 6);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(9, 7);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(6, 8);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(8, 9);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(5, 10);
-    io::println(sd.tree_struct());
-    io::println("----------------------------------");
-    sd.insert(25, 11);
-    io::println(sd.tree_struct());
+    for (const auto& key : keys) {
+        sd.insert(key, idx++);
+        io::println(sd.tree_struct());
+        io::println("----------------------------------");
+    }
 };
 
 fn should_insert = []() {
     // Given
     util::SortedDict<i32, i32> sd;
+    util::Vec<i32> keys = {17, 18, 23, 34, 27, 15, 9, 6, 8, 5, 25};
+    i32 idx = 1;
 
     // Then
     Assertions::assertEquals("{}"_cs, sd.__str__());
@@ -57,17 +38,9 @@ fn should_insert = []() {
     Assertions::assertTrue(sd.empty());
 
     // When
-    sd.insert(17, 1);
-    sd.insert(18, 2);
-    sd.insert(23, 3);
-    sd.insert(34, 4);
-    sd.insert(27, 5);
-    sd.insert(15, 6);
-    sd.insert(9, 7);
-    sd.insert(6, 8);
-    sd.insert(8, 9);
-    sd.insert(5, 10);
-    sd.insert(25, 11);
+    for (const auto& key : keys) {
+        sd.insert(key, idx++);
+    }
 
     // Then
     Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, sd.__str__());
@@ -78,19 +51,13 @@ fn should_insert = []() {
 fn should_insert_rev = []() {
     // Given
     util::SortedDict<i32, i32, std::greater<>> sd;
+    util::Vec<i32> keys = {17, 18, 23, 34, 27, 15, 9, 6, 8, 5, 25};
+    i32 idx = 1;
 
     // When
-    sd.insert(17, 1);
-    sd.insert(18, 2);
-    sd.insert(23, 3);
-    sd.insert(34, 4);
-    sd.insert(27, 5);
-    sd.insert(15, 6);
-    sd.insert(9, 7);
-    sd.insert(6, 8);
-    sd.insert(8, 9);
-    sd.insert(5, 10);
-    sd.insert(25, 11);
+    for (const auto& key : keys) {
+        sd.insert(key, idx++);
+    }
 
     // Then
     Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, sd.__str__());
@@ -148,6 +115,91 @@ fn should_for_each = []() {
     Assertions::assertEquals("[34,27,25,23,18,17,15,9,8,6,5]"_cs, res2.__str__());
 };
 
+fn should_get = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+
+    // When
+    auto res = sd.get(15);
+    auto res2 = sd.get(6);
+    auto res3 = sd.get(34);
+
+    // Then
+    Assertions::assertEquals(6, res);
+    Assertions::assertEquals(8, res2);
+    Assertions::assertEquals(4, res3);
+};
+
+fn should_fail_to_get_if_key_not_found = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+
+    // When & Then
+    Assertions::assertThrows("key '99' not found in red-black-tree", [&]() {
+        sd.get(99);
+    });
+
+    Assertions::assertThrows("key '0' not found in red-black-tree", [&]() {
+        sd.get(0);
+    });
+};
+
+fn should_get_or_default = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+
+    // When
+    auto res = sd.get_or_default(15, 10);
+    auto res2 = sd.get_or_default(99, 10);
+
+    // Then
+    Assertions::assertEquals(6, res);
+    Assertions::assertEquals(10, res2);
+};
+
+fn should_count = []() {
+    // Given
+    util::SortedDict<i32, i32> sd;
+    util::Vec<i32> v = {1, 1, 1, 2, 2, 3, 4, 4, 4, 4};
+
+    // When
+    for (const auto& it : v) {
+        sd[it]++;
+    }
+
+    // Then
+    Assertions::assertEquals("{1:3,2:2,3:1,4:4}"_cs, sd.__str__());
+};
+
+fn should_set_default = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+
+    // When
+    sd.set_default(17, 0).set_default(99, 0);
+
+    // Then
+    Assertions::assertEquals(1, sd[17]);
+    Assertions::assertEquals(0, sd[99]);
+};
+
+fn should_remove = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{15, 1}, {9, 2}, {18, 3}, {6, 4}, {13, 5}, {17, 6}, {27, 7}, {10, 8}, {23, 9}, {34, 10}, {25, 11}, {37, 12}};
+    util::Vec<i32> keys = {18, 25, 15, 6, 13, 37, 27, 17, 34, 9, 10, 23};
+
+    // When
+    for (const auto& key : keys) {
+        io::println(sd.tree_struct());
+        io::println("----------------------------------");
+        sd.remove(key);
+    }
+
+    // Then
+    Assertions::assertEquals(0, sd.size());
+    Assertions::assertTrue(sd.empty());
+};
+
 fn test_sorted_dict() {
     UnitTestGroup group{"test_sorted_dict"};
 
@@ -157,6 +209,64 @@ fn test_sorted_dict() {
     group.addTest("should_construct_by_initializer_list", should_construct_by_initializer_list);
     group.addTest("should_clone", should_clone);
     group.addTest("should_for_each", should_for_each);
+    group.addTest("should_get", should_get);
+    group.addTest("should_fail_to_get_if_key_not_found", should_fail_to_get_if_key_not_found);
+    group.addTest("should_get_or_default", should_get_or_default);
+    group.addTest("should_count", should_count);
+    group.addTest("should_set_default", should_set_default);
+    group.addTest("should_remove", should_remove);
+
+    group.startAll();
+}
+
+fn test_sorted_dict_speed() {
+    i32 n = 1e7;
+    util::Vec<i32> nums;
+    UnitTestGroup group{"test_sorted_dict_speed"};
+
+    group.setup([&]() {
+        for (i32 i = 0; i < n; ++i) {
+            nums.append(util::Random::instance().next<i32>(1, n));
+        }
+    });
+
+    group.addTest("test_sorted_dict_operations_speed", [&]() {
+        util::SortedDict<i32, i32> sd;
+
+        // insert
+        for (i32 i = 0; i < n; ++i) {
+            sd.insert(nums[i], 0);
+        }
+
+        // get
+        for (i32 i = 0; i < n; ++i) {
+            sd[nums[i]]++;
+        }
+
+        // remove
+        for (i32 i = 0; i < n; ++i) {
+            sd.remove(nums[i]);
+        }
+    });
+
+    group.addTest("test_map_operations_speed", [&]() {
+        std::map<i32, i32> mp;
+
+        // insert
+        for (i32 i = 0; i < n; ++i) {
+            mp.emplace(nums[i], 0);
+        }
+
+        // get
+        for (i32 i = 0; i < n; ++i) {
+            mp[nums[i]]++;
+        }
+
+        // remove
+        for (i32 i = 0; i < n; ++i) {
+            mp.erase(nums[i]);
+        }
+    });
 
     group.startAll();
 }

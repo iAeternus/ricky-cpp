@@ -296,9 +296,10 @@ public:
      * @param other 另一个向量
      */
     void swap(Self& other) noexcept {
-        std::swap(data_, other.data_);
-        std::swap(size_, other.size_);
+        std::swap(alloc_, other.alloc_);
         std::swap(capacity_, other.capacity_);
+        std::swap(size_, other.size_);
+        std::swap(data_, other.data_);
     }
 
     /**

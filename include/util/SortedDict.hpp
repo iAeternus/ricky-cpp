@@ -7,7 +7,9 @@
 #ifndef SORTED_DICT_HPP
 #define SORTED_DICT_HPP
 
+#include "Exception.hpp"
 #include "TreeNode.hpp"
+#include <utility>
 
 namespace my::util {
 
@@ -85,20 +87,8 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        clear();
-        if (nil_) {
-            alloc_.destroy(nil_);
-            alloc_.deallocate(nil_, 1);
-        }
-
-        this->alloc_ = other.alloc_;
-        this->comp_ = other.comp_;
-        this->size_ = other.size_;
-        create_nil();
-        this->root_ = nil_;
-        other.for_each([&](const auto& key, const auto& val) {
-            this->insert(key, val);
-        });
+        Self tmp(other);
+        this->swap(tmp);
         return *this;
     }
 
@@ -153,48 +143,169 @@ public:
     }
 
     /**
+     * @brief 获取最小的值，若树空抛出 runtime_exception
+     */
+    value_t& front() {
+        if (empty()) {
+            throw runtime_exception("red-black-tree is empty");
+        }
+        return find_min(root_)->val_;
+    }
+
+    /**
+     * @brief 获取最小的值，若树空抛出 runtime_exception（常量版本）
+     */
+    const value_t& front() const {
+        if (empty()) {
+            throw runtime_exception("red-black-tree is empty");
+        }
+        return find_min(root_)->val_;
+    }
+
+    /**
+     * @brief 获取最大的值，若树空抛出 runtime_exception
+     */
+    value_t& back() {
+        if (empty()) {
+            throw runtime_exception("red-black-tree is empty");
+        }
+        return find_max(root_)->val_;
+    }
+
+    /**
+     * @brief 获取最大的值，若树空抛出 runtime_exception（常量版本）
+     */
+    const value_t& back() const {
+        if (empty()) {
+            throw runtime_exception("red-black-tree is empty");
+        }
+        return find_max(root_)->val_;
+    }
+
+    /**
+     * @brief 检查字典中是否包含指定的键
+     * @param key 需要检查的键
+     * @return 如果键存在返回 true，否则返回 false
+     */
+    bool contains(const key_t& key) const {
+        return tree_search(key) != nullptr;
+    }
+
+    /**
+     * @brief 获取指定键对应的值
+     * 如果键不存在，抛出 throw not_found_exception
+     * @param key 键
+     * @return 返回对应值的可变引用
+     */
+    value_t& get(const key_t& key) {
+        Node* p = tree_search(key);
+        if (p == nullptr) {
+            throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
+        }
+        return p->val_;
+    }
+
+    /**
+     * @brief 获取指定键对应的值（常量版本）
+     * 如果键不存在，抛出 throw not_found_exception
+     * @param key 键
+     * @return 返回对应值的不可变引用
+     */
+    const value_t& get(const key_t& key) const {
+        Node* p = tree_search(key);
+        if (p == nullptr) {
+            throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
+        }
+        return p->val_;
+    }
+
+    /**
+     * @brief 获取指定键对应的值，默认值
+     * 如果键不存在，返回默认值
+     * @param key 键
+     * @param default_val 默认值
+     * @return 返回对应值的引用或默认值
+     */
+    value_t& get_or_default(const key_t& key, value_t& default_val) {
+        Node* p = tree_search(key);
+        if (p == nullptr) {
+            return default_val;
+        }
+        return p->val_;
+    }
+
+    /**
+     * @brief 获取指定键对应的值，默认值（常量版本）
+     * 如果键不存在，返回默认值
+     * @param key 键
+     * @param default_val 默认值
+     * @return 返回对应值的常量引用或默认值
+     */
+    const value_t& get_or_default(const key_t& key, const value_t& default_val) const {
+        Node* p = tree_search(key);
+        if (p == nullptr) {
+            return default_val;
+        }
+        return p->val_;
+    }
+
+    /**
+     * @brief 获取指定键对应的值
+     * 如果键不存在，创建键值对，值初始化为对应类型默认值
+     * @param key 键
+     * @return 返回对应值的可变引用
+     */
+    value_t& operator[](const key_t& key) {
+        Node* p = tree_search(key);
+        if (p == nullptr) {
+            return insert(key, value_t{});
+        }
+        return p->val_;
+    }
+
+    /**
+     * @brief 如果键不存在，设置默认值，否则什么都不做
+     * @param key 键
+     * @param default_val 默认值
+     * @return 本字典对象的引用，支持链式编程
+     */
+    template <typename _V>
+    Self& set_default(const key_t& key, _V&& default_val) {
+        Node* p = tree_search(key);
+        if (p == nullptr) {
+            insert(key, std::forward<_V>(default_val));
+        }
+        return *this;
+    }
+
+    /**
      * @brief 构造并插入节点
      * @note 时间复杂度 O(log n)
      * @param args 构造节点的参数
+     * @return 返回插入或更新后的值的引用
      */
     template <typename... Args>
-    void insert(Args&&... args) {
-        Node* z = alloc_.create(std::forward<Args>(args)...); // 新节点
-        Node* y = nil_;
-        Node* x = root_;
-        while (x != nil_) {
-            y = x;
-            if (comp_(z->key_, x->key_)) {
-                x = x->lch_;
-            } else {
-                x = x->rch_;
-            }
-        }
-        z->p_ = y;
-        if (y == nil_) {
-            root_ = z;
-        } else if (comp_(z->key_, y->key_)) {
-            y->lch_ = z;
-        } else {
-            y->rch_ = z;
-        }
-        z->lch_ = z->rch_ = nil_;
-        z->color_ = Color::RED;
-        insert_fixup(z); // 调整
+    value_t& insert(Args&&... args) {
+        auto& val = insert_impl(alloc_.create(std::forward<Args>(args)...));
         ++size_;
+        return val;
     }
 
     /**
      * @brief 删除节点
+     * 若节点不存在，则什么都不做
      * @param key 键
      */
-    void remove(const key_t& key);
-
-    /**
-     * @brief 删除节点（移动语义）
-     * @param key 键
-     */
-    void remove(key_t&& key);
+    template <typename _K>
+    void remove(_K&& key) {
+        Node* z = tree_search(std::forward<_K>(key));
+        if (z != nullptr) {
+            remove_impl(z);
+            --size_;
+            alloc_.destroy(z);
+            alloc_.deallocate(z, 1);
+        }
+    }
 
     /**
      * @brief 清空所有节点
@@ -203,6 +314,17 @@ public:
         clear(root_);
         root_ = nil_;
         size_ = 0;
+    }
+
+    /**
+     * @brief 交换
+     */
+    void swap(Self& other) noexcept {
+        std::swap(alloc_, other.alloc_);
+        std::swap(comp_, other.comp_);
+        std::swap(size_, other.size_);
+        std::swap(root_, other.root_);
+        std::swap(nil_, other.nil_);
     }
 
     /**
@@ -358,6 +480,35 @@ private:
     }
 
     /**
+     * @brief 插入节点z
+     * @return 返回插入或更新后的值的引用
+     */
+    value_t& insert_impl(Node* z) {
+        Node* y = nil_;
+        Node* x = root_;
+        while (x != nil_) {
+            y = x;
+            if (comp_(z->key_, x->key_)) {
+                x = x->lch_;
+            } else {
+                x = x->rch_;
+            }
+        }
+        z->p_ = y;
+        if (y == nil_) {
+            root_ = z;
+        } else if (comp_(z->key_, y->key_)) {
+            y->lch_ = z;
+        } else {
+            y->rch_ = z;
+        }
+        z->lch_ = z->rch_ = nil_;
+        z->color_ = Color::RED;
+        insert_fixup(z); // 调整
+        return z->val_;
+    }
+
+    /**
      * @brief 左旋
      *     |              |
      *     y    l_rot     x
@@ -414,9 +565,9 @@ private:
     /**
      * @brief 插入节点后调整
      * @note 存在以下3种情况
-     * Case 1. z的叔节点y是红色的：将父/叔/爷节点反色，当前节点指向爷节点，继续调整
+     * Case 1. z的叔节点y是红色的：将父/叔/爷节点变色，当前节点指向爷节点，继续调整
      * Case 2. z的叔节点y是黑色的且z是一个右孩子：左旋，转换为 case 3
-     * Case 3. z的叔节点y是黑色的且z是一个左孩子：将父/爷节点反色，对爷节点右旋
+     * Case 3. z的叔节点y是黑色的且z是一个左孩子：将父/爷节点变色，对爷节点右旋
      */
     void insert_fixup(Node* z) {
         while (z->p_->color_ == Color::RED) {
@@ -481,6 +632,144 @@ private:
             node = node->rch_;
         }
         return node;
+    }
+
+    /**
+     * @brief 树上查找
+     * @param key 键
+     * @return 若找到，返回指向目标节点的指针，否则返回 nullptr
+     */
+    template <typename K>
+    Node* tree_search(K&& key) const {
+        Node* p = root_;
+        while (p != nil_) {
+            if (comp_(key, p->key_)) {
+                p = p->lch_;
+            } else if (comp_(p->key_, key)) {
+                p = p->rch_;
+            } else {
+                return p;
+            }
+        }
+        return nullptr;
+    }
+
+    /**
+     * @brief 用一棵以 v 为根的子树替换以 u 为根的子树，并成为后者父亲的孩子结点
+     */
+    void transplant(Node* u, Node* v) {
+        if (u->p_ == nil_) {
+            root_ = v;
+        } else if (u == u->p_->lch_) {
+            u->p_->lch_ = v;
+        } else {
+            u->p_->rch_ = v;
+        }
+        v->p_ = u->p_;
+    }
+
+    /**
+     * @brief 删除节点z
+     */
+    void remove_impl(Node* z) {
+        Node *y = z, *x = nil_;
+        Color y_original_color = y->color_;
+        if (z->lch_ == nil_) {
+            x = z->rch_;
+            transplant(z, z->rch_);
+        } else if (z->rch_ == nil_) {
+            x = z->lch_;
+            transplant(z, z->lch_);
+        } else {
+            y = find_min(z->rch_);
+            y_original_color = y->color_;
+            x = y->rch_;
+            if (y->p_ == z) {
+                x->p_ = y;
+            } else {
+                transplant(y, y->rch_);
+                y->rch_ = z->rch_;
+                y->rch_->p_ = y;
+            }
+            transplant(z, y);
+            y->lch_ = z->lch_;
+            y->lch_->p_ = y;
+            y->color_ = z->color_;
+        }
+        if (y_original_color == Color::BLACK) {
+            delete_fixup(x);
+        }
+    }
+
+    /**
+     * @brief 删除节点后调整
+     * Case 1. 兄弟节点w是红色的：兄父变色，对父节点左旋，转换为其他情况
+     * Case 2. 兄弟节点w是黑色，且w的两个子节点都是黑色的：兄弟变红，双黑上移
+     * Case 3. 兄弟节点w是黑色，w的左孩子是红色的，右孩子是黑色的：交换兄弟与其左孩子的颜色，对兄弟右旋，转换为 Case 4
+     * Case 4. 兄弟节点w是黑色，w的右孩子是红色的：变色，对父节点左旋
+     */
+    void delete_fixup(Node* x) {
+        while (x != root_ && x->color_ == Color::BLACK) {
+            if (x == x->p_->lch_) {
+                Node* w = x->p_->rch_; // 兄弟节点
+                if (w->color_ == Color::RED) {
+                    // Case 1: 兄弟节点w是红色的
+                    w->color_ = Color::BLACK;
+                    x->p_->color_ = Color::RED;
+                    left_rotate(x->p_);
+                    w = x->p_->rch_;
+                }
+                if ((w->lch_ == nil_ || w->lch_->color_ == Color::BLACK) && (w->rch_ == nil_ || w->rch_->color_ == Color::BLACK)) {
+                    // Case 2: 兄弟节点w是黑色，且w的两个子节点都是黑色的
+                    w->color_ = Color::RED;
+                    x = x->p_;
+                } else {
+                    if (w->rch_->color_ == Color::BLACK) {
+                        // Case 3: 兄弟节点w是黑色，w的左孩子是红色，右孩子是黑色
+                        w->lch_->color_ = Color::BLACK;
+                        w->color_ = Color::RED;
+                        right_rotate(w);
+                        w = x->p_->rch_;
+                    }
+                    // Case 4: 兄弟节点w是黑色，w的右孩子是红色
+                    w->color_ = x->p_->color_;
+                    x->p_->color_ = Color::BLACK;
+                    if (w->rch_ != nil_) {
+                        w->rch_->color_ = Color::BLACK;
+                    }
+                    left_rotate(x->p_);
+                    x = root_; // 终止循环
+                }
+            } else {
+                // 对称情况
+                Node* w = x->p_->lch_;
+                if (w->color_ == Color::RED) {
+                    w->color_ = Color::BLACK;
+                    x->p_->color_ = Color::RED;
+                    right_rotate(x->p_);
+                    w = x->p_->lch_;
+                }
+                if ((w->lch_ == nil_ || w->lch_->color_ == Color::BLACK) && (w->rch_ == nil_ || w->rch_->color_ == Color::BLACK)) {
+                    w->color_ = Color::RED;
+                    x = x->p_;
+                } else {
+                    if (w->lch_->color_ == Color::BLACK) {
+                        w->rch_->color_ = Color::BLACK;
+                        w->color_ = Color::RED;
+                        left_rotate(w);
+                        w = x->p_->lch_;
+                    }
+                    w->color_ = x->p_->color_;
+                    x->p_->color_ = Color::BLACK;
+                    if (w->lch_ != nil_) {
+                        w->lch_->color_ = Color::BLACK;
+                    }
+                    right_rotate(x->p_);
+                    x = root_;
+                }
+            }
+        }
+        x->color_ = Color::BLACK;
     }
 
 private:

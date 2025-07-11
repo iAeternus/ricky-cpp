@@ -83,6 +83,18 @@ fn should_update = []() {
     Assertions::assertEquals(5, i32(d.size()));
 };
 
+fn should_remove = []() {
+    // Given
+    util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}};
+
+    // When
+    d.remove(1);
+
+    // Then
+    Assertions::assertEquals(2, d.size());
+    Assertions::assertFalse(d.contains(1));
+};
+
 fn should_operator = []() {
     // Given
     util::Dict<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}};
@@ -126,6 +138,7 @@ fn test_dict() {
     group.addTest("should_fail_to_get_if_key_not_found", should_fail_to_get_if_key_not_found);
     group.addTest("should_set_default", should_set_default);
     group.addTest("should_update", should_update);
+    group.addTest("should_remove", should_remove);
     group.addTest("should_operator", should_operator);
     group.addTest("should_to_string", should_to_string);
 
