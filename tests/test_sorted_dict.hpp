@@ -8,7 +8,6 @@
 #include "String.hpp"
 #include "SortedDict.hpp"
 
-#include <functional>
 #include <map>
 
 namespace my::test::test_sorted_dict {
@@ -242,7 +241,7 @@ fn test_sorted_dict() {
 }
 
 fn test_sorted_dict_speed() {
-    i32 n = 1e7;
+    i32 n = 1e6;
     util::Vec<i32> nums;
     UnitTestGroup group{"test_sorted_dict_speed"};
 

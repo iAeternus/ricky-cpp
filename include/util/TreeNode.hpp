@@ -273,6 +273,14 @@ public:
         return *this;
     }
 
+    bool is_black() const noexcept {
+        return color_ == Color::BLACK;
+    }
+
+    bool is_red() const noexcept {
+        return color_ == Color::RED;
+    }
+
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (Comparable<key_t>) {
             return this->key_.__cmp__(other.key_);

@@ -7,11 +7,7 @@
 #ifndef SORTED_DICT_HPP
 #define SORTED_DICT_HPP
 
-#include "Exception.hpp"
-#include "KeyValue.hpp"
 #include "TreeNode.hpp"
-#include "json_trait.hpp"
-#include <utility>
 
 namespace my::util {
 
@@ -511,8 +507,8 @@ public:
 
     private:
         const RBTree* tree_; // 指向红黑树的指针
-        Node* curr_;    // 迭代器当前位置
-        value_type kv_; // 当前键值对
+        Node* curr_;         // 迭代器当前位置
+        value_type kv_;      // 当前键值对
     };
 
     using iterator = RBTreeIterator;
@@ -698,10 +694,10 @@ private:
      * Case 3. z的叔节点y是黑色的且z是一个左孩子：将父/爷节点变色，对爷节点右旋
      */
     void insert_fixup(Node* z) {
-        while (z->p_->color_ == Color::RED) {
+        while (z->p_->is_red()) {
             if (z->p_ == z->p_->p_->lch_) {
                 Node* y = z->p_->p_->rch_; // 叔节点
-                if (y->color_ == Color::RED) {
+                if (y->is_red()) {
                     // Case 1: 叔节点为红色
                     z->p_->color_ = y->color_ = Color::BLACK;
                     z->p_->p_->color_ = Color::RED;
@@ -721,7 +717,7 @@ private:
             } else {
                 // 对称情况
                 Node* y = z->p_->p_->lch_;
-                if (y->color_ == Color::RED) {
+                if (y->is_red()) {
                     z->p_->color_ = Color::BLACK;
                     y->color_ = Color::BLACK;
                     z->p_->p_->color_ = Color::RED;
@@ -837,22 +833,22 @@ private:
      * Case 4. 兄弟节点w是黑色，w的右孩子是红色的：变色，对父节点左旋
      */
     void delete_fixup(Node* x) {
-        while (x != root_ && x->color_ == Color::BLACK) {
+        while (x != root_ && x->is_black()) {
             if (x == x->p_->lch_) {
                 Node* w = x->p_->rch_; // 兄弟节点
-                if (w->color_ == Color::RED) {
+                if (w->is_red()) {
                     // Case 1: 兄弟节点w是红色的
                     w->color_ = Color::BLACK;
                     x->p_->color_ = Color::RED;
                     left_rotate(x->p_);
                     w = x->p_->rch_;
                 }
-                if ((w->lch_ == nil_ || w->lch_->color_ == Color::BLACK) && (w->rch_ == nil_ || w->rch_->color_ == Color::BLACK)) {
+                if ((w->lch_ == nil_ || w->lch_->is_black()) && (w->rch_ == nil_ || w->rch_->is_black())) {
                     // Case 2: 兄弟节点w是黑色，且w的两个子节点都是黑色的
                     w->color_ = Color::RED;
                     x = x->p_;
                 } else {
-                    if (w->rch_->color_ == Color::BLACK) {
+                    if (w->rch_->is_black()) {
                         // Case 3: 兄弟节点w是黑色，w的左孩子是红色，右孩子是黑色
                         w->lch_->color_ = Color::BLACK;
                         w->color_ = Color::RED;
@@ -871,17 +867,17 @@ private:
             } else {
                 // 对称情况
                 Node* w = x->p_->lch_;
-                if (w->color_ == Color::RED) {
+                if (w->is_red()) {
                     w->color_ = Color::BLACK;
                     x->p_->color_ = Color::RED;
                     right_rotate(x->p_);
                     w = x->p_->lch_;
                 }
-                if ((w->lch_ == nil_ || w->lch_->color_ == Color::BLACK) && (w->rch_ == nil_ || w->rch_->color_ == Color::BLACK)) {
+                if ((w->lch_ == nil_ || w->lch_->is_black()) && (w->rch_ == nil_ || w->rch_->is_black())) {
                     w->color_ = Color::RED;
                     x = x->p_;
                 } else {
-                    if (w->lch_->color_ == Color::BLACK) {
+                    if (w->lch_->is_black()) {
                         w->rch_->color_ = Color::BLACK;
                         w->color_ = Color::RED;
                         left_rotate(w);
