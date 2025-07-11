@@ -49,12 +49,12 @@ public:
         return *value_;
     }
 
-    value_t& value() {
-        if (value_ == nullptr) {
-            throw null_pointer_exception("value is null");
-        }
-        return *value_;
-    }
+    // value_t& value() {
+    //     if (value_ == nullptr) {
+    //         throw null_pointer_exception("value is null");
+    //     }
+    //     return *value_;
+    // }
 
     template <std::size_t I>
     decltype(auto) get() & {

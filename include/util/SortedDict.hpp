@@ -8,6 +8,7 @@
 #define SORTED_DICT_HPP
 
 #include "TreeNode.hpp"
+#include "ricky.hpp"
 
 namespace my::util {
 
@@ -342,6 +343,193 @@ public:
     }
 
     /**
+     * @brief 计算两个字典的交集
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 返回两个字典的交集
+     */
+    Self operator&(const Self& other) const {
+        Self res;
+        auto it = this->begin();
+        auto jt = other.begin();
+        while (it != this->end() && jt != other.end()) {
+            if (comp_(it->key(), jt->key())) {
+                ++it;
+            } else if (comp_(jt->key(), it->key())) {
+                ++jt;
+            } else {
+                res.insert(it->key(), it->value());
+                ++it;
+                ++jt;
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @brief 计算两个字典的交集并赋值给当前字典
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 本字典对象的引用
+     */
+    Self& operator&=(const Self& other) {
+        if (this == &other) return *this;
+        *this = *this & other;
+        return *this;
+    }
+
+    /**
+     * @brief 计算两个字典的并集，键相同则选择其他字典的值
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 返回两个字典的并集
+     */
+    Self operator|(const Self& other) const {
+        Self res;
+        auto it = this->begin();
+        auto jt = other.begin();
+        while (it != this->end() && jt != other.end()) {
+            if (comp_(it->key(), jt->key())) {
+                res.insert(it->key(), it->value());
+                ++it;
+            } else if (comp_(jt->key(), it->key())) {
+                res.insert(jt->key(), jt->value());
+                ++jt;
+            } else {
+                res.insert(it->key(), it->value());
+                ++it;
+                ++jt;
+            }
+        }
+        while (it != this->end()) {
+            res.insert(it->key(), it->value());
+            ++it;
+        }
+        while (jt != other.end()) {
+            res.insert(jt->key(), jt->value());
+            ++jt;
+        }
+        return res;
+    }
+
+    /**
+     * @brief 计算两个字典的并集并赋值给当前字典
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 本字典对象的引用
+     */
+    Self& operator|=(const Self& other) {
+        if (this == &other) return *this;
+        *this = *this | other;
+        return *this;
+    }
+
+    /**
+     * @brief 计算两个字典的并集
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 返回两个字典的并集
+     */
+    Self operator+(const Self& other) const {
+        return *this | other;
+    }
+
+    /**
+     * @brief 计算两个字典的并集并赋值给当前字典
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 本字典对象的引用
+     */
+    Self& operator+=(const Self& other) {
+        return *this |= other;
+    }
+
+    /**
+     * @brief 计算两个字典的相对补集
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 返回两个字典的相对补集
+     */
+    Self operator^(const Self& other) const {
+        Self res;
+        auto it = this->begin();
+        auto jt = other.begin();
+        while (it != this->end() && jt != other.end()) {
+            if (comp_(it->key(), jt->key())) {
+                res.insert(it->key(), it->value());
+                ++it;
+            } else if (comp_(jt->key(), it->key())) {
+                res.insert(jt->key(), jt->value());
+                ++jt;
+            } else {
+                ++it;
+                ++jt;
+            }
+        }
+        while (it != this->end()) {
+            res.insert(it->key(), it->value());
+            ++it;
+        }
+        while (jt != other.end()) {
+            res.insert(jt->key(), jt->value());
+            ++jt;
+        }
+        return res;
+    }
+
+    /**
+     * @brief 计算两个字典的相对补集并赋值给当前字典
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 本字典对象的引用
+     */
+    Self& operator^=(const Self& other) {
+        if (this == &other) return *this;
+        *this = *this ^ other;
+        return *this;
+    }
+
+    /**
+     * @brief 计算两个字典的差集
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 返回两个字典的差集
+     */
+    Self operator-(const Self& other) const {
+        Self res;
+        auto it = this->begin();
+        auto jt = other.begin();
+        while (it != this->end() && jt != other.end()) {
+            if (comp_(it->key(), jt->key())) {
+                res.insert(it->key(), it->value());
+                ++it;
+            } else if (comp_(jt->key(), it->key())) {
+                ++jt;
+            } else {
+                ++it;
+                ++jt;
+            }
+        }
+        while (it != this->end()) {
+            res.insert(it->key(), it->value());
+            ++it;
+        }
+        return res;
+    }
+
+    /**
+     * @brief 计算两个字典的差集并赋值给当前字典
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 本字典对象的引用
+     */
+    Self& operator-=(const Self& other) {
+        if (this == &other) return *this;
+        *this = *this - other;
+        return *this;
+    }
+
+    /**
      * @brief 获取树结构
      */
     [[nodiscard]] CString tree_struct() const {
@@ -351,6 +539,70 @@ public:
         std::stringstream stream;
         print_tree(root_, stream, "");
         return CString{stream.str()};
+    }
+
+    /**
+     * @brief 比较两个字典的包含关系
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @note 建议使用__equals__比较集合相等
+     * @return 返回值分以下情况
+     * 1. 若this是other的真超集，返回 1
+     * 2. 若this与other相等，返回 0
+     * 3. 若this是other的真子集，返回 -1
+     * 4. 若this与other无法比较（互不为子集），返回 TYPE_MAX(cmp_t)
+     */
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+        auto it = this->begin();
+        auto jt = other.begin();
+        bool flag1 = false, flag2 = false;
+        while (it != this->end() && jt != other.end()) {
+            if (comp_(it->key(), jt->key())) {
+                flag1 = true;
+                ++it;
+            } else if (comp_(jt->key(), it->key())) {
+                flag2 = true;
+                ++jt;
+            } else {
+                ++it;
+                ++jt;
+            }
+        }
+        if (it != this->end()) flag1 = true;
+        if (jt != other.end()) flag2 = true;
+
+        if (!flag1 && !flag2) {
+            return 0; // 集合相等
+        } else if (flag1 && !flag2) {
+            return 1; // this 是 other 的真超集
+        } else if (!flag1 && flag2) {
+            return -1; // this 是 other 的真子集
+        } else {
+            return TYPE_MAX(cmp_t); // 互不为子集
+        }
+    }
+
+    /**
+     * @brief 比较两个字典是否相等
+     * @note 若两个字典的比较函数不同，则行为未定义
+     * @param other 另一个字典
+     * @return 如果相等返回 true，否则返回 false
+     */
+    [[nodiscard]] bool __equals__(const Self& other) const {
+        if (this->size() != other.size()) return false;
+
+        auto it = this->begin();
+        auto jt = other.begin();
+        while (it != this->end() && jt != other.end()) {
+            if (comp_(it->key(), jt->key())) {
+                return false;
+            } else if (comp_(jt->key(), it->key())) {
+                return false;
+            } else {
+                ++it;
+                ++jt;
+            }
+        }
+        return true;
     }
 
     [[nodiscard]] CString __str__() const {
@@ -393,7 +645,7 @@ public:
         using reference = value_type&;
         using const_reference = const value_type&;
 
-        RBTreeIterator(RBTree* tree = nullptr, Node* curr = nullptr) :
+        RBTreeIterator(const RBTree* tree = nullptr, Node* curr = nullptr) :
                 tree_(tree), curr_(curr) {
             if (curr_ != tree_->nil_ && curr_ != nullptr) {
                 update_kv();

@@ -586,7 +586,7 @@ public:
          * @brief 解引用运算符
          * @return 返回当前键值对的引用
          */
-        const value_type& operator*() const {
+        const_reference operator*() const {
             return kv_;
         }
 
@@ -594,7 +594,7 @@ public:
          * @brief 获取指向当前键值对的指针
          * @return 返回指向当前键值对的指针
          */
-        const value_type* operator->() const {
+        const_pointer operator->() const {
             return &kv_;
         }
 

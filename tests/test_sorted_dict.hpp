@@ -7,6 +7,7 @@
 #include "Random.hpp"
 #include "String.hpp"
 #include "SortedDict.hpp"
+#include "ricky.hpp"
 
 #include <map>
 
@@ -219,6 +220,59 @@ fn should_iterable = []() {
     Assertions::assertEquals("[10,8,9,7,6,1,2,3,11,5,4]"_cs, values.__str__());
 };
 
+fn should_operator = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}};
+    util::SortedDict<i32, i32> sd2 = {{4, 1}, {5, 1}, {6, 1}, {7, 1}, {8, 1}};
+
+    // When
+    auto res = sd & sd2;  // 交集
+    auto res2 = sd | sd2; // 并集
+    auto res3 = sd ^ sd2; // 相对补集
+    auto res4 = sd - sd2; // 差集
+
+    // Then
+    Assertions::assertEquals(2, i32(res.size()));
+    Assertions::assertEquals(8, i32(res2.size()));
+    Assertions::assertEquals(6, i32(res3.size()));
+    Assertions::assertEquals(3, i32(res4.size()));
+};
+
+fn should_cmp = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{1, 1}, {2, 2}, {3, 3}};
+    util::SortedDict<i32, i32> sd2 = {{1, 1}, {2, 2}, {3, 3}};
+    util::SortedDict<i32, i32> sd3 = {{1, 1}, {3, 3}};
+    util::SortedDict<i32, i32> sd4 = {{2, 2}, {4, 4}};
+
+    // When
+    auto res = sd.__cmp__(sd2);
+    auto res2 = sd.__cmp__(sd3);
+    auto res3 = sd3.__cmp__(sd);
+    auto res4 = sd3.__cmp__(sd4);
+
+    // Then
+    Assertions::assertEquals(0, res);
+    Assertions::assertEquals(1, res2);
+    Assertions::assertEquals(-1, res3);
+    Assertions::assertEquals(TYPE_MAX(cmp_t), res4);
+};
+
+fn should_equals = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+    util::SortedDict<i32, i32> sd2 = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+    util::SortedDict<i32, i32> sd3 = {{1, 1}};
+
+    // When
+    auto res = sd.__equals__(sd2);
+    auto res2 = sd.__equals__(sd3);
+
+    // Then
+    Assertions::assertTrue(res);
+    Assertions::assertFalse(res2);
+};
+
 fn test_sorted_dict() {
     UnitTestGroup group{"test_sorted_dict"};
 
@@ -236,6 +290,9 @@ fn test_sorted_dict() {
     group.addTest("should_set_default", should_set_default);
     group.addTest("should_remove", should_remove);
     group.addTest("should_iterable", should_iterable);
+    group.addTest("should_operator", should_operator);
+    group.addTest("should_cmp", should_cmp);
+    group.addTest("should_equals", should_equals);
 
     group.startAll();
 }
