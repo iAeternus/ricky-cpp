@@ -8,7 +8,9 @@
 #define SORTED_DICT_HPP
 
 #include "Exception.hpp"
+#include "KeyValue.hpp"
 #include "TreeNode.hpp"
+#include "json_trait.hpp"
 #include <utility>
 
 namespace my::util {
@@ -387,10 +389,130 @@ public:
     public:
         using Self = RBTreeIterator;
 
-        // TODO
+        using iterator_category = std::bidirectional_iterator_tag;
+        using value_type = KeyValueView<key_t, value_t>;
+        using difference_type = std::ptrdiff_t;
+        using pointer = value_type*;
+        using const_pointer = const value_type*;
+        using reference = value_type&;
+        using const_reference = const value_type&;
+
+        RBTreeIterator(RBTree* tree = nullptr, Node* curr = nullptr) :
+                tree_(tree), curr_(curr) {
+            if (curr_ != tree_->nil_ && curr_ != nullptr) {
+                update_kv();
+            }
+        }
+
+        RBTreeIterator(const Self& other) = default;
+        Self& operator=(const Self& other) = default;
+
+        /**
+         * @brief 解引用运算符
+         * @return 返回当前键值对的引用
+         */
+        const_reference operator*() const {
+            return kv_;
+        }
+
+        /**
+         * @brief 获取指向当前键值对的指针
+         * @return 返回指向当前键值对的指针
+         */
+        const_pointer operator->() const {
+            return &kv_;
+        }
+
+        /**
+         * @brief 前置自增运算符
+         * 移动迭代器到下一个键值对
+         * @return 返回自增后的迭代器
+         */
+        Self& operator++() {
+            if (curr_ != tree_->nil_) {
+                curr_ = tree_->next(curr_);
+                update_kv();
+            }
+            return *this;
+        }
+
+        /**
+         * @brief 后置自增运算符
+         * 移动迭代器到下一个键值对
+         * @return 返回自增前的迭代器
+         */
+        Self operator++(int) {
+            Self tmp = *this;
+            ++*this;
+            return tmp;
+        }
+
+        /**
+         * @brief 前置自减运算符
+         * 移动迭代器到上一个键值对
+         * @return 返回自减后的迭代器
+         */
+        Self& operator--() {
+            if (curr_ != tree_->nil_) {
+                curr_ = tree_->prev(curr_);
+                update_kv();
+            }
+            return *this;
+        }
+
+        /**
+         * @brief 后置自减运算符
+         * 移动迭代器到上一个键值对
+         * @return 返回自减前的迭代器
+         */
+        Self operator--(i32) {
+            Self tmp = *this;
+            --*this;
+            return tmp;
+        }
+
+        /**
+         * @brief 比较两个迭代器是否相等
+         * @param other 另一个迭代器
+         * @return 如果相等返回 true，否则返回 false
+         */
+        [[nodiscard]] bool __equals__(const Self& other) const {
+            return this->tree_ == other.tree_ && this->curr_ == other.curr_;
+        }
+
+        /**
+         * @brief 比较两个迭代器是否相等
+         * @param other 另一个迭代器
+         * @return 如果相等返回 true，否则返回 false
+         */
+        bool operator==(const Self& other) const {
+            return this->__equals__(other);
+        }
+
+        /**
+         * @brief 比较两个迭代器是否不相等
+         * @param other 另一个迭代器
+         * @return 如果不相等返回 true，否则返回 false
+         */
+        bool operator!=(const Self& other) const {
+            return !this->__equals__(other);
+        }
 
     private:
-        Node* curr; // 迭代器当前位置
+        /**
+         * @brief 更新当前键值对
+         * @param add 需要调整的指数
+         */
+        void update_kv() {
+            if (curr_ != tree_->nil_) {
+                kv_.set(&curr_->key_, &curr_->val_);
+            }
+        }
+
+    private:
+        const RBTree* tree_; // 指向红黑树的指针
+        Node* curr_;    // 迭代器当前位置
+        value_type kv_; // 当前键值对
     };
 
     using iterator = RBTreeIterator;
@@ -401,7 +523,10 @@ public:
      * @return 返回起始迭代器
      */
     iterator begin() {
-        // TODO
+        if (!root_) {
+            return iterator(nullptr, nil_);
+        }
+        return iterator(this, find_min(root_));
     }
 
     /**
@@ -409,7 +534,10 @@ public:
      * @return 返回常量起始迭代器
      */
     const_iterator begin() const {
-        // TODO
+        if (!root_) {
+            return const_iterator(nullptr, nil_);
+        }
+        return const_iterator(this, find_min(root_));
     }
 
     /**
@@ -417,7 +545,7 @@ public:
      * @return 返回末尾迭代器
      */
     iterator end() {
-        // TODO
+        return iterator(this, nil_);
     }
 
     /**
@@ -425,7 +553,7 @@ public:
      * @return 返回常量末尾迭代器
      */
     const_iterator end() const {
-        // TODO
+        return const_iterator(this, nil_);
     }
 
 private:
@@ -770,6 +898,40 @@ private:
             }
         }
         x->color_ = Color::BLACK;
+    }
+
+    /**
+     * @brief 获取 curr 的中序后继
+     */
+    Node* next(Node* curr) const {
+        if (!curr) return nullptr;
+        if (curr->rch_ != nil_) {
+            return find_min(curr->rch_);
+        }
+        // 右子树为空时，找到第一个有左孩子的祖先节点
+        Node* next = curr->p_;
+        while (next != nil_ && curr == next->rch_) {
+            curr = next;
+            next = next->p_;
+        }
+        return next;
+    }
+
+    /**
+     * @brief 获取 curr 的中序前驱
+     */
+    Node* prev(Node* curr) const {
+        if (!curr) return nullptr;
+        if (curr->lch_ != nil_) {
+            return find_max(curr->lch_);
+        }
+        // 左子树为空时，找到第一个有右孩子的祖先节点
+        Node* prev = curr->p_;
+        while (prev != nil_ && curr == prev->lch_) {
+            curr = prev;
+            prev = prev->p_;
+        }
+        return prev;
     }
 
 private:

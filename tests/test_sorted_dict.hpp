@@ -1,13 +1,12 @@
 #ifndef TEST_SORTED_DICT_HPP
 #define TEST_SORTED_DICT_HPP
 
-#include "Function.hpp"
-#include "Printer.hpp"
-#include "Random.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
+#include "Printer.hpp"
+#include "Random.hpp"
+#include "String.hpp"
 #include "SortedDict.hpp"
-#include "Vec.hpp"
 
 #include <functional>
 #include <map>
@@ -24,6 +23,11 @@ fn it_works = []() {
         io::println(sd.tree_struct());
         io::println("----------------------------------");
     }
+};
+
+fn it_works2 = []() {
+    util::SortedDict<util::String, i32> sd = {{"hello"_s, 1}, {"world"_s, 1}, {"你好"_s, 2}, {"世界", 2}};
+    Assertions::assertEquals("{\"hello\":1,\"world\":1,\"世界\":2,\"你好\":2}"_cs, sd.__str__());
 };
 
 fn should_insert = []() {
@@ -200,10 +204,27 @@ fn should_remove = []() {
     Assertions::assertTrue(sd.empty());
 };
 
+fn should_iterable = []() {
+    // Given
+    util::SortedDict<i32, i32> sd = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
+    util::Vec<i32> keys, values;
+
+    // When
+    for (const auto& [k, v] : sd) {
+        keys.append(k);
+        values.append(v);
+    }
+
+    // Then
+    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, keys.__str__());
+    Assertions::assertEquals("[10,8,9,7,6,1,2,3,11,5,4]"_cs, values.__str__());
+};
+
 fn test_sorted_dict() {
     UnitTestGroup group{"test_sorted_dict"};
 
     group.addTest("it_works", it_works);
+    group.addTest("it_works2", it_works2);
     group.addTest("should_insert", should_insert);
     group.addTest("should_insert_rev", should_insert_rev);
     group.addTest("should_construct_by_initializer_list", should_construct_by_initializer_list);
@@ -215,6 +236,7 @@ fn test_sorted_dict() {
     group.addTest("should_count", should_count);
     group.addTest("should_set_default", should_set_default);
     group.addTest("should_remove", should_remove);
+    group.addTest("should_iterable", should_iterable);
 
     group.startAll();
 }
