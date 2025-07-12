@@ -1,7 +1,6 @@
 #ifndef TEST_TREE_HPP
 #define TEST_TREE_HPP
 
-#include "TreeNode.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "Tree.hpp"
@@ -15,7 +14,7 @@ fn it_works = []() {
     t.add_child(root, 2);
     t.add_child(root, 3);
     t.add_child(t.root(), 4);
-    t.add_child(root->children_[0], 5);
+    t.add_child(root->subs_[0], 5);
 
     io::println(t);
 };
@@ -27,7 +26,7 @@ fn should_dfs = []() {
     t.add_child(t.root(), 2);
     t.add_child(t.root(), 3);
     t.add_child(t.root(), 4);
-    t.add_child(t.root()->children_[0], 5);
+    t.add_child(t.root()->subs_[0], 5);
     util::DynArray<i32> res;
 
     // When
@@ -46,7 +45,7 @@ fn should_bfs = []() {
     t.add_child(t.root(), 2);
     t.add_child(t.root(), 3);
     t.add_child(t.root(), 4);
-    t.add_child(t.root()->children_[0], 5);
+    t.add_child(t.root()->subs_[0], 5);
     util::DynArray<i32> res;
 
     // When

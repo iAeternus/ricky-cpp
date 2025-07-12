@@ -7,10 +7,122 @@
 #ifndef SORTED_DICT_HPP
 #define SORTED_DICT_HPP
 
-#include "TreeNode.hpp"
-#include "ricky.hpp"
+#include "KeyValue.hpp"
+#include "Color.hpp"
+#include "Pair.hpp"
 
 namespace my::util {
+
+/**
+ * @brief 红黑树节点约束
+ */
+template <typename T>
+concept RBTreeNodeType = requires(T a, const T& b, T&& c) {
+    typename T::key_t;
+    typename T::value_t;
+    { T() }
+    ->std::same_as<T>;
+    { a = std::move(c) }
+    ->std::same_as<T&>;
+    { T(std::move(c)) }
+    ->std::same_as<T>;
+    {a.key_};
+    {a.lch_};
+    {a.rch_};
+    {a.p_};
+};
+
+/**
+ * @brief 红黑树节点颜色
+ */
+enum class Color : bool {
+    BLACK, // 黑 = 0
+    RED,   // 红 = 1
+};
+
+/**
+ * @brief 红黑树节点，存储键值对
+ */
+template <Sortable K, typename V>
+class RBTreeNode : public Object<RBTreeNode<K, V>> {
+public:
+    using key_t = K;
+    using value_t = V;
+    using Self = RBTreeNode<key_t, value_t>;
+    using Callback = Consumer<const KeyValueView<key_t, value_t>&>;
+
+    key_t key_;   // 键
+    value_t val_; // 值
+    Color color_; // 颜色
+    Self* lch_;   // 指向左孩子的指针
+    Self* rch_;   // 指向右孩子的指针
+    Self* p_;     // 指向父节点的指针，定义根节点的父指针指向NIL
+
+    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, Color color = Color::RED,
+                        Self* lchild = nullptr, Self* rchild = nullptr, Self* parent = nullptr) :
+            key_(key), val_(value), color_(color), lch_(lchild), rch_(rchild), p_(parent) {}
+
+    explicit RBTreeNode(key_t&& key, value_t&& value, Color color = Color::RED) :
+            key_(std::move(key)), val_(std::move(value)), color_(color), lch_(nullptr), rch_(nullptr), p_(nullptr) {}
+
+    RBTreeNode(const Self&) = delete;
+    Self& operator=(const Self&) = delete;
+
+    RBTreeNode(Self&& other) noexcept :
+            color_(other.color_),
+            key_(std::move(other.key_)),
+            val_(std::move(other.value)),
+            lch_(other.lch_),
+            rch_(other.rch_),
+            p_(other.p_) {
+        other.lch_ = other.rch_ = other.p_ = nullptr;
+    }
+
+    Self& operator=(Self&& other) noexcept {
+        if (this == &other) return *this;
+
+        this->color_ = other.color_;
+        this->key_ = std::move(other.key_);
+        this->val_ = std::move(other.val_);
+        this->lch_ = other.lch_;
+        this->rch_ = other.rch_;
+        this->p_ = other.p_;
+        other.lch_ = other.rch_ = other.p_ = nullptr;
+        return *this;
+    }
+
+    /**
+     * @brief 是否为黑节点
+     * @return true=是 false=否
+     */
+    bool is_black() const noexcept {
+        return color_ == Color::BLACK;
+    }
+
+    /**
+     * @brief 是否为红节点
+     * @return true=是 false=否
+     */
+    bool is_red() const noexcept {
+        return color_ == Color::RED;
+    }
+
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+        if constexpr (Comparable<key_t>) {
+            return this->key_.__cmp__(other.key_);
+        } else if constexpr (Subtractble<key_t>) {
+            return this->key_ - other.key_;
+        } else {
+            throw type_exception("key type[{}] is not sortable", SRC_LOC, dtype(key_t));
+        }
+    }
+
+    [[nodiscard]] CString __str__() const {
+        std::stringstream stream;
+        stream << (color_ == Color::RED ? io::Color::RED : "") << '(' << key_ << ',' << val_ << ')' << io::Color::CLOSE << '\n';
+        return CString{stream.str()};
+    }
+};
 
 /**
  * @brief 红黑树
@@ -24,7 +136,7 @@ namespace my::util {
  * 4. 不存在两个相邻的红节点（红节点的父节点和子节点均是黑色的）
  * 5. 对每个节点，从该节点到任意一个叶结点的简单路径上，所含黑节点的数量相同
  */
-template <BiTreeNodeType Node, typename Comp = std::less<typename Node::key_t>, typename Alloc = Allocator<Node>>
+template <RBTreeNodeType Node, typename Comp = std::less<typename Node::key_t>, typename Alloc = Allocator<Node>>
 class RBTree : public Object<RBTree<Node, Comp, Alloc>> {
 public:
     using Self = RBTree<Node, Comp, Alloc>;

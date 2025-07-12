@@ -8,6 +8,7 @@
 #define PRINTER_HPP
 
 #include "Object.hpp"
+#include "Color.hpp"
 
 namespace my::io {
 
@@ -102,20 +103,6 @@ private:
     CString ew_;             // 结束符
     CString sw_;             // 分隔符
     std::FILE* output_file_; // 输出文件
-};
-
-class Color : public Object<Color> {
-public:
-    constexpr static const char* CLOSE = "\033[0m";
-    constexpr static const char* BLACK = "\033[30m";
-    constexpr static const char* RED = "\033[31m";
-    constexpr static const char* GREEN = "\033[32m";
-    constexpr static const char* YELLOW = "\033[33m";
-    constexpr static const char* BLUE = "\033[34m";
-    constexpr static const char* PURPLE = "\033[35m";
-    constexpr static const char* DEEPGREEN = "\033[36m";
-    constexpr static const char* WHITE = "\033[37m";
-    constexpr static const char* AQUA = "\033[94m";
 };
 
 class ColorPrinter : public Printer {
