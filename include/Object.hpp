@@ -21,7 +21,7 @@ public:
     using derived_obj = D;
 
     /**
-     * 计算hash编码
+     * @brief 获取对象的哈希值
      */
     [[nodiscard]] hash_t __hash__() const {
         static_assert(false, "NotImplementedException: not implemented __hash__()");
@@ -45,7 +45,9 @@ public:
     }
 
     /**
-     * @brief 转换为`字符串`类型
+     * @return 返回对象的字符串表示
+     * @note 该函数不应该抛出异常，若发生异常则返回一个空字符串
+     * @note 该函数不应该修改对象状态
      */
     [[nodiscard]] CString __str__() const {
         std::string type_name = dtype(D);
