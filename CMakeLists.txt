@@ -62,6 +62,7 @@ target_include_directories(RICKY_CPP PUBLIC
         ${CMAKE_SOURCE_DIR}/include/coro
         ${CMAKE_SOURCE_DIR}/include/ai
         ${CMAKE_SOURCE_DIR}/include/num
+        ${CMAKE_SOURCE_DIR}/include/mem
 )
 
 # ----------------------------------------

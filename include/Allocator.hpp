@@ -59,10 +59,10 @@ public:
      * @param n 要分配的对象数量
      * @return 指向分配内存的指针，若分配失败则抛出 std::bad_alloc 异常
      */
-    fn allocate(size_type n)->value_type* {
+    fn allocate(size_type n)->pointer {
         if (n == 0) return nullptr;
         if (n > max_size()) throw std::bad_alloc();
-        return static_cast<value_type*>(::operator new(sizeof(value_type) * n));
+        return static_cast<pointer>(::operator new(sizeof(value_type) * n));
     }
 
     /**
@@ -73,7 +73,7 @@ public:
      * @param p 指向要释放内存的指针
      * @param n 要释放的对象数量
      */
-    fn deallocate(value_type* p, size_type n) noexcept {
+    fn deallocate(pointer p, size_type n) noexcept {
         if (p != nullptr) {
             ::operator delete(p, n * sizeof(value_type));
         }
@@ -119,7 +119,7 @@ public:
      *          如果分配失败，则返回nullptr，并且在异常情况下会自动释放内存
      */
     template <typename... Args>
-    fn create(Args&&... args)->value_type* {
+    fn create(Args&&... args)->pointer {
         auto* ptr = allocate(1);
         if (!ptr) return nullptr;
 
