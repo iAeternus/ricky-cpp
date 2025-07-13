@@ -57,7 +57,10 @@ enum class ExceptionType {
 };
 
 /**
- * @brief 通用异常类
+ * @class Exception
+ * @brief 基础异常类，提供异常类型、消息和位置等信息
+ * @details 该类继承自std::exception和Object，提供基本的异常处理功能
+ * @note 使用std::source_location记录异常发生的位置
  */
 class Exception : public std::exception, public Object<Exception> {
 public:
@@ -170,20 +173,32 @@ private:
     }
 
 private:
-    ExceptionType type_;
-    CString message_;
-    std::source_location loc_;
+    ExceptionType type_;        // 异常类型
+    CString message_;           // 异常消息
+    std::source_location loc_;  // 异常发生位置
     std::exception_ptr nested_; // 嵌套异常
-    CString formatted_message_;
+    CString formatted_message_; // 格式化后的异常消息
 };
 
 /**
- * @brief 基本异常工厂
+ * @brief 创建异常对象
+ * @param type 异常类型
+ * @param message 异常消息
+ * @param loc 异常位置
+ * @return 异常对象
  */
 fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC)->Exception {
     return Exception(type, std::move(message), loc);
 }
 
+/**
+ * @brief 创建异常对象
+ * @param type 异常类型
+ * @param fmt 格式化字符串
+ * @param loc 异常位置
+ * @param args 格式化参数
+ * @return 异常对象
+ */
 template <typename... Args>
 fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args)->Exception {
     std::string message = std::vformat(fmt, std::make_format_args(args...));
@@ -191,7 +206,11 @@ fn exception(ExceptionType type, std::string_view fmt, std::source_location loc,
 }
 
 /**
- * @brief 条件检查
+ * @brief 如果条件不满足，则抛出指定类型的异常
+ * @param condition 条件
+ * @param type 异常类型
+ * @param message 异常消息
+ * @param loc 异常位置
  */
 fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC)->void {
     if (!condition) {
@@ -199,6 +218,14 @@ fn check(bool condition, ExceptionType type, CString&& message, std::source_loca
     }
 }
 
+/**
+ * @brief 如果条件不满足，则抛出指定类型的异常
+ * @param condition 条件
+ * @param type 异常类型
+ * @param fmt 格式化字符串
+ * @param loc 异常位置
+ * @param args 格式化参数
+ */
 template <typename... Args>
 fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args)->void {
     if (!condition) {
@@ -208,7 +235,11 @@ fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_l
 }
 
 /**
- * @brief 异常工厂
+ * @brief 异常工厂宏，简化异常的创建和使用
+ * @note 这些宏会生成对应类型的异常工厂函数
+ * @example
+ *   auto e = runtime_exception("Something went wrong");
+ *   throw e;
  */
 #define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                         \
     fn NAME##_exception(CString&& message, std::source_location loc = SRC_LOC)->Exception {          \
