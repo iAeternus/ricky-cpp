@@ -8,6 +8,7 @@
 #define BUFFER_HPP
 
 #include "Array.hpp"
+#include <cstring>
 
 namespace my::util {
 
@@ -176,6 +177,16 @@ public:
     value_t& append(Args&&... args) {
         alloc_.construct(buf_ + size_, std::forward<Args>(args)...);
         return buf_[size_++];
+    }
+
+    /**
+     * @brief 追加一块内存，不会做容量检查
+     * @param ptr 指向要追加的内存块的指针
+     * @param size 要追加的内存块大小
+     */
+    void append_bytes(const void* ptr, usize size) {
+        std::memcpy(buf_ + size_, ptr, size);
+        size_ += size;
     }
 
     /**

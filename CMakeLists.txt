@@ -63,7 +63,10 @@ target_include_directories(RICKY_CPP PUBLIC
         ${CMAKE_SOURCE_DIR}/include/ai
         ${CMAKE_SOURCE_DIR}/include/num
         ${CMAKE_SOURCE_DIR}/include/mem
+        ${CMAKE_SOURCE_DIR}/include/net
 )
+
+target_link_libraries(RICKY_CPP PRIVATE ws2_32)
 
 # ----------------------------------------
 # 编译器优化
