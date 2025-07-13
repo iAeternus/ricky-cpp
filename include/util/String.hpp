@@ -7,7 +7,6 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
-#include "Allocator.hpp"
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
 #include "NoCopy.hpp"

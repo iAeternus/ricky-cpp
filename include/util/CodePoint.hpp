@@ -7,15 +7,11 @@
 #ifndef CODE_POINT_HPP
 #define CODE_POINT_HPP
 
-#include "Allocator.hpp"
-#include "Exception.hpp"
 #include "Encoding.hpp"
-#include "Vec.hpp"
 #include "Dict.hpp"
 
 #include <mutex>
 #include <shared_mutex>
-#include <utility>
 
 namespace my::util {
 

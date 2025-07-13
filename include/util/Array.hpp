@@ -7,7 +7,6 @@
 #ifndef ARRAY_HPP
 #define ARRAY_HPP
 
-#include "Allocator.hpp"
 #include "Sequence.hpp"
 #include "Pair.hpp"
 

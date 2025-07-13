@@ -120,7 +120,7 @@ public:
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << (color_ == Color::RED ? io::Color::RED : "") << '(' << key_ << ',' << val_ << ')' << io::Color::CLOSE << '\n';
-        return CString{stream.str()};
+        return BaseCString{stream.str()};
     }
 };
 
@@ -347,7 +347,7 @@ public:
         }
         return p->val_;
     }
-    
+
     /**
      * @brief 获取指定键对应的值
      * 如果键不存在，创建键值对，值初始化为对应类型默认值
@@ -639,7 +639,7 @@ public:
         }
         std::stringstream stream;
         print_tree(root_, stream, "");
-        return CString{stream.str()};
+        return BaseCString{stream.str()};
     }
 
     /**
@@ -728,7 +728,7 @@ public:
             str.pop_back();
         }
         str.push_back('}');
-        return CString{str};
+        return BaseCString{str};
     }
 
     /**
@@ -1294,8 +1294,8 @@ private:
 /**
  * @brief 有序字典
  */
-template <Sortable K, typename V, typename Comp = std::less<K>>
-using SortedDict = RBTree<RBTreeNode<K, V>, Comp, Allocator<RBTreeNode<K, V>>>;
+template <Sortable K, typename V, typename Comp = std::less<K>, typename Alloc = Allocator<RBTreeNode<K, V>>>
+using SortedDict = RBTree<RBTreeNode<K, V>, Comp, Alloc>;
 
 } // namespace my::util
 

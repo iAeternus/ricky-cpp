@@ -449,7 +449,7 @@ public:
             stream << at(i);
         }
         stream << ']';
-        return CString{stream.str()};
+        return BaseCString{stream.str()};
     }
 
     /**

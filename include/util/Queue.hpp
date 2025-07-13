@@ -8,7 +8,6 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
-#include "Allocator.hpp"
 #include "ChainNode.hpp"
 #include "Exception.hpp"
 

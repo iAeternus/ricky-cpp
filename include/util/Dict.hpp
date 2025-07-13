@@ -7,8 +7,6 @@
 #ifndef DICT_HPP
 #define DICT_HPP
 
-#include "Allocator.hpp"
-#include "Exception.hpp"
 #include "binary_utils.hpp"
 #include "Vec.hpp"
 #include "KeyValue.hpp"
@@ -517,7 +515,7 @@ public:
             str.pop_back();
         }
         str.push_back('}');
-        return CString{str};
+        return BaseCString{str};
     }
 
     /**

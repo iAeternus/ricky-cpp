@@ -21,16 +21,16 @@ namespace my {
 /**
  * @brief 自定义字符串类，提供安全的字符串操作和内存管理
  */
-class CString {
+template <typename Alloc = Allocator<char>>
+class BaseCString {
 public:
-    using Self = CString;
-    using Alloc = Allocator<char>;
+    using Self = BaseCString;
 
     /**
      * @brief 根据指定长度创建字符串
      * @param len 字符串的长度
      */
-    CString(usize len = 1) :
+    BaseCString(usize len = 1) :
             str_(alloc_.allocate(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
         str_[len_] = '\0';
@@ -40,7 +40,7 @@ public:
      * @brief 根据 C 风格字符串创建字符串
      * @param str C 风格字符串
      */
-    CString(const char* str) :
+    BaseCString(const char* str) :
             Self(str, std::strlen(str)) {}
 
     /**
@@ -48,7 +48,7 @@ public:
      * @param str C 风格字符串
      * @param len 字符串的长度
      */
-    CString(const char* str, usize len) :
+    BaseCString(const char* str, usize len) :
             Self(len) {
         std::memcpy(data(), str, len);
     }
@@ -57,13 +57,13 @@ public:
      * @brief 根据 std::basic_string 创建字符串
      * @param str std::basic_string 对象
      */
-    CString(const std::basic_string<char>& str) :
+    BaseCString(const std::basic_string<char>& str) :
             Self(str.c_str(), str.size()) {}
 
     /**
      * @brief 析构函数，释放动态分配的内存
      */
-    ~CString() {
+    ~BaseCString() {
         alloc_.deallocate(str_, len_ + 1);
     }
 
@@ -71,14 +71,14 @@ public:
      * @brief 拷贝构造函数
      * @param other 要拷贝的 CString 对象
      */
-    CString(const Self& other) :
+    BaseCString(const Self& other) :
             Self(other.data(), other.size()) {}
 
     /**
      * @brief 移动构造函数
      * @param other 要移动的 CString 对象
      */
-    CString(Self&& other) noexcept :
+    BaseCString(Self&& other) noexcept :
             alloc_(std::move(other.alloc_)), str_(other.str_), len_(other.len_) {
         other.str_ = nullptr;
         other.len_ = 0;
@@ -750,7 +750,10 @@ private:
     usize len_;     // 字符串的长度
 };
 
-// using CString = BaseCString<Allocator<char>>;
+/**
+ * @brief CString 类，使用默认分配器
+ */
+using CString = BaseCString<Allocator<char>>;
 
 /**
  * @brief 根据不同类型转换为 CString 对象（适用于自定义可打印类型）
