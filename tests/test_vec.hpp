@@ -1,7 +1,6 @@
 #ifndef TEST_VEC_HPP
 #define TEST_VEC_HPP
 
-#include "Printer.hpp"
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "Vec.hpp"

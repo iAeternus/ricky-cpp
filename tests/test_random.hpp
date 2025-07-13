@@ -2,7 +2,6 @@
 #define TEST_RANDOM_HPP
 
 #include "UnitTest.hpp"
-#include "Assertions.hpp"
 #include "Random.hpp"
 #include "Printer.hpp"
 

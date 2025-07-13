@@ -7,16 +7,11 @@
 #ifndef GRAPH_HPP
 #define GRAPH_HPP
 
-#include "Exception.hpp"
 #include "graph_helper.hpp"
 #include "Dict.hpp"
-#include "Vec.hpp"
 
 #include <memory>
 #include <shared_mutex>
-#include <type_traits>
-#include <utility>
-#include <any>
 
 namespace my::graph {
 
@@ -117,7 +112,7 @@ public:
      * @brief 获取边的迭代视图
      */
     auto edges() const {
-        util::DynArray<Edge<E>> edges;
+        util::Vec<Edge<E>> edges;
         for (const auto& vertex : nodes_.values()) {
             for (const auto& edge : vertex.edges) {
                 edges.append(edge);
