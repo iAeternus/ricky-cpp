@@ -3,7 +3,9 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "D:\\Windows Kits\\10\\Include\\10.0.19041.0\\um",
+                "D:\\Windows Kits\\10\\Include\\10.0.19041.0\\shared"
             ],
             "defines": [
                 "_DEBUG",

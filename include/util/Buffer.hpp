@@ -11,6 +11,11 @@
 
 namespace my::util {
 
+/**
+ * @brief 内存块
+ * @tparam T 元素类型
+ * @tparam Alloc 内存分配器类型，默认为Allocator<T>
+ */
 template <typename T, typename Alloc = Allocator<T>>
 class Buffer : public Sequence<Buffer<T>, T> {
 public:
@@ -21,12 +26,23 @@ public:
     using iterator = Super::iterator;
     using const_iterator = Super::const_iterator;
 
+    /**
+     * @brief 默认构造函数，创建一个空的Buffer
+     */
     Buffer() :
             size_(0), capacity_(0), buf_(nullptr) {}
 
+    /**
+     * @brief 构造函数，创建一个指定容量的Buffer
+     * @param capacity 初始容量
+     */
     Buffer(usize capacity) :
             size_(0), capacity_(capacity), buf_(alloc_.allocate(capacity_)) {}
 
+    /**
+     * @brief 拷贝构造函数
+     * @param other 另一个Buffer对象
+     */
     Buffer(const Self& other) :
             alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), buf_(alloc_.allocate(capacity_)) {
         for (usize i = 0; i < other.size(); ++i) {
@@ -34,12 +50,21 @@ public:
         }
     }
 
+    /**
+     * @brief 移动构造函数
+     * @param other 另一个Buffer对象
+     */
     Buffer(Self&& other) noexcept :
             alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), buf_(other.buf_) {
         other.size_ = other.capacity_ = 0;
         other.buf_ = nullptr;
     }
 
+    /**
+     * @brief 拷贝赋值
+     * @param other 另一个Buffer对象
+     * @return 返回当前对象的引用
+     */
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
         alloc_.destroy(this);
@@ -47,6 +72,11 @@ public:
         return *this;
     }
 
+    /**
+     * @brief 移动赋值
+     * @param other 另一个Buffer对象
+     * @return 返回当前对象的引用
+     */
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
@@ -55,44 +85,74 @@ public:
         return *this;
     }
 
+    /**
+     * @brief 析构函数，释放内存
+     */
     ~Buffer() {
         alloc_.destroy(buf_, size_);
         alloc_.deallocate(buf_, size_);
         size_ = capacity_ = 0;
     }
 
+    /**
+     * @brief 获取当前Buffer的大小
+     */
     usize size() const {
         return size_;
     }
 
+    /**
+     * @brief 获取当前Buffer的容量
+     */
     usize capacity() const {
         return capacity_;
     }
 
+    /**
+     * @brief 检查Buffer是否装满
+     */
     bool full() const {
         return size_ == capacity_;
     }
 
+    /**
+     * @brief 获取内存块指针
+     */
     value_t* data() {
         return buf_;
     }
 
+    /**
+     * @brief 获取内存块指针（常量版本）
+     */
     const value_t* data() const {
         return buf_;
     }
 
+    /**
+     * @brief 获取首元
+     */
     value_t& front() {
         return buf_[0];
     }
 
+    /**
+     * @brief 获取首元（常量版本）
+     */
     const value_t& front() const {
         return buf_[0];
     }
 
+    /**
+     * @brief 获取尾元
+     */
     value_t& back() {
         return buf_[size_ - 1];
     }
 
+    /**
+     * @brief 获取尾元（常量版本）
+     */
     const value_t& back() const {
         return buf_[size_ - 1];
     }
@@ -118,6 +178,9 @@ public:
         return buf_[size_++];
     }
 
+    /**
+     * @brief 删除尾元
+     */
     void pop_back() {
         alloc_.destroy(buf_ + size_);
         --size_;
@@ -132,10 +195,20 @@ public:
         alloc_.construct(this, new_capacity);
     }
 
+    /**
+     * @brief 下标访问
+     * @param index 索引
+     * @return 返回指定索引的元素引用
+     */
     value_t& at(usize index) {
         return buf_[index];
     }
 
+    /**
+     * @brief 下标访问（常量版本）
+     * @param index 索引
+     * @return 返回指定索引的元素引用
+     */
     const value_t& at(usize index) const {
         return buf_[index];
     }
@@ -164,9 +237,9 @@ public:
     }
 
 private:
-    Alloc alloc_{};
-    usize size_, capacity_;
-    value_t* buf_;
+    Alloc alloc_{};         // 内存分配器
+    usize size_, capacity_; // 当前大小和容量
+    value_t* buf_;          // 内存块指针
 };
 
 } // namespace my::util
