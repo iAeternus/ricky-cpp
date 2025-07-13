@@ -54,6 +54,7 @@
 #include "test_huffman_tree.hpp"
 #include "test_big_decimal.hpp"
 #include "test_priority_queue.hpp"
+#include "test_allocator.hpp"
 #else
 #include "test_speed.hpp"
 #endif
@@ -106,6 +107,7 @@ int main() {
     test_huffman_tree::test_huffman_tree();
     test_big_decimal::test_big_decimal();
     test_priority_queue::test_priority_queue();
+    test_allocator::test_allocator();
 #else
     test_speed();
 #endif

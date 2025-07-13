@@ -16,16 +16,21 @@ class Assertions : public Object<Assertions> {
 public:
     /**
      * @brief 断言表达式是否为true，否则抛出异常
+     * @param expression 要断言的表达式
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
      */
     static void assertTrue(bool expression, CString&& message = "", std::source_location loc = SRC_LOC) {
         if (!expression) {
-            // fail("Expected true, but got false.", std::forward<CString>(message), loc);
             fail(std::format("Expected true, but got false. {}", std::forward<CString>(message)), loc);
         }
     }
 
     /**
      * @brief 断言表达式是否为false，否则抛出异常
+     * @param expression 要断言的表达式
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
      */
     static void assertFalse(bool expression, CString&& message = "", std::source_location loc = SRC_LOC) {
         if (expression) {
@@ -35,6 +40,11 @@ public:
 
     /**
      * @brief 断言两个值相等，否则抛出异常
+     * @note 对于自定义类型，要求实现__cmp__和__str__方法
+     * @param expected 期望的值
+     * @param actual 实际的值
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
      */
     template <Assertable T, Assertable U>
     static void assertEquals(const T& expected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
@@ -43,6 +53,14 @@ public:
         }
     }
 
+    /**
+     * @brief 断言两个值相等，否则抛出异常
+     * @note 对于浮点数，使用math::fcmp进行比较
+     * @param expected 期望的值
+     * @param actual 实际的值
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
+     */
     template <StdPrintable T, StdPrintable U>
     static void assertEquals(const T& expected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
         if constexpr (is_same<T, f32, f64, f128>) {
@@ -58,6 +76,11 @@ public:
 
     /**
      * @brief 断言两个值不相等，否则抛出异常
+     * @note 对于自定义类型，要求实现__cmp__和__str__方法
+     * @param unexpected 不期望的值
+     * @param actual 实际的值
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
      */
     template <Assertable T, Assertable U>
     static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
@@ -66,6 +89,14 @@ public:
         }
     }
 
+    /**
+     * @brief 断言两个值不相等，否则抛出异常
+     * @note 对于浮点数，使用math::fcmp进行比较
+     * @param unexpected 不期望的值
+     * @param actual 实际的值
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
+     */
     template <StdPrintable T, StdPrintable U>
     static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
         if constexpr (is_same<T, f32, f64, f128>) {
@@ -79,6 +110,12 @@ public:
         }
     }
 
+    /**
+     * @brief 断言抛出异常，否则抛出异常
+     * @param expectedMessage 期望的异常消息
+     * @param func 要执行的函数
+     * @param loc 断言发生的位置
+     */
     static void assertThrows(CString&& expectedMessage, Runnable&& func, std::source_location loc = SRC_LOC) {
         bool no_exception_throw = false;
         try {
@@ -97,6 +134,12 @@ public:
         }
     }
 
+    /**
+     * @brief 断言抛出异常，否则抛出异常
+     * @param expectedMessage 期望的异常消息
+     * @param func 要执行的函数
+     * @param loc 断言发生的位置
+     */
     static void assertThrows(const char* expectedMessage, Runnable&& func, std::source_location loc = SRC_LOC) {
         bool no_exception_throw = false;
         try {
