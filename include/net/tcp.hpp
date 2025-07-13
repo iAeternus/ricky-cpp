@@ -40,7 +40,50 @@ public:
      */
     Socket& accept() {
         clients_.append(socket_.accept()); // 接受客户端连接，保存客户端套接字
-        return clients_.back(); // 返回最新的客户端套接字
+        return clients_.back();
+    }
+
+    /**
+     * @brief 发送数据到指定客户端
+     * @param index 客户端索引
+     * @param data 要发送的数据指针
+     * @param size 数据大小
+     * @param flags 发送标志，默认为0
+     * @throws runtime_exception 如果发送失败
+     */
+    void send(i32 index, const char* data, usize size, i32 flags = 0) const {
+        cliend(index).send(data, size, flags);
+    }
+
+    /**
+     * @brief 广播数据到所有已连接的客户端
+     * @param data 要发送的数据指针
+     * @param size 数据大小
+     * @param flags 发送标志，默认为0
+     */
+    void sendall(const char* data, usize size, i32 flags = 0) const {
+        for (const auto& client : clients_) {
+            client.send(data, size, flags);
+        }
+    }
+
+    /**
+     * @brief 接收数据
+     * @param index 客户端索引
+     * @param flags 接收标志，默认为0
+     * @return 返回接收到的数据
+     * @throws runtime_exception 如果接收失败
+     */
+    CString recv(i32 index, i32 flags = 0) const {
+        return cliend(index).recv(flags); // 接收数据，假设每次接收1024字节
+    }
+
+    /**
+     * @brief 根据客户端索引获取客户端套接字
+     * @param index 客户端索引
+     */
+    const Socket& cliend(i32 index) const {
+        return clients_[index];
     }
 
 private:
@@ -55,6 +98,36 @@ private:
 class TcpClient : public Object<TcpClient> {
 public:
     using Self = TcpClient;
+
+    /**
+     * @brief 使用地址族构造TCP客户端
+     * @param family 地址族，默认为AF_INET
+     * @throws runtime_exception 如果创建套接字失败
+     */
+    TcpClient(const char* ip, u16 port, i32 family = AF_INET) :
+            socket_(family, SOCK_STREAM) {
+        socket_.connect(ip, port); // 连接到指定IP和端口
+    }
+
+    /**
+     * @brief 发送数据到服务器
+     * @param data 要发送的数据指针
+     * @param size 数据大小
+     * @param flags 发送标志，默认为0
+     */
+    void send(const char* data, usize size, i32 flags = 0) const {
+        socket_.send(data, size, flags);
+    }
+
+    /**
+     * @brief 接收数据
+     * @param flags 接收标志，默认为0
+     * @return 返回接收到的数据
+     * @throws runtime_exception 如果接收失败
+     */
+    CString recv(i32 flags = 0) const {
+        return socket_.recv(flags);
+    }
 
 private:
     Socket socket_; // TCP套接字
