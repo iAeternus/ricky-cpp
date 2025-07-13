@@ -7,6 +7,7 @@
 #ifndef HASH_BUCKET_HPP
 #define HASH_BUCKET_HPP
 
+#include "Allocator.hpp"
 #include "Array.hpp"
 #include "Exception.hpp"
 
@@ -271,13 +272,18 @@ private:
  *
  * @tparam T 存储的值类型。
  */
-template <typename T>
+template <typename T, typename Alloc = Allocator<RobinManager<T>>>
 class RobinHashBucket : public HashBucket<T> {
 public:
     using value_t = T;
     using Self = RobinHashBucket<value_t>;
     using Super = HashBucket<value_t>;
     using manager_t = RobinManager<value_t>;
+
+    template <typename U>
+    struct rebind {
+        using other = RobinHashBucket<U, typename Alloc::template rebind<RobinManager<U>>::other>;
+    };
 
     /**
      * @brief 默认构造函数。
@@ -641,7 +647,7 @@ public:
     }
 
 private:
-    Array<manager_t> robin_managers_;
+    Array<manager_t, Alloc> robin_managers_;
 };
 
 } // namespace my::util

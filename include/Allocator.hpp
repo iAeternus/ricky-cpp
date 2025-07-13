@@ -37,6 +37,18 @@ public:
     using propagate_on_container_swap = std::true_type;
 
     /**
+     * @brief rebind 结构体
+     * @tparam U 其他类型的分配器
+     * @details 允许从其他类型的分配器转换而来，适用于 STL 容器的 rebind 操作
+     * @note 该 rebind 结构体用于在分配器中重新绑定其他类型的分配器
+     * @example Allocator<int>::rebind<double>::other
+     */
+    template <typename U>
+    struct rebind {
+        using other = Allocator<U>;
+    };
+
+    /**
      * @brief 默认构造函数
      * @details 不执行任何操作，适用于默认初始化分配器
      */
@@ -157,11 +169,6 @@ private:
 };
 
 // 分配器比较支持
-template <typename U>
-struct rebind {
-    using other = Allocator<U>;
-};
-
 template <typename T, typename U>
 bool operator==(const Allocator<T>&, const Allocator<U>&) noexcept {
     return true;

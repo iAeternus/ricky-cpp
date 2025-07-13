@@ -12,7 +12,7 @@
 
 namespace my::util {
 
-template <typename T>
+template <typename T, typename Alloc = Allocator<T>>
 class Stack : public Object<Stack<T>> {
 public:
     using value_t = T;
@@ -76,7 +76,7 @@ public:
     }
 
 private:
-    Vec<value_t> data_;
+    Vec<value_t, Alloc> data_;
 };
 
 } // namespace my::util

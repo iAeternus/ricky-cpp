@@ -7,13 +7,13 @@
 #ifndef DICT_HPP
 #define DICT_HPP
 
+#include "Allocator.hpp"
 #include "Exception.hpp"
 #include "binary_utils.hpp"
-#include "DynArray.hpp"
+#include "Vec.hpp"
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "Pair.hpp"
-#include <utility>
 
 namespace my::util {
 
@@ -30,13 +30,16 @@ class String;
  * @tparam V 值的类型
  * @tparam Bucket 桶的类型，默认为 RobinHashBucket
  */
-template <Hashable K, typename V, typename Bucket = RobinHashBucket<V>>
-class Dict : Object<Dict<K, V, Bucket>> {
+template <Hashable K,
+          typename V,
+          typename Alloc = Allocator<K>,
+          typename Bucket = RobinHashBucket<V, typename Alloc::template rebind<RobinManager<V>>::other>>
+class Dict : Object<Dict<K, V, Alloc, Bucket>> {
 public:
     using key_t = K;         // 键的类型
     using value_t = V;       // 值的类型
     using bucket_t = Bucket; // 桶的类型
-    using Self = Dict<key_t, value_t, bucket_t>;
+    using Self = Dict<key_t, value_t, Alloc, bucket_t>;
 
     /**
      * @brief 默认构造函数
@@ -205,16 +208,6 @@ public:
         }
         return *value;
     }
-
-    // /**
-    //  * @brief 重载 [] 运算符，返回指定键对应的值
-    //  * 如果键不存在，抛出 throw not_found_exception
-    //  * @param key 键
-    //  * @return 返回对应值的常量引用
-    //  */
-    // const value_t& operator[](const key_t& key) const {
-    //     return get(key);
-    // }
 
     /**
      * @brief 获取指定键对应的值
@@ -835,8 +828,8 @@ private:
     }
 
 private:
-    bucket_t bucket_;      // 桶对象
-    DynArray<key_t> keys_; // 键的动态数组
+    bucket_t bucket_;        // 桶对象
+    Vec<key_t, Alloc> keys_; // 键的动态数组
 
     constexpr static f64 MAX_LOAD_FACTOR = 0.75; // 最大负载因子
     constexpr static usize MIN_BUCKET_SIZE = 8;  // 最小桶大小

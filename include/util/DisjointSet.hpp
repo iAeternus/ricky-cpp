@@ -33,7 +33,7 @@ public:
     using value_t = T;
     using Self = DisjointSet<value_t>;
 
-    DisjointSet(const DynArray<value_t>& arr) :
+    DisjointSet(const Vec<value_t>& arr) :
             nodes_(arr.size()) {
         for (auto&& item : arr) {
             nodes_.insert(item, new Node{item});
@@ -41,7 +41,7 @@ public:
     }
 
     DisjointSet(std::initializer_list<value_t>&& init_list) :
-            DisjointSet(init_list) {}
+            DisjointSet(Vec<value_t>(std::move(init_list))) {}
 
     /**
      * @brief 添加元素
@@ -104,7 +104,7 @@ public:
     }
 
     [[nodiscard]] CString __str__() const {
-        Dict<value_t, DynArray<value_t>> sets;
+        Dict<value_t, Vec<value_t>> sets;
         for (const auto& elem : nodes_.keys()) {
             sets[find(elem)].append(elem);
         }

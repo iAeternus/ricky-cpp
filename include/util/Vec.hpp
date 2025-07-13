@@ -8,13 +8,8 @@
 #define VEC_HPP
 
 #include "Array.hpp"
-#include "Exception.hpp"
-#include "Sequence.hpp"
-#include "Allocator.hpp"
 
 #include <any>
-#include <iterator>
-#include <utility>
 
 namespace my::util {
 

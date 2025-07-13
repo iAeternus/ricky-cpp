@@ -38,6 +38,11 @@ public:
     using propagate_on_container_move_assignment = std::true_type;
     using propagate_on_container_swap = std::true_type;
 
+    template <typename U>
+    struct rebind {
+        using other = TrackingAllocator<U>;
+    };
+
     TrackingAllocator() noexcept = default;
     template <typename U>
     TrackingAllocator(const TrackingAllocator<U>&) noexcept {}
@@ -134,11 +139,6 @@ template <typename T>
 std::mutex TrackingAllocator<T>::leak_mutex_;
 
 // 分配器比较支持
-template <typename U>
-struct rebind {
-    using other = TrackingAllocator<U>;
-};
-
 template <typename T, typename U>
 bool operator==(const TrackingAllocator<T>&, const TrackingAllocator<U>&) noexcept {
     return true;
