@@ -8,7 +8,7 @@
 #define JSON_TRAIT_HPP
 
 #include "String.hpp"
-#include "DynArray.hpp"
+#include "Vec.hpp"
 #include "Dict.hpp"
 
 namespace my::json {
@@ -25,7 +25,7 @@ struct JsonType {
     using JsonFloat = f64;
     using JsonBool = bool;
     using JsonStr = util::String;
-    using JsonArray = util::DynArray<Json>;
+    using JsonArray = util::Vec<Json>;
     using JsonDict = util::Dict<JsonStr, Json>;
     using JsonNull = Null;
 };

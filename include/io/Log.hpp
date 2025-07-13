@@ -8,8 +8,8 @@
 #define LOG_HPP
 
 #include "DateTime.hpp"
-#include "DynArray.hpp"
-#include "Printer.hpp"
+#include "Vec.hpp"
+#include "Color.hpp"
 
 #include <mutex>
 #include <source_location>
@@ -105,7 +105,7 @@ public:
 
 private:
     static std::mutex mutex_;
-    static util::DynArray<LogHandler> handlers_;
+    static util::Vec<LogHandler> handlers_;
     static i32 min_level_;
 
     template <ConvertibleToCstr Str>
@@ -113,7 +113,7 @@ private:
         if (level < min_level_) return;
 
         // 获取当前配置快照
-        util::DynArray<LogHandler> local_handlers;
+        util::Vec<LogHandler> local_handlers;
         {
             std::lock_guard<std::mutex> lock(mutex_);
             local_handlers = handlers_;
@@ -147,7 +147,7 @@ private:
 };
 
 inline std::mutex Log::mutex_;
-inline util::DynArray<Log::LogHandler> Log::handlers_{
+inline util::Vec<Log::LogHandler> Log::handlers_{
     Log::LogHandler(Log::LogLevel::TRACE_, stdout),
     Log::LogHandler(Log::LogLevel::DEBUG_, stdout),
     Log::LogHandler(Log::LogLevel::INFO_, stdout),

@@ -7,7 +7,7 @@
 #ifndef TREE_HPP
 #define TREE_HPP
 
-#include "DynArray.hpp"
+#include "Vec.hpp"
 #include "Queue.hpp"
 
 namespace my::util {
@@ -38,9 +38,9 @@ public:
     using Self = TreeNode<value_t>;
     using Callback = Consumer<const value_t&>;
 
-    value_t val_;          // 节点值
-    Self* p_;              // 指向父节点的指针，定义根节点的父指针指向自身
-    DynArray<Self*> subs_; // 指向子节点的指针集合
+    value_t val_;     // 节点值
+    Self* p_;         // 指向父节点的指针，定义根节点的父指针指向自身
+    Vec<Self*> subs_; // 指向子节点的指针集合
 
     explicit TreeNode(const value_t& value = value_t{}, Self* parent = nullptr) :
             val_(value), p_(parent) {

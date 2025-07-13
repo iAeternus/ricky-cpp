@@ -7,8 +7,7 @@
 #ifndef WIN_FILE_UTILS_HPP
 #define WIN_FILE_UTILS_HPP
 
-#include "DynArray.hpp"
-#include "Exception.hpp"
+#include "Vec.hpp"
 
 #include <fileapi.h>
 #include <handleapi.h>
@@ -120,7 +119,7 @@ fn join(const char* path1, const char* path2)->CString {
  * @brief 列出文件夹中的文件名
  * @return 文件名集合
  */
-fn listdir(const char* path)->util::DynArray<CString> {
+fn listdir(const char* path)->util::Vec<CString> {
     WIN32_FIND_DATAA find_data;
     auto handle = FindFirstFileA(join(path, "*"), &find_data);
 
@@ -128,7 +127,7 @@ fn listdir(const char* path)->util::DynArray<CString> {
         throw system_exception("failed to list directory: {}", SRC_LOC, path);
     }
 
-    util::DynArray<CString> results;
+    util::Vec<CString> results;
     do {
         if (strcmp(find_data.cFileName, ".") == 0 || strcmp(find_data.cFileName, "..") == 0) {
             continue;

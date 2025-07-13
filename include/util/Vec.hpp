@@ -477,7 +477,7 @@ public:
          * @param inblockIndex 块内索引
          */
         Iterator(container_t* vec_ptr = nullptr, usize cur_idx = 0) :
-                vec_ptr_(vec_ptr), cur_idx_(cur_idx) {}
+                cur_idx_(cur_idx), vec_ptr_(vec_ptr) {}
 
         /**
          * @brief 拷贝构造函数

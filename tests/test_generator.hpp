@@ -4,11 +4,11 @@
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "Generator.hpp"
-#include "DynArray.hpp"
+#include "Vec.hpp"
 
 namespace my::test::test_generator {
 
-my::coro::Generator<i32> range(i32 start, i32 end) {
+fn range(i32 start, i32 end) -> my::coro::Generator<i32> {
     for (i32 i = start; i <= end; ++i) {
         co_yield i;
     }
@@ -16,7 +16,7 @@ my::coro::Generator<i32> range(i32 start, i32 end) {
 
 fn should_generate = []() {
     // Given
-    util::DynArray<i32> res;
+    util::Vec<i32> res;
 
     // When
     for (const auto& item : range(1, 5)) {
