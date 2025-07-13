@@ -13,6 +13,7 @@
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "Pair.hpp"
+#include <utility>
 
 namespace my::util {
 
@@ -164,7 +165,8 @@ public:
      * @param key 键
      * @return 返回对应值的引用
      */
-    value_t& get(const key_t& key) {
+    template <typename _K>
+    value_t& get(const _K& key) {
         auto hash_val = my_hash(key);
         auto* value = get_impl(hash_val);
         if (value == nullptr) {
@@ -179,7 +181,8 @@ public:
      * @param key 键
      * @return 返回对应值的常量引用
      */
-    const value_t& get(const key_t& key) const {
+    template <typename _K>
+    const value_t& get(const _K& key) const {
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
             throw not_found_exception("key '{}' not found in dict", SRC_LOC, key);
@@ -188,38 +191,14 @@ public:
     }
 
     /**
-     * @brief 重载 [] 运算符，返回指定键对应的值
-     * 如果键不存在，抛出 throw not_found_exception
-     * @param key 键
-     * @return 返回对应值的常量引用
-     */
-    const value_t& operator[](const key_t& key) const {
-        return get(key);
-    }
-
-    /**
-     * @brief 获取指定键对应的值，默认值
-     * 如果键不存在，返回默认值
-     * @param key 键
-     * @param default_val 默认值
-     * @return 返回对应值的引用或默认值
-     */
-    value_t& get_or_default(const key_t& key, value_t& default_val) {
-        auto* value = get_impl(my_hash(key));
-        if (value == nullptr) {
-            return default_val;
-        }
-        return *value;
-    }
-
-    /**
-     * @brief 获取指定键对应的值，默认值（常量版本）
+     * @brief 获取指定键对应的值或默认值
      * 如果键不存在，返回默认值
      * @param key 键
      * @param default_val 默认值
      * @return 返回对应值的常量引用或默认值
      */
-    const value_t& get_or_default(const key_t& key, const value_t& default_val) const {
+    template <typename _K>
+    const value_t& get_or_default(const _K& key, const value_t& default_val) const {
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
             return default_val;
@@ -227,15 +206,27 @@ public:
         return *value;
     }
 
+    // /**
+    //  * @brief 重载 [] 运算符，返回指定键对应的值
+    //  * 如果键不存在，抛出 throw not_found_exception
+    //  * @param key 键
+    //  * @return 返回对应值的常量引用
+    //  */
+    // const value_t& operator[](const key_t& key) const {
+    //     return get(key);
+    // }
+
     /**
-     * @brief 重载 [] 运算符，如果键不存在，创建并返回一个默认值
+     * @brief 获取指定键对应的值
+     * 如果键不存在，创建键值对，值初始化为对应类型默认值
      * @param key 键
-     * @return 返回对应值的引用
+     * @return 返回对应值的可变引用
      */
-    value_t& operator[](const key_t& key) {
+    template <typename _K>
+    value_t& operator[](_K&& key) {
         auto hash_val = my_hash(key);
         if (!contains_hash_val(hash_val)) {
-            insert_impl(key, value_t{}, hash_val);
+            insert_impl(std::forward<_K>(key), value_t{}, hash_val);
         }
         return *get_impl(hash_val);
     }

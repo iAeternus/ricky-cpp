@@ -308,7 +308,8 @@ public:
      * @param key 键
      * @return 返回对应值的可变引用
      */
-    value_t& get(const key_t& key) {
+    template <typename _K>
+    value_t& get(const _K& key) {
         Node* p = tree_search(key);
         if (p == nullptr) {
             throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
@@ -322,7 +323,8 @@ public:
      * @param key 键
      * @return 返回对应值的不可变引用
      */
-    const value_t& get(const key_t& key) const {
+    template <typename _K>
+    const value_t& get(const _K& key) const {
         Node* p = tree_search(key);
         if (p == nullptr) {
             throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
@@ -331,45 +333,32 @@ public:
     }
 
     /**
-     * @brief 获取指定键对应的值，默认值
-     * 如果键不存在，返回默认值
-     * @param key 键
-     * @param default_val 默认值
-     * @return 返回对应值的引用或默认值
-     */
-    value_t& get_or_default(const key_t& key, value_t& default_val) {
-        Node* p = tree_search(key);
-        if (p == nullptr) {
-            return default_val;
-        }
-        return p->val_;
-    }
-
-    /**
-     * @brief 获取指定键对应的值，默认值（常量版本）
+     * @brief 获取指定键对应的值或默认值
      * 如果键不存在，返回默认值
      * @param key 键
      * @param default_val 默认值
      * @return 返回对应值的常量引用或默认值
      */
-    const value_t& get_or_default(const key_t& key, const value_t& default_val) const {
+    template <typename _K>
+    const value_t& get_or_default(const _K& key, const value_t& default_val) const {
         Node* p = tree_search(key);
         if (p == nullptr) {
             return default_val;
         }
         return p->val_;
     }
-
+    
     /**
      * @brief 获取指定键对应的值
      * 如果键不存在，创建键值对，值初始化为对应类型默认值
      * @param key 键
      * @return 返回对应值的可变引用
      */
-    value_t& operator[](const key_t& key) {
+    template <typename _K>
+    value_t& operator[](_K&& key) {
         Node* p = tree_search(key);
         if (p == nullptr) {
-            return insert(key, value_t{});
+            return insert(std::forward<_K>(key), value_t{});
         }
         return p->val_;
     }
@@ -1127,8 +1116,8 @@ private:
      * @param key 键
      * @return 若找到，返回指向目标节点的指针，否则返回 nullptr
      */
-    template <typename K>
-    Node* tree_search(K&& key) const {
+    template <typename _K>
+    Node* tree_search(const _K& key) const {
         Node* p = root_;
         while (p != nil_) {
             if (comp_(key, p->key_)) {

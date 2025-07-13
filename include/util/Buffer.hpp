@@ -98,7 +98,18 @@ public:
     }
 
     /**
-     * @brief 在buffer末尾追加元素，不会做容量检查
+     * @brief 拷贝/移动追加，不会做容量检查
+     * @param item 要追加的元素
+     * @return 被追加元素的引用
+     */
+    template <typename U>
+    value_t& append(U&& item) {
+        alloc_.construct(buf_ + size_, std::forward<U>(item));
+        return buf_[size_++];
+    }
+
+    /**
+     * @brief 原位构造追加，不会做容量检查
      * @return 返回追加的元素
      */
     template <typename... Args>

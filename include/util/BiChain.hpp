@@ -24,9 +24,16 @@ public:
     using Super = Chain<BiNode, Alloc>;
     friend class BiChainIterator<BiNode>;
 
+    /**
+     * @brief 构造一个空的双向链
+     */
     BiChain() :
             Super() {}
 
+    /**
+     * @brief 原位构造并在链尾追加一个新节点
+     * @param args 用于初始化新节点的参数
+     */
     template <typename... Args>
     void append(Args&&... args) {
         BiNode* new_node = alloc_.create(std::forward<Args>(args)...);
@@ -40,6 +47,10 @@ public:
         ++Super::size_;
     }
 
+    /**
+     * @brief 原位构造并在链头插入一个新节点
+     * @param args 用于初始化新节点的参数
+     */
     template <typename... Args>
     void prepend(Args&&... args) {
         BiNode* new_node = alloc_.create(std::forward<Args>(args)...);
@@ -51,22 +62,6 @@ public:
             Super::head_ = new_node;
         }
         ++Super::size_;
-    }
-
-    [[nodiscard]] CString __str__() const {
-        std::stringstream stream;
-        stream << "<BiChain> [";
-        bool first = true;
-        for (const auto& current : *this) {
-            if (first) {
-                first = false;
-            } else {
-                stream << "<-->";
-            }
-            stream << current;
-        }
-        stream << ']';
-        return CString{stream.str()};
     }
 
     using iterator = BiChainIterator<BiNode>;
@@ -89,6 +84,22 @@ public:
 
     reverse_iterator rend() const {
         return reverse_iterator{iterator{nullptr}};
+    }
+
+    [[nodiscard]] CString __str__() const {
+        std::stringstream stream;
+        stream << "<BiChain> [";
+        bool first = true;
+        for (const auto& current : *this) {
+            if (first) {
+                first = false;
+            } else {
+                stream << "<-->";
+            }
+            stream << current;
+        }
+        stream << ']';
+        return CString{stream.str()};
     }
 
 private:
@@ -144,6 +155,11 @@ public:
     }
 };
 
+/**
+ * @brief 双向链的别名
+ * @tparam T 节点值类型
+ * @tparam Alloc 内存分配器类型
+ */
 template <typename T>
 using BiChainList = BiChain<BiChainNode<T>, Allocator<BiChainNode<T>>>;
 

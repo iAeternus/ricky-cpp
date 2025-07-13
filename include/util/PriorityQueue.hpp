@@ -71,17 +71,9 @@ public:
      * @brief 插入元素
      * @param val 要插入的元素
      */
-    void push(const value_t& val) {
-        heap_.append(val);
-        heapify_up(heap_.size() - 1);
-    }
-
-    /**
-     * @brief 插入元素（移动语义）
-     * @param val 要插入的元素
-     */
-    void push(value_t&& val) {
-        heap_.append(std::move(val));
+    template<typename V>
+    void push(V&& val) {
+        heap_.append(std::forward<V>(val));
         heapify_up(heap_.size() - 1);
     }
 

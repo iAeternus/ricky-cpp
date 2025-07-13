@@ -14,6 +14,7 @@
 
 #include <any>
 #include <iterator>
+#include <utility>
 
 namespace my::util {
 
@@ -216,31 +217,20 @@ public:
     }
 
     /**
-     * @brief 在末尾追加元素（拷贝语义）
+     * @brief 拷贝/移动追加
      * @param item 要追加的元素
      * @return 被追加元素的引用
      */
-    value_t& append(const value_t& item) {
+    template <typename U>
+    value_t& append(U&& item) {
         try_expand();
-        alloc_.construct(data_ + size_, item);
+        alloc_.construct(data_ + size_, std::forward<U>(item));
         ++size_;
         return back();
     }
 
     /**
-     * @brief 在末尾追加元素（移动语义）
-     * @param item 要移动的元素
-     * @return 被追加元素的引用
-     */
-    value_t& append(value_t&& item) {
-        try_expand();
-        alloc_.construct(data_ + size_, item);
-        ++size_;
-        return back();
-    }
-
-    /**
-     * @brief 构造并在末尾追加元素
+     * @brief 原地构造追加
      * @param args 构造元素的参数
      */
     template <typename... Args>

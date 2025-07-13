@@ -16,7 +16,7 @@ template <ChainNodeType Node>
 class ChainIterator;
 
 /**
- * @brief 链
+ * @brief 单向链
  */
 template <ChainNodeType Node, typename Alloc = Allocator<Node>>
 class Chain : public Object<Chain<Node, Alloc>> {
@@ -26,21 +26,39 @@ public:
     using value_t = typename Node::value_t;
     friend class ChainIterator<Node>;
 
+    /**
+     * @brief 默认构造函数
+     * 初始化一个空单向链
+     */
     Chain() :
             head_(nullptr), tail_(nullptr), size_(0) {}
 
+    /**
+     * @brief 析构函数
+     */
     virtual ~Chain() {
         clear();
     }
 
+    /**
+     * @brief 获取链的大小
+     * @return 返回链的大小
+     */
     usize size() const {
         return size_;
     }
 
+    /**
+     * @brief 检查链是否为空
+     * @return 如果链为空，返回 true；否则返回 false
+     */
     bool empty() const {
         return size_ == 0;
     }
 
+    /**
+     * @brief 判断节点是否存在
+     */
     bool contains(const Node& node) const {
         for (const auto& cur : *this) {
             if (cur == node.value_) {
@@ -50,6 +68,10 @@ public:
         return false;
     }
 
+    /**
+     * @brief 原位构造并在链尾追加一个新节点
+     * @param args 用于初始化新节点的参数
+     */
     template <typename... Args>
     void append(Args&&... args) {
         auto* new_node = alloc_.create(std::forward<Args>(args)...);
@@ -63,6 +85,9 @@ public:
         ++size_;
     }
 
+    /**
+     * @brief 清空单向链
+     */
     void clear() {
         auto* cur = head_;
         Node* next_node = nullptr;
@@ -75,6 +100,10 @@ public:
         size_ = 0;
     }
 
+    /**
+     * @brief 下标访问
+     * @param index 索引
+     */
     value_t& operator[](usize index) {
         index = neg_index(index, size_);
 
@@ -85,6 +114,10 @@ public:
         return cur->value_;
     }
 
+    /**
+     * @brief 下标访问（常量版本）
+     * @param index 索引
+     */
     const value_t& operator[](usize index) const {
         index = neg_index(index, size_);
 

@@ -7,21 +7,28 @@
 #ifndef HUFFMAN_TREE_HPP
 #define HUFFMAN_TREE_HPP
 
-#include "Exception.hpp"
-#include "String.hpp"
 #include "StringBuilder.hpp"
 #include "Dict.hpp"
-#include "Vec.hpp"
-
-#include <queue>
+#include "PriorityQueue.hpp"
 
 namespace my::util {
 
+/**
+ * @class HuffmanTree
+ * @brief 哈夫曼树类，用于文本编码和解码
+ *
+ * HuffmanTree 是一个基于哈夫曼编码算法的树结构，
+ * 用于对文本进行压缩编码和解码，支持计算带权路径长度和平均编码长度
+ */
 class HuffmanTree : public Object<HuffmanTree>, public NoCopy {
 public:
     using Self = HuffmanTree;
     static constexpr usize NIL = -1ULL;
 
+    /**
+     * @brief 哈夫曼树节点
+     * @note 节点包含索引、字符数据、频率以及左右子节点索引
+     */
     struct Node {
         usize idx;
         CodePoint data;
@@ -35,10 +42,14 @@ public:
                 idx(idx), freq(freq), lch(lch), rch(rch) {}
 
         bool operator<(const Node& other) const {
-            return this->freq > other.freq;
+            return this->freq < other.freq;
         }
     };
 
+    /**
+     * @brief 哈夫曼树构造函数
+     * @param text 输入的文本，用于统计字符频率
+     */
     HuffmanTree(const String& text) :
             text_(text) {
         for (const auto& cp : text) {
@@ -46,7 +57,7 @@ public:
         }
 
         usize idx = 0;
-        std::priority_queue<Node> pq;
+        PriorityQueue<Node> pq;
         for (const auto& [cp, freq] : freqs_) {
             nodes_.append(idx++, cp, freq);
             pq.push(nodes_.back());
@@ -56,6 +67,11 @@ public:
         generate_key();
     }
 
+    /**
+     * @brief 编码文本
+     * @return 返回编码后的字符串
+     * @throws runtime_exception 如果编码过程中缺少字符对应的编码
+     */
     String encode() {
         StringBuilder sb;
         for (const auto& cp : text_) {
@@ -68,6 +84,11 @@ public:
         return encoded_text_;
     }
 
+    /**
+     * @brief 解码文本
+     * @return 返回解码后的字符串
+     * @throws runtime_exception 如果编码流无效或缺少字符对应的编码
+     */
     String decode() {
         StringBuilder sb;
         usize cur = root_idx_;
@@ -83,10 +104,16 @@ public:
         return sb.build();
     }
 
+    /**
+     * @brief 获取密钥
+     */
     fn get_key() const {
         return key_;
     }
 
+    /**
+     * @brief 获取字符频率
+     */
     fn get_freqs() const {
         return freqs_;
     }
@@ -123,7 +150,12 @@ public:
     }
 
 private:
-    void build_tree(std::priority_queue<Node>& pq) {
+    /**
+     * @brief 构建哈夫曼树
+     * @param pq 优先队列，包含所有节点
+     * @note 使用优先队列构建哈夫曼树，合并频率最小的两个节点直到只剩一个根节点
+     */
+    void build_tree(PriorityQueue<Node>& pq) {
         if (pq.empty()) return;
 
         // 处理单字符特例

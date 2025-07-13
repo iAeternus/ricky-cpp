@@ -232,19 +232,7 @@ public:
     }
 
     /**
-     * @brief 在末尾追加元素（拷贝语义）
-     * @param item 要追加的元素
-     * @return 被追加元素的引用
-     */
-    value_t& append(const value_t& item) {
-        try_wakeup();
-        auto& res = get_back_block().append(item);
-        ++size_;
-        return res;
-    }
-
-    /**
-     * @brief 在末尾追加元素（移动语义）
+     * @brief 拷贝/移动追加
      * @param item 要移动的元素
      * @return 被追加元素的引用
      */
@@ -252,6 +240,18 @@ public:
     value_t& append(U&& item) {
         try_wakeup();
         auto& res = get_back_block().append(std::forward<U>(item));
+        ++size_;
+        return res;
+    }
+
+    /**
+     * @brief 原地构造追加
+     * @param args 构造元素的参数
+     */
+    template <typename... Args>
+    value_t& append(Args&&... args) {
+        try_wakeup();
+        auto& res = get_back_block().append(std::forward<Args>(args)...);
         ++size_;
         return res;
     }
@@ -267,9 +267,6 @@ public:
         if (idx > size_) return;
 
         append(std::forward<U>(item));
-        // for(auto it = end(); it >= begin() + idx; --it) {
-        //     std::swap(*it, *std::prev(it));
-        // }
         for (isize i = size() - 1; i > static_cast<isize>(idx); --i) {
             std::swap(at(i), at(i - 1));
         }
@@ -283,9 +280,6 @@ public:
         if (empty()) return;
 
         idx = neg_index(idx, static_cast<isize>(size_));
-        // for(auto it = begin() + idx + 1; it != end(); ++it) {
-        //     *std::prev(it) = std::move(*it);
-        // }
         for (usize i = idx + 1; i < size_; ++i) {
             at(i - 1) = std::move(at(i));
         }
