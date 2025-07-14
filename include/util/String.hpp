@@ -7,90 +7,11 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
-#include "Allocator.hpp"
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
 #include "NoCopy.hpp"
-#include "Vec.hpp"
 
 namespace my::util {
-
-// /**
-//  * @brief 字符串存储结构，支持SSO
-//  */
-// template <typename Alloc = Allocator<char>>
-// class Store : public Object<Store<Alloc>> {
-// public:
-//     using Self = Store<Alloc>;
-
-//     /**
-//      * @brief 默认构造函数，创建一个空字符串
-//      */
-//     Store() :
-//             length_(0), is_sso_(true) {
-//         sso_[0] = '\0';
-//     }
-
-//     Store(const Self& other) :
-
-
-//     /**
-//      * @brief 获取字符串指针
-//      */
-//     const char* data() const noexcept {
-//         return is_sso_ ? sso_ : heap_.ptr;
-//     }
-
-// private:
-//     /**
-//      * @brief 分配内存，生成空字符串
-//      * @param size 申请的内存大小
-//      */
-//     void alloc(usize size) {
-//         if (size <= SSO_MAX) {
-//             is_sso_ = true;
-//         } else {
-//             is_sso_ = false;
-//             heap_.ptr = alloc_.allocate(size + 1);
-//             heap_.capacity = size;
-//         }
-//         length_ = 0;
-//         data()[0] = '\0';
-//     }
-
-//     /**
-//      * @brief 释放内存
-//      */
-//     void dealloc() noexcept {
-//         if(!is_sso_) {
-//             alloc_.deallocate(heap_.ptr, heap_.capacity);
-//         }
-//     }
-
-// private:
-//     static constexpr usize SSO_MAX = 15; // 小字符串优化阈值
-
-//     Alloc alloc_{}; // 内存分配器
-
-//     /**
-//      * @brief 堆结构
-//      */
-//     struct Heap {
-//         char* ptr;
-//         usize capacity;
-//     };
-
-//     /**
-//      * @brief 存储结构  
-//      */
-//     union {
-//         Heap heap_;
-//         char sso_[SSO_MAX + 1];
-//     };
-
-//     usize length_; // 字符串长度
-//     bool is_sso_;  // 是否为SSO
-// };
 
 /**
  * @brief 字符串管理器，用于管理字符串的共享数据和编码信息
@@ -103,27 +24,27 @@ public:
     /**
      * @brief 构造函数
      * @param length 字符串的长度
-     * @param shared_head 共享的码点数组
+     * @param data 码点数组
      * @param encoding 字符串的编码
      */
-    StringManager(usize length, CodePoint* shared_head, Encoding* encoding) :
-            length_(length), shared_head_(shared_head), encoding_(encoding) {}
+    StringManager(usize length, CodePoint* data, Encoding* encoding) :
+            length_(length), data_(data), encoding_(encoding) {}
 
     /**
-     * @brief 析构函数，释放共享的码点数组
+     * @brief 析构函数，释放码点数组
      */
     ~StringManager() {
-        alloc_.destroy(shared_head_, length_);
-        alloc_.deallocate(shared_head_, length_);
+        alloc_.destroy(data_, length_);
+        alloc_.deallocate(data_, length_);
         length_ = 0;
     }
 
     /**
-     * @brief 获取共享的码点数组
-     * @return 共享的码点数组
+     * @brief 获取码点数组
+     * @return 码点数组
      */
-    CodePoint* shared_head() const {
-        return shared_head_;
+    CodePoint* data() const {
+        return data_;
     }
 
     /**
@@ -136,21 +57,21 @@ public:
 
     /**
      * @brief 重置字符串管理器
-     * @param length 新的字符串长度
-     * @param shared_head 新的共享码点数组
+     * @param new_len 新字符串长度
+     * @param new_data 新码点数组
      */
-    void reset(usize length, CodePoint* shared_head) {
-        alloc_.destroy(shared_head_, length_);
-        alloc_.deallocate(shared_head_, length_);
-        this->shared_head_ = shared_head;
-        this->length_ = length;
+    void reset(usize new_len, CodePoint* new_data) {
+        alloc_.destroy(data_, length_);
+        alloc_.deallocate(data_, length_);
+        this->data_ = new_data;
+        this->length_ = new_len;
     }
 
 private:
-    Alloc alloc_{};          // 内存分配器
-    usize length_;           // 字符串的长度
-    CodePoint* shared_head_; // 共享的码点数组
-    Encoding* encoding_;     // 字符串的编码
+    Alloc alloc_{};      // 内存分配器
+    usize length_;       // 字符串的长度
+    CodePoint* data_;    // 码点数组
+    Encoding* encoding_; // 字符串的编码
 };
 
 /**
@@ -167,8 +88,8 @@ public:
      * @brief 默认构造函数，创建一个空字符串，并指定编码
      * @param encoding 字符串的编码（可选）
      */
-    BaseString(const CString& encoding = UTF8) :
-            BaseString(0, encoding_map(encoding)) {}
+    BaseString(EncodingType enc = EncodingType::UTF8) :
+            BaseString(0, encoding_map(enc)) {}
 
     /**
      * @brief 构造函数，根据 C 风格字符串创建字符串
@@ -176,8 +97,8 @@ public:
      * @param length 字符串的长度（可选）
      * @param encoding 字符串的编码（可选）
      */
-    BaseString(const char* str, usize length = npos, const CString& encoding = UTF8) :
-            BaseString(0, encoding_map(encoding)) {
+    BaseString(const char* str, usize length = npos, EncodingType enc = EncodingType::UTF8) :
+            BaseString(0, encoding_map(enc)) {
         length = ifelse(length != npos, length, std::strlen(str));
         auto [size, arr] = get_code_points(str, length, manager_->encoding()).separate();
         this->length_ = size;
@@ -190,16 +111,16 @@ public:
      * @param cstr 自定义字符串
      * @param encoding 字符串的编码（可选）
      */
-    BaseString(const CString& cstr, const CString& encoding = UTF8) :
-            BaseString(cstr.data(), cstr.size(), encoding) {}
+    BaseString(const CString& cstr, EncodingType enc = EncodingType::UTF8) :
+            BaseString(cstr.data(), cstr.size(), enc) {}
 
     /**
      * @brief 构造函数，根据码点创建字符串
      * @param cp 码点
      * @param encoding 字符串的编码（可选）
      */
-    BaseString(const CodePoint& cp, const CString& encoding = UTF8) :
-            BaseString(cp.data(), cp.size(), encoding) {}
+    BaseString(const CodePoint& cp, EncodingType enc = EncodingType::UTF8) :
+            BaseString(cp.data(), cp.size(), enc) {}
 
     /**
      * @brief 拷贝构造函数
@@ -773,20 +694,20 @@ private:
             length_(length), code_points_(nullptr) {
         this->manager_ = std::make_shared<manager_t>(length, alloc_.allocate(length), encoding);
         for (usize i = 0; i < length_; ++i) {
-            alloc_.construct(manager_->shared_head() + i);
+            alloc_.construct(manager_->data() + i);
         }
-        this->code_points_ = manager_->shared_head();
+        this->code_points_ = manager_->data();
     }
 
     /**
      * @brief 获取去除首尾空白后的索引范围
      * @return 首尾空白后的索引范围
      */
-    std::pair<usize, usize> get_trim_index() const {
+    Pair<usize, usize> get_trim_index() const {
         usize l = 0, r = size();
         while (l < r && at(l).is_blank()) ++l;
         while (l < r && at(r - 1).is_blank()) --r;
-        return std::make_pair(l, r);
+        return {l, r};
     }
 
     /**
@@ -794,11 +715,11 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    std::pair<usize, usize> get_trim_index(const Self& pattern) const {
+    Pair<usize, usize> get_trim_index(const Self& pattern) const {
         usize l = 0, r = size(), p_size = pattern.size();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
-        return std::make_pair(l, r);
+        return {l, r};
     }
 
     /**

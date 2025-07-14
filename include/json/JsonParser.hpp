@@ -41,7 +41,7 @@ public:
      * @return json字符串
      */
     static fn parse(const Json& json)->JsonType::JsonStr {
-        return util::String{json.__str__(), util::UTF8};
+        return util::String{json.__str__(), util::EncodingType::UTF8};
     }
 
 private:

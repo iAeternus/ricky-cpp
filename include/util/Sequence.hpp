@@ -60,7 +60,7 @@ public:
      * @brief 获取序列的大小
      * @return 返回序列的大小
      */
-    usize size() const {
+    usize size() const noexcept {
         return static_cast<const D*>(this)->size();
     }
 

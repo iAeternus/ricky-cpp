@@ -8,15 +8,20 @@
 #define ENCODING_HPP
 
 #include "Dict.hpp"
-#include "Exception.hpp"
 
 namespace my::util {
 
-static const CString ASCII = "ascii";
-static const CString UTF8 = "utf-8";
-static const CString UTF16 = "utf-16";
-static const CString UTF32 = "utf-32";
-static const CString GB2312 = "gb2312";
+/**
+ * @brief 字符编码类型
+ */
+enum class EncodingType {
+    ASCII,
+    UTF8,
+    UTF16,
+    UTF32,
+    GB2312,
+    LATIN1,
+};
 
 /**
  * @brief 字符编码接口
@@ -39,7 +44,7 @@ public:
     virtual Encoding* clone() const = 0;
 
     [[nodiscard]] virtual CString __str__() const {
-        return "Encoding";
+        return "UNKNOWN";
     }
 };
 
@@ -61,7 +66,7 @@ public:
     }
 
     [[nodiscard]] CString __str__() const override {
-        return ASCII;
+        return "ASCII";
     }
 };
 
@@ -93,7 +98,7 @@ public:
     }
 
     [[nodiscard]] CString __str__() const override {
-        return UTF8;
+        return "UTF-8";
     }
 };
 
@@ -118,7 +123,7 @@ public:
     }
 
     [[nodiscard]] CString __str__() const override {
-        return UTF16;
+        return "UTF-16";
     }
 };
 
@@ -140,7 +145,7 @@ public:
     }
 
     [[nodiscard]] CString __str__() const override {
-        return UTF32;
+        return "UTF-32";
     }
 };
 
@@ -162,25 +167,47 @@ public:
     }
 
     [[nodiscard]] CString __str__() const override {
-        return GB2312;
+        return "GB2312";
     }
 };
 
 /**
- * @brief 编码名-编码方式 映射
+ * @brief 编码类型-编码方式 映射
  */
-fn encoding_map(const CString& encodingName)->Encoding* {
-    static Dict<CString, Encoding*> encodingMap_ = {
-        {ASCII, new ASCIIEncoding{}},
-        {UTF8, new UTF8Encoding{}},
-        {UTF16, new UTF16Encoding{}},
-        {UTF32, new UTF32Encoding{}},
-        {GB2312, new GB2312Encoding{}},
+fn encoding_map(EncodingType enc)->Encoding* {
+    static const Dict<EncodingType, Encoding*> encoding_map_ = {
+        {EncodingType::ASCII, new ASCIIEncoding{}},
+        {EncodingType::UTF8, new UTF8Encoding{}},
+        {EncodingType::UTF16, new UTF16Encoding{}},
+        {EncodingType::UTF32, new UTF32Encoding{}},
+        {EncodingType::GB2312, new GB2312Encoding{}},
     };
 
-    return encodingMap_.get(encodingName);
+    return encoding_map_.get(enc);
 }
 
 } // namespace my::util
+
+namespace std {
+
+template <>
+struct formatter<my::util::EncodingType> : formatter<string_view> {
+    auto format(my::util::EncodingType type, format_context& ctx) const {
+        using my::util::EncodingType;
+        string_view name;
+        switch (type) {
+        case EncodingType::ASCII: name = "ASCII"; break;
+        case EncodingType::UTF8: name = "UTF-8"; break;
+        case EncodingType::UTF16: name = "UTF-16"; break;
+        case EncodingType::UTF32: name = "UTF-32"; break;
+        case EncodingType::GB2312: name = "GB2312"; break;
+        case EncodingType::LATIN1: name = "LATIN1"; break;
+        default: name = "UNKNOWN";
+        }
+        return formatter<string_view>::format(name, ctx);
+    }
+};
+
+} // namespace std
 
 #endif // ENCODING_HPP

@@ -29,7 +29,7 @@ public:
      * @param initial_capacity 初始缓冲区容量
      * @param encoding 字符串编码（默认UTF-8）
      */
-    explicit StringBuilder(usize initial_capacity = 1024, util::Encoding* encoding = util::encoding_map(util::UTF8)) :
+    explicit StringBuilder(usize initial_capacity = 1024, util::Encoding* encoding = util::encoding_map(EncodingType::UTF8)) :
             encoding_(encoding) {
         char_buf_.reserve(initial_capacity);
     }
