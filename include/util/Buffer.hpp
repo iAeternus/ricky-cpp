@@ -8,6 +8,7 @@
 #define BUFFER_HPP
 
 #include "Array.hpp"
+
 #include <cstring>
 
 namespace my::util {
@@ -156,6 +157,22 @@ public:
      */
     const value_t& back() const {
         return buf_[size_ - 1];
+    }
+
+    /**
+     * @brief 设置大小，可能导致内存泄露，慎用
+     */
+    Self&& set_size(usize new_size) noexcept {
+        this->size_ = new_size;
+        return *this;
+    }
+
+    /**
+     * @brief 设置容量，可能导致内存泄露，慎用
+     */
+    Self& set_capacity(usize new_cap) noexcept {
+        this->capacity_ = new_cap;
+        return *this;
     }
 
     /**

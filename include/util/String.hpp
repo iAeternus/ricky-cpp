@@ -7,12 +7,90 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
+#include "Allocator.hpp"
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
 #include "NoCopy.hpp"
 #include "Vec.hpp"
 
 namespace my::util {
+
+// /**
+//  * @brief 字符串存储结构，支持SSO
+//  */
+// template <typename Alloc = Allocator<char>>
+// class Store : public Object<Store<Alloc>> {
+// public:
+//     using Self = Store<Alloc>;
+
+//     /**
+//      * @brief 默认构造函数，创建一个空字符串
+//      */
+//     Store() :
+//             length_(0), is_sso_(true) {
+//         sso_[0] = '\0';
+//     }
+
+//     Store(const Self& other) :
+
+
+//     /**
+//      * @brief 获取字符串指针
+//      */
+//     const char* data() const noexcept {
+//         return is_sso_ ? sso_ : heap_.ptr;
+//     }
+
+// private:
+//     /**
+//      * @brief 分配内存，生成空字符串
+//      * @param size 申请的内存大小
+//      */
+//     void alloc(usize size) {
+//         if (size <= SSO_MAX) {
+//             is_sso_ = true;
+//         } else {
+//             is_sso_ = false;
+//             heap_.ptr = alloc_.allocate(size + 1);
+//             heap_.capacity = size;
+//         }
+//         length_ = 0;
+//         data()[0] = '\0';
+//     }
+
+//     /**
+//      * @brief 释放内存
+//      */
+//     void dealloc() noexcept {
+//         if(!is_sso_) {
+//             alloc_.deallocate(heap_.ptr, heap_.capacity);
+//         }
+//     }
+
+// private:
+//     static constexpr usize SSO_MAX = 15; // 小字符串优化阈值
+
+//     Alloc alloc_{}; // 内存分配器
+
+//     /**
+//      * @brief 堆结构
+//      */
+//     struct Heap {
+//         char* ptr;
+//         usize capacity;
+//     };
+
+//     /**
+//      * @brief 存储结构  
+//      */
+//     union {
+//         Heap heap_;
+//         char sso_[SSO_MAX + 1];
+//     };
+
+//     usize length_; // 字符串长度
+//     bool is_sso_;  // 是否为SSO
+// };
 
 /**
  * @brief 字符串管理器，用于管理字符串的共享数据和编码信息
@@ -786,9 +864,9 @@ private:
     }
 
 private:
-    Alloc alloc_{};                                 // 内存分配器
-    usize length_;                                  // 字符串的长度
-    CodePoint* code_points_;                        // 字符串的码点数组
+    Alloc alloc_{};                      // 内存分配器
+    usize length_;                       // 字符串的长度
+    CodePoint* code_points_;             // 字符串的码点数组
     std::shared_ptr<manager_t> manager_; // 字符串管理器
 };
 
