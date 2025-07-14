@@ -8,6 +8,7 @@
 #define HTTP_HPP
 
 #include "Dict.hpp"
+#include "String.hpp"
 #include "tcp.hpp"
 
 namespace my::net {
@@ -88,16 +89,16 @@ public:
      */
     usize content_length() const {
         auto content_length = headers_.get_or_default("Content-Length", "0");
-        return std::stoul(content_length);
+        return std::stoul(content_length.into_string());
     }
 
 private:
     HttpMethod method_ = HttpMethod::UNKNOWN;       // 请求方法
     CString path_;                                  // 请求路径
     CString version_;                               // HTTP版本
-    util::Dict<CString, std::string> headers_;      // 请求头
-    std::string body_;                              // 请求体
-    util::Dict<CString, std::string> query_params_; // 查询参数
+    util::Dict<CString, util::String> headers_;      // 请求头
+    util::String body_;                              // 请求体
+    util::Dict<CString, util::String> query_params_; // 查询参数
 };
 
 /**
@@ -117,23 +118,23 @@ public:
     /**
      * @brief 设置响应头中的 Content-Type
      */
-    void set_content_type(const std::string& type) {
+    void set_content_type(const util::String& type) {
         headers_["Content-Type"] = type;
     }
 
     /**
      * @brief 设置响应体
      */
-    void set_body(const std::string& content, const std::string& type = "text/plain") {
+    void set_body(const util::String& content, const util::String& type = "text/plain") {
         body_ = content;
         set_content_type(type);
-        headers_["Content-Length"] = std::to_string(body_.length());
+        headers_["Content-Length"] = util::String::from(body_.length());
     }
 
     /**
      * @brief 设置重定向
      */
-    void set_redirect(const std::string& location, HttpStatusCode code = HttpStatusCode::FOUND) {
+    void set_redirect(const util::String& location, HttpStatusCode code = HttpStatusCode::FOUND) {
         status_ = code;
         headers_["Location"] = location;
         body_.clear();
@@ -142,8 +143,8 @@ public:
 
 private:
     HttpStatusCode status_ = HttpStatusCode::OK; // 响应状态
-    util::Dict<CString, std::string> headers_;   // 响应头
-    std::string body_;                           // 响应体
+    util::Dict<CString, util::String> headers_;   // 响应头
+    util::String body_;                           // 响应体
 };
 
 /**
@@ -169,14 +170,14 @@ private:
      * @brief 静态路径配置
      */
     struct StaticDirConfig {
-        std::string fspath;    // 文件系统路径
+        util::String fspath;    // 文件系统路径
         u32 cache_max_age = 0; // 缓存时间（秒）
     };
 
 private:
     TcpServer server_;                                                      // TCP服务器
-    util::Dict<HttpMethod, util::Dict<std::string, RouterHandler>> routes_; // 路由表
-    util::Dict<std::string, StaticDirConfig> static_dirs_;                  // 静态路径表 TODO 命名
+    util::Dict<HttpMethod, util::Dict<util::String, RouterHandler>> routes_; // 路由表
+    util::Dict<util::String, StaticDirConfig> static_dirs_;                  // 静态路径表 TODO 命名
     std::atomic<u32> active_connections_{0};                                // 当前活跃连接数
     u32 max_connections_{0};                                                // 最大连接数
 };

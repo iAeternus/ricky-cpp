@@ -9,7 +9,6 @@
 
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
-#include <cstring>
 
 namespace my::util {
 
@@ -211,6 +210,37 @@ public:
     }
 
     /**
+     * @brief 转换为std::string
+     */
+    std::string into_string() const {
+        std::string result;
+        result.reserve(byte_length());
+        for (usize i = 0; i < length_; ++i) {
+            const CodePoint& cp = code_points_[i];
+            result.append(cp.data(), cp.size());
+        }
+        return result;
+    }
+
+    /**
+     * @brief 从u32构造
+     */
+    static Self from(u32 val) {
+        char buf[16];
+        int len = std::snprintf(buf, sizeof(buf), "%u", val);
+        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+    }
+
+    /**
+     * @brief 从u64构造
+     */
+    static Self from(u64 val) {
+        char buf[32];
+        int len = std::snprintf(buf, sizeof(buf), "%llu", static_cast<unsigned long long>(val));
+        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+    }
+
+    /**
      * @brief 字符串拼接操作符
      * @param other 要拼接的字符串对象
      * @return 拼接后的新字符串
@@ -364,6 +394,21 @@ public:
             length += ch.size();
         }
         return length;
+    }
+
+    /**
+     * @brief 清空字符串
+     */
+    void clear() {
+        if (!is_sso_ && heap_ != nullptr) {
+            alloc_.destroy(heap_, length_);
+            alloc_.deallocate(heap_, length_);
+            heap_ = nullptr;
+        }
+        length_ = 0;
+        is_sso_ = true;
+        encoding_ = nullptr;
+        code_points_ = sso_;
     }
 
     /**
