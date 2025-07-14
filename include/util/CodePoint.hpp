@@ -15,6 +15,8 @@
 
 namespace my::util {
 
+class CodePointPool;
+
 class CodePoint : public Object<CodePoint> {
 public:
     using Self = CodePoint;
@@ -193,13 +195,26 @@ public:
         return *instance_;
     }
 
+    // ASCII码点静态池，避免频繁分配和锁竞争
     std::shared_ptr<const CodePoint> get(char ch) {
+        static std::shared_ptr<const CodePoint> ascii_pool[128] = {};
+        unsigned char idx = static_cast<unsigned char>(ch);
+        if (idx < 128) {
+            if (!ascii_pool[idx]) {
+                ascii_pool[idx] = std::make_shared<CodePoint>(ch);
+            }
+            return ascii_pool[idx];
+        }
         auto hash = hash_t(ch);
         return get_impl(hash, [ch]() { return std::make_shared<CodePoint>(ch); });
     }
 
     std::shared_ptr<const CodePoint> get(const char* str, Encoding* encoding) {
         auto codeSize = encoding->byte_size(str);
+        // 优化：单字节ASCII直接用静态池
+        if (codeSize == 1 && static_cast<unsigned char>(str[0]) < 128) {
+            return get(str[0]);
+        }
         auto hash = bytes_hash(str, codeSize);
         return get_impl(hash, [str, encoding]() { return std::make_shared<CodePoint>(str, encoding); });
     }
