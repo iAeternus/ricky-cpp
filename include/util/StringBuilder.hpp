@@ -197,7 +197,7 @@ public:
         // 将字节缓冲区转换为码点数组
         auto cps = get_code_points(char_buf_.data(), char_buf_.size(), encoding_);
         auto [size, code_points] = cps.separate();
-        return String(code_points, size, std::make_shared<StringManager>(size, code_points, encoding_));
+        return String(code_points, size, std::make_shared<StringManager<>>(size, code_points, encoding_));
     }
 
     /**
@@ -207,7 +207,7 @@ public:
         // 将字节缓冲区转换为码点数组
         auto cps = get_code_points(char_buf_.data(), char_buf_.size(), encoding_);
         auto [size, code_points] = cps.separate();
-        return String(code_points, size, std::make_shared<StringManager>(size, code_points, encoding_));
+        return String(code_points, size, std::make_shared<StringManager<>>(size, code_points, encoding_));
     }
 
     /**

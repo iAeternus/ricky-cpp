@@ -15,7 +15,8 @@
 
 namespace my::util {
 
-class String;
+template<typename Alloc>
+class BaseString;
 
 /**
  * @class Dict

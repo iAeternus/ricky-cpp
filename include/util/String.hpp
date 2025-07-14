@@ -1,5 +1,5 @@
 /**
- * @brief 自定义字符串类，支持 Unicode 编码 TODO 仍然不能改为Allocator管理内存分配
+ * @brief 自定义字符串类，支持 Unicode 编码
  * @author Ricky
  * @date 2024/12/19
  * @version 1.0
@@ -11,17 +11,16 @@
 #include "Encoding.hpp"
 #include "NoCopy.hpp"
 #include "Vec.hpp"
-#include "Function.hpp"
 
 namespace my::util {
 
 /**
  * @brief 字符串管理器，用于管理字符串的共享数据和编码信息
  */
-class StringManager : public Object<StringManager>, public NoCopy {
+template <typename Alloc = Allocator<CodePoint>>
+class StringManager : public Object<StringManager<Alloc>>, public NoCopy {
 public:
-    using Self = StringManager;
-    using Alloc = Allocator<CodePoint>;
+    using Self = StringManager<Alloc>;
 
     /**
      * @brief 构造函数
@@ -70,27 +69,28 @@ public:
     }
 
 private:
-    Alloc alloc_{};            // 内存分配器
-    usize length_;             // 字符串的长度
-    CodePoint* shared_head_;   // 共享的码点数组
-    Encoding* encoding_; // 字符串的编码
+    Alloc alloc_{};          // 内存分配器
+    usize length_;           // 字符串的长度
+    CodePoint* shared_head_; // 共享的码点数组
+    Encoding* encoding_;     // 字符串的编码
 };
 
 /**
  * @brief 字符串，支持 Unicode 编码和多种操作
  */
-class String : public Sequence<String, CodePoint> {
+template <typename Alloc = Allocator<CodePoint>>
+class BaseString : public Sequence<BaseString<Alloc>, CodePoint> {
 public:
-    using Self = String;
+    using Self = BaseString<Alloc>;
     using Super = Sequence<Self, CodePoint>;
-    using Alloc = Allocator<CodePoint>;
+    using manager_t = StringManager<Alloc>;
 
     /**
      * @brief 默认构造函数，创建一个空字符串，并指定编码
      * @param encoding 字符串的编码（可选）
      */
-    String(const CString& encoding = UTF8) :
-            String(0, encoding_map(encoding)) {}
+    BaseString(const CString& encoding = UTF8) :
+            BaseString(0, encoding_map(encoding)) {}
 
     /**
      * @brief 构造函数，根据 C 风格字符串创建字符串
@@ -98,8 +98,8 @@ public:
      * @param length 字符串的长度（可选）
      * @param encoding 字符串的编码（可选）
      */
-    String(const char* str, usize length = npos, const CString& encoding = UTF8) :
-            String(0, encoding_map(encoding)) {
+    BaseString(const char* str, usize length = npos, const CString& encoding = UTF8) :
+            BaseString(0, encoding_map(encoding)) {
         length = ifelse(length != npos, length, std::strlen(str));
         auto [size, arr] = get_code_points(str, length, manager_->encoding()).separate();
         this->length_ = size;
@@ -112,23 +112,23 @@ public:
      * @param cstr 自定义字符串
      * @param encoding 字符串的编码（可选）
      */
-    String(const CString& cstr, const CString& encoding = UTF8) :
-            String(cstr.data(), cstr.size(), encoding) {}
+    BaseString(const CString& cstr, const CString& encoding = UTF8) :
+            BaseString(cstr.data(), cstr.size(), encoding) {}
 
     /**
      * @brief 构造函数，根据码点创建字符串
      * @param cp 码点
      * @param encoding 字符串的编码（可选）
      */
-    String(const CodePoint& cp, const CString& encoding = UTF8) :
-            String(cp.data(), cp.size(), encoding) {}
+    BaseString(const CodePoint& cp, const CString& encoding = UTF8) :
+            BaseString(cp.data(), cp.size(), encoding) {}
 
     /**
      * @brief 拷贝构造函数
      * @param other 要拷贝的字符串对象
      */
-    String(const Self& other) :
-            String(other.size(), other.encoding()) {
+    BaseString(const Self& other) :
+            BaseString(other.size(), other.encoding()) {
         for (usize i = 0; i < length_; ++i) {
             at(i) = other.at(i);
         }
@@ -138,13 +138,13 @@ public:
      * @brief 移动构造函数
      * @param other 要移动的字符串对象
      */
-    String(Self&& other) noexcept :
-            String(other.code_points_, other.length_, other.manager_) {}
+    BaseString(Self&& other) noexcept :
+            BaseString(other.code_points_, other.length_, other.manager_) {}
 
     /**
      * @brief 默认析构函数
      */
-    ~String() = default;
+    ~BaseString() = default;
 
     /**
      * @brief 拷贝赋值操作符
@@ -619,7 +619,7 @@ public:
         }
         auto length = buf.size();
         auto [size, code_points] = buf.separate();
-        return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding()));
+        return BaseString(code_points, length, std::make_shared<manager_t>(length, code_points, encoding()));
     }
 
     /**
@@ -637,7 +637,7 @@ public:
         }
         auto length = buf.size();
         auto [size, code_points] = buf.separate();
-        return String(code_points, length, std::make_shared<StringManager>(length, code_points, encoding()));
+        return BaseString(code_points, length, std::make_shared<manager_t>(length, code_points, encoding()));
     }
 
     /**
@@ -683,7 +683,7 @@ private:
      * @param length 字符串的长度
      * @param manager 字符串管理器
      */
-    String(CodePoint* code_points, usize length, std::shared_ptr<StringManager> manager) :
+    BaseString(CodePoint* code_points, usize length, std::shared_ptr<manager_t> manager) :
             length_(length), code_points_(code_points), manager_(std::move(manager)) {}
 
     /**
@@ -691,9 +691,9 @@ private:
      * @param length 字符串的长度
      * @param encoding 字符串的编码
      */
-    String(usize length, Encoding* encoding) :
+    BaseString(usize length, Encoding* encoding) :
             length_(length), code_points_(nullptr) {
-        this->manager_ = std::make_shared<StringManager>(length, alloc_.allocate(length), encoding);
+        this->manager_ = std::make_shared<manager_t>(length, alloc_.allocate(length), encoding);
         for (usize i = 0; i < length_; ++i) {
             alloc_.construct(manager_->shared_head() + i);
         }
@@ -786,11 +786,13 @@ private:
     }
 
 private:
-    Alloc alloc_{};                          // 内存分配器
-    usize length_;                           // 字符串的长度
-    CodePoint* code_points_;                 // 字符串的码点数组
-    std::shared_ptr<StringManager> manager_; // 字符串管理器
+    Alloc alloc_{};                                 // 内存分配器
+    usize length_;                                  // 字符串的长度
+    CodePoint* code_points_;                        // 字符串的码点数组
+    std::shared_ptr<manager_t> manager_; // 字符串管理器
 };
+
+using String = BaseString<Allocator<CodePoint>>;
 
 } // namespace my::util
 
