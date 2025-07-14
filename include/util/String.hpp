@@ -9,6 +9,7 @@
 
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
+#include <cstring>
 
 namespace my::util {
 
@@ -45,10 +46,7 @@ public:
             }
             code_points_ = sso_;
         } else {
-            heap_ = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_ + i, code_points[i]);
-            }
+            heap_ = code_points;
             code_points_ = heap_;
         }
     }
@@ -72,10 +70,7 @@ public:
             }
             code_points_ = sso_;
         } else {
-            heap_ = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_ + i, arr[i]);
-            }
+            heap_ = arr;
             code_points_ = heap_;
         }
     }
@@ -244,7 +239,7 @@ public:
             res[i] = (*this)[i];
         }
         for (usize i = 0; i < o_size; ++i) {
-            res[m_size + i] = CodePoint(other[i]);
+            res[m_size + i] = *CodePointPool::instance().get(other[i]);
         }
         return res;
     }
@@ -738,15 +733,6 @@ public:
     }
 
 private:
-    // /**
-    //  * @brief 内部构造函数，用于创建字符串对象
-    //  * @param code_points 字符串的码点数组
-    //  * @param length 字符串的长度
-    //  * @param manager 字符串管理器
-    //  */
-    // BaseString(CodePoint* code_points, usize length, std::shared_ptr<manager_t> manager) :
-    //         length_(length), code_points_(code_points), manager_(std::move(manager)) {}
-
     /**
      * @brief 内部构造函数，用于根据编码创建字符串对象
      * @note 对于SSO，每个位置的码点都会调用默认构造函数初始化

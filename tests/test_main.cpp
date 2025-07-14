@@ -7,7 +7,7 @@
  */
 
 // 测试模式设置。置1 功能测试；置0 基准测试（运行时间较长）
-#define TEST_MODE 1
+#define TEST_MODE 0
 
 #if TEST_MODE
 #include "test_test_utils.hpp"

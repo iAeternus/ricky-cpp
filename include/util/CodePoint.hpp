@@ -15,8 +15,6 @@
 
 namespace my::util {
 
-class CodePointPool;
-
 class CodePoint : public Object<CodePoint> {
 public:
     using Self = CodePoint;
@@ -255,8 +253,8 @@ fn get_code_points(const char* str, usize len, Encoding* encoding)->Vec<CodePoin
     Vec<CodePoint> cps;
     usize i = 0;
     while (i < len) {
-        cps.append(CodePoint{str + i, encoding});
-        i += cps[-1].size();
+        cps.append(*CodePointPool::instance().get(str + i, encoding));
+        i += cps.back().size();
         if (i > len) throw runtime_exception("invalid encoding, code point out of range");
     }
     return cps;
