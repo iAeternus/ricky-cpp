@@ -78,7 +78,7 @@ fn should_register = []() {
         auto min = util::opt<f64>(args, 0);
         auto max = util::opt<f64>(args, 1);
 
-        util::DynArray<i64> res;
+        util::Vec<i64> res;
         for (const auto& edge : g.edges()) {
             if (math::fcmp(edge.w, min) > 0 && math::fcmp(edge.w, max) < 0) {
                 res.append(edge.w);
@@ -88,7 +88,7 @@ fn should_register = []() {
     });
 
     // When
-    auto res = g.call_algo<util::DynArray<i64>>("filter_edge", 5.0, 25.0);
+    auto res = g.call_algo<util::Vec<i64>>("filter_edge", 5.0, 25.0);
 
     // Then
     Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());
