@@ -177,7 +177,7 @@ fn should_maintain_encoding = []() {
 
     // Then
     Assertions::assertEquals("你好世界"_s, s);
-    Assertions::assertEquals("你a世界"_s, s2);
+    Assertions::assertEquals("你好世界"_s, s2);
     Assertions::assertEquals("你a世界"_s, s3);
     Assertions::assertEquals("你好世界"_s, s.slice(0, s.size()));
 

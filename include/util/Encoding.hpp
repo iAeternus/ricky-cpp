@@ -172,7 +172,7 @@ public:
 };
 
 /**
- * @brief 编码类型-编码方式 映射
+ * @brief 编码类型-编码方式 映射 TODO 可能存在内存泄漏
  */
 fn encoding_map(EncodingType enc)->Encoding* {
     static const Dict<EncodingType, Encoding*> encoding_map_ = {

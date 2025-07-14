@@ -9,70 +9,8 @@
 
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
-#include "NoCopy.hpp"
 
 namespace my::util {
-
-/**
- * @brief 字符串管理器，用于管理字符串的共享数据和编码信息
- */
-template <typename Alloc = Allocator<CodePoint>>
-class StringManager : public Object<StringManager<Alloc>>, public NoCopy {
-public:
-    using Self = StringManager<Alloc>;
-
-    /**
-     * @brief 构造函数
-     * @param length 字符串的长度
-     * @param data 码点数组
-     * @param encoding 字符串的编码
-     */
-    StringManager(usize length, CodePoint* data, Encoding* encoding) :
-            length_(length), data_(data), encoding_(encoding) {}
-
-    /**
-     * @brief 析构函数，释放码点数组
-     */
-    ~StringManager() {
-        alloc_.destroy(data_, length_);
-        alloc_.deallocate(data_, length_);
-        length_ = 0;
-    }
-
-    /**
-     * @brief 获取码点数组
-     * @return 码点数组
-     */
-    CodePoint* data() const {
-        return data_;
-    }
-
-    /**
-     * @brief 获取字符串的编码
-     * @return 字符串的编码
-     */
-    Encoding* encoding() const {
-        return encoding_;
-    }
-
-    /**
-     * @brief 重置字符串管理器
-     * @param new_len 新字符串长度
-     * @param new_data 新码点数组
-     */
-    void reset(usize new_len, CodePoint* new_data) {
-        alloc_.destroy(data_, length_);
-        alloc_.deallocate(data_, length_);
-        this->data_ = new_data;
-        this->length_ = new_len;
-    }
-
-private:
-    Alloc alloc_{};      // 内存分配器
-    usize length_;       // 字符串的长度
-    CodePoint* data_;    // 码点数组
-    Encoding* encoding_; // 字符串的编码
-};
 
 /**
  * @brief 字符串，支持 Unicode 编码和多种操作
@@ -82,14 +20,38 @@ class BaseString : public Sequence<BaseString<Alloc>, CodePoint> {
 public:
     using Self = BaseString<Alloc>;
     using Super = Sequence<Self, CodePoint>;
-    using manager_t = StringManager<Alloc>;
+
+    static constexpr usize SSO_MAX_SIZE = 16;                                      // SSO最大码点数
+    static constexpr usize SSO_BUFFER_MAX_SIZE = SSO_MAX_SIZE * sizeof(CodePoint); // SSO缓冲区大小
 
     /**
      * @brief 默认构造函数，创建一个空字符串，并指定编码
      * @param encoding 字符串的编码（可选）
      */
     BaseString(EncodingType enc = EncodingType::UTF8) :
-            BaseString(0, encoding_map(enc)) {}
+            length_(0), is_sso_(true), encoding_(encoding_map(enc)), code_points_(sso_) {}
+
+    /**
+     * @brief 构造函数，使用码点数组和编码创建字符串
+     * @param code_points 码点数组
+     * @param length 码点数量
+     * @param encoding 编码
+     */
+    BaseString(CodePoint* code_points, usize length, Encoding* encoding) :
+            length_(length), is_sso_(length <= SSO_MAX_SIZE), encoding_(encoding) {
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, code_points[i]);
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = alloc_.allocate(length_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_ + i, code_points[i]);
+            }
+            code_points_ = heap_;
+        }
+    }
 
     /**
      * @brief 构造函数，根据 C 风格字符串创建字符串
@@ -97,13 +59,25 @@ public:
      * @param length 字符串的长度（可选）
      * @param encoding 字符串的编码（可选）
      */
-    BaseString(const char* str, usize length = npos, EncodingType enc = EncodingType::UTF8) :
-            BaseString(0, encoding_map(enc)) {
+    BaseString(const char* str, usize length = npos, EncodingType enc = EncodingType::UTF8) {
+        Encoding* encoding = encoding_map(enc);
         length = ifelse(length != npos, length, std::strlen(str));
-        auto [size, arr] = get_code_points(str, length, manager_->encoding()).separate();
-        this->length_ = size;
-        this->code_points_ = arr;
-        this->manager_->reset(length_, code_points_);
+        auto [size, arr] = get_code_points(str, length, encoding).separate();
+        length_ = size;
+        is_sso_ = length_ <= SSO_MAX_SIZE;
+        encoding_ = encoding;
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, arr[i]);
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = alloc_.allocate(length_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_ + i, arr[i]);
+            }
+            code_points_ = heap_;
+        }
     }
 
     /**
@@ -127,9 +101,18 @@ public:
      * @param other 要拷贝的字符串对象
      */
     BaseString(const Self& other) :
-            BaseString(other.size(), other.encoding()) {
-        for (usize i = 0; i < length_; ++i) {
-            at(i) = other.at(i);
+            length_(other.length_), is_sso_(other.is_sso_), encoding_(other.encoding_) {
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, other.code_points_[i]);
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = alloc_.allocate(length_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_ + i, other.code_points_[i]);
+            }
+            code_points_ = heap_;
         }
     }
 
@@ -138,12 +121,37 @@ public:
      * @param other 要移动的字符串对象
      */
     BaseString(Self&& other) noexcept :
-            BaseString(other.code_points_, other.length_, other.manager_) {}
+            length_(other.length_), is_sso_(other.is_sso_), encoding_(other.encoding_) {
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, std::move(other.code_points_[i]));
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = std::move(other.heap_);
+            code_points_ = heap_;
+        }
+        other.length_ = 0;
+        other.is_sso_ = true;
+        other.encoding_ = nullptr;
+        other.code_points_ = other.sso_; // TODO 联合是否能修改两个成员？
+        other.heap_ = nullptr;
+    }
 
     /**
-     * @brief 默认析构函数
+     * @brief 析构函数，自动释放堆分配内存
      */
-    ~BaseString() = default;
+    ~BaseString() {
+        if (!is_sso_ && heap_ != nullptr) {
+            alloc_.destroy(heap_, length_);
+            alloc_.deallocate(heap_, length_);
+            heap_ = nullptr;
+        }
+        length_ = 0;
+        is_sso_ = true;
+        encoding_ = nullptr;
+        code_points_ = nullptr;
+    }
 
     /**
      * @brief 拷贝赋值操作符
@@ -152,9 +160,26 @@ public:
      */
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
-
-        alloc_.destroy(&manager_);
-        alloc_.construct(this, other);
+        if (!is_sso_ && heap_ != nullptr) {
+            alloc_.destroy(heap_, length_);
+            alloc_.deallocate(heap_, length_);
+            heap_ = nullptr;
+        }
+        this->length_ = other.length_;
+        this->is_sso_ = other.is_sso_;
+        this->encoding_ = other.encoding_;
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, other.code_points_[i]);
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = alloc_.allocate(length_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_ + i, other.code_points_[i]);
+            }
+            code_points_ = heap_;
+        }
         return *this;
     }
 
@@ -165,9 +190,28 @@ public:
      */
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
-
-        alloc_.destroy(&manager_);
-        alloc_.construct(this, std::move(other));
+        if (!is_sso_ && heap_ != nullptr) {
+            alloc_.destroy(heap_, length_);
+            alloc_.deallocate(heap_, length_);
+            heap_ = nullptr;
+        }
+        this->length_ = other.length_;
+        this->is_sso_ = other.is_sso_;
+        this->encoding_ = other.encoding_;
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, std::move(other.code_points_[i]));
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = other.heap_;
+            code_points_ = heap_;
+            other.heap_ = nullptr;
+        }
+        other.length_ = 0;
+        other.is_sso_ = true;
+        other.encoding_ = nullptr;
+        other.code_points_ = other.sso_;
         return *this;
     }
 
@@ -180,10 +224,10 @@ public:
         usize m_size = this->size(), o_size = other.size();
         Self res{m_size + o_size, this->encoding()};
         for (usize i = 0; i < m_size; ++i) {
-            res.at(i) = this->at(i);
+            res[i] = (*this)[i];
         }
         for (usize i = 0; i < o_size; ++i) {
-            res.at(m_size + i) = other.at(i);
+            res[m_size + i] = other[i];
         }
         return res;
     }
@@ -197,10 +241,10 @@ public:
         usize m_size = this->size(), o_size = other.size();
         Self res{m_size + o_size, this->encoding()};
         for (usize i = 0; i < m_size; ++i) {
-            res.at(i) = this->at(i);
+            res[i] = (*this)[i];
         }
         for (usize i = 0; i < o_size; ++i) {
-            res.at(m_size + i) = CodePoint(other[i]);
+            res[m_size + i] = CodePoint(other[i]);
         }
         return res;
     }
@@ -237,7 +281,7 @@ public:
         Self res{m_size * n, encoding()};
         while (n--) {
             for (usize i = 0; i < m_size; ++i) {
-                res.at(pos++) = at(i);
+                res[pos++] = (*this)[i];
             }
         }
         return res;
@@ -247,8 +291,12 @@ public:
      * @brief 获取指定索引处的码点
      * @param index 索引位置
      * @return 索引位置的码点
+     * @exception index_out_of_bounds_exception 若下标越界
      */
     CodePoint& at(usize index) {
+        if (index > length_) {
+            throw index_out_of_bounds_exception("index {} out of bounds [0..{}]", SRC_LOC, index, length_);
+        }
         return code_points_[index];
     }
 
@@ -256,27 +304,31 @@ public:
      * @brief 获取指定索引处的码点（常量版本）
      * @param index 索引位置
      * @return 索引位置的码点
+     * @exception index_out_of_bounds_exception 若下标越界
      */
     const CodePoint& at(usize index) const {
+        if (index > length_) {
+            throw index_out_of_bounds_exception("index {} out of bounds [0..{}]", SRC_LOC, index, length_);
+        }
         return code_points_[index];
     }
 
     /**
-     * @brief 索引操作符，返回指定索引处的码点
+     * @brief 索引操作符，返回指定索引处的码点，不会检查越界
      * @param index 索引位置
      * @return 索引位置的码点
      */
     CodePoint& operator[](usize index) {
-        return at(index);
+        return code_points_[index];
     }
 
     /**
-     * @brief 索引操作符（常量版本），返回指定索引处的码点
+     * @brief 索引操作符（常量版本），返回指定索引处的码点，不会检查越界
      * @param index 索引位置
      * @return 索引位置的码点
      */
     const CodePoint& operator[](usize index) const {
-        return at(index);
+        return code_points_[index];
     }
 
     /**
@@ -304,7 +356,7 @@ public:
      * @return 字符串的编码
      */
     Encoding* encoding() const {
-        return manager_->encoding();
+        return encoding_;
     }
 
     /**
@@ -329,7 +381,12 @@ public:
         auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
-        return Self{code_points_ + start, end - start, manager_};
+        Vec<CodePoint> buf;
+        for (usize i = start; i < end; ++i) {
+            buf.append(code_points_[i]);
+        }
+        auto [size, arr] = buf.separate();
+        return Self(arr, end - start, encoding_);
     }
 
     /**
@@ -363,10 +420,10 @@ public:
         auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
-            while (j > 0 && at(i) != pattern[j]) {
+            while (j > 0 && (*this)[i] != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (at(i) == pattern[j]); // 匹配，j前进
+            j += ((*this)[i] == pattern[j]); // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
             if (j == p_size) {
                 return i - p_size + 1;
@@ -388,10 +445,10 @@ public:
         auto next = get_next(pattern);
         for (usize i = 0, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
-            while (j > 0 && at(i) != pattern[j]) {
+            while (j > 0 && (*this)[i] != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (at(i) == pattern[j]); // 匹配，j前进
+            j += ((*this)[i] == pattern[j]); // 匹配，j前进
             // 模式串匹配完，收集文本串匹配起点
             if (j == p_size) {
                 res.append(i - p_size + 1);
@@ -433,7 +490,7 @@ public:
         Self res{*this};
         usize m_size = size();
         for (usize i = 0; i < m_size; ++i) {
-            res.at(i) = res.at(i).upper();
+            res[i] = res[i].upper();
         }
         return res;
     }
@@ -446,7 +503,7 @@ public:
         Self res{*this};
         usize m_size = size();
         for (usize i = 0; i < m_size; ++i) {
-            res.at(i) = res.at(i).lower();
+            res[i] = res[i].lower();
         }
         return res;
     }
@@ -533,18 +590,18 @@ public:
         if (elem_it != elem_end) {
             const auto& elem_str = *elem_it;
             for (usize i = 0; i < elem_str.size(); ++i) {
-                result.at(pos++) = elem_str[i];
+                result[pos++] = elem_str[i];
             }
             ++elem_it;
         }
 
         for (; elem_it != elem_end; ++elem_it) {
             for (usize i = 0; i < length_; ++i) {
-                result.at(pos++) = this->at(i);
+                result[pos++] = (*this)[i];
             }
             const auto& elem_str = *elem_it;
             for (usize i = 0; i < elem_str.size(); ++i) {
-                result.at(pos++) = elem_str[i];
+                result[pos++] = elem_str[i];
             }
         }
 
@@ -569,7 +626,7 @@ public:
                 i += old_.size() - 1;
                 ++j;
             } else {
-                result.code_points_[k++] = at(i);
+                result.code_points_[k++] = (*this)[i];
             }
         }
         return result;
@@ -589,9 +646,9 @@ public:
 
         usize match_cnt = 1;
         for (usize r = l + 1, m_size = size(); r < m_size; ++r) {
-            if (at(r) == right) {
+            if ((*this)[r] == right) {
                 --match_cnt;
-            } else if (at(r) == left) {
+            } else if ((*this)[r] == left) {
                 ++match_cnt;
             }
 
@@ -612,13 +669,13 @@ public:
         auto m_size = size();
         Vec<CodePoint> buf;
         for (usize i = 0; i < m_size; ++i) {
-            if (at(i) != codePoint) {
-                buf.append(at(i));
+            if ((*this)[i] != codePoint) {
+                buf.append((*this)[i]);
             }
         }
         auto length = buf.size();
         auto [size, code_points] = buf.separate();
-        return BaseString(code_points, length, std::make_shared<manager_t>(length, code_points, encoding()));
+        return Self(code_points, length, encoding_);
     }
 
     /**
@@ -630,13 +687,20 @@ public:
         auto m_size = size();
         Vec<CodePoint> buf;
         for (usize i = 0; i < m_size; ++i) {
-            if (!pred(at(i))) {
-                buf.append(at(i));
+            if (!pred((*this)[i])) {
+                buf.append((*this)[i]);
             }
         }
         auto length = buf.size();
         auto [size, code_points] = buf.separate();
-        return BaseString(code_points, length, std::make_shared<manager_t>(length, code_points, encoding()));
+        return Self(code_points, length, encoding_);
+    }
+
+    /**
+     * @brief 交换两个字符串
+     */
+    void swap(const Self& _) noexcept {
+        // TODO
     }
 
     /**
@@ -665,7 +729,7 @@ public:
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         auto min_size = std::min(this->size(), other.size());
         for (usize i = 0; i < min_size; ++i) {
-            auto cmp = this->at(i).__cmp__(other.at(i));
+            auto cmp = (*this)[i].__cmp__(other[i]);
             if (cmp != 0) {
                 return cmp;
             }
@@ -674,29 +738,30 @@ public:
     }
 
 private:
-    friend class StringBuilder;
-
-    /**
-     * @brief 内部构造函数，用于创建字符串对象
-     * @param code_points 字符串的码点数组
-     * @param length 字符串的长度
-     * @param manager 字符串管理器
-     */
-    BaseString(CodePoint* code_points, usize length, std::shared_ptr<manager_t> manager) :
-            length_(length), code_points_(code_points), manager_(std::move(manager)) {}
+    // /**
+    //  * @brief 内部构造函数，用于创建字符串对象
+    //  * @param code_points 字符串的码点数组
+    //  * @param length 字符串的长度
+    //  * @param manager 字符串管理器
+    //  */
+    // BaseString(CodePoint* code_points, usize length, std::shared_ptr<manager_t> manager) :
+    //         length_(length), code_points_(code_points), manager_(std::move(manager)) {}
 
     /**
      * @brief 内部构造函数，用于根据编码创建字符串对象
+     * @note 对于SSO，每个位置的码点都会调用默认构造函数初始化
+     * @note 对于heap，每个位置不会调用初始化
      * @param length 字符串的长度
      * @param encoding 字符串的编码
      */
     BaseString(usize length, Encoding* encoding) :
-            length_(length), code_points_(nullptr) {
-        this->manager_ = std::make_shared<manager_t>(length, alloc_.allocate(length), encoding);
-        for (usize i = 0; i < length_; ++i) {
-            alloc_.construct(manager_->data() + i);
+            length_(length), is_sso_(length_ <= SSO_MAX_SIZE), encoding_(encoding) {
+        if (is_sso_) {
+            code_points_ = sso_;
+        } else {
+            heap_ = alloc_.allocate(length_);
+            code_points_ = heap_;
         }
-        this->code_points_ = manager_->data();
     }
 
     /**
@@ -705,8 +770,8 @@ private:
      */
     Pair<usize, usize> get_trim_index() const {
         usize l = 0, r = size();
-        while (l < r && at(l).is_blank()) ++l;
-        while (l < r && at(r - 1).is_blank()) --r;
+        while (l < r && (*this)[l].is_blank()) ++l;
+        while (l < r && (*this)[r - 1].is_blank()) --r;
         return {l, r};
     }
 
@@ -728,7 +793,7 @@ private:
      */
     usize get_ltrim_index() const {
         usize l = 0, r = size();
-        while (l < r && at(l).is_blank()) ++l;
+        while (l < r && (*this)[l].is_blank()) ++l;
         return l;
     }
 
@@ -749,7 +814,7 @@ private:
      */
     usize get_rtrim_index() const {
         usize l = 0, r = size();
-        while (l < r && at(r - 1).is_blank()) --r;
+        while (l < r && (*this)[r - 1].is_blank()) --r;
         return r;
     }
 
@@ -785,10 +850,15 @@ private:
     }
 
 private:
-    Alloc alloc_{};                      // 内存分配器
-    usize length_;                       // 字符串的长度
-    CodePoint* code_points_;             // 字符串的码点数组
-    std::shared_ptr<manager_t> manager_; // 字符串管理器
+    Alloc alloc_{};          // 内存分配器
+    usize length_;           // 字符串的长度
+    bool is_sso_;            // 当前是否为小字符串
+    Encoding* encoding_;     // 字符串编码信息
+    CodePoint* code_points_; // 指向码点数组（可能指向SSO或堆分配）
+    union {
+        CodePoint sso_[SSO_BUFFER_MAX_SIZE]; // SSO小字符串存储
+        CodePoint* heap_;                    // 堆分配大字符串存储
+    };
 };
 
 using String = BaseString<Allocator<CodePoint>>;

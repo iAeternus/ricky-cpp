@@ -3,7 +3,6 @@
 
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
-#include "Assertions.hpp"
 #include "StringBuilder.hpp"
 
 namespace my::test::test_string_builder {
@@ -50,7 +49,7 @@ fn speed_of_string_builder_append_string = []() {
     Assertions::assertEquals(N * 6, str.size());
 };
 
-fn speed_of_std_string_splicing = []() {
+fn speed_of_std_string_append_string = []() {
     std::string str;
     for (usize i = 0; i < N; ++i) {
         str += "abcdef";
@@ -62,7 +61,7 @@ fn test_string_builder_speed() {
     UnitTestGroup group{"test_string_builder_speed"};
 
     group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);
-    group.addTest("speed_of_std_string_splicing", speed_of_std_string_splicing);
+    group.addTest("speed_of_std_string_append_string", speed_of_std_string_append_string);
 
     group.startAll();
 }

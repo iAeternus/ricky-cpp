@@ -433,7 +433,7 @@ public:
      */
     void reserve(usize new_cap) {
         if (new_cap > capacity_) {
-            resize(new_cap);
+            resize(std::max(new_cap, capacity_ << 1));
         }
     }
 
