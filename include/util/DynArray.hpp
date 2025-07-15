@@ -7,7 +7,6 @@
 #ifndef DYN_ARRAY_HPP
 #define DYN_ARRAY_HPP
 
-#include "Exception.hpp"
 #include "binary_utils.hpp"
 #include "Buffer.hpp"
 

@@ -7,7 +7,6 @@
 #ifndef EXPR_HPP
 #define EXPR_HPP
 
-#include "Exception.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"

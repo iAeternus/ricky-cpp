@@ -7,7 +7,6 @@
 #ifndef VECTOR2_HPP
 #define VECTOR2_HPP
 
-#include "Object.hpp"
 #include "math_utils.hpp"
 
 namespace my::math {

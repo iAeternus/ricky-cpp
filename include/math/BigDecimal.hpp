@@ -9,7 +9,6 @@
 #define BIG_DECIMAL_HPP
 
 #include "BigInteger.hpp"
-#include "CString.hpp"
 #include "Pair.hpp"
 
 namespace my::math {

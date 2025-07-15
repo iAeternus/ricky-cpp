@@ -9,8 +9,6 @@
 
 #include "Array.hpp"
 
-#include <cstring>
-
 namespace my::util {
 
 /**

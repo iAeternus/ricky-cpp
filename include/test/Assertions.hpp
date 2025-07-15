@@ -8,7 +8,6 @@
 #define ASSERTIONS_HPP
 
 #include "math_utils.hpp"
-#include "Exception.hpp"
 
 namespace my::test {
 

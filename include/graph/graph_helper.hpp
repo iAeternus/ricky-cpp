@@ -9,7 +9,6 @@
 
 #include "math_utils.hpp"
 #include "Vec.hpp"
-#include "ricky.hpp"
 
 namespace my::graph {
 

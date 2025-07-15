@@ -10,6 +10,7 @@
 #include "StringBuilder.hpp"
 #include "Dict.hpp"
 #include "PriorityQueue.hpp"
+#include "NoCopy.hpp"
 
 namespace my::util {
 

@@ -8,11 +8,8 @@
 #define HTTP_HPP
 
 #include "Dict.hpp"
-#include "Socket.hpp"
-#include "String.hpp"
 #include "StringBuilder.hpp"
 #include "ThreadPool.hpp"
-#include "ricky.hpp"
 #include "tcp.hpp"
 #include "Log.hpp"
 

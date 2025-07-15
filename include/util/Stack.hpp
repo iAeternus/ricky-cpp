@@ -7,7 +7,6 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
-#include "Exception.hpp"
 #include "Vec.hpp"
 
 namespace my::util {

@@ -9,7 +9,6 @@
 #define QUEUE_HPP
 
 #include "ChainNode.hpp"
-#include "Exception.hpp"
 
 namespace my::util {
 

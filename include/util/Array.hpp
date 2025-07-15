@@ -10,8 +10,6 @@
 #include "Sequence.hpp"
 #include "Pair.hpp"
 
-#include <initializer_list>
-
 namespace my::util {
 
 /**

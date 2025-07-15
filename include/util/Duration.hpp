@@ -8,7 +8,6 @@
 #ifndef DURATION_HPP
 #define DURATION_HPP
 
-#include "Exception.hpp"
 #include "math_utils.hpp"
 
 namespace my::util {

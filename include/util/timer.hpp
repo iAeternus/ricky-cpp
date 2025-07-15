@@ -10,8 +10,6 @@
 #include "Object.hpp"
 
 #include <chrono>
-#include <utility>
-#include <functional>
 
 namespace my::util {
 

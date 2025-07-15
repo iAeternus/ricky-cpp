@@ -7,7 +7,6 @@
 #ifndef COMPLEX_HPP
 #define COMPLEX_HPP
 
-#include "Exception.hpp"
 #include "math_utils.hpp"
 
 namespace my::math {

@@ -7,7 +7,6 @@
 #ifndef THREAD_POOL_HPP
 #define THREAD_POOL_HPP
 
-#include "Function.hpp"
 #include "Array.hpp"
 #include "NoCopy.hpp"
 #include "Queue.hpp"

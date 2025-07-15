@@ -7,7 +7,6 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include "Exception.hpp"
 #include "math_utils.hpp"
 #include "Vec.hpp"
 
