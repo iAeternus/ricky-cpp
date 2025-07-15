@@ -37,16 +37,16 @@ class ThreadPool : public Object<ThreadPool>, public NoCopy {
 public:
     using Task = Runnable;
 
-    ThreadPool(usize numOfThreads) :
-            threads_(numOfThreads), stopFlag_(StopFlag::WAIT_FOREVER) {
+    ThreadPool(usize num_of_threads) :
+            threads_(num_of_threads), stop_flag_(StopFlag::WAIT_FOREVER) {
         auto worker = [this]() {
             while (true) {
                 std::unique_lock<std::mutex> lock(mtx_);
                 condition_.wait(lock, [this]() {
-                    return isStopNow() || isTaskFinished() || hasTask();
+                    return is_stop_now() || is_task_finished() || has_task();
                 });
 
-                if (isStopNow() || isTaskFinished()) {
+                if (is_stop_now() || is_task_finished()) {
                     return;
                 }
 
@@ -70,12 +70,12 @@ public:
     auto push(F&& task, Args&&... args) -> std::future<decltype(task(args...))> {
         using return_type = decltype(task(args...));
 
-        auto taskPtr = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<F>(task), std::forward<Args>(args)...));
-        std::future<return_type> res = taskPtr->get_future();
+        auto task_ptr = std::make_shared<std::packaged_task<return_type()>>(std::bind(std::forward<F>(task), std::forward<Args>(args)...));
+        std::future<return_type> res = task_ptr->get_future();
 
         {
             std::lock_guard<std::mutex> lock(mtx_);
-            tasks_.push([taskPtr]() { (*taskPtr)(); });
+            tasks_.push([task_ptr]() { (*task_ptr)(); });
         }
 
         condition_.notify_one();
@@ -86,7 +86,7 @@ public:
      * @brief 立即停止线程池
      */
     void stop() {
-        setStopFlag(StopFlag::STOP_NOW);
+        set_stop_flag(StopFlag::STOP_NOW);
         join();
     }
 
@@ -94,7 +94,7 @@ public:
      * @brief 等待所有任务完成后停止线程池
      */
     void wait() {
-        setStopFlag(StopFlag::STOP_FINISHED);
+        set_stop_flag(StopFlag::STOP_FINISHED);
         join();
     }
 
@@ -107,10 +107,10 @@ private:
         }
     }
 
-    void setStopFlag(i8 flag) {
+    void set_stop_flag(i8 flag) {
         {
             std::lock_guard<std::mutex> lock(mtx_);
-            stopFlag_ = flag;
+            stop_flag_ = flag;
         }
         condition_.notify_all();
     }
@@ -119,23 +119,23 @@ private:
      * @brief 判断是否立即停止，默认此时持有锁
      * @return true=是 false=否
      */
-    bool isStopNow() const {
-        return stopFlag_ == StopFlag::STOP_NOW;
+    bool is_stop_now() const {
+        return stop_flag_ == StopFlag::STOP_NOW;
     }
 
     /**
      * @brief 判断任务是否完成
      * @return true=是 false=否
      */
-    bool isTaskFinished() const {
-        return stopFlag_ == StopFlag::STOP_FINISHED && tasks_.empty();
+    bool is_task_finished() const {
+        return stop_flag_ == StopFlag::STOP_FINISHED && tasks_.empty();
     }
 
     /**
      * @brief 判断任务队列中是否有任务
      * @return true=是 false=否
      */
-    bool hasTask() const {
+    bool has_task() const {
         return !tasks_.empty();
     }
 
@@ -144,7 +144,7 @@ private:
     util::Queue<Task> tasks_;
     std::mutex mtx_;
     std::condition_variable condition_;
-    i8 stopFlag_;
+    i8 stop_flag_;
 };
 
 } // namespace my::async

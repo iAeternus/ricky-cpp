@@ -2,7 +2,6 @@
 #define TEST_LOG_HPP
 
 #include "UnitTest.hpp"
-#include "Assertions.hpp"
 #include "Log.hpp"
 
 namespace my::test::test_log {

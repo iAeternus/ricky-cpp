@@ -234,12 +234,79 @@ public:
         close(); // 析构时关闭套接字
     }
 
+    /**
+     * @brief 移动赋值
+     */
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         socket_ = other.socket_;
         other.socket_ = INVALID_SOCKET; // 避免析构时关闭套接字
         return *this;
+    }
+
+    /**
+     * @brief 获取本地地址信息
+     * @return 包含本地IP和端口的SockAddrIn对象
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    SockAddrIn get_local_address() const {
+        SockAddrIn addr;
+        socklen_t len = addr.get_socklen();
+        if (getsockname(socket_, addr.get_sockaddr(), &len) == SOCKET_ERROR) {
+            throw runtime_exception(error_msg());
+        }
+        return addr;
+    }
+
+    /**
+     * @brief 获取远程地址信息
+     * @return 包含远程IP和端口的SockAddrIn对象
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    SockAddrIn get_remote_address() const {
+        SockAddrIn addr;
+        socklen_t len = addr.get_socklen();
+        if (getpeername(socket_, addr.get_sockaddr(), &len) == SOCKET_ERROR) {
+            throw runtime_exception(error_msg());
+        }
+        return addr;
+    }
+
+    /**
+     * @brief 获取本地IP地址
+     * @return 本地IP地址字符串
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    CString get_local_ip() const {
+        return get_local_address().get_ip();
+    }
+
+    /**
+     * @brief 获取本地端口号
+     * @return 本地端口号
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    u16 get_local_port() const {
+        return get_local_address().get_port();
+    }
+
+    /**
+     * @brief 获取远程IP地址
+     * @return 远程IP地址字符串
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    CString get_remote_ip() const {
+        return get_remote_address().get_ip();
+    }
+
+    /**
+     * @brief 获取远程端口号
+     * @return 远程端口号
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    u16 get_remote_port() const {
+        return get_remote_address().get_port();
     }
 
     /**

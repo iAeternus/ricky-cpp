@@ -225,7 +225,7 @@ public:
     /**
      * @brief 从u32构造
      */
-    static Self from(u32 val) {
+    static Self from_u32(u32 val) {
         char buf[16];
         int len = std::snprintf(buf, sizeof(buf), "%u", val);
         return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
@@ -234,7 +234,7 @@ public:
     /**
      * @brief 从u64构造
      */
-    static Self from(u64 val) {
+    static Self from_u64(u64 val) {
         char buf[32];
         int len = std::snprintf(buf, sizeof(buf), "%llu", static_cast<unsigned long long>(val));
         return Self(buf, static_cast<usize>(len), EncodingType::UTF8);

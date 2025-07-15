@@ -34,6 +34,42 @@ public:
     }
 
     /**
+     * @brief 获取本地IP地址
+     * @return 本地IP地址字符串
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    CString get_local_ip() const {
+        return socket_.get_local_ip();
+    }
+
+    /**
+     * @brief 获取本地端口号
+     * @return 本地端口号
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    u16 get_local_port() const {
+        return socket_.get_local_port();
+    }
+
+    /**
+     * @brief 获取远程IP地址
+     * @return 远程IP地址字符串
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    CString get_remote_ip() const {
+        return socket_.get_remote_ip();
+    }
+
+    /**
+     * @brief 获取远程端口号
+     * @return 远程端口号
+     * @throws runtime_exception 如果获取地址信息失败
+     */
+    u16 get_remote_port() const {
+        return socket_.get_remote_port();
+    }
+
+    /**
      * @brief 接受连接
      * @return 返回最新的客户端套接字
      * @throws runtime_exception 如果接受连接失败
