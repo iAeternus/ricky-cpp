@@ -71,7 +71,7 @@ public:
      * @brief 插入元素
      * @param val 要插入的元素
      */
-    template<typename V>
+    template <typename V>
     void push(V&& val) {
         heap_.append(std::forward<V>(val));
         heapify_up(heap_.size() - 1);
@@ -173,26 +173,26 @@ private:
      */
     void heapify_down(usize idx) {
         const auto m_size = heap_.size();
-        auto min_idx = idx;
+        auto curr = idx;
 
         while (true) {
             const auto l = lch(idx), r = rch(idx);
 
             // 检查左子节点
-            if (l < m_size && comp_(heap_[l], heap_[min_idx])) {
-                min_idx = l;
+            if (l < m_size && comp_(heap_[l], heap_[curr])) {
+                curr = l;
             }
 
             // 检查右子节点
-            if (r < m_size && comp_(heap_[r], heap_[min_idx])) {
-                min_idx = r;
+            if (r < m_size && comp_(heap_[r], heap_[curr])) {
+                curr = r;
             }
 
             // 如果当前节点是最小的，则停止下沉
-            if (min_idx == idx) break;
+            if (curr == idx) break;
 
-            std::swap(heap_[idx], heap_[min_idx]);
-            idx = min_idx;
+            std::swap(heap_[idx], heap_[curr]);
+            idx = curr;
         }
     }
 

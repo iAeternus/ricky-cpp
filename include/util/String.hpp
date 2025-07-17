@@ -236,7 +236,7 @@ public:
      */
     static Self from_u64(u64 val) {
         char buf[32];
-        int len = std::snprintf(buf, sizeof(buf), "%llu", static_cast<unsigned long long>(val));
+        int len = std::snprintf(buf, sizeof(buf), "%llu", val);
         return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
     }
 
