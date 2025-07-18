@@ -12,10 +12,12 @@
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "Pair.hpp"
+#include "match.hpp"
+#include <variant>
 
 namespace my::util {
 
-template<typename Alloc>
+template <typename Alloc>
 class BaseString;
 
 /**

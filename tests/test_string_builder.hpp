@@ -29,11 +29,24 @@ fn should_append_format_string = []() {
     Assertions::assertEquals("Case 1#: 1+1=2"_s, sb.build());
 };
 
+fn should_find = []() {
+    // Given
+    util::StringBuilder sb;
+    sb.append("abcdef").append("\r\n\r\r").append("defghi");
+
+    // When
+    auto pos = sb.find("\r\n\r\r"_s);
+
+    // Then
+    Assertions::assertEquals(6, pos);
+};
+
 fn test_string_builder() {
     UnitTestGroup group{"test_string_builder"};
 
     group.addTest("it_works", it_works);
     group.addTest("should_append_format_string", should_append_format_string);
+    group.addTest("should_find", should_find);
 
     group.startAll();
 }

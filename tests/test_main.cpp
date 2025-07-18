@@ -55,6 +55,7 @@
 #include "test_big_decimal.hpp"
 #include "test_priority_queue.hpp"
 #include "test_allocator.hpp"
+#include "test_match.hpp"
 #include "test_udp.hpp"
 #include "test_tcp.hpp"
 #else
@@ -110,6 +111,7 @@ int main() {
     test_big_decimal::test_big_decimal();
     test_priority_queue::test_priority_queue();
     test_allocator::test_allocator();
+    test_match::test_match();
     test_udp::test_udp();
     test_tcp::test_tcp();
 #else

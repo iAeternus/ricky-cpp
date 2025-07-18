@@ -35,6 +35,31 @@ public:
     }
 
     /**
+     * @brief 查找模式串的第一个匹配位置
+     * @param pattern 模式串，长度为m
+     * @param pos 起始查找位置（可选）
+     * @return 模式串的第一个匹配位置，未找到返回 `npos`
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
+    usize find(const String& pattern, usize pos = 0) {
+        if (pattern.empty()) return npos;
+        auto m_size = buf_.size(), p_size = pattern.size();
+        auto next = get_next(pattern);
+        for (usize i = pos, j = 0; i < m_size; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && buf_[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (buf_[i] == pattern[j]); // 匹配，j前进
+            // 模式串匹配完，返回文本串匹配起点
+            if (j == p_size) {
+                return i - p_size + 1;
+            }
+        }
+        return npos;
+    }
+
+    /**
      * @brief 追加 String 对象到构建器
      * @param str 要追加的字符串
      * @return 构建器自身引用
@@ -148,6 +173,27 @@ public:
      */
     bool empty() const noexcept {
         return buf_.empty();
+    }
+
+private:
+    /**
+     * @brief KMP辅助函数，求next数组
+     * @param pattern 模式串
+     * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
+     * @note 时间复杂度为 O(m)，m为模式串的长度
+     */
+    static Vec<usize> get_next(const String& pattern) {
+        auto p_size = pattern.size();
+        Vec<usize> next(p_size, 0);
+        for (usize i = 1, j = 0; i < p_size; ++i) {
+            // 失配，j按照next数组回跳
+            while (j > 0 && pattern[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (pattern[i] == pattern[j]); // 匹配，j前进
+            next[i] = j;
+        }
+        return next;
     }
 
 private:

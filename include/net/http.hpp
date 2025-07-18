@@ -8,10 +8,14 @@
 #define HTTP_HPP
 
 #include "Dict.hpp"
+#include "Socket.hpp"
 #include "StringBuilder.hpp"
 #include "ThreadPool.hpp"
+#include "ricky.hpp"
 #include "tcp.hpp"
 #include "Log.hpp"
+#include <WinSock2.h>
+#include <exception>
 
 namespace my::net {
 
@@ -83,99 +87,67 @@ static const util::Dict<HttpStatusCode, CString> status_text_map = {
 /**
  * @brief HTTP请求
  */
-class HttpRequest : public Object<HttpRequest> {
-public:
+struct HttpRequest : public Object<HttpRequest> {
     using Self = HttpRequest;
+
+    HttpMethod method = HttpMethod::UNKNOWN;        // 请求方法
+    CString path;                                   // 请求路径
+    CString version;                                // HTTP版本
+    util::Dict<CString, util::String> headers;      // 请求头
+    util::String body;                              // 请求体
+    util::Dict<CString, util::String> query_params; // 查询参数
 
     /**
      * @brief 从请求头获取 Content-Length
      */
     usize content_length() const {
-        auto content_length = headers_.get_or_default("Content-Length", "0");
+        auto content_length = headers.get_or_default("Content-Length", "0");
         return std::stoul(content_length.into_string());
     }
-
-private:
-    HttpMethod method_ = HttpMethod::UNKNOWN;        // 请求方法
-    CString path_;                                   // 请求路径
-    CString version_;                                // HTTP版本
-    util::Dict<CString, util::String> headers_;      // 请求头
-    util::String body_;                              // 请求体
-    util::Dict<CString, util::String> query_params_; // 查询参数
 };
 
 /**
  * @brief HTTP响应
  */
-class HttpResponse : public Object<HttpResponse> {
-public:
+struct HttpResponse : public Object<HttpResponse> {
     using Self = HttpResponse;
+
+    HttpStatusCode status = HttpStatusCode::OK; // 响应状态
+    util::Dict<CString, util::String> headers;  // 响应头
+    util::String body;                          // 响应体
 
     /**
      * @brief 获取状态文本
      */
     CString status_text() const {
-        return status_text_map.get_or_default(status_, "Unknown");
-    }
-
-    /**
-     * @brief 获取响应状态码
-     */
-    HttpStatusCode get_status() const {
-        return status_;
-    }
-
-    /**
-     * @brief 设置响应状态码
-     */
-    void set_status(HttpStatusCode status) {
-        status_ = status;
-    }
-
-    /**
-     * @brief 获取响应头
-     */
-    util::Dict<CString, util::String> get_headers() const {
-        return headers_;
+        return status_text_map.get_or_default(status, "Unknown");
     }
 
     /**
      * @brief 设置响应头中的 Content-Type
      */
     void set_content_type(const util::String& type) {
-        headers_["Content-Type"] = type;
-    }
-
-    /**
-     * @brief 获取响应体
-     */
-    util::String get_body() const {
-        return body_;
+        headers["Content-Type"] = type;
     }
 
     /**
      * @brief 设置响应体
      */
     void set_body(const util::String& content, const util::String& type = "text/plain") {
-        body_ = content;
+        body = content;
         set_content_type(type);
-        headers_["Content-Length"] = util::String::from_u64(body_.length());
+        headers["Content-Length"] = util::String::from_u64(body.length());
     }
 
     /**
      * @brief 设置重定向
      */
     void set_redirect(const util::String& location, HttpStatusCode code = HttpStatusCode::FOUND) {
-        status_ = code;
-        headers_["Location"] = location;
-        body_.clear();
-        headers_.remove("Content-Length");
+        status = code;
+        headers["Location"] = location;
+        body.clear();
+        headers.remove("Content-Length");
     }
-
-private:
-    HttpStatusCode status_ = HttpStatusCode::OK; // 响应状态
-    util::Dict<CString, util::String> headers_;  // 响应头
-    util::String body_;                          // 响应体
 };
 
 /**
@@ -305,7 +277,7 @@ private:
      */
     void send_error_response(Socket& client, HttpStatusCode status) {
         HttpResponse resp;
-        resp.set_status(status);
+        resp.status = status;
 
         util::StringBuilder sb;
         sb.append("<html><head><title>")
@@ -331,11 +303,11 @@ private:
         std::ostringstream oss;
 
         // 状态行
-        oss << "HTTP/1.1 " << static_cast<i32>(resp.get_status())
+        oss << "HTTP/1.1 " << static_cast<i32>(resp.status)
             << " " << resp.status_text().data() << "\r\n";
 
         // 头部
-        for (const auto& [key, value] : resp.get_headers()) {
+        for (const auto& [key, value] : resp.headers) {
             oss << key << ": " << value << "\r\n";
         }
 
@@ -343,7 +315,7 @@ private:
         oss << "\r\n";
 
         // 主体
-        auto body = resp.get_body();
+        auto body = resp.body;
         if (!body.empty()) {
             oss << body;
         }
@@ -358,7 +330,98 @@ private:
      * @param client 客户端
      */
     void handle_connection(Socket& client) {
-        // TODO
+        try {
+            // 接收并解析HTTP请求
+            auto req = parse_request(client);
+
+            // 处理静态文件请求
+            if (handle_static_file(req, client)) {
+                return;
+            }
+
+            HttpResponse resp;
+            if (!routes_.contains(req.method)) {
+                // 方法不允许
+                resp.status = HttpStatusCode::METHOD_NOT_ALLOWED;
+                resp.headers["Allow"] = get_allowed_methods(req.path);
+                resp.set_body("<h1>405 Method Not Allowed</h1>", "text/html");
+            }
+
+            auto& method_routes = routes_[req.method];
+            if (!method_routes.contains(req.path)) {
+                // 路径未找到
+                resp.status = HttpStatusCode::NOT_FOUND;
+                util::StringBuilder sb;
+                sb.append("<h1>404 Not Found</h1><p>The requested URL ")
+                    .append(req.path)
+                    .append(" was not found on this server.</p>");
+                resp.set_body(sb.build(), "text/html");
+            }
+
+            // 调用路由处理函数
+            resp = method_routes[req.path](req);
+
+            // 发送HTTP响应
+            send_response(client, resp);
+        } catch (std::exception& ex) {
+            io::Log::error("Request error: {}", SRC_LOC, ex.what());
+            send_error_response(client, HttpStatusCode::INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * @brief 解析HTTP请求
+     * @param client 客户端
+     * @return HTTP请求
+     */
+    HttpRequest parse_request(Socket& client) {
+        HttpRequest req;
+
+        // 读取请求行和头部
+        auto raw = read_headers(client);
+    }
+
+    /**
+     * @brief 读取HTTP请求头，直到空行
+     * @param client 客户端
+     * @return 未解析的请求头
+     */
+    util::String read_headers(Socket& client) {
+        static constexpr usize BUFFER_SIZE = 1024;
+        util::StringBuilder sb;
+        sb.reserve(BUFFER_SIZE << 2);
+
+        while(true) {
+            // 接收数据
+            auto chuck = client.recv(MSG_PEEK); // BUFFER_SIZE
+            if(chuck.empty()) break;
+            sb.append(chuck);
+
+            // 检查是否包含结束标记
+            auto end_pos = sb.find("\r\n\r\n");
+            if(end_pos != npos) {
+                // 读取到完整头部，实际接收数据
+                // client.recv(end_pos + 4, 0);
+                // TODO return sb.substr(0, end_pos + 4);
+            }
+        }
+    }
+
+    /**
+     * @brief 处理静态文件请求
+     * @param request HTTP请求
+     * @param client 客户端
+     * @return 是否处理成功
+     */
+    bool handle_static_file(HttpRequest& request, Socket& client) {
+    }
+
+    /**
+     * @brief 获取path对应的HTTP方法
+     * @param path URL
+     * @return 支持的HTTP方法
+     */
+    util::String get_allowed_methods(const CString& path) {
     }
 
 private:
