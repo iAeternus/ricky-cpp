@@ -488,14 +488,14 @@ auto floyd = [](const auto& g, auto&& _) -> math::Matrix<E> {
     return dis;
 };
 
-/**
- * @brief 拓扑排序，生成其中一条拓扑序
- * @note 时间复杂度 O(|N| + |E|)
- */
-template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
-auto topological_sort_bfs = [](const auto& g, auto&& _) -> util::Vec<Idx> {
-    // TODO  
-};
+// /**
+//  * @brief 拓扑排序，生成其中一条拓扑序
+//  * @note 时间复杂度 O(|N| + |E|)
+//  */
+// template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
+// auto topological_sort_bfs = [](const auto& g, auto&& _) -> util::Vec<Idx> {
+//     // TODO  
+// };
 
 } // namespace my::graph
 

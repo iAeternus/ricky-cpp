@@ -4,7 +4,6 @@
 #include "UnitTest.hpp"
 #include "Assertions.hpp"
 #include "Graph.hpp"
-#include "graph_algorithm.hpp"
 
 namespace my::test::test_graph {
 

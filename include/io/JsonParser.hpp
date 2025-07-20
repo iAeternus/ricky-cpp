@@ -10,7 +10,7 @@
 #include "Exception.hpp"
 #include "Json.hpp"
 
-namespace my::json {
+namespace my::io {
 
 class JsonParser : public Object<JsonParser> {
 public:

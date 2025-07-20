@@ -11,7 +11,7 @@
 #include "Vec.hpp"
 #include "Dict.hpp"
 
-namespace my::json {
+namespace my::io {
 
 class Json;
 

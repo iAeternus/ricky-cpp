@@ -11,7 +11,7 @@
 #include "json_trait.hpp"
 #include "ricky.hpp"
 
-namespace my::json {
+namespace my::io {
 
 class Json : public Object<Json> {
 public:
