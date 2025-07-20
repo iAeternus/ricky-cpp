@@ -422,7 +422,7 @@ public:
         }
 
         usize cur_idx = std::distance(&robin_managers_.at(0), manager);
-        while (true) {
+        loop {
             usize next_idx = (cur_idx + 1) % m_capacity;
             auto& cur_manager = robin_managers_.at(cur_idx);
             auto& next_manager = robin_managers_.at(next_idx);

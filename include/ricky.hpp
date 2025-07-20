@@ -21,13 +21,14 @@ namespace my {
  * 对于constexpr函数，`fn`应该放在constexpr后
  */
 #define fn inline auto
-
 #define fr(R) inline R
 
 /**
- * @brief 标准库命名空间
+ * @brief rust-like `loop` 关键字
+ * @note 规范：
+ * 仅可用于无限循环
  */
-#define STD ::std::
+#define loop while (true)
 
 // /**
 //  * @brief rust-like `let` 关键字
@@ -35,6 +36,11 @@ namespace my {
 //  * 仅可用于局部变量创建
 //  */
 // #define let auto
+
+/**
+ * @brief 标准库命名空间
+ */
+#define STD ::std::
 
 /**
  * @brief 获取类型名

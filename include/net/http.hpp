@@ -220,7 +220,7 @@ public:
     void start() {
         io::Log::info("HTTP server started on {}:{}", SRC_LOC, server_.get_local_ip(), server_.get_local_port());
 
-        while (true) {
+        loop {
             try {
                 // 接受新连接
                 auto client = server_.accept();
@@ -450,7 +450,7 @@ private:
         parse_query_params(req);
 
         // 读取头部
-        while (true) {
+        loop {
             auto header_line = read_line(client);
             if (header_line.empty()) break; // 空行结束头部
 
@@ -489,7 +489,7 @@ private:
         util::StringBuilder line;
         char c;
 
-        while (true) {
+        loop {
             // 逐字符读取
             auto recv = client.recv_bytes(1);
             if (recv.empty()) break;

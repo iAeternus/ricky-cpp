@@ -9,7 +9,7 @@ namespace my::test::test_http {
 
 fn it_works = []() {
     net::HttpServer server("127.0.0.1", 8080, 100);
-    io::Log::set_level(io::Log::LogLevel::DEBUG_);
+    io::Log::set_level(io::Log::LogLevel::TRACE_);
 
     /*
     静态文件服务

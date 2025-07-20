@@ -175,7 +175,7 @@ private:
         const auto m_size = heap_.size();
         auto curr = idx;
 
-        while (true) {
+        loop {
             const auto l = lch(idx), r = rch(idx);
 
             // 检查左子节点

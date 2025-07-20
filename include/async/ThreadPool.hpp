@@ -39,7 +39,7 @@ public:
     ThreadPool(usize num_of_threads) :
             threads_(num_of_threads), stop_flag_(StopFlag::WAIT_FOREVER) {
         auto worker = [this]() {
-            while (true) {
+            loop {
                 std::unique_lock<std::mutex> lock(mtx_);
                 condition_.wait(lock, [this]() {
                     return is_stop_now() || is_task_finished() || has_task();
