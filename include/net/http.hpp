@@ -12,7 +12,6 @@
 #include "ThreadPool.hpp"
 #include "tcp.hpp"
 #include "Log.hpp"
-#include "filesystem.hpp"
 
 namespace my::net {
 
@@ -157,14 +156,14 @@ struct HttpResponse : public Object<HttpResponse> {
         headers["Location"_s] = location;
         body.clear();
         headers.remove("Content-Length");
-        
+
         util::StringBuilder sb;
         sb.append("<html><head><title>Redirect</title></head>")
-          .append("<body><h1>Redirect</h1><p>You are being redirected to <a href=\"")
-          .append(location)
-          .append("\">")
-          .append(location)
-          .append("</a></p></body></html>");
+            .append("<body><h1>Redirect</h1><p>You are being redirected to <a href=\"")
+            .append(location)
+            .append("\">")
+            .append(location)
+            .append("</a></p></body></html>");
         set_body(sb.build(), "text/html");
     }
 };
@@ -518,7 +517,8 @@ private:
             {"OPTIONS", HttpMethod::OPTIONS},
             {"TRACE", HttpMethod::TRACE},
             {"PATCH", HttpMethod::PATCH},
-            {"HEAD", HttpMethod::HEAD}};
+            {"HEAD", HttpMethod::HEAD},
+        };
 
         return method_map.get_or_default(method_str.upper(), HttpMethod::UNKNOWN);
     }

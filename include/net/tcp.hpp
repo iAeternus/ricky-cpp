@@ -9,7 +9,6 @@
 
 #include "Socket.hpp"
 #include "Vec.hpp"
-#include <memory>
 
 namespace my::net {
 

@@ -10,12 +10,9 @@
 #include "filesystem.hpp"
 #include "Buffer.hpp"
 #include "NoCopy.hpp"
-#include "ricky.hpp"
 
 #include <WinSock2.h>
-#include <cstdlib>
 #include <minwindef.h>
-#include <mutex>
 #include <winspool.h>
 
 namespace my::net {
