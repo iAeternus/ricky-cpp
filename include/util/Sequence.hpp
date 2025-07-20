@@ -105,6 +105,36 @@ public:
     }
 
     /**
+     * @brief 查找第一个匹配值的位置
+     * @param v 需要查找的值
+     * @return 返回值在序列中的第一个匹配位置索引，如果不存在则返回 npos
+     */
+    template <typename V>
+    usize find_first_of(const V& v) const {
+        for (usize i = 0, siz = size(); i < siz; ++i) {
+            if (at(i) == v) {
+                return i;
+            }
+        }
+        return npos;
+    }
+
+    /**
+     * @brief 查找最后一个匹配值的位置
+     * @param v 需要查找的值
+     * @return 返回值在序列中的最后一个匹配位置索引，如果不存在则返回 npos
+     */
+    template <typename V>
+    usize find_last_of(const V& v) const {
+        for (i32 i = size() - 1; i >= 0; --i) {
+            if (at(i) == v) {
+                return i;
+            }
+        }
+        return npos;
+    }
+
+    /**
      * @brief 查找指定值的迭代器
      * @param v 需要查找的值
      * @return 返回指向值的迭代器，如果不存在则返回 end()

@@ -17,9 +17,9 @@ class String;
 
 template <typename S, typename T>
 class Pair : public Object<Pair<S, T>> {
+public:
     using Self = Pair<S, T>;
 
-public:
     Pair(S first, T second) :
             first_(std::move(first)), second_(std::move(second)) {}
 

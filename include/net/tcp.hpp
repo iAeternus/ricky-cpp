@@ -9,6 +9,7 @@
 
 #include "Socket.hpp"
 #include "Vec.hpp"
+#include <memory>
 
 namespace my::net {
 
@@ -29,8 +30,12 @@ public:
      */
     TcpServer(const char* ip, u16 port, i32 family = AF_INET) :
             socket_(family, SOCK_STREAM) {
-        socket_.bind(ip, port); // 绑定到指定IP和端口
-        socket_.listen();       // 开始监听
+        // 设置优雅关闭选项
+        linger lin{.l_onoff = 1, .l_linger = 5};
+        socket_.set_option(SOL_SOCKET, SO_LINGER, &lin, sizeof(lin));
+
+        socket_.bind(ip, port);
+        socket_.listen();
     }
 
     /**
@@ -74,9 +79,10 @@ public:
      * @return 返回最新的客户端套接字
      * @throws runtime_exception 如果接受连接失败
      */
-    Socket& accept() {
-        clients_.append(socket_.accept()); // 接受客户端连接，保存客户端套接字
-        return clients_.back();
+    std::shared_ptr<Socket> accept() {
+        auto client = std::make_shared<Socket>(socket_.accept());
+        clients_.append(client);
+        return client;
     }
 
     /**
@@ -99,7 +105,7 @@ public:
      */
     void sendall(const char* data, usize size, i32 flags = 0) const {
         for (const auto& client : clients_) {
-            client.send(data, size, flags);
+            client.lock()->send(data, size, flags);
         }
     }
 
@@ -119,12 +125,25 @@ public:
      * @param index 客户端索引
      */
     const Socket& cliend(i32 index) const {
-        return clients_[index];
+        return *clients_[index].lock();
+    }
+
+    /**
+     * @brief 关闭服务器
+     */
+    void close() {
+        for (auto& client : clients_) {
+            if (auto ptr = client.lock()) {
+                ptr->close();
+            }
+        }
+        clients_.clear();
+        socket_.close();
     }
 
 private:
-    Socket socket_;             // TCP套接字
-    util::Vec<Socket> clients_; // 已连接的客户端套接字
+    Socket socket_;                            // 服务器套接字
+    util::Vec<std::weak_ptr<Socket>> clients_; // 客户端连接
 };
 
 /**
@@ -142,7 +161,7 @@ public:
      */
     TcpClient(const char* ip, u16 port, i32 family = AF_INET) :
             socket_(family, SOCK_STREAM) {
-        socket_.connect(ip, port); // 连接到指定IP和端口
+        socket_.connect(ip, port);
     }
 
     /**

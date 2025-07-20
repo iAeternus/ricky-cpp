@@ -228,6 +228,14 @@ fn should_fail_match_if_str_invalid = []() {
     });
 };
 
+fn should_split = []() {
+    Assertions::assertEquals("[a,b,c]"_cs, "a/b/c"_s.split("/").__str__());
+    Assertions::assertEquals("[,,a,b]"_cs, "//a/b"_s.split("/").__str__());
+    Assertions::assertEquals("[a,,b]"_cs, "a//b"_s.split("/").__str__());
+    Assertions::assertEquals("[a,b,,]"_cs, "a/b//"_s.split("/").__str__());
+    Assertions::assertEquals("[a,b,c/d]"_cs, "a/b/c/d"_s.split("/", 2).__str__());
+};
+
 fn should_compare = []() {
     // Given
     util::String s = "abc";
@@ -282,6 +290,7 @@ fn test_string() {
     group.addTest("should_join_iterator", should_join_iterator);
     group.addTest("should_match_parentheses", should_match_parentheses);
     group.addTest("should_fail_match_if_str_invalid", should_fail_match_if_str_invalid);
+    group.addTest("should_split", should_split);
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
 

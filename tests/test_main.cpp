@@ -6,10 +6,17 @@
  * @file test_main.cpp
  */
 
-// 测试模式设置。置1 功能测试；置0 基准测试（运行时间较长）
+/**
+ * 测试模式设置
+ * - 0 基准测试（运行时间较长）
+ * - 1 功能测试
+ * - 2 HTTP服务器测试（阻塞）
+ */
 #define TEST_MODE 1
 
-#if TEST_MODE
+#if TEST_MODE == 0
+#include "test_speed.hpp"
+#elif TEST_MODE == 1
 #include "test_test_utils.hpp"
 #include "test_cstring.hpp"
 #include "test_buffer.hpp"
@@ -58,14 +65,16 @@
 #include "test_match.hpp"
 #include "test_udp.hpp"
 #include "test_tcp.hpp"
-#else
-#include "test_speed.hpp"
+#elif TEST_MODE == 2
+#include "test_http.hpp"
 #endif
 
 using namespace my::test;
 
 int main() {
-#if TEST_MODE
+#if TEST_MODE == 0
+    test_speed();
+#elif TEST_MODE == 1
     test_test_utils::test_test_utils();
     test_cstring::test_cstring();
     test_buffer::test_buffer();
@@ -114,7 +123,7 @@ int main() {
     test_match::test_match();
     test_udp::test_udp();
     test_tcp::test_tcp();
-#else
-    test_speed();
+#elif TEST_MODE == 2
+    test_http::test_http();
 #endif
 }

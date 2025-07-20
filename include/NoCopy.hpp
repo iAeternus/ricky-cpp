@@ -1,6 +1,6 @@
 /**
  * @file NoCopy.hpp
- * @brief RAII资源管理基类
+ * @brief 禁止拷贝的基类
  * @author Ricky
  * @date 2024/12/19
  * @version 1.1

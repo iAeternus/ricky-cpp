@@ -17,10 +17,10 @@ fn it_works = []() {
     // 启动服务器线程
     net::TcpServer server{ip, port};
     std::thread server_thread([&]() {
-        auto& client_sock = server.accept();
-        auto recv_msg = client_sock.recv();
+        auto client_sock = server.accept();
+        auto recv_msg = client_sock->recv();
         Assertions::assertEquals(msg, recv_msg);
-        client_sock.send(msg, msg.size());
+        client_sock->send(msg, msg.size());
     });
 
     std::this_thread::sleep_for(std::chrono::milliseconds(100)); // 等待服务器启动
@@ -43,8 +43,8 @@ fn should_send_all = []() {
     net::TcpServer server{ip, port};
     std::thread server_thread([&]() {
         // 接受两个客户端连接
-        auto& client1 = server.accept();
-        auto& client2 = server.accept();
+        auto client1 = server.accept();
+        auto client2 = server.accept();
         server.sendall(msg.data(), msg.size()); // 广播消息
     });
 

@@ -96,7 +96,7 @@ public:
     template <typename... Args>
     static void trace(std::string_view fmt, std::source_location loc, Args&&... args) {
         auto msg = std::vformat(fmt, std::make_format_args(args...));
-        log_impl(msg, LogLevel::TRACE_, loc);
+        log_impl(CString(msg), LogLevel::TRACE_, loc);
     }
 
     /**
@@ -118,7 +118,7 @@ public:
     template <typename... Args>
     static void debug(std::string_view fmt, std::source_location loc, Args&&... args) {
         auto msg = std::vformat(fmt, std::make_format_args(args...));
-        log_impl(msg, LogLevel::DEBUG_, loc);
+        log_impl(CString(msg), LogLevel::DEBUG_, loc);
     }
 
     /**
@@ -140,7 +140,7 @@ public:
     template <typename... Args>
     static void info(std::string_view fmt, std::source_location loc, Args&&... args) {
         auto msg = std::vformat(fmt, std::make_format_args(args...));
-        log_impl(msg, LogLevel::INFO_, loc);
+        log_impl(CString(msg), LogLevel::INFO_, loc);
     }
 
     /**
@@ -162,7 +162,7 @@ public:
     template <typename... Args>
     static void warn(std::string_view fmt, std::source_location loc, Args&&... args) {
         auto msg = std::vformat(fmt, std::make_format_args(args...));
-        log_impl(msg, LogLevel::WARN_, loc);
+        log_impl(CString(msg), LogLevel::WARN_, loc);
     }
 
     /**
@@ -184,7 +184,7 @@ public:
     template <typename... Args>
     static void error(std::string_view fmt, std::source_location loc, Args&&... args) {
         auto msg = std::vformat(fmt, std::make_format_args(args...));
-        log_impl(msg, LogLevel::ERROR_, loc);
+        log_impl(CString(msg), LogLevel::ERROR_, loc);
     }
 
     /**
@@ -206,7 +206,7 @@ public:
     template <typename... Args>
     static void fatal(std::string_view fmt, std::source_location loc, Args&&... args) {
         auto msg = std::vformat(fmt, std::make_format_args(args...));
-        log_impl(msg, LogLevel::FATAL_, loc);
+        log_impl(CString(msg), LogLevel::FATAL_, loc);
     }
 
 private:

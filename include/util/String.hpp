@@ -701,6 +701,48 @@ public:
     }
 
     /**
+     * @brief 将当前字符串以pattern作为分隔符分割
+     * @param pattern 分隔符
+     * @param maxsplit 最大分割次数（可选，-1表示无限制）
+     * @return 分割后的字符串向量
+     */
+    Vec<Self> split(const Self& pattern, isize maxsplit = -1) const {
+        Vec<Self> res;
+        usize start = 0;
+        usize split_cnt = 0;
+        usize m_size = size(), p_size = pattern.size();
+        usize actual_splits = (maxsplit < 0) ? m_size : std::min(static_cast<usize>(maxsplit), m_size);
+
+        // 空模式处理：按每个字符分割
+        if (pattern.empty()) {
+            for (usize i = 0; i < actual_splits; ++i) {
+                res.append(Self((*this)[i], encoding_));
+            }
+            if (actual_splits < m_size) {
+                res.append(slice(actual_splits));
+            }
+            return res;
+        }
+
+        auto positions = find_all(pattern);
+        for (auto pos : positions) {
+            if (maxsplit >= 0 && split_cnt >= actual_splits) {
+                break;
+            }
+            if (pos >= start && pos <= m_size) {
+                res.append(slice(start, pos));
+                start = pos + p_size;
+                split_cnt++;
+            }
+        }
+
+        // 添加最后一段
+        res.append(slice(start));
+
+        return res;
+    }
+
+    /**
      * @brief 删除字符串中所有指定字符
      * @param codePoint 要删除的字符
      * @return 删除后的字符串
