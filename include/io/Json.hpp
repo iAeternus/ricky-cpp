@@ -9,7 +9,6 @@
 
 #include "json_trait.hpp"
 #include "StringBuilder.hpp"
-#include "ricky.hpp"
 
 namespace my::io {
 
@@ -23,14 +22,10 @@ public:
     // 基础类型构造函数
     Json(i32 value) :
             Json(static_cast<JsonType::JsonInt>(value)) {}
-    // Json(i64 value) :
-    //         Json(static_cast<JsonType::JsonInt>(value)) {}
+
     Json(f32 value) :
             Json(static_cast<JsonType::JsonFloat>(value)) {}
-    // Json(f64 value) :
-    //         Json(static_cast<JsonType::JsonFloat>(value)) {}
-    // Json(bool value) :
-    //         Json(static_cast<JsonType::JsonBool>(value)) {}
+
     Json(const char* value) :
             Json(util::String(value)) {}
 
@@ -43,7 +38,6 @@ public:
         using DecayT = std::decay_t<T>;
         using MappedType = typename JsonValueType<DecayT>::Type;
 
-        // 处理数组类型（递归转换元素）
         if constexpr (std::is_same_v<MappedType, JsonType::JsonArray>) {
             json_type_ = GetJsonTypeIDStrict<JsonType::JsonArray>::ID;
             auto* arr = new JsonType::JsonArray();
@@ -51,18 +45,14 @@ public:
                 arr->append(Json(std::forward<decltype(elem)>(elem)));
             }
             json_item_ = arr;
-        }
-        // 处理字典类型（递归转换值）
-        else if constexpr (std::is_same_v<MappedType, JsonType::JsonDict>) {
+        } else if constexpr (std::is_same_v<MappedType, JsonType::JsonDict>) {
             json_type_ = GetJsonTypeIDStrict<JsonType::JsonDict>::ID;
             auto* dict = new JsonType::JsonDict();
             for (auto&& [key, value] : item) {
                 dict->insert(key, Json(std::forward<decltype(value)>(value)));
             }
             json_item_ = dict;
-        }
-        // 处理基础类型
-        else {
+        } else {
             json_type_ = GetJsonTypeIDStrict<MappedType>::ID;
             json_item_ = new MappedType(std::forward<T>(item));
         }
@@ -72,25 +62,25 @@ public:
             json_type_(other.json_type_) {
         switch (json_type_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
-            this->json_item_ = new JsonType::JsonInt(other.as<JsonType::JsonInt>());
+            this->json_item_ = new JsonType::JsonInt(other.into<JsonType::JsonInt>());
             break;
         case GetJsonTypeID<JsonType::JsonFloat>::ID:
-            this->json_item_ = new JsonType::JsonFloat(other.as<JsonType::JsonFloat>());
+            this->json_item_ = new JsonType::JsonFloat(other.into<JsonType::JsonFloat>());
             break;
         case GetJsonTypeID<JsonType::JsonBool>::ID:
-            this->json_item_ = new JsonType::JsonBool(other.as<JsonType::JsonBool>());
+            this->json_item_ = new JsonType::JsonBool(other.into<JsonType::JsonBool>());
             break;
         case GetJsonTypeID<JsonType::JsonStr>::ID:
-            this->json_item_ = new JsonType::JsonStr(other.as<JsonType::JsonStr>());
+            this->json_item_ = new JsonType::JsonStr(other.into<JsonType::JsonStr>());
             break;
         case GetJsonTypeID<JsonType::JsonArray>::ID:
-            this->json_item_ = new JsonType::JsonArray(other.as<JsonType::JsonArray>());
+            this->json_item_ = new JsonType::JsonArray(other.into<JsonType::JsonArray>());
             break;
         case GetJsonTypeID<JsonType::JsonDict>::ID:
-            this->json_item_ = new JsonType::JsonDict(other.as<JsonType::JsonDict>());
+            this->json_item_ = new JsonType::JsonDict(other.into<JsonType::JsonDict>());
             break;
         case GetJsonTypeID<JsonType::JsonNull>::ID:
-            this->json_item_ = new JsonType::JsonNull(other.as<JsonType::JsonNull>());
+            this->json_item_ = new JsonType::JsonNull(other.into<JsonType::JsonNull>());
             break;
         default:
             throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
@@ -115,25 +105,25 @@ public:
 
         switch (json_type_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
-            this->json_item_ = new JsonType::JsonInt(other.as<JsonType::JsonInt>());
+            this->json_item_ = new JsonType::JsonInt(other.into<JsonType::JsonInt>());
             break;
         case GetJsonTypeID<JsonType::JsonFloat>::ID:
-            this->json_item_ = new JsonType::JsonFloat(other.as<JsonType::JsonFloat>());
+            this->json_item_ = new JsonType::JsonFloat(other.into<JsonType::JsonFloat>());
             break;
         case GetJsonTypeID<JsonType::JsonBool>::ID:
-            this->json_item_ = new JsonType::JsonBool(other.as<JsonType::JsonBool>());
+            this->json_item_ = new JsonType::JsonBool(other.into<JsonType::JsonBool>());
             break;
         case GetJsonTypeID<JsonType::JsonStr>::ID:
-            this->json_item_ = new JsonType::JsonStr(other.as<JsonType::JsonStr>());
+            this->json_item_ = new JsonType::JsonStr(other.into<JsonType::JsonStr>());
             break;
         case GetJsonTypeID<JsonType::JsonArray>::ID:
-            this->json_item_ = new JsonType::JsonArray(other.as<JsonType::JsonArray>());
+            this->json_item_ = new JsonType::JsonArray(other.into<JsonType::JsonArray>());
             break;
         case GetJsonTypeID<JsonType::JsonDict>::ID:
-            this->json_item_ = new JsonType::JsonDict(other.as<JsonType::JsonDict>());
+            this->json_item_ = new JsonType::JsonDict(other.into<JsonType::JsonDict>());
             break;
         case GetJsonTypeID<JsonType::JsonNull>::ID:
-            this->json_item_ = new JsonType::JsonNull(other.as<JsonType::JsonNull>());
+            this->json_item_ = new JsonType::JsonNull(other.into<JsonType::JsonNull>());
             break;
         default:
             throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
@@ -173,7 +163,7 @@ public:
     static Json array(Args&&... args) {
         JsonType::JsonArray arr;
         // build_array(arr, std::forward<Args>(args)...);
-        (arr.append(to_json_object(std::forward<Args>(args))...));
+        arr.append(to_json_object(std::forward<Args>(args))...);
         return Json(std::move(arr));
     }
 
@@ -234,13 +224,12 @@ public:
      * @note 该函数不检查指针的有效性
      */
     template <typename T>
-    T* as_ptr() const {
+    T* into_ptr() const {
         using TargetType = typename JsonValueType<T>::Type;
         if (!is<TargetType>()) {
-            // throw type_exception("expected {} but got {}", SRC_LOC, JsonTypeTrait<TargetType>::name, type_name(json_type_));
-            throw type_exception("aaa");
+            throw type_exception("expected {} but got {}", SRC_LOC, JsonTypeTrait<TargetType>::name, type_name(json_type_));
         }
-        return reinterpret_cast<TargetType*>(json_item_);
+        return static_cast<T*>(json_item_);
     }
 
     /**
@@ -249,8 +238,7 @@ public:
      * @return 如果Json对象的类型是T类型，返回该对象，否则抛出type_exception
      */
     template <typename T>
-    T as() const {
-        // 特殊处理Json类型
+    T into() const {
         if constexpr (std::is_same_v<T, Json>) {
             return *this;
         }
@@ -259,72 +247,30 @@ public:
         constexpr i8 target_id = GetJsonTypeID<TargetType>::ID;
 
         if (json_type_ != target_id) {
-            throw type_exception("expected {} but got {}", SRC_LOC,
-                                 JsonTypeTrait<TargetType>::name,
-                                 type_name(json_type_));
+            throw type_exception("expected {} but got {}", SRC_LOC, JsonTypeTrait<TargetType>::name, type_name(json_type_));
         }
 
-        // 统一类型转换逻辑
         if constexpr (std::is_same_v<TargetType, JsonType::JsonArray>) {
-            return convert_array<T>();
+            return into_array<T>();
         } else if constexpr (std::is_same_v<TargetType, JsonType::JsonDict>) {
-            return convert_dict<T>();
+            return into_dict<T>();
         } else {
-            return convert_basic<T, TargetType>();
+            return into_basic<T, TargetType>();
         }
     }
-
-    // /**
-    //  * @brief 转换为指定类型
-    //  * @return 返回转换后对象的指针
-    //  */
-    // template <JsonTypeStrictConcept T>
-    // T* transform_ptr() {
-    //     if (!is<T>()) {
-    //         throw type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
-    //     }
-    //     return reinterpret_cast<T*>(json_item_);
-    // }
-
-    // template <JsonTypeStrictConcept T>
-    // const T* transform_ptr() const {
-    //     if (!is<T>()) {
-    //         throw type_exception("json type is not {} but {}", SRC_LOC, type_name(GetJsonTypeID<T>::ID), type_name(json_type_));
-    //     }
-    //     return reinterpret_cast<T*>(json_item_);
-    // }
-
-    // /**
-    //  * @brief 转换为指定类型
-    //  * @return 返回转换后对象的引用
-    //  */
-    // template <JsonTypeStrictConcept T>
-    // T& transform() {
-    //     return *transform_ptr<T>();
-    // }
-
-    // template <JsonTypeStrictConcept T>
-    // const T& transform() const {
-    //     return *transform_ptr<T>();
-    // }
-
-    // template <JsonTypeStrictConcept T>
-    // operator T() const {
-    //     return transform<T>();
-    // }
 
     /**
      * @brief 键访问，需要当前Json对象为JsonDict类型
      */
     Self& operator[](const util::String& key) {
-        return as<JsonType::JsonDict>().get(key);
+        return into<JsonType::JsonDict>().get(key);
     }
 
     /**
      * @brief 键访问，需要当前Json对象为JsonDict类型（常量版本）
      */
     const Self& operator[](const util::String& key) const {
-        return as<JsonType::JsonDict>().get(key);
+        return into<JsonType::JsonDict>().get(key);
     }
 
     /**
@@ -336,14 +282,14 @@ public:
      */
     template <typename T>
     T get(const util::String& key) const {
-        return as<JsonType::JsonDict>().get(key).as<T>();
+        return into<JsonType::JsonDict>().get(key).into<T>();
     }
 
     /**
      * @brief 尾部添加一个Json对象，需要当前Json对象为JsonArray类型
      */
     Self& append(const Self& json) {
-        as<JsonType::JsonArray>().append(json);
+        into<JsonType::JsonArray>().append(json);
         return *this;
     }
 
@@ -352,7 +298,7 @@ public:
      * @param index 索引，从0开始
      */
     Self& operator[](usize index) {
-        return as<JsonType::JsonArray>()[index];
+        return into<JsonType::JsonArray>()[index];
     }
 
     /**
@@ -360,7 +306,7 @@ public:
      * @param index 索引，从0开始
      */
     const Self& operator[](usize index) const {
-        return as<JsonType::JsonArray>()[index];
+        return into<JsonType::JsonArray>()[index];
     }
 
     /**
@@ -373,7 +319,7 @@ public:
      */
     template <typename T>
     T get(usize index) const {
-        return as<JsonType::JsonArray>()[index].as<T>();
+        return into<JsonType::JsonArray>()[index].into<T>();
     }
 
     /**
@@ -382,7 +328,7 @@ public:
      * @return void
      */
     void pop(isize index = -1) {
-        as<JsonType::JsonArray>().pop(index);
+        into<JsonType::JsonArray>().pop(index);
     }
 
     /**
@@ -390,10 +336,10 @@ public:
      */
     usize size() const {
         if (is<JsonType::JsonArray>()) {
-            return as<JsonType::JsonArray>().size();
+            return into<JsonType::JsonArray>().size();
         }
         if (is<JsonType::JsonDict>()) {
-            return as<JsonType::JsonDict>().size();
+            return into<JsonType::JsonDict>().size();
         }
         throw runtime_exception("json type is not JSON_ARRAY or JSON_DICT");
     }
@@ -401,18 +347,18 @@ public:
     [[nodiscard]] CString __str__() const {
         switch (json_type_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
-            return cstr(as<JsonType::JsonInt>());
+            return cstr(into<JsonType::JsonInt>());
         case GetJsonTypeID<JsonType::JsonFloat>::ID:
-            return cstr(as<JsonType::JsonFloat>());
+            return cstr(into<JsonType::JsonFloat>());
         case GetJsonTypeID<JsonType::JsonBool>::ID:
-            return cstr(as<JsonType::JsonBool>());
+            return cstr(into<JsonType::JsonBool>());
         case GetJsonTypeID<JsonType::JsonStr>::ID:
             using namespace my::util;
-            return cstr("\""_s + as<JsonType::JsonStr>() + "\""_s);
+            return cstr("\""_s + into<JsonType::JsonStr>() + "\""_s);
         case GetJsonTypeID<JsonType::JsonArray>::ID:
-            return cstr(as<JsonType::JsonArray>());
+            return cstr(into<JsonType::JsonArray>());
         case GetJsonTypeID<JsonType::JsonDict>::ID:
-            return cstr(as<JsonType::JsonDict>());
+            return cstr(into<JsonType::JsonDict>());
         case GetJsonTypeID<JsonType::JsonNull>::ID:
             return cstr("null");
         default:
@@ -428,78 +374,30 @@ private:
     void release() {
         switch (json_type_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
-            delete as_ptr<JsonType::JsonInt>();
+            delete into_ptr<JsonType::JsonInt>();
             break;
         case GetJsonTypeID<JsonType::JsonFloat>::ID:
-            delete as_ptr<JsonType::JsonFloat>();
+            delete into_ptr<JsonType::JsonFloat>();
             break;
         case GetJsonTypeID<JsonType::JsonBool>::ID:
-            delete as_ptr<JsonType::JsonBool>();
+            delete into_ptr<JsonType::JsonBool>();
             break;
         case GetJsonTypeID<JsonType::JsonStr>::ID:
-            delete as_ptr<JsonType::JsonStr>();
+            delete into_ptr<JsonType::JsonStr>();
             break;
         case GetJsonTypeID<JsonType::JsonArray>::ID:
-            delete as_ptr<JsonType::JsonArray>();
+            delete into_ptr<JsonType::JsonArray>();
             break;
         case GetJsonTypeID<JsonType::JsonDict>::ID:
-            delete as_ptr<JsonType::JsonDict>();
+            delete into_ptr<JsonType::JsonDict>();
             break;
         case GetJsonTypeID<JsonType::JsonNull>::ID:
-            delete as_ptr<JsonType::JsonNull>();
+            delete into_ptr<JsonType::JsonNull>();
             break;
         default:
             throw type_exception("json type {} is not valid", SRC_LOC, json_type_);
         }
     }
-
-    // // 递归构建字典
-    // template <typename Key, typename Value, typename... Rest>
-    // static void build_dict(JsonType::JsonDict& dict, Key&& key, Value&& value, Rest&&... rest) {
-    //     auto key_str = to_json_string(key);
-    //     auto value_json = to_json_object(value);
-    //     dict.insert(std::move(key_str), std::move(value_json));
-
-    //     if constexpr (sizeof...(Rest) > 0) {
-    //         build_dict(dict, std::forward<Rest>(rest)...);
-    //     }
-    // }
-
-    // // 递归构建数组
-    // template <typename First, typename... Rest>
-    // static void build_array(JsonType::JsonArray& arr, First&& first, Rest&&... rest) {
-    //     arr.append(to_json_object(std::forward<First>(first)));
-
-    //     if constexpr (sizeof...(Rest) > 0) {
-    //         build_array(arr, std::forward<Rest>(rest)...);
-    //     }
-    // }
-
-    // // 将任意类型转换为JSON对象
-    // template <typename T>
-    // static Self to_json_object(T&& value) {
-    //     if constexpr (std::is_convertible_v<T, Self>) {
-    //         return Self(std::forward<T>(value));
-    //     } else {
-    //         Self result;
-    //         to_json(result, std::forward<T>(value));
-    //         return result;
-    //     }
-    // }
-
-    // // 将任意类型转换为JSON键字符串
-    // template <typename T>
-    // static util::String to_json_string(T&& value) {
-    //     if constexpr (std::is_convertible_v<T, util::String>) {
-    //         return util::String(std::forward<T>(value));
-    //     } else if constexpr (std::is_arithmetic_v<std::remove_cvref_t<T>>) {
-    //         return util::String::from_i64(value); // TODO
-    //     } else {
-    //         util::StringBuilder sb;
-    //         sb.append(value);
-    //         return sb.build();
-    //     }
-    // }
 
     // 递归构建字典
     template <typename Key, typename Value, typename... Rest>
@@ -508,10 +406,13 @@ private:
         if constexpr (std::is_convertible_v<Key, util::String>) {
             key_str = util::String(std::forward<Key>(key));
         } else {
-            key_str = util::String::from_i64(key); // TODO from_num
+            // 添加其他类型的键转换支持
+            key_str = util::String(std::format("{}", key));
         }
 
-        dict.insert(std::move(key_str), to_json_object(std::forward<Value>(value)));
+        dict.insert(
+            std::move(key_str),
+            to_json_object(std::forward<Value>(value)));
 
         if constexpr (sizeof...(Rest) > 0) {
             build_dict(dict, std::forward<Rest>(rest)...);
@@ -531,32 +432,32 @@ private:
     }
 
     template <typename T>
-    auto convert_array() const {
+    auto into_array() const {
         using ValueType = typename T::value_t;
         util::Vec<ValueType> result;
         const auto& arr = *static_cast<JsonType::JsonArray*>(json_item_);
         for (const auto& item : arr) {
-            result.append(item.template as<ValueType>());
+            result.append(item.template into<ValueType>());
         }
         return result;
     }
 
     // 提取字典转换逻辑
     template <typename T>
-    auto convert_dict() const {
+    auto into_dict() const {
         using KeyType = typename T::key_t;
         using ValueType = typename T::value_t;
         util::Dict<KeyType, ValueType> result;
         const auto& dict = *static_cast<JsonType::JsonDict*>(json_item_);
         for (const auto& [key, value] : dict) {
-            result.insert(key, value.template as<ValueType>());
+            result.insert(key, value.template into<ValueType>());
         }
         return result;
     }
 
     // 提取基础类型转换逻辑
     template <typename T, typename TargetType>
-    auto convert_basic() const {
+    auto into_basic() const {
         const auto* ptr = static_cast<TargetType*>(json_item_);
         if constexpr (!std::is_same_v<T, TargetType>) {
             return static_cast<T>(*ptr);
@@ -568,17 +469,17 @@ private:
     util::String dump_impl(i32 indent, i32 depth) const {
         switch (json_type_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
-            return util::String::from_i64(as<JsonType::JsonInt>());
+            return util::String::from_i64(into<JsonType::JsonInt>());
         case GetJsonTypeID<JsonType::JsonFloat>::ID:
-            return util::String::from_f64(as<JsonType::JsonFloat>());
+            return util::String::from_f64(into<JsonType::JsonFloat>());
         case GetJsonTypeID<JsonType::JsonBool>::ID:
-            return as<JsonType::JsonBool>() ? "true" : "false";
+            return into<JsonType::JsonBool>() ? "true" : "false";
         case GetJsonTypeID<JsonType::JsonStr>::ID:
-            return escape_string(as<JsonType::JsonStr>());
+            return escape_string(into<JsonType::JsonStr>());
         case GetJsonTypeID<JsonType::JsonArray>::ID:
-            return dump_array(as<JsonType::JsonArray>(), indent, depth);
+            return dump_array(into<JsonType::JsonArray>(), indent, depth);
         case GetJsonTypeID<JsonType::JsonDict>::ID:
-            return dump_dict(as<JsonType::JsonDict>(), indent, depth);
+            return dump_dict(into<JsonType::JsonDict>(), indent, depth);
         case GetJsonTypeID<JsonType::JsonNull>::ID:
             return "null";
         default:

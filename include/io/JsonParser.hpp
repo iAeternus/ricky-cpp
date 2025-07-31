@@ -93,7 +93,7 @@ private:
             auto [value, remain2] = parseFirstObject(jsonStr, util::CodePoint{','});
             jsonStr = remain2;
 
-            dict[key.as<JsonType::JsonStr>()] = std::move(value);
+            dict[key.into<JsonType::JsonStr>()] = std::move(value);
         }
         return Json{std::move(dict)};
     }

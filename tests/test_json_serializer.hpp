@@ -65,11 +65,11 @@ fn to_json(Json& j, const Person& p) {
 }
 
 fn from_json(const Json& j, Person& p) {
-    p.name = j["name"].as<util::String>();
-    p.age = j["age"].as<i32>();
-    p.is_student = j["is_student"].as<bool>();
-    p.scores = j["scores"].as<util::Vec<i32>>();
-    p.address = j["address"].as<util::Dict<util::String, util::String>>();
+    p.name = j["name"].into<util::String>();
+    p.age = j["age"].into<i32>();
+    p.is_student = j["is_student"].into<bool>();
+    p.scores = j["scores"].into<util::Vec<i32>>();
+    p.address = j["address"].into<util::Dict<util::String, util::String>>();
 }
 
 } // namespace my::io

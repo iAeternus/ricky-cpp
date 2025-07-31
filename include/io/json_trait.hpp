@@ -91,24 +91,6 @@ struct GetJsonTypeIDStrict<Json> {
     constexpr static i8 ID = 7;
 };
 
-// // 整数类型支持
-// template <typename T>
-// struct GetJsonTypeIDStrict<T, std::enable_if_t<std::is_integral_v<T> && !std::is_same_v<T, bool>>> {
-//     static constexpr JsonTypeID ID = JsonTypeID::Int;
-// };
-
-// // 浮点类型支持
-// template <typename T>
-// struct GetJsonTypeIDStrict<T, std::enable_if_t<std::is_floating_point_v<T>>> {
-//     static constexpr JsonTypeID ID = JsonTypeID::Float;
-// };
-
-// // 布尔类型支持
-// template <>
-// struct GetJsonTypeIDStrict<bool> {
-//     static constexpr JsonTypeID ID = JsonTypeID::Bool;
-// };
-
 /**
  * @brief 可接受const reference volatile 修饰符获得Json类型的枚举值
  */
@@ -215,12 +197,10 @@ struct JsonValueType<util::Dict<K, V>> {
     using Type = std::conditional_t<
         std::is_convertible_v<K, util::String>,
         JsonType::JsonDict,
-        void
-    >;
+        void>;
     static_assert(
         !std::is_same_v<Type, void>,
-        "JsonDict key must be convertible to util::String"
-    );
+        "JsonDict key must be convertible to util::String");
 };
 
 // Json类型映射

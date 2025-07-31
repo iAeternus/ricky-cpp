@@ -72,16 +72,16 @@ public:
     }
 
     static void do_deserialize(const util::String& str, i64& res) {
-        res = parse_json(str).as<JsonType::JsonInt>();
+        res = parse_json(str).into<JsonType::JsonInt>();
     }
     static void do_deserialize(const util::String& str, f64& res) {
-        res = parse_json(str).as<JsonType::JsonFloat>();
+        res = parse_json(str).into<JsonType::JsonFloat>();
     }
     static void do_deserialize(const util::String& str, bool& res) {
-        res = parse_json(str).as<JsonType::JsonBool>();
+        res = parse_json(str).into<JsonType::JsonBool>();
     }
     static void do_deserialize(const util::String& str, util::String& res) {
-        res = parse_json(str).as<JsonType::JsonStr>();
+        res = parse_json(str).into<JsonType::JsonStr>();
     }
 
     template <typename T>
@@ -91,7 +91,7 @@ public:
             throw type_exception("expected array for container");
         }
         res.clear();
-        const auto& array = json.as<JsonType::JsonArray>();
+        const auto& array = json.into<JsonType::JsonArray>();
         for (const auto& item : array) {
             T value;
             do_deserialize(item.dump(), value);
@@ -106,7 +106,7 @@ public:
             throw type_exception("expected dict for container");
         }
         res.clear();
-        const auto& dict = json.as<JsonType::JsonDict>();
+        const auto& dict = json.into<JsonType::JsonDict>();
         for (const auto& [key, value] : dict) {
             V val;
             do_deserialize(value.dump(), val);
