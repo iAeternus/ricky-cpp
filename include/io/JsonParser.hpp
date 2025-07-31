@@ -7,7 +7,6 @@
 #ifndef JSON_PARSER_HPP
 #define JSON_PARSER_HPP
 
-#include "Exception.hpp"
 #include "Json.hpp"
 
 namespace my::io {
@@ -94,7 +93,7 @@ private:
             auto [value, remain2] = parseFirstObject(jsonStr, util::CodePoint{','});
             jsonStr = remain2;
 
-            dict[key.transform<JsonType::JsonStr>()] = std::move(value);
+            dict[key.as<JsonType::JsonStr>()] = std::move(value);
         }
         return Json{std::move(dict)};
     }
@@ -161,6 +160,6 @@ private:
     }
 };
 
-} // namespace my::json
+} // namespace my::io
 
 #endif // JSON_PARSER_HPP

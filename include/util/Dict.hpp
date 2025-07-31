@@ -12,8 +12,6 @@
 #include "KeyValue.hpp"
 #include "HashBucket.hpp"
 #include "Pair.hpp"
-#include "match.hpp"
-#include <variant>
 
 namespace my::util {
 
@@ -835,6 +833,15 @@ private:
     constexpr static f64 MAX_LOAD_FACTOR = 0.75; // 最大负载因子
     constexpr static usize MIN_BUCKET_SIZE = 8;  // 最小桶大小
 };
+
+template <typename>
+struct is_dict : std::false_type {};
+
+template <typename K, typename V>
+struct is_dict<util::Dict<K, V>> : std::true_type {};
+
+template <typename T>
+constexpr bool is_dict_v = is_dict<T>::value;
 
 } // namespace my::util
 

@@ -747,6 +747,15 @@ fn opt(const Vec<std::any>& args, usize idx)->T {
     }
 }
 
+template <typename>
+struct is_vec : std::false_type {};
+
+template <typename T>
+struct is_vec<util::Vec<T>> : std::true_type {};
+
+template <typename T>
+constexpr bool is_vec_v = is_vec<T>::value;
+
 } // namespace my::util
 
 #endif // VEC_HPP

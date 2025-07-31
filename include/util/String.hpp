@@ -91,6 +91,28 @@ public:
             BaseString(cp.data(), cp.size(), enc) {}
 
     /**
+     * @brief 构造函数，创建一个长度为 length 的字符串，并用码点 cp 填充
+     * @param length 字符串的长度
+     * @param cp 码点，用于填充整个字符串
+     * @param enc 字符串的编码
+     */
+    BaseString(usize length, const CodePoint& cp = ' ', EncodingType enc = EncodingType::UTF8) :
+            length_(length), is_sso_(length <= SSO_MAX_SIZE), encoding_(encoding_map(enc)) {
+        if (is_sso_) {
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, cp);
+            }
+            code_points_ = sso_;
+        } else {
+            heap_ = alloc_.allocate(length_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_ + i, cp);
+            }
+            code_points_ = heap_;
+        }
+    }
+
+    /**
      * @brief 拷贝构造函数
      * @param other 要拷贝的字符串对象
      */
@@ -210,16 +232,12 @@ public:
     }
 
     /**
-     * @brief 转换为std::string
+     * @brief 从i32构造
      */
-    std::string into_string() const {
-        std::string result;
-        result.reserve(byte_length());
-        for (usize i = 0; i < length_; ++i) {
-            const CodePoint& cp = code_points_[i];
-            result.append(cp.data(), cp.size());
-        }
-        return result;
+    static Self from_i32(i32 val) {
+        char buf[16];
+        int len = std::snprintf(buf, sizeof(buf), "%d", val);
+        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
     }
 
     /**
@@ -232,12 +250,43 @@ public:
     }
 
     /**
+     * @brief 从i64构造
+     */
+    static Self from_i64(i64 val) {
+        char buf[32];
+        int len = std::snprintf(buf, sizeof(buf), "%lld", val);
+        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+    }
+
+    /**
      * @brief 从u64构造
      */
     static Self from_u64(u64 val) {
         char buf[32];
         int len = std::snprintf(buf, sizeof(buf), "%llu", val);
         return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+    }
+
+    /**
+     * @brief 从f64构造，会自动去除多余的0
+     */
+    static Self from_f64(f64 val) {
+        char buf[32];
+        int len = std::snprintf(buf, sizeof(buf), "%g", val);
+        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+    }
+
+    /**
+     * @brief 转换为std::string
+     */
+    std::string into_string() const {
+        std::string result;
+        result.reserve(byte_length());
+        for (usize i = 0; i < length_; ++i) {
+            const CodePoint& cp = code_points_[i];
+            result.append(cp.data(), cp.size());
+        }
+        return result;
     }
 
     /**

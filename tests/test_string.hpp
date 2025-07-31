@@ -65,7 +65,7 @@ fn should_find = []() {
 
     // When
     auto pos = s.find("def");
-    auto pos2 = s.find('f');
+    auto pos2 = s.find(util::CodePoint('f'));
     auto pos3 = s.find("abd");
     auto pos4 = s2.find("aabaabaaaa");
     auto pos5 = s2.find("");
