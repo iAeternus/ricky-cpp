@@ -112,7 +112,7 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const char* str) {
-        auto len = std::strlen(str);
+        const auto len = std::strlen(str);
         buf_.reserve(buf_.size() + len);
         for (usize i = 0; i < len; ++i) {
             buf_.append(CodePoint(str[i]));
@@ -123,14 +123,14 @@ public:
     /**
      * @brief 追加格式化字符串
      * @tparam Args 格式化参数类型
-     * @param format 格式化字符串
+     * @param fmt 格式化字符串
      * @param args 格式化参数
      * @return 构建器自身引用
      */
     template <typename... Args>
-    Self& append_format(std::string_view format, Args&&... args) {
-        std::string formatted = std::vformat(format, std::make_format_args(std::forward<Args>(args)...));
-        return append(formatted.c_str());
+    Self& append_format(std::format_string<Args...> fmt, Args&&... args) {
+        const auto formatted = std::format(fmt, std::forward<Args>(args)...);
+        return append(formatted);
     }
 
     /**

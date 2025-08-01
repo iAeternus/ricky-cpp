@@ -5,6 +5,7 @@ CompileFlags:
     - "-Wall"
     - "-I${workspaceFolder}/include"
     - "-I${workspaceFolder}/src"
+    - "-ID:F:\\Software\\Develop\\mingw\\mingw64\\include"
   Compiler: g++
 
 Diagnostics:

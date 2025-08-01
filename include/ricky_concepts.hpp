@@ -30,7 +30,7 @@ concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, sho
 template <typename T>
 concept MyPrintable = requires(T t) {
     { t.__str__() }
-    ->ConvertibleToCstr;
+      -> ConvertibleToCstr;
 };
 
 template <typename T>
@@ -41,18 +41,14 @@ concept Printable = MyPrintable<T> || StdPrintable<T>;
  */
 template <typename T>
 concept MyLikeHashable = requires(const T& one, const T& other) {
-    { one.__hash__() }
-    ->std::convertible_to<hash_t>;
-    { one.__cmp__(other) }
-    ->std::convertible_to<cmp_t>;
+    { one.__hash__() } -> std::convertible_to<hash_t>;
+    { one.__cmp__(other) } -> std::convertible_to<cmp_t>;
 };
 
 template <typename T>
 concept StdHashable = requires(const T& one, const T& other) {
-    { std::hash<T>()(one) }
-    ->std::convertible_to<hash_t>;
-    { one == other }
-    ->std::convertible_to<bool>;
+    { std::hash<T>()(one) } -> std::convertible_to<hash_t>;
+    { one == other } -> std::convertible_to<bool>;
 };
 
 template <typename T>
@@ -63,9 +59,9 @@ concept Hashable = MyLikeHashable<T> || StdHashable<T>;
  */
 template <typename T>
 concept Iterable = requires(T obj) {
-    {obj.begin()};
-    {obj.end()};
-    {obj.size()};
+    { obj.begin() };
+    { obj.end() };
+    { obj.size() };
 };
 
 /**
@@ -73,14 +69,12 @@ concept Iterable = requires(T obj) {
  */
 template <typename T>
 concept Comparable = requires(const T& one, const T& other) {
-    { one.__cmp__(other) }
-    ->std::convertible_to<cmp_t>;
+    { one.__cmp__(other) } -> std::convertible_to<cmp_t>;
 };
 
 template <typename T>
 concept Subtractble = requires(const T& one, const T& other) {
-    { one - other }
-    ->std::convertible_to<T>;
+    { one - other } -> std::convertible_to<T>;
 };
 
 /**
@@ -99,7 +93,7 @@ concept KeyType = Hashable<T> || Sortable<T>;
  * @brief 可断言约束概念
  */
 template <typename T>
-concept Assertable = Comparable<T>&& MyPrintable<T>;
+concept Assertable = Comparable<T> && MyPrintable<T>;
 
 /**
  * @brief 非类类型约束概念

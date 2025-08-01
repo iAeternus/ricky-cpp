@@ -9,13 +9,13 @@
 
 namespace my::test::test_win_file_utils {
 
-static constexpr const char* CLASS_PATH = "F:\\develop\\ricky-cpp\\tests\\resources";
-inline const char* filepath = "F:\\develop\\ricky-cpp\\tests\\test_win_file_utils.hpp";
-inline const char* dir_path = "F:\\develop\\ricky-cpp\\tests";
+static constexpr auto CLASS_PATH = R"(F:\Develop\cpp\ricky-cpp\tests\resources)";
+inline auto filepath = R"(F:\Develop\cpp\ricky-cpp\tests\test_win_file_utils.hpp)";
+inline auto dir_path = R"(F:\Develop\cpp\ricky-cpp\tests)";
 
 fn should_judge_exists = []() {
     // Given
-    const char* path_not_exists = "F:\\develop\\ricky-cpp\\tests\\aaa.txt";
+    const auto path_not_exists = ".\\aaa.txt";
 
     // When
     bool res = fs::win::exists(filepath);
@@ -72,19 +72,19 @@ fn should_mkdir_and_remove = []() {
 };
 
 fn should_fail_to_mkdir_if_dir_already_exists = []() {
-    Assertions::assertThrows("directory already exists: F:\\develop\\ricky-cpp\\tests\\resources", []() {
+    Assertions::assertThrows(R"(directory already exists: F:\Develop\tmp\ricky-cpp\tests\resources)", []() {
         fs::win::mkdir(CLASS_PATH, false);
     });
 };
 
 fn should_fail_to_mkdir_if_path_not_found = []() {
-    Assertions::assertThrows("path not found: F:\\develop\\ricky-cpp\\tests\\resources\\tmp1\\tmp2", []() {
+    Assertions::assertThrows(R"(path not found: F:\Develop\tmp\ricky-cpp\tests\resources\tmp1\tmp2)", []() {
         fs::win::mkdir(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
     });
 };
 
 fn should_fail_to_remove_if_file_or_dir_not_found = []() {
-    Assertions::assertThrows("file or directory not found in F:\\develop\\ricky-cpp\\tests\\resources\\tmp1\\tmp2", []() {
+    Assertions::assertThrows(R"(file or directory not found in F:\Develop\cpp\ricky-cpp\tests\resources\tmp1\tmp2)", []() {
         fs::win::remove(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
     });
 };

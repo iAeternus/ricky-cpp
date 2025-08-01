@@ -119,7 +119,7 @@
     "Wpedantic"
   ],
   "clangd.arguments": [
-    // "--query-driver=F:\\application\\develop\\gcc\\x86_64-13.2.0-release-win32-seh-msvcrt-rt_v11-rev0\\mingw64\\bin\\g*",
-    "--query-driver=F:\\application\\develop\\LLVM\\bin\\clang++.exe",
-  ],
+    "--query-driver=F:\\Software\\Develop\\mingw\\mingw64\\bin\\g*"
+    // "--query-driver=F:\\application\\develop\\LLVM\\bin\\clang++.exe",
+  ]
 }

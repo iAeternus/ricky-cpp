@@ -17,10 +17,8 @@ namespace my::io {
  */
 template <typename T>
 concept SerializerType = requires(Json& json_mut, const T& obj, const Json& json, T& obj_mut) {
-    { to_json(json_mut, obj) }
-    ->std::convertible_to<void>;
-    { from_json(json, obj_mut) }
-    ->std::convertible_to<void>;
+    { to_json(json_mut, obj) } -> std::convertible_to<void>;
+    { from_json(json, obj_mut) } -> std::convertible_to<void>;
 };
 
 /**

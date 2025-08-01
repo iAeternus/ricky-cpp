@@ -73,6 +73,8 @@
 using namespace my::test;
 
 int main() {
+    system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
+
 #if TEST_MODE == 0
     test_speed();
 #elif TEST_MODE == 1
