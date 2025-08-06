@@ -18,7 +18,8 @@ class File : public Object<File>, public NoCopy {
     using Self = File;
 
 public:
-    File(const char* filename, const CString& mode) {
+    File(const char* filename, const CString& mode) :
+            fh_(nullptr) {
         i32 dwDesiredAccess = 0, dwCreationDisposition = 0;
         if (mode == "w") {
             dwDesiredAccess = GENERIC_WRITE;
@@ -74,8 +75,9 @@ public:
         usize buffer_size = fileSize() + 1;
         CString buffer{buffer_size};
 
-        if (!ReadFile(fh_, buffer.data(), buffer_size, &read_bytes, nullptr))
+        if (!ReadFile(fh_, buffer.data(), buffer_size, &read_bytes, nullptr)) {
             throw system_exception("failed to read from file");
+        }
 
         return buffer;
     }

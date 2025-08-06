@@ -61,7 +61,7 @@ enum class ExceptionType {
  * @details 该类继承自std::exception和Object，提供基本的异常处理功能
  * @note 使用std::source_location记录异常发生的位置
  */
-class Exception : public std::exception, public Object<Exception> {
+class Exception final : public std::exception, public Object<Exception> {
 public:
     using Self = Exception;
 
@@ -70,11 +70,12 @@ public:
      * @param type 异常类型
      * @param message 异常消息
      * @param loc 异常位置
+     * @param nested 关联异常
      */
     explicit Exception(ExceptionType type, CString&& message,
                        std::source_location loc = SRC_LOC,
                        std::exception_ptr nested = nullptr) :
-            type_(type), message_(std::move(message)), loc_(loc), nested_(nested), formatted_message_(format_message()) {}
+            type_(type), message_(std::move(message)), loc_(loc), nested_(std::move(nested)), formatted_message_(format_message()) {}
 
     /**
      * @brief 获取异常信息
@@ -134,12 +135,13 @@ public:
             {ExceptionType::AssertionFailedException, "AssertionFailedException"},
             {ExceptionType::SystemException, "SystemException"},
             {ExceptionType::NetworkException, "NetworkException"},
-            {ExceptionType::CustomException, "CustomException"}};
+            {ExceptionType::CustomException, "CustomException"},
+        };
 
         return type_names.contains(type) ? type_names.at(type) : "UnknownException";
     }
 
-    CString __str__() const {
+    [[nodiscard]] CString __str__() const {
         return formatted_message_;
     }
 
@@ -167,7 +169,7 @@ private:
             return "Memory error in exception formatting";
         } catch (...) {
             // 格式化失败时回退
-            return CString("Exception formatting failed");
+            return {"Exception formatting failed"};
         }
     }
 
@@ -186,7 +188,7 @@ private:
  * @param loc 异常位置
  * @return 异常对象
  */
-fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC)->Exception {
+fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) -> Exception {
     return Exception(type, std::move(message), loc);
 }
 
@@ -199,9 +201,9 @@ fn exception(ExceptionType type, CString&& message, std::source_location loc = S
  * @return 异常对象
  */
 template <typename... Args>
-fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args)->Exception {
-    std::string message = std::vformat(fmt, std::make_format_args(args...));
-    return Exception(type, std::move(message), loc);
+fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) -> Exception {
+    const std::string message = std::vformat(fmt, std::make_format_args(args...));
+    return Exception(type, message, loc);
 }
 
 /**
@@ -211,7 +213,7 @@ fn exception(ExceptionType type, std::string_view fmt, std::source_location loc,
  * @param message 异常消息
  * @param loc 异常位置
  */
-fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC)->void {
+fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) -> void {
     if (!condition) {
         throw exception(type, std::move(message), loc);
     }
@@ -226,10 +228,10 @@ fn check(bool condition, ExceptionType type, CString&& message, std::source_loca
  * @param args 格式化参数
  */
 template <typename... Args>
-fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args)->void {
+fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) -> void {
     if (!condition) {
-        std::string message = std::vformat(fmt, std::make_format_args(args...));
-        throw exception(type, std::move(message), loc);
+        const std::string message = std::vformat(fmt, std::make_format_args(args...));
+        throw exception(type, message, loc);
     }
 }
 

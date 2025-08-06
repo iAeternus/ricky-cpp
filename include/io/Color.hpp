@@ -14,16 +14,16 @@ namespace my::io {
  */
 class Color {
 public:
-    constexpr static const char* CLOSE = "\033[0m";
-    constexpr static const char* BLACK = "\033[30m";
-    constexpr static const char* RED = "\033[31m";
-    constexpr static const char* GREEN = "\033[32m";
-    constexpr static const char* YELLOW = "\033[33m";
-    constexpr static const char* BLUE = "\033[34m";
-    constexpr static const char* PURPLE = "\033[35m";
-    constexpr static const char* DEEPGREEN = "\033[36m";
-    constexpr static const char* WHITE = "\033[37m";
-    constexpr static const char* AQUA = "\033[94m";
+    constexpr static auto CLOSE = "\033[0m";
+    constexpr static auto BLACK = "\033[30m";
+    constexpr static auto RED = "\033[31m";
+    constexpr static auto GREEN = "\033[32m";
+    constexpr static auto YELLOW = "\033[33m";
+    constexpr static auto BLUE = "\033[34m";
+    constexpr static auto PURPLE = "\033[35m";
+    constexpr static auto DEEPGREEN = "\033[36m";
+    constexpr static auto WHITE = "\033[37m";
+    constexpr static auto AQUA = "\033[94m";
 };
 
 } // namespace my::io

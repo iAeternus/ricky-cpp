@@ -162,7 +162,6 @@ public:
     template <typename... Args>
     static Json array(Args&&... args) {
         JsonType::JsonArray arr;
-        // build_array(arr, std::forward<Args>(args)...);
         arr.append(to_json_object(std::forward<Args>(args))...);
         return Json(std::move(arr));
     }
@@ -204,7 +203,6 @@ public:
             return "JsonNull";
         default:
             throw type_exception("json type {} is not valid", SRC_LOC, id);
-            break;
         }
     }
 
