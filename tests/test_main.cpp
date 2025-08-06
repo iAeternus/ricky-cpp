@@ -12,7 +12,7 @@
  * - 1 功能测试
  * - 2 HTTP服务器测试（阻塞）
  */
-#define TEST_MODE 1
+#define TEST_MODE 2
 
 #if TEST_MODE == 0
 #include "test_speed.hpp"
@@ -69,6 +69,8 @@
 #elif TEST_MODE == 2
 #include "test_http.hpp"
 #endif
+
+#include <winnls.h>
 
 using namespace my::test;
 

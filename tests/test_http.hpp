@@ -15,7 +15,7 @@ fn it_works = []() {
     静态文件服务
     http://127.0.0.1:8080/static
     */
-    server.static_file("/static", "F:\\develop\\ricky-cpp\\tests\\resources\\text.txt", 3600);
+    server.static_file("/static", R"(F:\Develop\cpp\ricky-cpp\tests\resources\text.txt)", 3600);
 
     /*
     首页
@@ -33,8 +33,8 @@ fn it_works = []() {
     */
     server.get("/hello", [](const net::HttpRequest& req) {
         net::HttpResponse resp;
-        auto name = req.query_params.get_or_default("name", "Guest");
-        resp.set_body("Hello, " + name + "!", "text/plain");
+        const auto name = req.query_params.get_or_default("name"_s, "Guest");
+        resp.set_body("Hello, "_s + name + "!"_s, "text/plain");
         return resp;
     });
 
@@ -45,7 +45,7 @@ fn it_works = []() {
     server.post("/submit", [](const net::HttpRequest& req) {
         net::HttpResponse resp;
         resp.status = net::HttpStatusCode::CREATED;
-        resp.set_body("Received: " + req.body, "text/plain");
+        resp.set_body("Received: "_s + req.body, "text/plain");
         return resp;
     });
 
