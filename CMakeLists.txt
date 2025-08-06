@@ -10,29 +10,33 @@ project(RICKY_CPP VERSION 1.0
 # ----------------------------------------
 # 编译器标准配置
 # ----------------------------------------
-set(CMAKE_CXX_STANDARD 23)            # 强制使用C++23标准
-set(CMAKE_CXX_STANDARD_REQUIRED ON)   # 必须支持C++23
-set(CMAKE_CXX_EXTENSIONS OFF)         # 禁用编译器扩展
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # ----------------------------------------
-# 并行编译配置（自动检测CPU核心数）
+# 构建系统优化 (优先使用Ninja)
 # ----------------------------------------
-include(ProcessorCount)
-ProcessorCount(NUM_JOBS)
-if (NUM_JOBS EQUAL 0)
-    set(NUM_JOBS 4)  # 核心数检测失败时回退到4线程
+if (NOT CMAKE_GENERATOR)
+    find_program(NINJA_EXE ninja)
+    if (NINJA_EXE)
+        set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "Build system generator")
+        message(STATUS "[MAIN] Using Ninja build system")
+    endif ()
 endif ()
-message(STATUS "[MAIN] Parallel jobs: ${NUM_JOBS}")
 
 # ----------------------------------------
-# 预编译头文件（PCH）配置
+# 并行编译配置
 # ----------------------------------------
-set(PCH_HEADER "${CMAKE_SOURCE_DIR}/include/common/PCH.h")
-if (EXISTS ${PCH_HEADER})
-    message(STATUS "[MAIN] Enabling precompiled headers")
-    # 为可执行文件设置PCH（Require CMake 3.16+）
-    target_precompile_headers(RICKY_CPP PRIVATE ${PCH_HEADER})
+if (NOT CMAKE_GENERATOR MATCHES "Ninja")
+    include(ProcessorCount)
+    ProcessorCount(NUM_JOBS)
+    if (NUM_JOBS EQUAL 0)
+        set(NUM_JOBS 4)
+    endif ()
+    set(CMAKE_BUILD_PARALLEL_LEVEL ${NUM_JOBS} CACHE STRING "Parallel build jobs")
+    message(STATUS "[MAIN] Parallel jobs: ${NUM_JOBS}")
 endif ()
 
 # ----------------------------------------
@@ -43,13 +47,18 @@ file(GLOB_RECURSE SRC_FILES
         "${CMAKE_SOURCE_DIR}/src/*.cxx"
 )
 
-# 添加可执行文件
 add_executable(RICKY_CPP ${SRC_FILES})
+
+# 延迟设置PCH（必须在目标创建后）
+if (ENABLE_PCH AND EXISTS ${PCH_HEADER})
+    message(STATUS "[MAIN] Enabling precompiled headers")
+    target_precompile_headers(RICKY_CPP PRIVATE ${PCH_HEADER})
+endif ()
 
 # ----------------------------------------
 # include目录配置
 # ----------------------------------------
-target_include_directories(RICKY_CPP PUBLIC
+target_include_directories(RICKY_CPP PRIVATE
         ${CMAKE_SOURCE_DIR}/include
         ${CMAKE_SOURCE_DIR}/include/io
         ${CMAKE_SOURCE_DIR}/include/util
@@ -65,53 +74,79 @@ target_include_directories(RICKY_CPP PUBLIC
         ${CMAKE_SOURCE_DIR}/include/net
 )
 
-target_link_libraries(RICKY_CPP PRIVATE ws2_32)
+# 平台特定链接库
+if (WIN32)
+    target_link_libraries(RICKY_CPP PRIVATE ws2_32)
+elseif (UNIX)
+    target_link_libraries(RICKY_CPP PRIVATE pthread)
+endif ()
 
 # ----------------------------------------
-# 编译器优化
+# 编译器优化与警告
 # ----------------------------------------
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+# 公共编译选项
+target_compile_options(RICKY_CPP PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:
+        /W4 /WX
+        /MP           # 多进程编译
+        /permissive-  # 标准一致性模式
+        >
+        $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:
+        -Wall -Wextra -Wpedantic
+        -Wno-unused-parameter  # 忽略未使用的参数警告
+        >
+)
+
+# 配置特定优化
+target_compile_options(RICKY_CPP PRIVATE
+        $<$<CONFIG:RELEASE>:
+        $<$<CXX_COMPILER_ID:MSVC>:/O2 /GL>
+        $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-O3 -flto>
+        >
+        $<$<CONFIG:DEBUG>:
+        $<$<CXX_COMPILER_ID:MSVC>:/Zi>
+        $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-g3>
+        >
+)
+
+# 链接器优化
+target_link_options(RICKY_CPP PRIVATE
+        $<$<CONFIG:RELEASE>:
+        $<$<CXX_COMPILER_ID:MSVC>:/LTCG>
+        $<$<OR:$<CXX_COMPILER_ID:GNU>,$<CXX_COMPILER_ID:Clang>>:-flto>
+        >
+)
+
+# GNU/Clang额外优化
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(RICKY_CPP PRIVATE
-            -Wall -Wextra -Wpedantic  # 严格警告
-            -O2                       # 发布模式优化
-            -ffunction-sections       # 函数分段（减少二进制体积）
-            -fdata-sections           # 数据分段
-            -Wa,-mbig-obj             # 汇编器大对象支持
+            -ffunction-sections
+            -fdata-sections
+    )
+    target_link_options(RICKY_CPP PRIVATE
+            -Wl,--gc-sections
+            $<$<CONFIG:RELEASE>:-Wl,--strip-all>
     )
 
-    # 链接器优化（gold/lld）
+    # 链接器选择
     include(CheckLinkerFlag)
-    check_linker_flag(CXX "-fuse-ld=gold" LINKER_SUPPORTS_GOLD)
-    if (LINKER_SUPPORTS_GOLD)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--gc-sections,--no-keep-memory")
-        message(STATUS "[MAIN] Using GNU gold linker")
+    if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        set(LINKER_OPTIONS "-fuse-ld=lld" CACHE STRING "Linker selection")
     else ()
-        check_linker_flag(CXX "-fuse-ld=lld" LINKER_SUPPORTS_LLD)
-        if (LINKER_SUPPORTS_LLD)
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -Wl,--gc-sections,--icf=safe")
-            message(STATUS "[MAIN] Using LLVM lld linker")
-        else ()
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections,--no-keep-memory")
-            message(STATUS "[MAIN] Using default linker")
-        endif ()
+        set(LINKER_OPTIONS "-fuse-ld=gold" CACHE STRING "Linker selection")
     endif ()
 
-elseif (MSVC)
-    # MSVC优化配置
-    target_compile_options(RICKY_CPP PRIVATE
-            /W4       # 最高警告等级
-            /WX       # 视警告为错误
-            /MP       # 多进程编译
-            /GL       # 全程序优化
-            /bigobj   # 大对象支持
-    )
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG")  # 链接时代码生成
+    check_linker_flag(CXX ${LINKER_OPTIONS} LINKER_SUPPORTS_OPTION)
+    if (LINKER_SUPPORTS_OPTION)
+        target_link_options(RICKY_CPP PRIVATE ${LINKER_OPTIONS})
+        message(STATUS "[MAIN] Using ${LINKER_OPTIONS} linker")
+    endif ()
 endif ()
 
 # ----------------------------------------
 # 输出目录配置
 # ----------------------------------------
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)  # 可执行文件
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # ----------------------------------------
 # 测试配置

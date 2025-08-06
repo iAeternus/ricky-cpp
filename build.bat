@@ -18,13 +18,13 @@ if exist CMakeCache.txt (
     echo Checking existing CMake configuration...
     setlocal
     set "OLD_GENERATOR="
-    
+
     for /f "tokens=1,* delims== " %%A in ('findstr /b /c:"CMAKE_GENERATOR:INTERNAL" CMakeCache.txt') do (
         set "OLD_GENERATOR=%%B"
     )
-    
+
     endlocal & set "OLD_GENERATOR=%OLD_GENERATOR%"
-    
+
     if "!OLD_GENERATOR!" NEQ %GENERATOR% (
         echo Detected different generator: [!OLD_GENERATOR%]
         echo Cleaning old CMake configuration...

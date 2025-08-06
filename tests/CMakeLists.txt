@@ -1,5 +1,5 @@
 # ===================================================================
-# 测试项目CMake配置（tests/CMakeLists.txt）
+# 测试项目CMake配置
 # ===================================================================
 cmake_minimum_required(VERSION 3.20)
 
@@ -12,83 +12,97 @@ file(GLOB_RECURSE TEST_SOURCES
 )
 list(FILTER TEST_SOURCES EXCLUDE REGEX ".*/main\\.cpp$")
 
-# 测试可执行文件
+# 创建测试可执行文件
 add_executable(RICKY_CPP_TESTS ${TEST_SOURCES})
 
 # ----------------------------------------
-# include目录配置
+# 继承主项目配置
 # ----------------------------------------
-target_include_directories(RICKY_CPP_TESTS PUBLIC
-        ${CMAKE_SOURCE_DIR}/include
-        ${CMAKE_SOURCE_DIR}/include/io
-        ${CMAKE_SOURCE_DIR}/include/util
-        ${CMAKE_SOURCE_DIR}/include/test
-        ${CMAKE_SOURCE_DIR}/include/async
-        ${CMAKE_SOURCE_DIR}/include/fs
-        ${CMAKE_SOURCE_DIR}/include/math
-        ${CMAKE_SOURCE_DIR}/include/graph
-        ${CMAKE_SOURCE_DIR}/include/coro
-        ${CMAKE_SOURCE_DIR}/include/ai
-        ${CMAKE_SOURCE_DIR}/include/num
-        ${CMAKE_SOURCE_DIR}/include/mem
-        ${CMAKE_SOURCE_DIR}/include/net
+# 包含目录继承
+target_include_directories(RICKY_CPP_TESTS PRIVATE
+        $<TARGET_PROPERTY:RICKY_CPP,INCLUDE_DIRECTORIES>
 )
 
-target_link_libraries(RICKY_CPP_TESTS PRIVATE ws2_32)
+# 编译器标志继承
+target_compile_options(RICKY_CPP_TESTS PRIVATE
+        $<TARGET_PROPERTY:RICKY_CPP,COMPILE_OPTIONS>
+)
+
+# 链接器标志继承
+target_link_options(RICKY_CPP_TESTS PRIVATE
+        $<TARGET_PROPERTY:RICKY_CPP,LINK_OPTIONS>
+)
+
+# 链接库继承
+get_target_property(MAIN_LIBS RICKY_CPP LINK_LIBRARIES)
+if (MAIN_LIBS)
+    target_link_libraries(RICKY_CPP_TESTS PRIVATE ${MAIN_LIBS})
+endif ()
 
 # ----------------------------------------
-# 编译器优化
+# LTO
 # ----------------------------------------
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-    target_compile_options(RICKY_CPP_TESTS PRIVATE
-            -Wa,-mbig-obj             # 汇编器大对象支持
-    )
-
-    # 链接器优化（gold/lld）
-    include(CheckLinkerFlag)
-    check_linker_flag(CXX "-fuse-ld=gold" LINKER_SUPPORTS_GOLD)
-    if (LINKER_SUPPORTS_GOLD)
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=gold -Wl,--gc-sections,--no-keep-memory")
-        message(STATUS "[MAIN] Using GNU gold linker")
-    else ()
-        check_linker_flag(CXX "-fuse-ld=lld" LINKER_SUPPORTS_LLD)
-        if (LINKER_SUPPORTS_LLD)
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fuse-ld=lld -Wl,--gc-sections,--icf=safe")
-            message(STATUS "[MAIN] Using LLVM lld linker")
-        else ()
-            set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--gc-sections,--no-keep-memory")
-            message(STATUS "[MAIN] Using default linker")
-        endif ()
+# 确保测试程序被识别为控制台应用程序
+if (WIN32)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+        target_link_options(RICKY_CPP_TESTS PRIVATE
+                -Wl,-subsystem,console
+        )
+    elseif (MSVC)
+        set_target_properties(RICKY_CPP_TESTS PROPERTIES
+                LINK_FLAGS "/SUBSYSTEM:CONSOLE"
+        )
     endif ()
+endif ()
 
-elseif (MSVC)
-    # MSVC优化配置
+# 在测试目标上禁用 LTO（链接时优化）
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(RICKY_CPP_TESTS PRIVATE
-            /bigobj   # 大对象支持
+            -fno-lto
     )
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG")  # 链接时代码生成
+    target_link_options(RICKY_CPP_TESTS PRIVATE
+            -fno-lto
+    )
 endif ()
 
 # ----------------------------------------
-# 继承主项目的预编译头配置
+# 测试专用配置
 # ----------------------------------------
-if (DEFINED PCH_HEADER AND EXISTS ${PCH_HEADER})
-    target_precompile_headers(RICKY_CPP_TESTS PRIVATE ${PCH_HEADER})
-    message(STATUS "[TEST] Sharing PCH from main project")
-endif ()
+# 测试特定编译选项
+target_compile_definitions(RICKY_CPP_TESTS PRIVATE
+        UNIT_TESTING=1
+)
 
 # ----------------------------------------
-# 测试输出目录配置
+# 输出目录配置
 # ----------------------------------------
 set_target_properties(RICKY_CPP_TESTS PROPERTIES
-        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/tests"
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/tests"
 )
 
 # ----------------------------------------
-# 注册CTest测试
+# 编译器大对象支持
+# ----------------------------------------
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_compile_options(RICKY_CPP_TESTS PRIVATE
+            -Wa,-mbig-obj
+    )
+elseif (MSVC)
+    target_compile_options(RICKY_CPP_TESTS PRIVATE
+            /bigobj
+    )
+endif ()
+
+# ----------------------------------------
+# CTest测试注册
 # ----------------------------------------
 add_test(
         NAME RICKY_CPP_TESTS
         COMMAND $<TARGET_FILE:RICKY_CPP_TESTS>
 )
+
+# 测试超时设置（秒）
+set_tests_properties(RICKY_CPP_TESTS PROPERTIES TIMEOUT 30)
+
 message(STATUS "[TEST] Test executable: $<TARGET_FILE_NAME:RICKY_CPP_TESTS>")
+message(STATUS "[TEST] Output path: ${CMAKE_BINARY_DIR}/bin/tests")

@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set TEST_ARTIFACTS=build/tests
+set TEST_ARTIFACTS=build/bin/tests
 set TEST_BINARY=RICKY_CPP_TESTS
 
 if not exist "%TEST_ARTIFACTS%" (
