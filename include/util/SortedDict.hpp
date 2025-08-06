@@ -148,7 +148,7 @@ public:
      * @brief 构造一棵空红黑树
      */
     RBTree(Comp comp = Comp{}) :
-            comp_(comp), size_(0) {
+            comp_(comp), size_(0), nil_(nullptr) {
         create_nil();
         this->root_ = nil_;
     }
@@ -157,7 +157,7 @@ public:
      * @brief 通过初始化成员列表构造
      */
     RBTree(std::initializer_list<Pair<key_t, value_t>>&& init_list) :
-            comp_(Comp{}), size_(0) {
+            comp_(Comp{}), size_(0), nil_(nullptr) {
         create_nil();
         this->root_ = nil_;
         for (auto&& [key, val] : init_list) {
@@ -171,7 +171,8 @@ public:
     RBTree(const Self& other) :
             alloc_(other.alloc_),
             comp_(other.comp_),
-            size_(other.size_) {
+            size_(other.size_),
+            nil_(nullptr) {
         create_nil();
         this->root_ = nil_;
         other.for_each([&](const auto& key, const auto& val) {

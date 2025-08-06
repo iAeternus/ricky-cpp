@@ -33,8 +33,8 @@ fn it_works = []() {
     */
     server.get("/hello", [](const net::HttpRequest& req) {
         net::HttpResponse resp;
-        auto name = req.query_params.get_or_default("name"_s, "Guest");
-        resp.set_body("Hello, "_s + name + "!"_s, "text/plain");
+        auto name = req.query_params.get_or_default("name", "Guest");
+        resp.set_body("Hello, " + name + "!", "text/plain");
         return resp;
     });
 
@@ -45,7 +45,7 @@ fn it_works = []() {
     server.post("/submit", [](const net::HttpRequest& req) {
         net::HttpResponse resp;
         resp.status = net::HttpStatusCode::CREATED;
-        resp.set_body("Received: "_s + req.body, "text/plain");
+        resp.set_body("Received: " + req.body, "text/plain");
         return resp;
     });
 

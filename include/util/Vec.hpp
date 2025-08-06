@@ -63,7 +63,7 @@ public:
 
     /**
      * @brief 从可迭代对象构造
-     * @tparam Iter 满足Iterable概念的类型
+     * @tparam I 满足Iterable概念的类型
      * @param iter 可迭代对象，元素将被拷贝
      */
     template <Iterable I>
@@ -238,9 +238,9 @@ public:
 
     /**
      * @brief 在指定位置插入元素
-     * @tparam U 可转发类型
+     * @tparam Args 可转发类型
      * @param idx 插入位置，从0开始
-     * @param item 要插入的元素
+     * @param args 要插入的元素
      */
     template <typename... Args>
     void insert(usize idx, Args&&... args) {
@@ -472,9 +472,8 @@ public:
 
         /**
          * @brief 构造一个迭代器
-         * @param dynarray 指向动态数组的指针
-         * @param blockIndex 块索引
-         * @param inblockIndex 块内索引
+         * @param vec_ptr 指向动态数组的指针
+         * @param cur_idx 当前索引
          */
         Iterator(container_t* vec_ptr = nullptr, usize cur_idx = 0) :
                 cur_idx_(cur_idx), vec_ptr_(vec_ptr) {}
@@ -736,7 +735,7 @@ private:
  */
 template <typename T>
 fn opt(const Vec<std::any>& args, usize idx)->T {
-    if (idx < 0 || idx >= args.size()) {
+    if (idx >= args.size()) {
         throw index_out_of_bounds_exception("index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
     }
 
@@ -751,7 +750,7 @@ template <typename>
 struct is_vec : std::false_type {};
 
 template <typename T>
-struct is_vec<util::Vec<T>> : std::true_type {};
+struct is_vec<Vec<T>> : std::true_type {};
 
 template <typename T>
 constexpr bool is_vec_v = is_vec<T>::value;

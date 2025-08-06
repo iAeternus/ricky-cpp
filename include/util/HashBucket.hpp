@@ -247,7 +247,7 @@ public:
      * @brief 与另一个管理器交换数据。
      * @param other 需要交换的管理器。
      */
-    void swap(Self& other) {
+    void swap(Self& other) noexcept {
         std::swap(this->move_dist_, other.move_dist_);
         std::swap(this->hash_val_, other.hash_val_);
         std::swap(this->value_, other.value_);
@@ -460,7 +460,6 @@ public:
             value_manager.add_move_dist();
         }
         throw runtime_exception("bucket is full");
-        return nullptr;
     }
 
     /**

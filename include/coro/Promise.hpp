@@ -12,7 +12,7 @@
 namespace my::coro {
 
 template <typename T>
-struct PromiseImpl : public Object<PromiseImpl<T>> {
+struct PromiseImpl : Object<PromiseImpl<T>> {
     using Self = PromiseImpl<T>;
     using co_type = std::coroutine_handle<Self>;
 

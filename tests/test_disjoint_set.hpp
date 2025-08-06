@@ -1,8 +1,7 @@
 #ifndef TEST_DISJOINT_SET_HPP
 #define TEST_DISJOINT_SET_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "DisjointSet.hpp"
 
 namespace my::test::test_disjoint_set {

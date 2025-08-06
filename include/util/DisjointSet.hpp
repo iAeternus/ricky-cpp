@@ -16,12 +16,12 @@ class DisjointSet : public Object<DisjointSet<T>> {
     /**
      * @brief 并查集节点
      */
-    struct Node : public Object<Node> {
+    struct Node : Object<Node> {
         T value;      // 值
         i32 rank;     // 秩
         Node* parent; // 父节点
 
-        Node(const T& value) :
+        explicit Node(const T& value) :
                 value(value), rank(1), parent(this) {}
 
         [[nodiscard]] CString __str__() const {

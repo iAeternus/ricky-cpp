@@ -2,8 +2,7 @@
 #define TEST_WIN_FILE_UTILS_HPP
 
 #include "Printer.hpp"
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "filesystem.hpp"
 #include "win/file_utils.hpp"
 

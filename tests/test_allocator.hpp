@@ -1,8 +1,7 @@
 #ifndef TEST_ALLOCATOR_HPP
 #define TEST_ALLOCATOR_HPP
 
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 #include "Allocator.hpp"
 #include "ricky.hpp"
 

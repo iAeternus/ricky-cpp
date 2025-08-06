@@ -1,8 +1,7 @@
 #ifndef TEST_WIN_FILE_HPP
 #define TEST_WIN_FILE_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "filesystem.hpp"
 #include "win/File.hpp"
 

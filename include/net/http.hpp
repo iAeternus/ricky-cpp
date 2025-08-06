@@ -100,7 +100,7 @@ struct HttpRequest : public Object<HttpRequest> {
      * @brief 从请求头获取 Content-Length
      */
     usize content_length() const {
-        auto content_length = headers.get_or_default("Content-Length"_s, "0");
+        auto content_length = headers.get_or_default("Content-Length", "0");
         return std::stoul(content_length.into_string());
     }
 
@@ -136,7 +136,7 @@ struct HttpResponse : public Object<HttpResponse> {
      * @brief 设置响应头中的 Content-Type
      */
     void set_content_type(const util::String& type) {
-        headers["Content-Type"_s] = type;
+        headers["Content-Type"] = type;
     }
 
     /**
@@ -145,7 +145,7 @@ struct HttpResponse : public Object<HttpResponse> {
     void set_body(const util::String& content, const util::String& type = "text/plain") {
         body = content;
         set_content_type(type);
-        headers["Content-Length"_s] = util::String::from_u64(body.length());
+        headers["Content-Length"] = util::String::from_u64(body.length());
     }
 
     /**
@@ -153,7 +153,7 @@ struct HttpResponse : public Object<HttpResponse> {
      */
     void set_redirect(const util::String& location, HttpStatusCode code = HttpStatusCode::FOUND) {
         status = code;
-        headers["Location"_s] = location;
+        headers["Location"] = location;
         body.clear();
         headers.remove("Content-Length");
 
@@ -200,17 +200,17 @@ public:
     HttpServer(const char* ip, u16 port, usize num_of_threads = 4, u32 max_connections = 0, u32 timeout = 30) :
             server_(ip, port), pool_(num_of_threads), max_connections_(max_connections), timeout_(timeout) {
         // 添加默认MIME类型
-        mime_types_["html"_s] = "text/html";
-        mime_types_["css"_s] = "text/css";
-        mime_types_["js"_s] = "application/javascript";
-        mime_types_["json"_s] = "application/json";
-        mime_types_["png"_s] = "image/png";
-        mime_types_["jpg"_s] = "image/jpeg";
-        mime_types_["jpeg"_s] = "image/jpeg";
-        mime_types_["gif"_s] = "image/gif";
-        mime_types_["svg"_s] = "image/svg+xml";
-        mime_types_["ico"_s] = "image/x-icon";
-        mime_types_["txt"_s] = "text/plain";
+        mime_types_["html"] = "text/html";
+        mime_types_["css"] = "text/css";
+        mime_types_["js"] = "application/javascript";
+        mime_types_["json"] = "application/json";
+        mime_types_["png"] = "image/png";
+        mime_types_["jpg"] = "image/jpeg";
+        mime_types_["jpeg"] = "image/jpeg";
+        mime_types_["gif"] = "image/gif";
+        mime_types_["svg"] = "image/svg+xml";
+        mime_types_["ico"] = "image/x-icon";
+        mime_types_["txt"] = "text/plain";
     }
 
     /**
@@ -404,7 +404,7 @@ private:
                     }
                 } else {
                     resp.status = HttpStatusCode::METHOD_NOT_ALLOWED;
-                    resp.headers["Allow"_s] = get_allowed_methods(req.path);
+                    resp.headers["Allow"] = get_allowed_methods(req.path);
                     resp.set_body("<h1>405 Method Not Allowed</h1>", "text/html");
                 }
             }
@@ -469,7 +469,7 @@ private:
         // 读取请求体
         if (req.headers.contains("content-length")) {
             try {
-                auto content_length = std::stoull(req.headers["content-length"_s].into_string());
+                auto content_length = std::stoull(req.headers["content-length"].into_string());
                 if (content_length > 0 && content_length <= MAX_BODY_SIZE) {
                     req.body = client.recv_bytes(content_length);
                     io::Log::debug("Request body: {}", SRC_LOC, req.body);
@@ -602,14 +602,14 @@ private:
 
                     // 设置缓存头
                     if (config.cache_max_age > 0) {
-                        resp.headers["Cache-Control"_s] = "max-age="_s + util::String::from_u32(config.cache_max_age);
+                        resp.headers["Cache-Control"] = "max-age=" + config.cache_max_age;
                     }
 
                     // 设置内容
                     if (req.method == HttpMethod::GET) {
                         resp.set_body(content);
                     } else { // HEAD请求
-                        resp.headers["Content-Length"_s] = util::String::from_u64(content.length());
+                        resp.headers["Content-Length"] = util::String::from_u64(content.length());
                     }
 
                     // 发送响应

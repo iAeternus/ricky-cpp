@@ -18,7 +18,7 @@ namespace my::coro {
  */
 using Coroutine = std::coroutine_handle<>;
 
-struct CurrentCoro : public std::suspend_always {
+struct CurrentCoro : std::suspend_always {
     /**
      * @brief 协程挂起时调用
      */
@@ -38,7 +38,7 @@ private:
     Coroutine previous_coro_ = nullptr; // 存储当前协程挂起前的句柄
 };
 
-struct CoroAwaiter : public std::suspend_always, public Object<CoroAwaiter> {
+struct CoroAwaiter : std::suspend_always, Object<CoroAwaiter> {
     Coroutine coro_ = nullptr;
 
     CoroAwaiter() noexcept = default;

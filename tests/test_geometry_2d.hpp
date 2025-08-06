@@ -1,8 +1,7 @@
 #ifndef TEST_GEOMETRY_2D_HPP
 #define TEST_GEOMETRY_2D_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "geometry_2d.hpp"
 
 namespace my::test::test_geometry_2d {

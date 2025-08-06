@@ -1,8 +1,7 @@
 #ifndef TEST_EXPRESSION_HPP
 #define TEST_EXPRESSION_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Expr.hpp"
 
 namespace my::test::test_expr {

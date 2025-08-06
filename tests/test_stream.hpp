@@ -1,8 +1,7 @@
 #ifndef TEST_STREAM_HPP
 #define TEST_STREAM_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Stream.hpp"
 // #include "Pair.hpp"
 

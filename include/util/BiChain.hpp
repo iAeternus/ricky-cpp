@@ -18,7 +18,7 @@ class BiChainIterator;
  * @brief 双向链
  */
 template <BiChainNodeType BiNode, typename Alloc = Allocator<BiNode>>
-class BiChain : public Chain<BiNode, Alloc> {
+class BiChain final : public Chain<BiNode, Alloc> {
 public:
     using Self = BiChain<BiNode, Alloc>;
     using Super = Chain<BiNode, Alloc>;

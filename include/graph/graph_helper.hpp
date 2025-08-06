@@ -114,7 +114,7 @@ struct Node : public Object<Node<N, E>> {
 
     /**
      * @brief 遍历邻接边
-     * @param C 消费者类型（接受两个参数：Idx id, E weight）
+     * @param consumer 消费者类型（接受两个参数：Idx id, E weight）
      */
     template <typename C>
     void for_each(C&& consumer) {

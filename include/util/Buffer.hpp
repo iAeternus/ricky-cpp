@@ -20,11 +20,11 @@ template <typename T, typename Alloc = Allocator<T>>
 class Buffer : public Sequence<Buffer<T>, T> {
 public:
     using value_t = T;
-    using Self = Buffer<value_t, Alloc>;
+    using Self = Buffer<T, Alloc>;
     using Super = Sequence<Buffer<value_t>, value_t>;
 
-    using iterator = Super::iterator;
-    using const_iterator = Super::const_iterator;
+    using iterator = typename Super::iterator;
+    using const_iterator = typename Super::const_iterator;
 
     /**
      * @brief 默认构造函数，创建一个空的Buffer

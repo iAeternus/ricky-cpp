@@ -27,7 +27,7 @@ public:
     struct promise_type;
     using co_handle = std::coroutine_handle<promise_type>;
 
-    struct promise_type : public PromiseImpl<T> {
+    struct promise_type : PromiseImpl<T> {
         Self get_return_object() noexcept {
             return Self(co_handle::from_promise(*this));
         }

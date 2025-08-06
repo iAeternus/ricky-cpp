@@ -57,11 +57,10 @@ public:
     /**
      * @brief 拷贝构造函数
      * @tparam U 其他类型的分配器
-     * @param other 其他类型的分配器实例
      * @details 允许从其他类型的分配器转换而来，适用于 STL 容器的 rebind 操作
      */
     template <typename U>
-    Allocator(const Allocator<U>&) noexcept {}
+    explicit Allocator(const Allocator<U>&) noexcept {}
 
     /**
      * @brief 分配内存

@@ -83,7 +83,8 @@ template <typename T, std::size_t N>
 struct inner_iterator_type<T[N]> : std::type_identity<T*> {};
 
 template <typename T>
-requires hasattr(T, Iterator) struct inner_iterator_type<T> : std::type_identity<typename T::Iterator> {};
+    requires hasattr
+(T, Iterator) struct inner_iterator_type<T> : std::type_identity<typename T::Iterator> {};
 
 template <typename T>
 using traits_inner_iterator_t = typename inner_iterator_type<T>::type;
@@ -93,7 +94,7 @@ using traits_inner_iterator_t = typename inner_iterator_type<T>::type;
  */
 template <typename dtype>
 struct is_valid_dtype {
-    static constexpr bool value = std::is_default_constructible<dtype>::value && std::is_nothrow_copy_constructible<dtype>::value && std::is_nothrow_move_constructible<dtype>::value && std::is_nothrow_copy_assignable<dtype>::value && std::is_nothrow_move_assignable<dtype>::value && std::is_nothrow_destructible<dtype>::value && !std::is_void<dtype>::value && !std::is_pointer<dtype>::value && !std::is_array<dtype>::value && !std::is_union<dtype>::value && !std::is_function<dtype>::value && !std::is_abstract<dtype>::value;
+    static constexpr bool value = std::is_default_constructible_v<dtype> && std::is_nothrow_copy_constructible_v<dtype> && std::is_nothrow_move_constructible_v<dtype> && std::is_nothrow_copy_assignable_v<dtype> && std::is_nothrow_move_assignable_v<dtype> && std::is_nothrow_destructible_v<dtype> && !std::is_void_v<dtype> && !std::is_pointer_v<dtype> && !std::is_array_v<dtype> && !std::is_union_v<dtype> && !std::is_function_v<dtype> && !std::is_abstract_v<dtype>;
 };
 
 template <typename dtype>

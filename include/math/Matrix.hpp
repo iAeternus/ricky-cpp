@@ -115,7 +115,7 @@ public:
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         value_t& operator[](usize j) {
-            if (j < 0 || j >= cols_) {
+            if (j >= cols_) {
                 throw index_out_of_bounds_exception("column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
             }
             return data_[start_col_ + j];
@@ -136,7 +136,7 @@ public:
                 data_(data), start_col_(start_col), cols_(cols) {}
 
         const value_t& operator[](usize j) const {
-            if (j < 0 || j >= cols_) {
+            if (j >= cols_) {
                 throw index_out_of_bounds_exception("column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
             }
             return data_[start_col_ + j];
@@ -150,9 +150,6 @@ public:
 
     Matrix(usize rows = 1, usize cols = 1, value_t value = 0.0) :
             rows_(rows), cols_(cols), data_(rows_ * cols_, value) {}
-
-    // Matrix(usize n, value_t value = 0.0) :
-    //         rows_(n), cols_(n), data_(rows_ * cols_, value) {}
 
     Matrix(std::initializer_list<std::initializer_list<value_t>>&& init_list) :
             rows_(init_list.size()), cols_(rows_ > 0 ? init_list.begin()->size() : 0), data_(rows_ * cols_) {
@@ -183,7 +180,7 @@ public:
     Matrix(Self&& other) noexcept = default;
 
     Self& operator=(const Self& other) = default;
-    Self& operator=(Self& other) = default;
+    Self& operator=(Self&& other) noexcept = default;
 
     usize rows() const {
         return rows_;
@@ -210,14 +207,14 @@ public:
     }
 
     value_t& at(usize i, usize j) {
-        if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
+        if (i >= rows_ || j >= cols_) {
             throw index_out_of_bounds_exception("index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
         }
         return at_impl(i, j);
     }
 
     const value_t& at(usize i, usize j) const {
-        if (i < 0 || i >= rows_ || j < 0 || j >= cols_) {
+        if (i >= rows_ || j >= cols_) {
             throw index_out_of_bounds_exception("index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
         }
         return at_impl(i, j);
@@ -232,14 +229,14 @@ public:
     }
 
     RowView operator[](usize i) {
-        if (i < 0 || i >= rows_) {
+        if ( i >= rows_) {
             throw index_out_of_bounds_exception("row index {} out of range [0..{}]", SRC_LOC, i, rows_);
         }
         return RowView{data_, i * cols_, cols_};
     }
 
     ConstRowView operator[](usize i) const {
-        if (i < 0 || i >= rows_) {
+        if (i >= rows_) {
             throw index_out_of_bounds_exception("row index {} out of range [0..{}]", SRC_LOC, i, rows_);
         }
         return ConstRowView{data_, i * cols_, cols_};

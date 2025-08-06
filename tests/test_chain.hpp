@@ -1,8 +1,7 @@
 #ifndef TEST_CHAIN_HPP
 #define TEST_CHAIN_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Chain.hpp"
 
 namespace my::test::test_chain {
@@ -100,7 +99,7 @@ fn should_str = []() {
 };
 
 fn test_chain() {
-    UnitTestGroup group{"test_chain"_cs};
+    UnitTestGroup group{"test_chain"};
 
     group.addTest("should_append", should_append);
     group.addTest("should_iterable", should_iterable);

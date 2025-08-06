@@ -1,8 +1,7 @@
 #ifndef TEST_HUFFMAN_TREE_HPP
 #define TEST_HUFFMAN_TREE_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "filesystem.hpp"
 #include "HuffmanTree.hpp"
 
@@ -58,7 +57,7 @@ fn should_handle_empty_string = []() {
 
 fn should_handle_non_ascii_character = []() {
     // Given
-    util::String text = "你好好"_s;
+    util::String text = "你好好";
 
     // When
     util::HuffmanTree h(text);

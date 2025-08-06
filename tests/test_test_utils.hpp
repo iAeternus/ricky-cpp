@@ -1,8 +1,7 @@
 #ifndef TEST_UNIT_TEST_HPP
 #define TEST_UNIT_TEST_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Exception.hpp"
 
 #include <source_location>

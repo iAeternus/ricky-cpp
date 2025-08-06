@@ -1,8 +1,7 @@
 #ifndef TEST_GENERATOR_HPP
 #define TEST_GENERATOR_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Generator.hpp"
 #include "Vec.hpp"
 

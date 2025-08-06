@@ -25,7 +25,7 @@ template <typename T, typename Alloc = Allocator<T>>
 class Array : public Sequence<Array<T>, T> {
 public:
     using value_t = T;
-    using Self = Array<value_t, Alloc>;
+    using Self = Array<T, Alloc>;
     using Super = Sequence<Array<value_t>, value_t>;
 
     /**
@@ -35,7 +35,7 @@ public:
      * @param args 用于初始化数组元素的参数
      */
     template <typename... Args>
-    Array(usize size, const Args&... args) :
+    explicit Array(const usize size, const Args&... args) :
             size_(size), arr_(alloc_.allocate(size_)) {
         for (usize i = 0; i < size_; ++i) {
             alloc_.construct(arr_ + i, args...);
@@ -333,7 +333,7 @@ public:
          * 将当前值增加步长，并返回自增前的迭代器
          * @return 返回自增前的迭代器
          */
-        Self operator++(i32) {
+        Self operator++(i32) const {
             Self tmp(*this);
             ++tmp;
             return tmp;
@@ -354,7 +354,7 @@ public:
          * 将当前值减少步长，并返回自减前的迭代器
          * @return 返回自减前的迭代器
          */
-        Self operator--(i32) {
+        Self operator--(i32) const {
             Self tmp(*this);
             --tmp;
             return tmp;

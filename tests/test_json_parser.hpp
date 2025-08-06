@@ -2,15 +2,14 @@
 #define TEST_JSON_PARSER_HPP
 
 #include "Printer.hpp"
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "JsonParser.hpp"
 
 namespace my::test::test_json_parser {
 
 fn should_parse = []() {
     // Given
-    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })"_s;
+    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
 
     // When
     auto json = io::JsonParser::parse(s);
@@ -18,9 +17,9 @@ fn should_parse = []() {
     // Then
     io::println(json);
     io::println(json.size());
-    io::println(json["array"_s]);
-    io::println(json["other"_s]);
-    io::println(json["bool"_s]);
+    io::println(json["array"]);
+    io::println(json["other"]);
+    io::println(json["bool"]);
 
     // When
     auto jsonStr = io::JsonParser::parse(json);
@@ -40,7 +39,7 @@ fn should_fail_to_parse_if_json_str_is_empty = []() {
 
 fn should_dump = []() {
     // Given
-    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })"_s;
+    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
 
     // When 
     auto res = io::JsonParser::parse(s).dump(2);

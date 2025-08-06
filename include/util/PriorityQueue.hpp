@@ -37,7 +37,7 @@ public:
 
     /**
      * @brief 带初始容量和比较器的构造函数
-     * @param capacity 初始容量
+     * @param cap 初始容量
      * @param comp 自定义比较函数对象
      */
     explicit PriorityQueue(usize cap, Comp comp = Comp{}) :

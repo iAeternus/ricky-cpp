@@ -1,8 +1,7 @@
 #ifndef TEST_VECTOR2_HPP
 #define TEST_VECTOR2_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Vector2.hpp"
 
 namespace my::test::test_vector2 {

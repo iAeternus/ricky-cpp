@@ -29,8 +29,7 @@ concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, sho
 
 template <typename T>
 concept MyPrintable = requires(T t) {
-    { t.__str__() }
-      -> ConvertibleToCstr;
+    { t.__str__() } -> ConvertibleToCstr;
 };
 
 template <typename T>

@@ -56,8 +56,8 @@ public:
     /**
      * @brief 终止操作：收集到容器 TODO 暂定为Vec
      */
-    auto collect() && -> util::Vec<value_t> {
-        util::Vec<value_t> result;
+    auto collect() && -> Vec<value_t> {
+        Vec<value_t> result;
         for (auto&& elem : static_cast<D&>(*this).generator()) {
             result.append(std::forward<decltype(elem)>(elem));
         }

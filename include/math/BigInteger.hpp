@@ -108,7 +108,7 @@ public:
     Self& operator=(const char* str) {
         if (!str || !*str) throw runtime_exception("invalid string");
 
-        i32 len = strlen(str);
+        auto len = std::strlen(str);
         i32 tmp = 0, ten = 1, stop = 0;
         num_.clear();
         sign_ = (str[0] != '-');
@@ -198,7 +198,7 @@ public:
     */
     Self right_shift(usize n) const {
         if (n >= length_) {
-            return Self(0);
+            return {0};
         }
         return *this / TEN.pow(n);
     }

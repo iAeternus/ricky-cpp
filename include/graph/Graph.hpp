@@ -53,6 +53,7 @@ public:
         this->edge_cnt_ = other.edge_cnt_;
         this->is_directed_ = other.is_directed_;
         this->nodes_ = other.nodes_;
+        return *this;
     }
 
     usize node_cnt() const {

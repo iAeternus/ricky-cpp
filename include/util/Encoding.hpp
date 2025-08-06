@@ -81,16 +81,17 @@ public:
     u8 byte_size(const char* data) const override {
         if ((data[0] & 0x80) == 0) {
             return 1; // 以0    开头（0xxxxxxx），1字节编码
-        } else if ((data[0] & 0xE0) == 0xC0) {
-            return 2; // 以110  开头（110xxxxx），2字节编码
-        } else if ((data[0] & 0xF0) == 0xE0) {
-            return 3; // 以1110 开头（1110xxxx），3字节编码
-        } else if ((data[0] & 0xF8) == 0xF0) {
-            return 4; // 以11110开头（11110xxx），4字节编码
-        } else {
-            throw runtime_exception("invalid CodePoint");
         }
-        return 0;
+        if ((data[0] & 0xE0) == 0xC0) {
+            return 2; // 以110  开头（110xxxxx），2字节编码
+        }
+        if ((data[0] & 0xF0) == 0xE0) {
+            return 3; // 以1110 开头（1110xxxx），3字节编码
+        }
+        if ((data[0] & 0xF8) == 0xF0) {
+            return 4; // 以11110开头（11110xxx），4字节编码
+        }
+        throw runtime_exception("invalid CodePoint");
     }
 
     Self* clone() const override {
@@ -174,7 +175,7 @@ public:
 /**
  * @brief 编码类型-编码方式 映射 TODO 可能存在内存泄漏
  */
-fn encoding_map(EncodingType enc)->Encoding* {
+fn encoding_map(EncodingType enc) -> Encoding* {
     static const Dict<EncodingType, Encoding*> encoding_map_ = {
         {EncodingType::ASCII, new ASCIIEncoding{}},
         {EncodingType::UTF8, new UTF8Encoding{}},
@@ -188,10 +189,8 @@ fn encoding_map(EncodingType enc)->Encoding* {
 
 } // namespace my::util
 
-namespace std {
-
 template <>
-struct formatter<my::util::EncodingType> : formatter<string_view> {
+struct std::formatter<my::util::EncodingType> : formatter<string_view> {
     auto format(my::util::EncodingType type, format_context& ctx) const {
         using my::util::EncodingType;
         string_view name;
@@ -207,7 +206,5 @@ struct formatter<my::util::EncodingType> : formatter<string_view> {
         return formatter<string_view>::format(name, ctx);
     }
 };
-
-} // namespace std
 
 #endif // ENCODING_HPP

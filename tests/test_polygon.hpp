@@ -1,8 +1,7 @@
 #ifndef TEST_POLYGON_HPP
 #define TEST_POLYGON_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Polygon.hpp"
 
 namespace my::test::test_polygon {

@@ -1,8 +1,7 @@
 #ifndef TEST_SORTED_DICT_HPP
 #define TEST_SORTED_DICT_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Printer.hpp"
 #include "Random.hpp"
 #include "String.hpp"
@@ -26,7 +25,7 @@ fn it_works = []() {
 };
 
 fn it_works2 = []() {
-    util::SortedDict<util::String, i32> sd = {{"hello"_s, 1}, {"world"_s, 1}, {"你好"_s, 2}, {"世界", 2}};
+    util::SortedDict<util::String, i32> sd = {{"hello", 1}, {"world", 1}, {"你好", 2}, {"世界", 2}};
     Assertions::assertEquals("{\"hello\":1,\"world\":1,\"世界\":2,\"你好\":2}"_cs, sd.__str__());
 };
 

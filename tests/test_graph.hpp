@@ -1,8 +1,7 @@
 #ifndef TEST_GRAPH_HPP
 #define TEST_GRAPH_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Graph.hpp"
 
 namespace my::test::test_graph {

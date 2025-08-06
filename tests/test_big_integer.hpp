@@ -1,8 +1,7 @@
 #ifndef TEST_BIG_INTEGER_HPP
 #define TEST_BIG_INTEGER_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "BigInteger.hpp"
 
 namespace my::test::test_big_integer {
@@ -29,10 +28,10 @@ fn should_construct_with_i64 = []() {
 
 fn should_construct_with_c_string = []() {
     // Given
-    CString num = "123456789012345678901234567890"_cs;
-    CString num2 = "0"_cs;
-    CString num3 = "-123456789012345678901234567890"_cs;
-    CString num4 = "-00123456789012345678901234567890"_cs;
+    CString num = "123456789012345678901234567890";
+    CString num2 = "0";
+    CString num3 = "-123456789012345678901234567890";
+    CString num4 = "-00123456789012345678901234567890";
 
     // When
     math::BigInteger bi = num;

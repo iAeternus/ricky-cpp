@@ -2,8 +2,7 @@
 #define TEST_THREAD_POOL_HPP
 
 #include "Exception.hpp"
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "ThreadPool.hpp"
 #include "Dict.hpp"
 

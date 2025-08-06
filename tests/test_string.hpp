@@ -1,8 +1,7 @@
 #ifndef TEST_STRING_HPP
 #define TEST_STRING_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "String.hpp"
 #include "Array.hpp"
 #include "Vec.hpp"
@@ -68,7 +67,7 @@ fn should_find = []() {
     auto pos2 = s.find(util::CodePoint('f'));
     auto pos3 = s.find("abd");
     auto pos4 = s2.find("aabaabaaaa");
-    auto pos5 = s2.find("");
+    auto pos5 = s2.find(""_s);
 
     // Then
     Assertions::assertEquals(3, pos);
@@ -239,9 +238,9 @@ fn should_split = []() {
 fn should_compare = []() {
     // Given
     util::String s = "abc";
-    util::String s2 = "abd";
-    util::String s3 = "abcc";
-    util::String s4 = "abc";
+    util::String s2 = "abd"_s;
+    util::String s3 = "abcc"_s;
+    util::String s4 = "abc"_s;
 
     // When
     cmp_t res = s.__cmp__(s2);
@@ -258,7 +257,7 @@ fn should_compare = []() {
 
 fn should_remove_all = []() {
     // Given
-    util::String s = "   a  bc ";
+    util::String s = "   a  bc "_s;
 
     // When
     auto res = s.remove_all(' ');

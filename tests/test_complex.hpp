@@ -1,8 +1,7 @@
 #ifndef TEST_COMPLEX_HPP
 #define TEST_COMPLEX_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Complex.hpp"
 
 namespace my::test::test_complex {

@@ -1,8 +1,7 @@
 #ifndef TEST_DYNARRAY_HPP
 #define TEST_DYNARRAY_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "DynArray.hpp"
 
 namespace my::test::test_dynarray {
@@ -144,7 +143,7 @@ fn should_at = []() {
 
 fn should_find = []() {
     // Given
-    util::DynArray<CString> d = {"aaa"_cs, "bbb"_cs, "ccc"_cs};
+    util::DynArray<CString> d = {"aaa", "bbb", "ccc"_cs};
 
     // When
     auto res = d.find("aaa"_cs);

@@ -24,7 +24,7 @@ namespace my {
 template <typename Alloc = Allocator<char>>
 class BaseCString {
 public:
-    using Self = BaseCString;
+    using Self = BaseCString<Alloc>;
 
     /**
      * @brief 根据指定长度创建字符串
@@ -383,7 +383,7 @@ public:
         return slice(get_rtrim_index(pattern));
     }
 
-    Self remove_all(char ch) const {
+    Self remove_all(const char ch) const {
         usize new_len = 0;
         for (usize i = 0; i < len_; ++i) {
             if (str_[i] != ch) {

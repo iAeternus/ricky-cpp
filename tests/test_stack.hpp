@@ -1,8 +1,7 @@
 #ifndef TEST_STACK_HPP
 #define TEST_STACK_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Stack.hpp"
 
 namespace my::test::test_stack {

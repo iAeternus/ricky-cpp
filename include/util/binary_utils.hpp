@@ -141,7 +141,7 @@ constexpr fn highbit(u32 x)->u32 {
  */
 template <typename B>
 constexpr fn all_one(const B& x)->bool {
-    return (x & (x + 1)) == 0;
+    return (x & x + 1) == 0;
 }
 
 /**
@@ -150,7 +150,7 @@ constexpr fn all_one(const B& x)->bool {
  */
 template <typename B>
 constexpr fn only_one(const B& x)->bool {
-    return (x & (x - 1)) == 0;
+    return (x & x - 1) == 0;
 }
 
 /**
@@ -160,7 +160,7 @@ constexpr fn roundup2(usize x)->usize {
     if (x <= 1) return 0LL;
 
     --x;
-    for (usize i = 1LL; i < usize(sizeof(usize)) * 8LL; i <<= 1LL) {
+    for (usize i = 1LL; i < sizeof(usize) * 8LL; i <<= 1LL) {
         x |= x >> 1LL;
     }
     return x + 1LL;

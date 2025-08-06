@@ -13,7 +13,6 @@
 
 #include <WinSock2.h>
 #include <minwindef.h>
-#include <winspool.h>
 
 namespace my::net {
 

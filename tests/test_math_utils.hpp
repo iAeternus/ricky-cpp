@@ -1,8 +1,7 @@
 #ifndef TEST_MATH_UTILS_HPP
 #define TEST_MATH_UTILS_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "math_utils.hpp"
 
 namespace my::test::test_math_utils {

@@ -1,8 +1,7 @@
 #ifndef TEST_BIG_DECIMAL_HPP
 #define TEST_BIG_DECIMAL_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "BigDecimal.hpp"
 
 namespace my::test::test_big_decimal {

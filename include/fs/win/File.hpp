@@ -8,7 +8,6 @@
 #define WIN_FILE_HPP
 
 #include "Exception.hpp"
-#include "file_utils.hpp"
 #include "NoCopy.hpp"
 
 #include <winbase.h>
@@ -19,7 +18,7 @@ class File : public Object<File>, public NoCopy {
     using Self = File;
 
 public:
-    File(const char* filename, CString mode) {
+    File(const char* filename, const CString& mode) {
         i32 dwDesiredAccess = 0, dwCreationDisposition = 0;
         if (mode == "w") {
             dwDesiredAccess = GENERIC_WRITE;

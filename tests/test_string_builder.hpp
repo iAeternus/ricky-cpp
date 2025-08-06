@@ -1,8 +1,7 @@
 #ifndef TEST_STRING_BUILDER_HPP
 #define TEST_STRING_BUILDER_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "StringBuilder.hpp"
 
 namespace my::test::test_string_builder {
@@ -12,7 +11,7 @@ fn it_works = []() {
     util::StringBuilder sb;
 
     // When
-    sb.append("aaa").append("bbb"_s).append("ccc").append("你好"_s).append('R');
+    sb.append("aaa"_s).append("bbb"_cs).append("ccc").append("你好"_s).append('R');
 
     // Then
     Assertions::assertEquals("aaabbbccc你好R"_s, sb.build());
@@ -35,7 +34,7 @@ fn should_find = []() {
     sb.append("abcdef").append("\r\n\r\r").append("defghi");
 
     // When
-    auto pos = sb.find("\r\n\r\r"_s);
+    auto pos = sb.find("\r\n\r\r");
 
     // Then
     Assertions::assertEquals(6, pos);

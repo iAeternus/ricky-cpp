@@ -1,8 +1,7 @@
 #ifndef TEST_BI_CHAIN_HPP
 #define TEST_BI_CHAIN_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "BiChain.hpp"
 
 namespace my::test::test_bi_chain {

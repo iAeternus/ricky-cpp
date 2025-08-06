@@ -23,7 +23,7 @@ public:
     }
 
     long long end() {
-        auto endTime = std::chrono::high_resolution_clock::now();
+        const auto endTime = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<D>(endTime - startTime_).count();
         return duration;
     }

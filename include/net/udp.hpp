@@ -49,7 +49,7 @@ public:
      * @return 返回接收到的数据和发送方地址
      * @throws runtime_exception 如果接收失败
      */
-    Pair<CString, SockAddrIn> recvfrom(i32 flags = 0) const {
+    [[nodiscard]] Pair<CString, SockAddrIn> recvfrom(i32 flags = 0) const {
         return socket_.recvfrom(flags);
     }
 
@@ -70,7 +70,7 @@ public:
      * @param family 地址族，默认为AF_INET
      * @throws runtime_exception 如果创建套接字失败
      */
-    UdpClient(i32 family = AF_INET) :
+    explicit UdpClient(i32 family = AF_INET) :
             socket_(family, SOCK_DGRAM) {}
 
     /**
@@ -106,7 +106,7 @@ public:
      * @return 返回接收到的数据和发送方地址
      * @throws runtime_exception 如果接收失败
      */
-    Pair<CString, SockAddrIn> recvfrom(i32 flags = 0) const {
+    [[nodiscard]] Pair<CString, SockAddrIn> recvfrom(i32 flags = 0) const {
         return socket_.recvfrom(flags);
     }
 

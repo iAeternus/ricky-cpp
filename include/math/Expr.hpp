@@ -7,6 +7,8 @@
 #ifndef EXPR_HPP
 #define EXPR_HPP
 
+#include <utility>
+
 #include "math_utils.hpp"
 #include "Vec.hpp"
 #include "Dict.hpp"
@@ -17,7 +19,7 @@ namespace my::math {
 /**
  * @brief 表达式Token
  */
-struct Token : public Object<Token> {
+struct Token : Object<Token> {
     enum Type {
         NUMBER,      // 数字
         OPERATOR,    // 二元操作符
@@ -35,8 +37,8 @@ struct Token : public Object<Token> {
     CString op_value; // 操作符值
     f64 num_value;    // 数字值
 
-    Token(Type type, const CString& value = "", f64 num = 0.0) :
-            type(type), op_value(value), num_value(num) {}
+    Token(Type type, CString value = "", f64 num = 0.0) :
+            type(type), op_value(std::move(value)), num_value(num) {}
 
     /**
      * @brief 获取操作符属性（优先级和结合性）
@@ -304,22 +306,26 @@ private:
     static f64 eval_op(f64 a, f64 b, const CString& op) {
         if (op == "+") {
             return a + b;
-        } else if (op == "-") {
+        }
+        if (op == "-") {
             return a - b;
-        } else if (op == "*") {
+        }
+        if (op == "*") {
             return a * b;
-        } else if (op == "/") {
+        }
+        if (op == "/") {
             if (is_zero(b)) {
                 throw arithmetic_exception("/ by zero");
             }
             return a / b;
-        } else if (op == "%") {
-            return std::fmod(a, b);
-        } else if (op == "^") {
-            return std::pow(a, b);
-        } else {
-            throw runtime_exception("unknown operator: {}", SRC_LOC, op);
         }
+        if (op == "%") {
+            return std::fmod(a, b);
+        }
+        if (op == "^") {
+            return std::pow(a, b);
+        }
+        throw runtime_exception("unknown operator: {}", SRC_LOC, op);
     }
 
     static f64 eval_unary_op(f64 x, const CString& op) {
@@ -342,7 +348,7 @@ namespace my {
 /**
  * @brief 自定义字符串字面量，支持 `_expr` 后缀转换为 `math::Expr` 对象
  * @param str C 风格字符串
- * @param length 字符串长度
+ * @param len 字符串长度
  * @return 转换后的 `math::Expr` 对象
  */
 fn operator""_expr(const char* str, size_t len)->math::Expr {

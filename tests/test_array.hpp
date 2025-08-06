@@ -1,8 +1,7 @@
 #ifndef TEST_ARRAY_HPP
 #define TEST_ARRAY_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Array.hpp"
 
 namespace my::test::test_array {

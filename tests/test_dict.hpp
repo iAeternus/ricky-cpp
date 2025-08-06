@@ -1,8 +1,7 @@
 #ifndef TEST_DICT_HPP
 #define TEST_DICT_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "ricky_test.hpp"
 #include "Dict.hpp"
 #include "Random.hpp"
 

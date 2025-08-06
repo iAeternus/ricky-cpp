@@ -714,7 +714,7 @@ private:
      * @return 返回块索引
      * @note 时间复杂度为 O(log n)
      */
-    i32 get_block_idx(usize ith) const {
+    static i32 get_block_idx(usize ith) {
         i32 l = 0, r = DYNARRAY_BLOCK_SIZE;
         while (l < r) {
             i32 mid = l + ((r - l) >> 1);
@@ -733,7 +733,7 @@ private:
      * @param block_idx 块索引
      * @return 返回块内索引
      */
-    usize get_inblock_idx(usize ith, i32 block_idx) const {
+    static usize get_inblock_idx(usize ith, i32 block_idx) {
         return ith - BASE_CAP * (exp2[block_idx] - 1) - 1;
     }
 

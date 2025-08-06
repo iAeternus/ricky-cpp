@@ -104,7 +104,7 @@ public:
         return *this;
     }
 
-    Self& operator=(Self&& other) {
+    Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
         this->unscaled_value_ = std::move(other.unscaled_value_);
@@ -333,7 +333,8 @@ public:
     /**
      * @brief 除法运算符
      * @note 以a和b标度的较大者为结果的标度
-     * @param other 除数
+     * @param a 被除数
+     * @param b 除数
      * @return 除法结果
      */
     friend Self operator/(const Self& a, const Self& b) {
@@ -375,14 +376,6 @@ public:
 
         return x.scale(scale, HALF_UP);
     }
-
-    // friend bool operator==(const Self& a, const Self& b) {
-    //     return a.__equals__(b);
-    // }
-
-    // friend bool operator!=(const Self& a, const Self& b) {
-    //     return !a.__equals__(b);
-    // }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         // 比较零值

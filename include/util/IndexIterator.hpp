@@ -26,7 +26,7 @@ public:
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    IndexIterator(container_t* container = nullptr, usize index = 0) :
+    explicit IndexIterator(container_t* container = nullptr, usize index = 0) :
             container_(container), index_(index) {}
 
     IndexIterator(const Self& other) :
