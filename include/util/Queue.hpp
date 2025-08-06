@@ -158,11 +158,11 @@ private:
 };
 
 /**
- * @brief 定义队列类型，节点类型为 `ChainNode<T>`
+ * @brief 队列类型，节点类型为 `ChainNode<T>`
  * @tparam T 节点存储的值类型
  */
-template <typename T>
-using Queue = ChainQueue<ChainNode<T>, Allocator<ChainNode<T>>>;
+template <typename T, typename Alloc = Allocator<ChainNode<T>>>
+using Queue = ChainQueue<ChainNode<T>, Alloc>;
 
 } // namespace my::util
 

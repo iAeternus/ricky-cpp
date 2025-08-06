@@ -20,16 +20,13 @@ template <typename T>
 concept RBTreeNodeType = requires(T a, const T& b, T&& c) {
     typename T::key_t;
     typename T::value_t;
-    { T() }
-    ->std::same_as<T>;
-    { a = std::move(c) }
-    ->std::same_as<T&>;
-    { T(std::move(c)) }
-    ->std::same_as<T>;
-    {a.key_};
-    {a.lch_};
-    {a.rch_};
-    {a.p_};
+    { T() } -> std::same_as<T>;
+    { a = std::move(c) } -> std::same_as<T&>;
+    { T(std::move(c)) } -> std::same_as<T>;
+    { a.key_ };
+    { a.lch_ };
+    { a.rch_ };
+    { a.p_ };
 };
 
 /**
@@ -58,9 +55,9 @@ public:
     Self* rch_;   // 指向右孩子的指针
     Self* p_;     // 指向父节点的指针，定义根节点的父指针指向NIL
 
-    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, Color color = Color::RED,
-                        Self* lchild = nullptr, Self* rchild = nullptr, Self* parent = nullptr) :
-            key_(key), val_(value), color_(color), lch_(lchild), rch_(rchild), p_(parent) {}
+    explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, const Color color = Color::RED,
+                        Self* lch = nullptr, Self* rch = nullptr, Self* parent = nullptr) :
+            key_(key), val_(value), color_(color), lch_(lch), rch_(rch), p_(parent) {}
 
     explicit RBTreeNode(key_t&& key, value_t&& value, Color color = Color::RED) :
             key_(std::move(key)), val_(std::move(value)), color_(color), lch_(nullptr), rch_(nullptr), p_(nullptr) {}
@@ -147,7 +144,7 @@ public:
     /**
      * @brief 构造一棵空红黑树
      */
-    RBTree(Comp comp = Comp{}) :
+    explicit RBTree(Comp comp = Comp{}) :
             comp_(comp), size_(0), nil_(nullptr) {
         create_nil();
         this->root_ = nil_;
@@ -309,8 +306,8 @@ public:
      * @param key 键
      * @return 返回对应值的可变引用
      */
-    template <typename _K>
-    value_t& get(const _K& key) {
+    template <typename K>
+    value_t& get(const K& key) {
         Node* p = tree_search(key);
         if (p == nullptr) {
             throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
@@ -324,8 +321,8 @@ public:
      * @param key 键
      * @return 返回对应值的不可变引用
      */
-    template <typename _K>
-    const value_t& get(const _K& key) const {
+    template <typename K>
+    const value_t& get(const K& key) const {
         Node* p = tree_search(key);
         if (p == nullptr) {
             throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
@@ -340,8 +337,8 @@ public:
      * @param default_val 默认值
      * @return 返回对应值的常量引用或默认值
      */
-    template <typename _K>
-    const value_t& get_or_default(const _K& key, const value_t& default_val) const {
+    template <typename K>
+    const value_t& get_or_default(const K& key, const value_t& default_val) const {
         Node* p = tree_search(key);
         if (p == nullptr) {
             return default_val;
@@ -355,11 +352,11 @@ public:
      * @param key 键
      * @return 返回对应值的可变引用
      */
-    template <typename _K>
-    value_t& operator[](_K&& key) {
+    template <typename K>
+    value_t& operator[](K&& key) {
         Node* p = tree_search(key);
         if (p == nullptr) {
-            return insert(std::forward<_K>(key), value_t{});
+            return insert(std::forward<K>(key), value_t{});
         }
         return p->val_;
     }
@@ -370,11 +367,11 @@ public:
      * @param default_val 默认值
      * @return 本字典对象的引用，支持链式编程
      */
-    template <typename _V>
-    Self& set_default(const key_t& key, _V&& default_val) {
+    template <typename V>
+    Self& set_default(const key_t& key, V&& default_val) {
         Node* p = tree_search(key);
         if (p == nullptr) {
-            insert(key, std::forward<_V>(default_val));
+            insert(key, std::forward<V>(default_val));
         }
         return *this;
     }
@@ -397,9 +394,9 @@ public:
      * 若节点不存在，则什么都不做
      * @param key 键
      */
-    template <typename _K>
-    void remove(_K&& key) {
-        Node* z = tree_search(std::forward<_K>(key));
+    template <typename K>
+    void remove(K&& key) {
+        Node* z = tree_search(std::forward<K>(key));
         if (z != nullptr) {
             remove_impl(z);
             --size_;
@@ -674,9 +671,9 @@ public:
 
         if (!flag1 && !flag2) {
             return 0; // 集合相等
-        } else if (flag1 && !flag2) {
+        } else if (!flag2) {
             return 1; // this 是 other 的真超集
-        } else if (!flag1 && flag2) {
+        } else if (!flag1) {
             return -1; // this 是 other 的真子集
         } else {
             return TYPE_MAX(cmp_t); // 互不为子集
@@ -747,7 +744,7 @@ public:
         using reference = value_type&;
         using const_reference = const value_type&;
 
-        RBTreeIterator(const RBTree* tree = nullptr, Node* curr = nullptr) :
+        explicit RBTreeIterator(const RBTree* tree = nullptr, Node* curr = nullptr) :
                 tree_(tree), curr_(curr) {
             if (curr_ != tree_->nil_ && curr_ != nullptr) {
                 update_kv();
@@ -851,7 +848,6 @@ public:
     private:
         /**
          * @brief 更新当前键值对
-         * @param add 需要调整的指数
          */
         void update_kv() {
             if (curr_ != tree_->nil_) {
@@ -1117,8 +1113,8 @@ private:
      * @param key 键
      * @return 若找到，返回指向目标节点的指针，否则返回 nullptr
      */
-    template <typename _K>
-    Node* tree_search(const _K& key) const {
+    template <typename K>
+    Node* tree_search(const K& key) const {
         Node* p = root_;
         while (p != nil_) {
             if (comp_(key, p->key_)) {

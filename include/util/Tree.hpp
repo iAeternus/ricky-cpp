@@ -17,15 +17,12 @@ namespace my::util {
  */
 template <typename T>
 concept TreeNodeType = requires(T a, const T& b, T&& c) {
-    { T() }
-    ->std::same_as<T>;
-    { a = std::move(c) }
-    ->std::same_as<T&>;
-    { T(std::move(c)) }
-    ->std::same_as<T>;
-    {a.val_};
-    {a.subs_};
-    {a.p_};
+    { T() } -> std::same_as<T>;
+    { a = std::move(c) } -> std::same_as<T&>;
+    { T(std::move(c)) } -> std::same_as<T>;
+    { a.val_ };
+    { a.subs_ };
+    { a.p_ };
 };
 
 /**
@@ -217,8 +214,8 @@ private:
     Node* root_;    // 根节点
 };
 
-template <typename T>
-using Tree = TreeImpl<TreeNode<T>, Allocator<TreeNode<T>>>;
+template <typename T, typename Alloc = Allocator<TreeNode<T>>>
+using Tree = TreeImpl<TreeNode<T>, Alloc>;
 
 } // namespace my::util
 

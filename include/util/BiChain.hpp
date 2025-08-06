@@ -160,8 +160,8 @@ public:
  * @tparam T 节点值类型
  * @tparam Alloc 内存分配器类型
  */
-template <typename T>
-using BiChainList = BiChain<BiChainNode<T>, Allocator<BiChainNode<T>>>;
+template <typename T, typename Alloc = Allocator<BiChainNode<T>>>
+using BiChainList = BiChain<BiChainNode<T>, Alloc>;
 
 } // namespace my::util
 

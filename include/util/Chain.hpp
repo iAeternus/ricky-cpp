@@ -253,8 +253,13 @@ protected:
     Node* current_;
 };
 
-template <typename T>
-using ChainList = Chain<ChainNode<T>, Allocator<ChainNode<T>>>;
+/**
+ * @brief 单向链的别名
+ * @tparam T 节点值类型
+ * @tparam Alloc 内存分配器类型
+ */
+template <typename T, typename Alloc = Allocator<ChainNode<T>>>
+using ChainList = Chain<ChainNode<T>, Alloc>;
 
 } // namespace my::util
 

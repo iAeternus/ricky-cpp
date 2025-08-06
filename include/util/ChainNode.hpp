@@ -16,26 +16,21 @@ namespace my::util {
  */
 template <typename T>
 concept ChainNodeType = requires(T a, const T& b, T&& c) {
-    { T() }
-    ->std::same_as<T>;
-    { a = b }
-    ->std::same_as<T&>;
-    { T(b) }
-    ->std::same_as<T>;
-    { a = std::move(c) }
-    ->std::same_as<T&>;
-    { T(std::move(c)) }
-    ->std::same_as<T>;
-    {a.next_};
-    {a.value_};
+    { T() } -> std::same_as<T>;
+    { a = b } -> std::same_as<T&>;
+    { T(b) } -> std::same_as<T>;
+    { a = std::move(c) } -> std::same_as<T&>;
+    { T(std::move(c)) } -> std::same_as<T>;
+    { a.next_ };
+    { a.value_ };
 };
 
 /**
  * @brief 双向链节点类型约束
  */
 template <typename T>
-concept BiChainNodeType = ChainNodeType<T>&& requires(T a) {
-    {a.prev_};
+concept BiChainNodeType = ChainNodeType<T> && requires(T a) {
+    { a.prev_ };
 };
 
 /**

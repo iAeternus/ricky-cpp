@@ -28,7 +28,7 @@ public:
      * @brief 默认构造函数，创建一个空字符串，并指定编码
      * @param enc 字符串的编码（可选）
      */
-    BaseString(EncodingType enc = EncodingType::UTF8) :
+    BaseString(const EncodingType enc = EncodingType::UTF8) :
             length_(0), is_sso_(true), encoding_(encoding_map(enc)), code_points_(sso_) {}
 
     /**
@@ -56,7 +56,7 @@ public:
      * @param length 字符串的长度（可选）
      * @param enc 字符串的编码（可选）
      */
-    BaseString(const char* str, usize length = npos, EncodingType enc = EncodingType::UTF8) {
+    BaseString(const char* str, usize length = npos, const EncodingType enc = EncodingType::UTF8) {
         Encoding* encoding = encoding_map(enc);
         length = ifelse(length != npos, length, std::strlen(str));
         auto [size, arr] = get_code_points(str, length, encoding).separate();
@@ -96,7 +96,7 @@ public:
      * @param cp 码点，用于填充整个字符串
      * @param enc 字符串的编码
      */
-    BaseString(usize length, const CodePoint& cp = ' ', EncodingType enc = EncodingType::UTF8) :
+    BaseString(usize length, const CodePoint& cp = ' ', const EncodingType enc = EncodingType::UTF8) :
             length_(length), is_sso_(length <= SSO_MAX_SIZE), encoding_(encoding_map(enc)) {
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
@@ -279,7 +279,7 @@ public:
     /**
      * @brief 转换为std::string
      */
-     std::string into_string() const {
+    std::string into_string() const {
         std::string result;
         result.reserve(byte_length());
         for (usize i = 0; i < length_; ++i) {
@@ -380,7 +380,7 @@ public:
      * @return 索引位置的码点
      * @exception index_out_of_bounds_exception 若下标越界
      */
-     const CodePoint& at(usize index) const {
+    const CodePoint& at(usize index) const {
         if (index > length_) {
             throw index_out_of_bounds_exception("index {} out of bounds [0..{}]", SRC_LOC, index, length_);
         }
@@ -409,11 +409,11 @@ public:
      * @brief 获取字符串的长度
      * @return 字符串的长度
      */
-     usize size() const {
+    usize size() const {
         return length_;
     }
 
-     usize length() const {
+    usize length() const {
         return length_;
     }
 
@@ -421,7 +421,7 @@ public:
      * @brief 判断字符串是否为空
      * @return true=是 false=否
      */
-     bool empty() const {
+    bool empty() const {
         return length_ == 0;
     }
 
@@ -429,7 +429,7 @@ public:
      * @brief 获取字符串的编码
      * @return 字符串的编码
      */
-     Encoding* encoding() const {
+    Encoding* encoding() const {
         return encoding_;
     }
 
@@ -437,7 +437,7 @@ public:
      * @brief 获取字符串的字节长度
      * @return 字符串的字节长度
      */
-     usize byte_length() const {
+    usize byte_length() const {
         usize length = 0;
         for (auto&& ch : *this) {
             length += ch.size();
@@ -466,7 +466,7 @@ public:
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-     Self slice(usize start, isize end) const {
+    Self slice(usize start, isize end) const {
         auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
@@ -483,7 +483,7 @@ public:
      * @param start 起始索引
      * @return 子字符串
      */
-     Self slice(usize start) const {
+    Self slice(usize start) const {
         return slice(start, size());
     }
 
@@ -492,7 +492,7 @@ public:
      * @param c 要查找的字符
      * @return 字符的位置，未找到返回 `npos`
      */
-     usize find(const CodePoint& c) const {
+    usize find(const CodePoint& c) const {
         return Super::find(c);
     }
 
@@ -503,7 +503,7 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-     usize find(const Self& pattern, usize pos = 0) const {
+    usize find(const Self& pattern, usize pos = 0) const {
         if (pattern.empty()) return npos;
         auto m_size = size(), p_size = pattern.size();
         auto next = get_next(pattern);
@@ -527,7 +527,7 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-     Vec<usize> find_all(const Self& pattern) const {
+    Vec<usize> find_all(const Self& pattern) const {
         Vec<usize> res;
         if (pattern.empty()) return res;
         auto m_size = size(), p_size = pattern.size();
@@ -552,7 +552,7 @@ public:
      * @param prefix 要检查的子字符串
      * @return 是否以指定子字符串开头
      */
-     bool starts_with(const Self& prefix) const {
+    bool starts_with(const Self& prefix) const {
         if (size() < prefix.size()) {
             return false;
         }
@@ -564,7 +564,7 @@ public:
      * @param suffix 要检查的子字符串
      * @return 是否以指定子字符串结尾
      */
-     bool ends_with(const Self& suffix) const {
+    bool ends_with(const Self& suffix) const {
         if (size() < suffix.size()) {
             return false;
         }
@@ -575,7 +575,7 @@ public:
      * @brief 将字符串转换为全大写
      * @return 全大写的字符串
      */
-     Self upper() const {
+    Self upper() const {
         Self res{*this};
         auto m_size = size();
         for (usize i = 0; i < m_size; ++i) {
@@ -588,7 +588,7 @@ public:
      * @brief 将字符串转换为全小写
      * @return 全小写的字符串
      */
-     Self lower() const {
+    Self lower() const {
         Self res{*this};
         auto m_size = size();
         for (usize i = 0; i < m_size; ++i) {
@@ -601,7 +601,7 @@ public:
      * @brief 去除字符串首尾的空白字符
      * @return 去除空白后的字符串
      */
-     Self trim() const {
+    Self trim() const {
         auto [l, r] = get_trim_index();
         return slice(l, r);
     }
@@ -610,7 +610,7 @@ public:
      * @brief 去除字符串首部的空白字符
      * @return 去除首部空白后的字符串
      */
-     Self ltrim() const {
+    Self ltrim() const {
         return slice(get_ltrim_index());
     }
 
@@ -618,7 +618,7 @@ public:
      * @brief 去除字符串尾部的空白字符
      * @return 去除尾部空白后的字符串
      */
-     Self rtrim() const {
+    Self rtrim() const {
         return slice(get_rtrim_index());
     }
 
@@ -627,7 +627,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-     Self trim(const Self& pattern) const {
+    Self trim(const Self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return slice(l, r);
     }
@@ -637,7 +637,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-     Self ltrim(const Self& pattern) const {
+    Self ltrim(const Self& pattern) const {
         return slice(get_ltrim_index(pattern));
     }
 
@@ -646,7 +646,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-     Self rtrim(const Self& pattern) const {
+    Self rtrim(const Self& pattern) const {
         return slice(get_rtrim_index(pattern));
     }
 
@@ -979,10 +979,13 @@ private:
     CodePoint* code_points_; // 指向码点数组（可能指向SSO或堆分配）
     union {
         CodePoint sso_[SSO_BUFFER_MAX_SIZE]; // SSO小字符串存储
-        CodePoint* heap_;                    // 堆分配大字符串存储
+        CodePoint* heap_{};                  // 堆分配大字符串存储
     };
 };
 
+/**
+ * 对外别名 String
+ */
 using String = BaseString<Allocator<CodePoint>>;
 
 } // namespace my::util

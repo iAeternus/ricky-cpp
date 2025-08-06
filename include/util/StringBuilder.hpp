@@ -65,10 +65,10 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const String& str) {
-        if (str.size()) {
+        if (!str.empty()) {
             buf_.reserve(buf_.size() + str.size());
-            for (usize i = 0; i < str.size(); ++i) {
-                buf_.append(str[i]);
+            for (const auto & cp : str) {
+                buf_.append(cp);
             }
         }
         return *this;
@@ -197,8 +197,8 @@ private:
     }
 
 private:
-    util::Vec<CodePoint> buf_; // 码点缓冲区，存储所有追加内容
-    util::Encoding* encoding_; // 字符串编码类型
+    Vec<CodePoint> buf_; // 码点缓冲区，存储所有追加内容
+    Encoding* encoding_; // 字符串编码类型
 };
 
 } // namespace my::util
