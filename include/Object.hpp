@@ -17,7 +17,7 @@ namespace my {
  * @brief 根对象（CRTP基类）
  * @details 提供基本的哈希、比较和字符串表示功能
  * @tparam D 派生类类型
- * @note 使用CRTP模式实现静态多态，避免虚函数的开销 
+ * @note 使用CRTP模式实现静态多态，避免虚函数的开销
  * @note 该类不应该被直接实例化，而是作为其他类的基类
  * @note 派生类需要实现__hash__()、__cmp__()和__str__()方法
  * @note 派生类需要提供一个类型别名derived_obj，指向自身
@@ -82,8 +82,7 @@ public:
 template <typename T>
 concept MyObject = requires(T& t) {
     typename T::derived_obj;
-}
-&&is_instance<T, Object<typename T::derived_obj>>;
+} && is_instance<T, Object<typename T::derived_obj>>;
 
 /**
  * @brief 输出流操作符重载
@@ -108,9 +107,8 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
  * @return 输出流
  */
 template <typename T>
-requires(Not<Printable<T>>)
-    std::ostream&
-    operator<<(std::ostream& out, const T& obj) {
+    requires(Not<Printable<T>>)
+std::ostream& operator<<(std::ostream& out, const T& obj) {
     out << '<' << dtype(T) << " 0x" << std::hex << &obj << '>';
     return out;
 }

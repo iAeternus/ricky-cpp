@@ -54,7 +54,7 @@ fn my_hash(const K& key)->hash_t {
  * @return 解码后的32位无符号整数
  */
 fn decode_fixed32(const char* ptr)->u32 {
-    const u8* buffer = reinterpret_cast<const u8*>(ptr);
+    const auto buffer = reinterpret_cast<const u8*>(ptr);
     return (static_cast<u32>(buffer[0]) | (static_cast<u32>(buffer[1]) << 8) | (static_cast<u32>(buffer[2]) << 16) | (static_cast<u32>(buffer[3]) << 24));
 }
 
@@ -67,7 +67,7 @@ fn decode_fixed32(const char* ptr)->u32 {
  * @param seed 可选的种子值，默认为0xbc9f1d34
  * @return 计算得到的哈希值 
  */
-fn bytes_hash(const char* data, size_t n, u32 seed = 0xbc9f1d34)->hash_t {
+fn bytes_hash(const char* data, const size_t n, const u32 seed = 0xbc9f1d34)->hash_t {
     constexpr hash_t m = 0xc6a4a793;
     constexpr hash_t r = 24;
     const char* end = data + n;
@@ -80,8 +80,8 @@ fn bytes_hash(const char* data, size_t n, u32 seed = 0xbc9f1d34)->hash_t {
         h ^= (h >> 16);
     }
 
-    i32 dis = end - data;
-    for (i32 i = 0; i < dis; i++) {
+    const auto dis = end - data;
+    for (i64 i = 0; i < dis; i++) {
         h += static_cast<u8>(data[i]) << (i * 8);
     }
 

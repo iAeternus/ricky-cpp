@@ -39,7 +39,7 @@ public:
 
     bool start() {
         try {
-            test_passed(std::format("[{}] Test passed in {}ms", displayName_, timer_(testCase_)));
+            test_passed(std::format("[{}] Test passed in {}us", displayName_, timer_(testCase_)));
             return true;
         } catch (const Exception& ex) {
             test_failed(std::format("[{}] Test failed!\nCaused by:\n{}", displayName_, ex.what()));
@@ -53,7 +53,7 @@ public:
 private:
     CString displayName_;
     TestCase testCase_;
-    util::Timer_ms timer_;
+    util::Timer_us timer_;
 };
 
 /**
@@ -90,7 +90,7 @@ public:
     void startAll() {
         io::println(std::format("================= {} =================", groupName_));
         if (setup_) setup_();
-        for (auto& it : group_) {
+        for (const auto& it : group_) {
             if (before_each_) before_each_();
             if (!it->start()) {
                 ++failed_;

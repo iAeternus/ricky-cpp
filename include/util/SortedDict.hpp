@@ -59,7 +59,7 @@ public:
                         Self* lch = nullptr, Self* rch = nullptr, Self* parent = nullptr) :
             key_(key), val_(value), color_(color), lch_(lch), rch_(rch), p_(parent) {}
 
-    explicit RBTreeNode(key_t&& key, value_t&& value, Color color = Color::RED) :
+    explicit RBTreeNode(key_t&& key, value_t&& value, const Color color = Color::RED) :
             key_(std::move(key)), val_(std::move(value)), color_(color), lch_(nullptr), rch_(nullptr), p_(nullptr) {}
 
     RBTreeNode(const Self&) = delete;

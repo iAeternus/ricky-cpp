@@ -130,19 +130,15 @@ private:
 /**
  * @brief 结构化绑定支持
  */
-namespace std {
-
 template <typename S, typename T>
-struct tuple_size<my::Pair<S, T>>
+struct std::tuple_size<my::Pair<S, T>>
         : integral_constant<size_t, 2> {};
 
 template <size_t I, typename S, typename T>
-struct tuple_element<I, my::Pair<S, T>> {
+struct std::tuple_element<I, my::Pair<S, T>> {
     static_assert(I < 2, "Index out of bounds for Pair");
     using type = conditional_t<I == 0, S, T>;
 };
-
-} // namespace std
 
 namespace my {
 
