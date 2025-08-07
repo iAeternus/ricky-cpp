@@ -33,7 +33,7 @@
 
 # Directories
 build*/*
-cmake-build-debug-mingw/*
+cmake-build-debug/*
 .vscode/ipch/*
 .clangd/*
 vcpkg/*
