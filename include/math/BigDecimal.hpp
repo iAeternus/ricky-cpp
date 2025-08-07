@@ -8,6 +8,8 @@
 #ifndef BIG_DECIMAL_HPP
 #define BIG_DECIMAL_HPP
 
+#include <utility>
+
 #include "BigInteger.hpp"
 #include "Pair.hpp"
 
@@ -17,7 +19,7 @@ namespace my::math {
  * @brief 舍入模式枚举
  * @details 定义了不同的数值舍入策略
  */
-enum RoundingMode {
+enum RoundingMode : i32 {
     UP,      // 远离零舍入（向绝对值更大的方向舍入）
     DOWN,    // 向零舍入（向绝对值更小的方向舍入）
     CEILING, // 向正无穷舍入（向更大的数字方向舍入）
@@ -57,8 +59,8 @@ public:
         *this = val;
     }
 
-    BigDecimal(const BigInteger& unscaled_val, u32 scale) :
-            unscaled_value_(unscaled_val), scale_(scale) {
+    BigDecimal(BigInteger unscaled_val, u32 scale) :
+            unscaled_value_(std::move(unscaled_val)), scale_(scale) {
         this->precision_ = calc_precision(unscaled_value_);
     }
 
@@ -69,7 +71,7 @@ public:
             unscaled_value_(std::move(other.unscaled_value_)), scale_(other.scale_), precision_(other.precision_) {}
 
     Self& operator=(i32 val) {
-        *this = i64(val);
+        *this = static_cast<i64>(val);
         return *this;
     }
 
@@ -204,7 +206,7 @@ public:
         }
         auto new_unscaled = rounded_quotient * divisor;
 
-        return Self(new_unscaled, scale_);
+        return Self{new_unscaled, scale_};
     }
 
     /**
@@ -251,9 +253,7 @@ public:
         if (b.is_zero()) return a;
 
         auto [a_aligned, b_aligned] = align_scales(a, b);
-        return BigDecimal{
-            a_aligned.unscaled_value_ - b_aligned.unscaled_value_,
-            a_aligned.scale_};
+        return Self{a_aligned.unscaled_value_ - b_aligned.unscaled_value_, a_aligned.scale_};
     }
 
     Self& operator-=(const Self& other) {
@@ -273,9 +273,7 @@ public:
     }
 
     friend Self operator*(const Self& a, const Self& b) {
-        return BigDecimal{
-            a.unscaled_value_ * b.unscaled_value_,
-            a.scale_ + b.scale_};
+        return Self{a.unscaled_value_ * b.unscaled_value_, a.scale_ + b.scale_};
     }
 
     Self& operator*=(const Self& other) {
@@ -327,7 +325,7 @@ public:
         auto rounded = apply_rounding(quotient, mode, remainder, divisor);
 
         // 创建结果并设置正确的标度
-        return Self(rounded, scale);
+        return Self{rounded, scale};
     }
 
     /**
@@ -593,7 +591,7 @@ private:
 
 private:
     BigInteger unscaled_value_; // 未缩放整数值（含符号）
-    u32 scale_ = 0;             // 小数点右移位数（非负数）
+    u32 scale_ = 0;             // 标度值（小数部分位数）
     mutable u32 precision_ = 0; // 精度（有效数字位数）
 };
 

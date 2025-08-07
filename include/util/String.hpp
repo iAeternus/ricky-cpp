@@ -21,8 +21,8 @@ public:
     using Self = BaseString<Alloc>;
     using Super = Sequence<Self, CodePoint>;
 
-    static constexpr usize SSO_MAX_SIZE = 16;                                      // SSO最大码点数
-    static constexpr usize SSO_BUFFER_MAX_SIZE = SSO_MAX_SIZE * sizeof(CodePoint); // SSO缓冲区大小
+    static constexpr usize SSO_MAX_SIZE = 16; // SSO最大码点数
+    // static constexpr usize SSO_BUFFER_MAX_SIZE = SSO_MAX_SIZE * sizeof(CodePoint); // SSO缓冲区大小
 
     /**
      * @brief 默认构造函数，创建一个空字符串，并指定编码
@@ -978,8 +978,8 @@ private:
     Encoding* encoding_;     // 字符串编码信息
     CodePoint* code_points_; // 指向码点数组（可能指向SSO或堆分配）
     union {
-        CodePoint sso_[SSO_BUFFER_MAX_SIZE]; // SSO小字符串存储
-        CodePoint* heap_{};                  // 堆分配大字符串存储
+        CodePoint sso_[SSO_MAX_SIZE]; // SSO小字符串存储
+        CodePoint* heap_{};           // 堆分配大字符串存储
     };
 };
 
@@ -999,7 +999,7 @@ namespace my {
  * @return 转换后的 `String` 对象
  */
 fn operator""_s(const char* str, size_t length)->const util::String {
-    return util::String{str, static_cast<usize>(length)};
+    return util::String{str, length};
 }
 
 } // namespace my

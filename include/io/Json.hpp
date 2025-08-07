@@ -177,7 +177,7 @@ public:
     }
 
     template <typename T>
-    bool is() const {
+    [[nodiscard]] bool is() const {
         using TargetType = typename JsonValueType<T>::Type;
         return json_type_ == GetJsonTypeID<TargetType>::ID;
     }
@@ -222,7 +222,7 @@ public:
      * @note 该函数不检查指针的有效性
      */
     template <typename T>
-    T* into_ptr() const {
+    [[nodiscard]] T* into_ptr() const {
         using TargetType = typename JsonValueType<T>::Type;
         if (!is<TargetType>()) {
             throw type_exception("expected {} but got {}", SRC_LOC, JsonTypeTrait<TargetType>::name, type_name(json_type_));
@@ -236,7 +236,7 @@ public:
      * @return 如果Json对象的类型是T类型，返回该对象，否则抛出type_exception
      */
     template <typename T>
-    T into() const {
+    [[nodiscard]] T into() const {
         if constexpr (std::is_same_v<T, Json>) {
             return *this;
         }
@@ -332,7 +332,7 @@ public:
     /**
      * @brief 获取json对象的长度，需要当前Json对象为JsonArray或JsonDict类型
      */
-    usize size() const {
+    [[nodiscard]] usize size() const {
         if (is<JsonType::JsonArray>()) {
             return into<JsonType::JsonArray>().size();
         }
@@ -430,7 +430,7 @@ private:
     }
 
     template <typename T>
-    auto into_array() const {
+    [[nodiscard]] auto into_array() const {
         using ValueType = typename T::value_t;
         util::Vec<ValueType> result;
         const auto& arr = *static_cast<JsonType::JsonArray*>(json_item_);
@@ -442,7 +442,7 @@ private:
 
     // 提取字典转换逻辑
     template <typename T>
-    auto into_dict() const {
+    [[nodiscard]] auto into_dict() const {
         using KeyType = typename T::key_t;
         using ValueType = typename T::value_t;
         util::Dict<KeyType, ValueType> result;
@@ -455,7 +455,7 @@ private:
 
     // 提取基础类型转换逻辑
     template <typename T, typename TargetType>
-    auto into_basic() const {
+    [[nodiscard]] auto into_basic() const {
         const auto* ptr = static_cast<TargetType*>(json_item_);
         if constexpr (!std::is_same_v<T, TargetType>) {
             return static_cast<T>(*ptr);
@@ -464,7 +464,7 @@ private:
         }
     }
 
-    util::String dump_impl(i32 indent, i32 depth) const {
+    [[nodiscard]] util::String dump_impl(i32 indent, i32 depth) const {
         switch (json_type_) {
         case GetJsonTypeID<JsonType::JsonInt>::ID:
             return util::String::from_i64(into<JsonType::JsonInt>());

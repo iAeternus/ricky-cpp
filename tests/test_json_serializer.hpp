@@ -1,13 +1,15 @@
 #ifndef TEST_JSON_SERIALIZER_HPP
 #define TEST_JSON_SERIALIZER_HPP
 
+#include <utility>
+
 #include "JsonSerializer.hpp"
 #include "Assertions.hpp"
 #include "UnitTest.hpp"
 
 namespace my::test::test_json_serializer {
 
-struct Person : public Object<Person> {
+struct Person : Object<Person> {
     using Self = Person;
 
     util::String name;
@@ -16,10 +18,10 @@ struct Person : public Object<Person> {
     util::Vec<i32> scores;
     util::Dict<util::String, util::String> address;
 
-    Person() {}
+    Person() = default;
 
-    Person(util::String name, i32 age, bool is_student, util::Vec<i32> scores, util::Dict<util::String, util::String> address) :
-            name(name), age(age), is_student(is_student), scores(scores), address(address) {}
+    Person(util::String name, i32 age, bool is_student, const util::Vec<i32>& scores, const util::Dict<util::String, util::String>& address) :
+            name(std::move(name)), age(age), is_student(is_student), scores(scores), address(address) {}
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return name.__cmp__(other.name);
