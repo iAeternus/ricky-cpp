@@ -15,6 +15,7 @@ fn it_works = []() {
 
     // Then
     Assertions::assertEquals("aaabbbccc你好R"_s, sb.build());
+    Assertions::assertEquals("aaabbbccc你好R"_s, sb.build_move());
 };
 
 fn should_append_format_string = []() {
@@ -26,6 +27,29 @@ fn should_append_format_string = []() {
 
     // Then
     Assertions::assertEquals("Case 1#: 1+1=2"_s, sb.build());
+};
+
+fn should_append_n = []() {
+    // Given
+    util::StringBuilder sb;
+
+    // When
+    sb.append_n(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, 10);
+
+    // Then
+    Assertions::assertEquals("我我我我我我我我我我"_s, sb.build());
+};
+
+fn should_append_array = []() {
+    // Given
+    util::StringBuilder sb;
+    const util::CodePoint cps[] = {'a', util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, 'b', 'c'};
+
+    // When
+    sb.append_array(cps, std::size(cps));
+
+    // Then
+    Assertions::assertEquals("a我bc"_s, sb.build());
 };
 
 fn should_find = []() {
@@ -45,6 +69,8 @@ fn test_string_builder() {
 
     group.addTest("it_works", it_works);
     group.addTest("should_append_format_string", should_append_format_string);
+    group.addTest("should_append_n", should_append_n);
+    group.addTest("should_append_array", should_append_array);
     group.addTest("should_find", should_find);
 
     group.startAll();
@@ -55,7 +81,7 @@ constexpr i32 N = 1e5;
 fn speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
     for (usize i = 0; i < N; ++i) {
-        sb.append("abcdef");
+        sb.append("abcdef"_s);
     }
     auto str = sb.build();
     Assertions::assertEquals(N * 6, str.size());
@@ -64,7 +90,7 @@ fn speed_of_string_builder_append_string = []() {
 fn speed_of_std_string_append_string = []() {
     std::string str;
     for (usize i = 0; i < N; ++i) {
-        str += "abcdef";
+        str += "abcdef"_cs.data();
     }
     Assertions::assertEquals(N * 6, str.length());
 };

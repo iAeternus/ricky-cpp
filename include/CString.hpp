@@ -578,7 +578,7 @@ public:
          */
         Self operator++(i32) {
             Self tmp(*this);
-            ++tmp;
+            ++*this;
             return tmp;
         }
 
@@ -599,8 +599,38 @@ public:
          */
         Self operator--(i32) {
             Self tmp(*this);
-            --tmp;
+            --*this;
             return tmp;
+        }
+
+        Self& operator+=(difference_type n) {
+            current_ += n;
+            return *this;
+        }
+
+        Self operator+(difference_type n) const {
+            Self tmp = *this;
+            tmp += n;
+            return tmp;
+        }
+
+        friend Self operator+(difference_type n, const Self& it) {
+            return it + n;
+        }
+
+        Self& operator-=(difference_type n) {
+            current_ -= n;
+            return *this;
+        }
+
+        Self operator-(difference_type n) const {
+            Self tmp = *this;
+            tmp -= n;
+            return tmp;
+        }
+
+        difference_type operator-(const Self& other) const {
+            return current_ - other.current_;
         }
 
         /**
@@ -609,7 +639,7 @@ public:
          * @return 如果相等返回 true，否则返回 false
          */
         bool operator==(const Self& other) const {
-            return __equals__(other);
+            return this->current_ == other.current_;
         }
 
         /**
@@ -618,25 +648,7 @@ public:
          * @return 如果不相等返回 true，否则返回 false
          */
         bool operator!=(const Self& other) const {
-            return !__equals__(other);
-        }
-
-        /**
-         * @brief 比较两个迭代器的内部状态是否相等
-         * @param other 另一个迭代器
-         * @return 如果内部状态相等返回 true，否则返回 false
-         */
-        [[nodiscard]] bool __equals__(const Self& other) const {
-            return this->current_ == other.current_;
-        }
-
-        /**
-         * @brief 比较两个迭代器的顺序
-         * @param other 另一个迭代器
-         * @return 返回一个整数值，表示两个迭代器的顺序
-         */
-        [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-            return this->current_ - other.current_;
+            return this->current_ != other.current_;
         }
 
     private:
@@ -762,7 +774,7 @@ using CString = BaseCString<Allocator<char>>;
  * @return 转换后的 CString 对象
  */
 template <MyPrintable T>
-fn cstr_impl(const T& value)->CString {
+fn cstr_impl(const T& value) -> CString {
     return value.__str__();
 }
 
@@ -773,7 +785,7 @@ fn cstr_impl(const T& value)->CString {
  * @return 转换后的 CString 对象
  */
 template <StdPrintable T>
-fn cstr_impl(const T& value)->CString {
+fn cstr_impl(const T& value) -> CString {
     std::stringstream stream;
     stream << value;
     return stream.str();
@@ -786,7 +798,7 @@ fn cstr_impl(const T& value)->CString {
  * @return 转换后的 CString 对象
  */
 template <Printable T>
-fn cstr(const T& value)->CString {
+fn cstr(const T& value) -> CString {
     return cstr_impl(value);
 }
 
@@ -795,7 +807,7 @@ fn cstr(const T& value)->CString {
  * @param value CString 对象
  * @return 标准 C 风格字符串
  */
-fn stdstr(const CString& value)->const char* {
+fn stdstr(const CString& value) -> const char* {
     return value.data();
 }
 
@@ -804,7 +816,7 @@ fn stdstr(const CString& value)->const char* {
  * @param ch 字符
  * @return 对应的整数值
  */
-fn c2i(char ch)->i32 {
+fn c2i(char ch) -> i32 {
     return ch - '0';
 }
 
@@ -813,7 +825,7 @@ fn c2i(char ch)->i32 {
  * @param ch 整数
  * @return 对应的字符
  */
-fn i2c(i32 ch)->char {
+fn i2c(i32 ch) -> char {
     return ch + '0';
 }
 

@@ -20,7 +20,6 @@ namespace my {
  * @note 使用CRTP模式实现静态多态，避免虚函数的开销
  * @note 该类不应该被直接实例化，而是作为其他类的基类
  * @note 派生类需要实现__hash__()、__cmp__()和__str__()方法
- * @note 派生类需要提供一个类型别名derived_obj，指向自身
  */
 template <typename D>
 class Object {

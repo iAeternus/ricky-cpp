@@ -998,7 +998,7 @@ namespace my {
  * @param length 字符串长度
  * @return 转换后的 `String` 对象
  */
-fn operator""_s(const char* str, size_t length)->const util::String {
+fn operator""_s(const char* str, size_t length)->util::String {
     return util::String{str, length};
 }
 

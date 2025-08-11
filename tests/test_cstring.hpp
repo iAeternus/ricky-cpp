@@ -182,14 +182,20 @@ fn should_add = []() {
 
 fn should_iterate = []() {
     CString str = "abcdefg";
+    util::Vec<char> chs;
 
     // When
     for (auto&& c : str) {
         c++;
     }
 
+    for (const auto& c : str) {
+        chs.append(c);
+    }
+
     // Then
     Assertions::assertEquals("bcdefgh"_cs, str.__str__());
+    Assertions::assertEquals("[b,c,d,e,f,g,h]"_cs, chs.__str__());
 };
 
 fn test_cstring() {

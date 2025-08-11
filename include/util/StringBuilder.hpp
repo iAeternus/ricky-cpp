@@ -1,10 +1,8 @@
 /**
- * @brief 高性能字符串构建器，支持批量追加和高效拼接
+ * @brief 字符串构建器
  * @author Ricky
  * @date 2025/7/14
  * @version 2.0
- *
- * 用于高效构建 Unicode 字符串，避免频繁分配和拷贝，适合大量字符串拼接场景
  */
 #ifndef STRING_BUILDER_HPP
 #define STRING_BUILDER_HPP
@@ -15,10 +13,7 @@ namespace my::util {
 
 /**
  * @class StringBuilder
- * @brief 高性能字符串构建器，支持批量追加和高效拼接
- *
- * 通过内部动态数组 Vec<CodePoint> 管理码点，避免频繁分配和拷贝
- * 适用于需要大量字符串拼接的场景
+ * @brief 字符串构建器
  */
 class StringBuilder : public Object<StringBuilder> {
 public:
@@ -67,9 +62,7 @@ public:
     Self& append(const String& str) {
         if (!str.empty()) {
             buf_.reserve(buf_.size() + str.size());
-            for (const auto & cp : str) {
-                buf_.append(cp);
-            }
+            buf_.extend(str);
         }
         return *this;
     }
@@ -80,9 +73,8 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const CString& cstr) {
-        auto cps = get_code_points(cstr.data(), cstr.size(), encoding_);
-        buf_.reserve(buf_.size() + cps.size());
-        buf_.extend(cps);
+        buf_.reserve(buf_.size() + cstr.length());
+        buf_.extend(cstr);
         return *this;
     }
 
@@ -134,14 +126,52 @@ public:
     }
 
     /**
+     * @brief 追加多个相同码点
+     * @param cp 码点
+     * @param count 码点数量
+     * @return 构建器自身引用
+     */
+    Self& append_n(const CodePoint& cp, usize count) {
+        buf_.reserve(buf_.size() + count);
+        for (usize i = 0; i < count; ++i) {
+            buf_.append(cp);
+        }
+        return *this;
+    }
+
+    /**
+     * @brief 追加码点数组
+     * @param cps 码点数组
+     * @param cnt 码点数组长度
+     * @return 构建器自身引用
+     */
+    Self& append_array(const CodePoint* cps, usize cnt) {
+        buf_.reserve(buf_.size() + cnt);
+        for (usize i = 0; i < cnt; ++i) {
+            buf_.append(cps[i]);
+        }
+        return *this;
+    }
+
+    /**
      * @brief 构建最终字符串（拷贝语义）
      * @return 构建好的 String 对象
      * @note 内部会复制码点数组，原构建器可继续使用
      */
     [[nodiscard]] String build() const {
-        Vec<CodePoint> tmp(buf_);
+        Vec tmp(buf_);
         auto [size, code_points] = tmp.separate();
-        return String(code_points, size, encoding_);
+        return {code_points, size, encoding_};
+    }
+
+    /**
+     * @brief 构建最终字符串（移动语义）
+     * @return 构建好的 String 对象
+     * @note 内部会移动码点数组，原构建器不能继续使用
+     */
+    [[nodiscard]] String build_move() {
+        auto [size, code_points] = buf_.separate();
+        return {code_points, size, encoding_};
     }
 
     /**

@@ -95,7 +95,7 @@ auto dfs = [](const auto& g, auto&& args) {
     auto s = util::opt<Idx>(args, 0);
     auto func = util::opt<Consumer<const Node<N, E>&>>(args, 1);
     util::Vec<bool> vis(g.node_cnt(), false);
-    std::function<void(const graph::Graph<N, E>&, Idx)> dfs_helper = [&](const graph::Graph<>& g, Idx s) {
+    std::function<void(const Graph<N, E>&, Idx)> dfs_helper = [&](const Graph<>& g, Idx s) {
         auto node = g.get_node(s);
         func(node);
         vis[s] = true;
@@ -117,7 +117,7 @@ auto is_tree = [](const auto& g, auto&& _) -> bool {
     auto n = g.node_cnt();
     usize node_cnt = 0, edge_cnt = 0;
     util::Vec<bool> vis(n, false);
-    std::function<void(const graph::Graph<N, E>&, Idx)> dfs_helper = [&](const graph::Graph<>& g, Idx s) {
+    std::function<void(const Graph<N, E>&, Idx)> dfs_helper = [&](const Graph<>& g, Idx s) {
         auto node = g.get_node(s);
         node_cnt++;
         vis[node.id] = true;
