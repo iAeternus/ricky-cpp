@@ -18,6 +18,210 @@
 
 namespace my {
 
+template <typename Alloc>
+class BaseCString;
+
+/**
+ * @class CStringView
+ * @brief C风格字符串视图
+ * @details 减少拷贝次数，加速切片操作
+ */
+class CStringView {
+public:
+    using Self = CStringView;
+
+    /**
+     * @brief 通过首尾指针构造
+     * @param begin 指向切片首地址
+     * @param end 指向切片尾后地址
+     */
+    CStringView(char* begin, char* end) :
+            begin_(begin), end_(end) {}
+
+    /**
+     * @brief 通过首指针和切片长度构造
+     * @param begin 指向切片首地址
+     * @param size 切片长度
+     */
+    CStringView(char* begin, const usize size) :
+            begin_(begin), end_(begin_ + size) {}
+
+    /**
+     * @brief 字符串视图长度
+     * @return 字符串视图长度
+     */
+    usize length() const {
+        return end_ - begin_;
+    }
+
+    /**
+     * @brief 字符串切片索引访问操作符
+     * @param idx 索引位置
+     * @return 索引位置的字符引用
+     */
+    char& operator[](const usize idx) {
+        return *(begin_ + idx);
+    }
+
+    /**
+     * @brief 字符串切片索引访问操作符（常量版本）
+     * @param idx 索引位置
+     * @return 索引位置的字符常量引用
+     */
+    const char& operator[](const usize idx) const {
+        return *(begin_ + idx);
+    }
+
+    /**
+     * @brief 转化为CString，会拷贝
+     * @return 新字符串
+     */
+    template <typename Alloc = Allocator<char>>
+    [[nodiscard]] BaseCString<Alloc> to_string() const {
+        return {begin_, length()};
+    }
+
+    friend bool operator==(const Self& a, const Self& b) {
+        return a.begin_ == b.begin_ && a.end_ == b.end_;
+    }
+
+    template <typename Alloc = Allocator<char>>
+    friend bool operator==(const Self& view, const BaseCString<Alloc> cstr) {
+        if (view.length() != cstr.length()) {
+            return false;
+        }
+
+        usize idx = 0;
+        for (const char c : cstr) {
+            if (view[idx] != c) {
+                return false;
+            }
+            ++idx;
+        }
+        return true;
+    }
+
+    /**
+     * @brief 迭代器支持
+     * @tparam IsConst 是否为常量迭代器
+     */
+    template <bool IsConst>
+    class Iterator {
+    public:
+        using Self = Iterator<IsConst>;
+        using iterator_category = std::random_access_iterator_tag;
+        using value_type = std::conditional_t<IsConst, const char, char>;
+        using difference_type = std::ptrdiff_t;
+        using pointer = value_type*;
+        using reference = value_type&;
+
+        /**
+         * @brief 使用指针构造
+         * @param ptr 指针
+         */
+        explicit Iterator(const pointer ptr) :
+                ptr_(ptr) {}
+
+        /**
+         * @brief 解引用
+         */
+        reference operator*() const { return *ptr_; }
+        pointer operator->() const { return ptr_; }
+
+        /**
+         * @brief 前缀递增/递减
+         */
+        Self& operator++() {
+            ++ptr_;
+            return *this;
+        }
+
+        Self& operator--() {
+            --ptr_;
+            return *this;
+        }
+
+        /**
+         * @breif 后缀递增/递减
+         */
+        Self operator++(int) {
+            Self tmp = *this;
+            ++*this;
+            return tmp;
+        }
+
+        Self operator--(int) {
+            Self tmp = *this;
+            --*this;
+            return tmp;
+        }
+
+        /**
+         * @breif 随机访问
+         */
+        Self operator+(difference_type n) const { return Self(ptr_ + n); }
+        Self operator-(difference_type n) const { return Self(ptr_ - n); }
+        difference_type operator-(const Self& other) const { return ptr_ - other.ptr_; }
+
+        /**
+         * @brief 复合赋值
+         */
+        Self& operator+=(difference_type n) {
+            ptr_ += n;
+            return *this;
+        }
+
+        Self& operator-=(difference_type n) {
+            ptr_ -= n;
+            return *this;
+        }
+
+        /**
+         * @brief 下标访问
+         */
+        reference operator[](difference_type n) const { return ptr_[n]; }
+
+        /**
+         * @brief 比较运算符
+         */
+        bool operator==(const Self& other) const { return ptr_ == other.ptr_; }
+        bool operator!=(const Self& other) const { return ptr_ != other.ptr_; }
+        bool operator<(const Self& other) const { return ptr_ < other.ptr_; }
+        bool operator>(const Self& other) const { return ptr_ > other.ptr_; }
+        bool operator<=(const Self& other) const { return ptr_ <= other.ptr_; }
+        bool operator>=(const Self& other) const { return ptr_ >= other.ptr_; }
+
+    private:
+        pointer ptr_;
+    };
+
+    using iterator = Iterator<false>;
+    using const_iterator = Iterator<true>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+    /**
+     * @brief 迭代器接口
+     */
+    iterator begin() { return iterator(begin_); }
+    iterator end() { return iterator(end_); }
+    const_iterator begin() const { return const_iterator(begin_); }
+    const_iterator end() const { return const_iterator(end_); }
+    const_iterator cbegin() const { return begin(); }
+    const_iterator cend() const { return end(); }
+
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+    const_reverse_iterator crbegin() const { return rbegin(); }
+    const_reverse_iterator crend() const { return rend(); }
+
+private:
+    char* begin_; // 指向切片首地址
+    char* end_;   // 指向切片尾后地址
+};
+
 /**
  * @class BaseCString
  * @brief C风格字符串
@@ -183,12 +387,12 @@ public:
      * @param idx 索引位置
      * @return 索引位置的字符常量引用
      */
-    const char& operator[](usize idx) const {
+    const char& operator[](const usize idx) const {
         return str_[idx];
     }
 
     /**
-     * @brief 获取字符串的长度 TODO 将弃用，请使用length()
+     * @brief 获取字符串的长度，适配可迭代约束
      * @return 字符串的长度
      */
     usize size() const {
@@ -228,16 +432,14 @@ public:
     }
 
     /**
-     * @brief 字符串切片，返回指定范围的子字符串 TODO CStringView类
+     * @brief 字符串切片，返回指定范围的子字符串
      * @param start 起始索引
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-    Self slice(usize start, isize end) const {
-        const auto m_size = size();
-        start = neg_index(start, m_size);
-        end = neg_index(end, static_cast<isize>(m_size));
-        return Self{str_ + start, end - start};
+    CStringView slice(const usize start, isize end) const {
+        end = neg_index(end, length());
+        return CStringView{str_ + start, end - start};
     }
 
     /**
@@ -245,15 +447,15 @@ public:
      * @param start 起始索引
      * @return 子字符串
      */
-    Self slice(const usize start) const {
-        return slice(start, size());
+    CStringView slice(const usize start) const {
+        return slice(start, length());
     }
 
     /**
      * @brief 查找指定字符，找不到返回npos
      */
     usize find(const char ch) const {
-        const auto m_size = size();
+        const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             if (str_[i] == ch) {
                 return i;
@@ -266,7 +468,7 @@ public:
      * @brief 查找第一个不匹配的位置，若全部匹配，返回npos
      */
     usize find_first_not_of(const char ch) const {
-        const auto m_size = size();
+        const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             if (str_[i] != ch) {
                 return i;
@@ -294,7 +496,7 @@ public:
      * @return 是否以指定子字符串开头
      */
     bool starts_with(const Self& prefix) const {
-        if (size() < prefix.size()) {
+        if (length() < prefix.size()) {
             return false;
         }
         return slice(0, prefix.size()) == prefix;
@@ -306,10 +508,10 @@ public:
      * @return 是否以指定子字符串结尾
      */
     bool ends_with(const Self& suffix) const {
-        if (size() < suffix.size()) {
+        if (length() < suffix.size()) {
             return false;
         }
-        return slice(size() - suffix.size()) == suffix;
+        return slice(length() - suffix.size()) == suffix;
     }
 
     /**
@@ -318,7 +520,7 @@ public:
      */
     Self upper() const {
         Self res{*this};
-        const auto m_size = size();
+        const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = std::toupper(res[i]);
         }
@@ -331,7 +533,7 @@ public:
      */
     Self lower() const {
         Self res{*this};
-        const auto m_size = size();
+        const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = std::tolower(res[i]);
         }
@@ -342,7 +544,7 @@ public:
      * @brief 去除字符串首尾的空白字符
      * @return 去除空白后的字符串
      */
-    Self trim() const {
+    CStringView trim() const {
         auto [l, r] = get_trim_index();
         return slice(l, r);
     }
@@ -351,7 +553,7 @@ public:
      * @brief 去除字符串首部的空白字符
      * @return 去除首部空白后的字符串
      */
-    Self ltrim() const {
+    CStringView ltrim() const {
         return slice(get_ltrim_index());
     }
 
@@ -359,7 +561,7 @@ public:
      * @brief 去除字符串尾部的空白字符
      * @return 去除尾部空白后的字符串
      */
-    Self rtrim() const {
+    CStringView rtrim() const {
         return slice(get_rtrim_index());
     }
 
@@ -368,7 +570,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self trim(const Self& pattern) const {
+    CStringView trim(const Self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return slice(l, r);
     }
@@ -378,7 +580,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self ltrim(const Self& pattern) const {
+    CStringView ltrim(const Self& pattern) const {
         return slice(get_ltrim_index(pattern));
     }
 
@@ -387,7 +589,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self rtrim(const Self& pattern) const {
+    CStringView rtrim(const Self& pattern) const {
         return slice(get_rtrim_index(pattern));
     }
 
@@ -692,7 +894,7 @@ private:
      * @return 首尾空白后的索引范围
      */
     std::pair<usize, usize> get_trim_index() const {
-        usize l = 0, r = size();
+        usize l = 0, r = length();
         while (l < r && str_[l] == ' ') ++l;
         while (l < r && str_[r - 1] == ' ') --r;
         return std::make_pair(l, r);
@@ -704,7 +906,7 @@ private:
      * @return 首尾模式后的索引范围
      */
     std::pair<usize, usize> get_trim_index(const Self& pattern) const {
-        usize l = 0, r = size(), p_size = pattern.size();
+        usize l = 0, r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return std::make_pair(l, r);
@@ -716,7 +918,7 @@ private:
      */
     usize get_ltrim_index() const {
         usize l = 0;
-        const usize r = size();
+        const usize r = length();
         while (l < r && str_[l] == ' ') ++l;
         return l;
     }
@@ -727,7 +929,7 @@ private:
      * @return 去除首部模式后的索引
      */
     usize get_ltrim_index(const Self& pattern) const {
-        usize l = 0, r = size(), p_size = pattern.size();
+        usize l = 0, r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         return l;
     }
@@ -737,7 +939,7 @@ private:
      * @return 去除尾部空白后的索引
      */
     usize get_rtrim_index() const {
-        usize l = 0, r = size();
+        usize l = 0, r = length();
         while (l < r && str_[r - 1] == ' ') --r;
         return r;
     }
@@ -748,7 +950,7 @@ private:
      * @return 去除尾部模式后的索引
      */
     usize get_rtrim_index(const Self& pattern) const {
-        usize l = 0, r = size(), p_size = pattern.size();
+        usize l = 0, r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
     }

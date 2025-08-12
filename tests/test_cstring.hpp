@@ -56,10 +56,10 @@ fn should_slice = []() {
     auto res3 = s.slice(1, -1);
 
     // Then
-    Assertions::assertEquals(1, res.size());
-    Assertions::assertEquals("b"_cs, res);
-    Assertions::assertEquals("def"_cs, res2);
-    Assertions::assertEquals("bcde"_cs, res3);
+    Assertions::assertEquals(1, res.length());
+    Assertions::assertEquals("b"_cs, res.to_string());
+    Assertions::assertEquals("def"_cs, res2.to_string());
+    Assertions::assertEquals("bcde"_cs, res3.to_string());
 };
 
 fn should_find = []() {
@@ -150,7 +150,7 @@ fn should_trim = []() {
     auto res = s.trim();
 
     // Then
-    Assertions::assertEquals("abcdef"_cs, res);
+    Assertions::assertEquals("abcdef"_cs, res.to_string());
 };
 
 fn should_remove_all = []() {
@@ -198,6 +198,24 @@ fn should_iterate = []() {
     Assertions::assertEquals("[b,c,d,e,f,g,h]"_cs, chs.__str__());
 };
 
+fn test_cstring_view = []() {
+    // Given
+    CString str = "abcdefg";
+    util::Vec<char> chs;
+
+    // When
+    CStringView sv = str.slice(1, 6);
+    for (char c : sv) {
+        chs.append(c);
+    }
+
+    // Then
+    Assertions::assertEquals("bcdef"_cs, sv.to_string());
+    Assertions::assertEquals('b', sv[0]);
+    Assertions::assertEquals('f', sv[sv.length() - 1]);
+    Assertions::assertEquals("[b,c,d,e,f]"_cs, chs.__str__());
+};
+
 fn test_cstring() {
     UnitTestGroup group{"test_cstring"};
 
@@ -215,6 +233,7 @@ fn test_cstring() {
     group.addTest("should_remove_all", should_remove_all);
     group.addTest("should_add", should_add);
     group.addTest("should_iterate", should_iterate);
+    group.addTest("test_cstring_view", test_cstring_view);
 
     group.startAll();
 }

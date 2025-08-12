@@ -492,9 +492,9 @@ private:
         }
 
         // 获取整数部分和小数部分
-        auto pos = cstr.find('.');
-        auto integer_part = (pos == npos ? cstr.slice(curr) : cstr.slice(curr, pos));
-        auto decimal_part = (pos == npos ? ""_cs : cstr.slice(pos + 1));
+        const auto pos = cstr.find('.');
+        const auto integer_part = pos == npos ? cstr.slice(curr).to_string() : cstr.slice(curr, pos).to_string();
+        const auto decimal_part = pos == npos ? ""_cs : cstr.slice(pos + 1).to_string();
 
         // 构建未缩放值
         auto unscaled_str = integer_part + decimal_part;
@@ -506,7 +506,7 @@ private:
             this->unscaled_value_ = BigInteger::ZERO;
             this->scale_ = 0;
         } else {
-            unscaled_str = unscaled_str.slice(first_non_zero);
+            unscaled_str = unscaled_str.slice(first_non_zero).to_string();
             this->unscaled_value_ = neg ? -BigInteger(unscaled_str) : BigInteger(unscaled_str);
         }
     }
