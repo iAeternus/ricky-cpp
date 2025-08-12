@@ -166,7 +166,7 @@ private:
  * @brief 套接字类
  * @details 封装了套接字的基本操作
  */
-class Socket : public Object<Socket>, public NoCopy {
+class Socket : public Object<Socket>, public NoCopyMove {
 public:
     using Self = Socket;
 

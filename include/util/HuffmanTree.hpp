@@ -21,7 +21,7 @@ namespace my::util {
  * HuffmanTree 是一个基于哈夫曼编码算法的树结构，
  * 用于对文本进行压缩编码和解码，支持计算带权路径长度和平均编码长度
  */
-class HuffmanTree : public Object<HuffmanTree>, public NoCopy {
+class HuffmanTree : public Object<HuffmanTree>, public NoCopyMove {
 public:
     using Self = HuffmanTree;
     static constexpr usize NIL = -1ULL;

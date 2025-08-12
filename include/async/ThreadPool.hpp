@@ -30,7 +30,7 @@ struct StopFlag {
 /**
  * @brief 线程池
  */
-class ThreadPool : public Object<ThreadPool>, public NoCopy {
+class ThreadPool : public Object<ThreadPool>, public NoCopyMove {
     using Self = ThreadPool;
 
 public:

@@ -163,7 +163,7 @@ private:
      * @return 最大可分配对象数量
      */
     fn max_size() const noexcept {
-        return size_type(-1) / sizeof(value_type);
+        return static_cast<size_type>(-1) / sizeof(value_type);
     }
 };
 

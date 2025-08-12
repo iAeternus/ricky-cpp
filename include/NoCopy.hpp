@@ -4,12 +4,6 @@
  * @author Ricky
  * @date 2024/12/19
  * @version 1.1
- * 
- * 本文件提供了：
- * - 禁止拷贝的基类
- * - 禁止移动的基类
- * - 禁止拷贝和移动的基类
- * - 仅允许移动的基类
  */
 #ifndef NO_COPY_HPP
 #define NO_COPY_HPP
@@ -17,87 +11,58 @@
 namespace my {
 
 /**
- * @brief 禁止拷贝的基类
- * 
- * 继承此类的子类将无法进行拷贝操作，但可以进行移动操作。
- * 适用于独占资源的类型。
+ * @class NoCopy
+ * @brief 禁止拷贝，允许移动
  */
-class NoCopyable {
+class NoCopy {
 protected:
-    using Self = NoCopyable;
+    using Self = NoCopy;
 
-    constexpr NoCopyable() = default;
-    ~NoCopyable() = default;
+    constexpr NoCopy() = default;
+    ~NoCopy() = default;
     
-    NoCopyable(const Self&) = delete;
+    NoCopy(const Self&) = delete;
     Self& operator=(const Self&) = delete;
     
-    NoCopyable(Self&&) noexcept = default;
+    NoCopy(Self&&) noexcept = default;
     Self& operator=(Self&&) noexcept = default;
 };
 
 /**
- * @brief 禁止移动的基类
- * 
- * 继承此类的子类将无法进行移动操作，但可以进行拷贝操作。
- * 适用于共享资源的类型。
+ * @class NoMove
+ * @brief 禁止移动，允许拷贝
  */
-class NoMoveable {
+class NoMove {
 protected:
-    using Self = NoMoveable;
+    using Self = NoMove;
 
-    constexpr NoMoveable() = default;
-    ~NoMoveable() = default;
+    constexpr NoMove() = default;
+    ~NoMove() = default;
     
-    NoMoveable(const Self&) = default;
+    NoMove(const Self&) = default;
     Self& operator=(const Self&) = default;
     
-    NoMoveable(Self&&) noexcept = delete;
+    NoMove(Self&&) noexcept = delete;
     Self& operator=(Self&&) noexcept = delete;
 };
 
 /**
- * @brief 禁止拷贝和移动的基类
- * 
- * 继承此类的子类将无法进行拷贝和移动操作。
- * 适用于单例类型或全局资源管理器。
+ * @class NoCopyMove
+ * @brief 禁止拷贝和移动
  */
-class NonCopyMoveable {
+class NoCopyMove {
 protected:
-    using Self = NonCopyMoveable;
+    using Self = NoCopyMove;
 
-    constexpr NonCopyMoveable() = default;
-    ~NonCopyMoveable() = default;
-    
-    NonCopyMoveable(const Self&) = delete;
+    constexpr NoCopyMove() = default;
+    ~NoCopyMove() = default;
+
+    NoCopyMove(const Self&) = delete;
     Self& operator=(const Self&) = delete;
     
-    NonCopyMoveable(Self&&) noexcept = delete;
+    NoCopyMove(Self&&) noexcept = delete;
     Self& operator=(Self&&) noexcept = delete;
 };
-
-/**
- * @brief 仅允许移动的基类
- * 
- * 继承此类的子类只能进行移动操作，不能进行拷贝操作。
- * 适用于独占资源的类型，如智能指针、文件句柄等。
- */
-class MoveOnly {
-protected:
-    using Self = MoveOnly;
-
-    constexpr MoveOnly() = default;
-    virtual ~MoveOnly() = default;
-    
-    MoveOnly(const MoveOnly&) = delete;
-    MoveOnly& operator=(const MoveOnly&) = delete;
-    
-    MoveOnly(MoveOnly&&) noexcept = default;
-    MoveOnly& operator=(MoveOnly&&) noexcept = default;
-};
-
-// 兼容性别名
-using NoCopy = NonCopyMoveable;
 
 } // namespace my
 

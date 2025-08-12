@@ -14,7 +14,7 @@
 
 namespace my::fs::win {
 
-class File : public Object<File>, public NoCopy {
+class File : public Object<File>, public NoCopyMove {
     using Self = File;
 
 public:

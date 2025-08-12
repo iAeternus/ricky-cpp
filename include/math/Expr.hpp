@@ -67,7 +67,7 @@ struct Token : Object<Token> {
                 stream << num_value;
             }
         } else {
-            stream << op_value;
+            stream << op_value.data();
         }
         return CString{stream.str()};
     }

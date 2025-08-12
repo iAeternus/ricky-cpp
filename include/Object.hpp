@@ -16,10 +16,9 @@ namespace my {
  * @class Object
  * @brief 根对象（CRTP基类）
  * @details 提供基本的哈希、比较和字符串表示功能
+ * @note 1. 使用CRTP模式实现静态多态，避免虚函数的开销
+ *       2. 该类不应该被直接实例化，而是作为其他类的基类
  * @tparam D 派生类类型
- * @note 使用CRTP模式实现静态多态，避免虚函数的开销
- * @note 该类不应该被直接实例化，而是作为其他类的基类
- * @note 派生类需要实现__hash__()、__cmp__()和__str__()方法
  */
 template <typename D>
 class Object {
@@ -45,9 +44,6 @@ public:
 
     /**
      * @brief 判断两个对象是否相等
-     * @details 如果两个对象的哈希值相等且比较结果为0，则认为它们相等
-     * @note 该方法不应该抛出异常，若发生异常则返回false
-     * @note 该方法不应该修改对象状态
      * @param other 另一个对象
      * @return true=相等 false=不相等
      */
@@ -57,8 +53,6 @@ public:
 
     /**
      * @brief 获取对象的字符串表示
-     * @note 该函数不应该抛出异常，若发生异常则返回一个空字符串
-     * @note 该函数不应该修改对象状态
      * @return 对象的字符串表示
      */
     [[nodiscard]] CString __str__() const {

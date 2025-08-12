@@ -13,7 +13,7 @@ namespace my {
 
 /**
  * @brief 计算哈希值
- * @details 根据类型特性选择合适的哈希计算方式
+ * @details 使用类型实现的__hash__计算
  * @tparam K 键类型
  * @param key 键值
  * @return 哈希值

@@ -15,6 +15,12 @@ namespace my {
 
 class String;
 
+/**
+ * @class Pair
+ * @brief 有序二元组
+ * @tparam S 第一个元素类型
+ * @tparam T 第二个元素类型
+ */
 template <typename S, typename T>
 class Pair : public Object<Pair<S, T>> {
 public:

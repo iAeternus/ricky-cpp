@@ -57,9 +57,8 @@ enum class ExceptionType {
 
 /**
  * @class Exception
- * @brief 基础异常类，提供异常类型、消息和位置等信息
- * @details 该类继承自std::exception和Object，提供基本的异常处理功能
- * @note 使用std::source_location记录异常发生的位置
+ * @brief 基础异常类
+ * @details 提供异常类型、消息和位置等信息
  */
 class Exception final : public std::exception, public Object<Exception> {
 public:
@@ -72,36 +71,36 @@ public:
      * @param loc 异常位置
      * @param nested 关联异常
      */
-    explicit Exception(ExceptionType type, CString&& message,
-                       std::source_location loc = SRC_LOC,
+    explicit Exception(const ExceptionType type, CString&& message,
+                       const std::source_location loc = SRC_LOC,
                        std::exception_ptr nested = nullptr) :
             type_(type), message_(std::move(message)), loc_(loc), nested_(std::move(nested)), formatted_message_(format_message()) {}
 
     /**
      * @brief 获取异常信息
      */
-    const char* what() const noexcept override {
+    [[nodiscard]] const char* what() const noexcept override {
         return formatted_message_.data();
     }
 
     /**
      * @brief 获取异常类型
      */
-    ExceptionType type() const noexcept {
+    [[nodiscard]] ExceptionType type() const noexcept {
         return type_;
     }
 
     /**
      * @brief 获取异常类型名称
      */
-    CString type_name() const {
+    [[nodiscard]] CString type_name() const {
         return type_to_string(type_);
     }
 
     /**
      * @brief 获取异常消息
      */
-    CString message() const {
+    [[nodiscard]] CString message() const {
         return message_;
     }
 
@@ -115,7 +114,7 @@ public:
     /**
      * @brief 异常类型转字符串
      */
-    static CString type_to_string(ExceptionType type) {
+    static CString type_to_string(const ExceptionType type) {
         static const std::unordered_map<ExceptionType, CString> type_names = {
             {ExceptionType::RuntimeException, "RuntimeException"},
             {ExceptionType::LogicException, "LogicException"},
@@ -146,7 +145,7 @@ public:
     }
 
 private:
-    CString format_message() const noexcept {
+    [[nodiscard]] CString format_message() const noexcept {
         try {
             auto msg = std::format("{} [{}:{} in {}]: {}",
                                    type_to_string(type_),
@@ -164,7 +163,7 @@ private:
                     msg += "\n  Caused by: unknown exception";
                 }
             }
-            return CString(msg);
+            return {msg};
         } catch (const std::bad_alloc&) {
             return "Memory error in exception formatting";
         } catch (...) {
@@ -182,18 +181,18 @@ private:
 };
 
 /**
- * @brief 创建异常对象
+ * @brief 使用异常信息字符串创建异常对象
  * @param type 异常类型
  * @param message 异常消息
  * @param loc 异常位置
  * @return 异常对象
  */
-fn exception(ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) -> Exception {
+fn exception(const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> Exception {
     return Exception(type, std::move(message), loc);
 }
 
 /**
- * @brief 创建异常对象
+ * @brief 使用格式化字符串创建异常对象
  * @param type 异常类型
  * @param fmt 格式化字符串
  * @param loc 异常位置
@@ -201,7 +200,7 @@ fn exception(ExceptionType type, CString&& message, std::source_location loc = S
  * @return 异常对象
  */
 template <typename... Args>
-fn exception(ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) -> Exception {
+fn exception(const ExceptionType type, const std::string_view fmt, const std::source_location loc, Args&&... args) -> Exception {
     const std::string message = std::vformat(fmt, std::make_format_args(args...));
     return Exception(type, message, loc);
 }
@@ -213,7 +212,7 @@ fn exception(ExceptionType type, std::string_view fmt, std::source_location loc,
  * @param message 异常消息
  * @param loc 异常位置
  */
-fn check(bool condition, ExceptionType type, CString&& message, std::source_location loc = SRC_LOC) -> void {
+fn check(const bool condition, const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> void {
     if (!condition) {
         throw exception(type, std::move(message), loc);
     }
@@ -228,7 +227,7 @@ fn check(bool condition, ExceptionType type, CString&& message, std::source_loca
  * @param args 格式化参数
  */
 template <typename... Args>
-fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_location loc, Args&&... args) -> void {
+fn check(const bool condition, const ExceptionType type, const std::string_view fmt, const std::source_location loc, Args&&... args) -> void {
     if (!condition) {
         const std::string message = std::vformat(fmt, std::make_format_args(args...));
         throw exception(type, message, loc);
@@ -242,14 +241,14 @@ fn check(bool condition, ExceptionType type, std::string_view fmt, std::source_l
  *   auto e = runtime_exception("Something went wrong");
  *   throw e;
  */
-#define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                         \
-    fn NAME##_exception(CString&& message, std::source_location loc = SRC_LOC)->Exception {          \
-        return exception(TYPE, std::move(message), loc);                                             \
-    }                                                                                                \
-    template <typename... Args>                                                                      \
-    fn NAME##_exception(std::string_view fmt, std::source_location loc, Args&&... args)->Exception { \
-        std::string message = std::vformat(fmt, std::make_format_args(args...));                     \
-        return exception(TYPE, std::move(message), loc);                                             \
+#define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                                     \
+    fn NAME##_exception(CString&& message, const std::source_location loc = SRC_LOC)->Exception {                \
+        return exception(TYPE, std::move(message), loc);                                                         \
+    }                                                                                                            \
+    template <typename... Args>                                                                                  \
+    fn NAME##_exception(const std::string_view fmt, const std::source_location loc, Args&&... args)->Exception { \
+        const std::string message = std::vformat(fmt, std::make_format_args(args...));                           \
+        return exception(TYPE, std::move(message), loc);                                                         \
     }
 
 DEFINE_EXCEPTION_FACTORY(runtime, ExceptionType::RuntimeException)                      // 运行时异常
@@ -258,10 +257,10 @@ DEFINE_EXCEPTION_FACTORY(value, ExceptionType::ValueException)                  
 DEFINE_EXCEPTION_FACTORY(type, ExceptionType::TypeException)                            // 类型异常
 DEFINE_EXCEPTION_FACTORY(argument, ExceptionType::ArgumentException)                    // 参数异常
 DEFINE_EXCEPTION_FACTORY(null_pointer, ExceptionType::NullPointerException)             // 空指针异常
-DEFINE_EXCEPTION_FACTORY(not_found, ExceptionType::NotFoundException)                   // not_found异常
+DEFINE_EXCEPTION_FACTORY(not_found, ExceptionType::NotFoundException)                   // not_found 异常
 DEFINE_EXCEPTION_FACTORY(index_out_of_bounds, ExceptionType::IndexOutOfBoundsException) // 下标越界异常
 DEFINE_EXCEPTION_FACTORY(resource, ExceptionType::ResourceException)                    // 资源异常
-DEFINE_EXCEPTION_FACTORY(io, ExceptionType::IOException)                                // IO异常
+DEFINE_EXCEPTION_FACTORY(io, ExceptionType::IOException)                                // IO 异常
 DEFINE_EXCEPTION_FACTORY(memory, ExceptionType::MemoryException)                        // 内存异常
 DEFINE_EXCEPTION_FACTORY(arithmetic, ExceptionType::ArithmeticException)                // 算术异常
 DEFINE_EXCEPTION_FACTORY(overflow, ExceptionType::OverflowException)                    // 溢出异常

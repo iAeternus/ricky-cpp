@@ -19,7 +19,10 @@
 namespace my {
 
 /**
- * @brief 自定义字符串类，提供安全的字符串操作和内存管理
+ * @class BaseCString
+ * @brief C风格字符串
+ * @details 自定义字符串类，提供安全的字符串操作和内存管理
+ * @tparam Alloc 内存分配器
  */
 template <typename Alloc = Allocator<char>>
 class BaseCString {
@@ -27,25 +30,26 @@ public:
     using Self = BaseCString<Alloc>;
 
     /**
-     * @brief 根据指定长度创建字符串
+     * @brief 根据指定长度创建字符串，填充0
+     * @details 实际长度为指定长度+1，尾元为'\0'
      * @param len 字符串的长度
      */
-    BaseCString(usize len = 1) :
+    BaseCString(const usize len = 1) :
             str_(alloc_.allocate(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
         str_[len_] = '\0';
     }
 
     /**
-     * @brief 根据 C 风格字符串创建字符串
-     * @param str C 风格字符串
+     * @brief 根据字符指针创建字符串
+     * @param str 字符指针
      */
     BaseCString(const char* str) :
             Self(str, std::strlen(str)) {}
 
     /**
-     * @brief 根据 C 风格字符串和指定长度创建字符串
-     * @param str C 风格字符串
+     * @brief 根据字符指针和指定长度创建字符串
+     * @param str 字符指针
      * @param len 字符串的长度
      */
     BaseCString(const char* str, usize len) :
@@ -167,37 +171,41 @@ public:
 
     /**
      * @brief 字符串索引访问操作符
-     * @param index 索引位置
+     * @param idx 索引位置
      * @return 索引位置的字符引用
      */
-    char& operator[](usize index) {
-        return str_[index];
+    char& operator[](const usize idx) {
+        return str_[idx];
     }
 
     /**
      * @brief 字符串索引访问操作符（常量版本）
-     * @param index 索引位置
+     * @param idx 索引位置
      * @return 索引位置的字符常量引用
      */
-    const char& operator[](usize index) const {
-        return str_[index];
+    const char& operator[](usize idx) const {
+        return str_[idx];
     }
 
     /**
-     * @brief 获取字符串的长度
+     * @brief 获取字符串的长度 TODO 将弃用，请使用length()
      * @return 字符串的长度
      */
     usize size() const {
         return len_;
     }
 
+    /**
+     * @brief 获取字符串的长度
+     * @return 字符串的长度
+     */
     usize length() const {
         return len_;
     }
 
     /**
      * @brief 判断字符串是否为空
-     * @return 是否为空
+     * @return true=是 false=否
      */
     bool empty() const {
         return len_ == 0;
@@ -226,7 +234,7 @@ public:
      * @return 子字符串
      */
     Self slice(usize start, isize end) const {
-        auto m_size = size();
+        const auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
         return Self{str_ + start, end - start};
@@ -237,15 +245,15 @@ public:
      * @param start 起始索引
      * @return 子字符串
      */
-    Self slice(usize start) const {
+    Self slice(const usize start) const {
         return slice(start, size());
     }
 
     /**
      * @brief 查找指定字符，找不到返回npos
      */
-    usize find(char ch) const {
-        auto m_size = size();
+    usize find(const char ch) const {
+        const auto m_size = size();
         for (usize i = 0; i < m_size; ++i) {
             if (str_[i] == ch) {
                 return i;
@@ -257,8 +265,8 @@ public:
     /**
      * @brief 查找第一个不匹配的位置，若全部匹配，返回npos
      */
-    usize find_first_not_of(char ch) const {
-        auto m_size = size();
+    usize find_first_not_of(const char ch) const {
+        const auto m_size = size();
         for (usize i = 0; i < m_size; ++i) {
             if (str_[i] != ch) {
                 return i;
@@ -310,7 +318,7 @@ public:
      */
     Self upper() const {
         Self res{*this};
-        usize m_size = size();
+        const auto m_size = size();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = std::toupper(res[i]);
         }
@@ -323,7 +331,7 @@ public:
      */
     Self lower() const {
         Self res{*this};
-        usize m_size = size();
+        const auto m_size = size();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = std::tolower(res[i]);
         }
@@ -383,6 +391,11 @@ public:
         return slice(get_rtrim_index(pattern));
     }
 
+    /**
+     * @brief 删除字符串中所有指定字符
+     * @param ch 要删除的字符
+     * @return 新字符串
+     */
     Self remove_all(const char ch) const {
         usize new_len = 0;
         for (usize i = 0; i < len_; ++i) {
@@ -391,16 +404,21 @@ public:
             }
         }
 
-        Self result(new_len);
+        Self res(new_len);
         usize pos = 0;
         for (usize i = 0; i < len_; ++i) {
             if (str_[i] != ch) {
-                result[pos++] = str_[i];
+                res[pos++] = str_[i];
             }
         }
-        return result;
+        return res;
     }
 
+    /**
+     * @brief 删除字符串中所有满足谓词的字符
+     * @param pred 谓词
+     * @return 新字符串
+     */
     Self remove_all(Pred<char>&& pred) const {
         usize new_len = 0;
         for (usize i = 0; i < len_; ++i) {
@@ -409,14 +427,14 @@ public:
             }
         }
 
-        Self result(new_len);
+        Self res(new_len);
         usize pos = 0;
         for (usize i = 0; i < len_; ++i) {
             if (!pred(str_[i])) {
-                result[pos++] = str_[i];
+                res[pos++] = str_[i];
             }
         }
-        return result;
+        return res;
     }
 
     /**
@@ -431,6 +449,11 @@ public:
         return res;
     }
 
+    /**
+     * @brief 字符串拼接操作符
+     * @param str 要拼接的字符串
+     * @return 拼接后的新字符串
+     */
     Self operator+(const char* str) const {
         return *this + Self{str};
     }
@@ -478,6 +501,9 @@ public:
         return std::strcmp(data(), other) == 0;
     }
 
+    /**
+     * @brief 比较运算符
+     */
     bool operator>(const Self& other) const { return __cmp__(other) > 0; }
 
     bool operator<(const Self& other) const { return __cmp__(other) < 0; }
@@ -514,7 +540,7 @@ public:
          * @brief 构造一个迭代器
          * @param current 当前位置指针
          */
-        explicit Iterator(pointer current) :
+        explicit Iterator(const pointer current) :
                 current_(current) {}
 
         Iterator(const Self& other) = default;
@@ -603,36 +629,6 @@ public:
             return tmp;
         }
 
-        Self& operator+=(difference_type n) {
-            current_ += n;
-            return *this;
-        }
-
-        Self operator+(difference_type n) const {
-            Self tmp = *this;
-            tmp += n;
-            return tmp;
-        }
-
-        friend Self operator+(difference_type n, const Self& it) {
-            return it + n;
-        }
-
-        Self& operator-=(difference_type n) {
-            current_ -= n;
-            return *this;
-        }
-
-        Self operator-(difference_type n) const {
-            Self tmp = *this;
-            tmp -= n;
-            return tmp;
-        }
-
-        difference_type operator-(const Self& other) const {
-            return current_ - other.current_;
-        }
-
         /**
          * @brief 比较两个迭代器是否相等
          * @param other 另一个迭代器
@@ -667,7 +663,7 @@ public:
     }
 
     /**
-     * @brief 获取动态数组的起始迭代器（const 版本）
+     * @brief 获取动态数组的起始迭代器（常量版本）
      * @return 返回指向第一个元素的 const 迭代器
      */
     const_iterator begin() const {
@@ -683,7 +679,7 @@ public:
     }
 
     /**
-     * @brief 获取动态数组的末尾迭代器（const 版本）
+     * @brief 获取动态数组的末尾迭代器（常量版本）
      * @return 返回指向最后一个元素之后的 const 迭代器
      */
     const_iterator end() const {
@@ -719,7 +715,8 @@ private:
      * @return 去除首部空白后的索引
      */
     usize get_ltrim_index() const {
-        usize l = 0, r = size();
+        usize l = 0;
+        const usize r = size();
         while (l < r && str_[l] == ' ') ++l;
         return l;
     }
@@ -829,20 +826,6 @@ fn i2c(i32 ch) -> char {
     return ch + '0';
 }
 
-} // namespace my
-
-/**
- * @brief 为 CString 类提供标准库格式化支持
- */
-template <>
-struct std::formatter<my::CString> : std::formatter<const char*> {
-    fn format(const my::CString& value, auto& ctx) const {
-        return std::formatter<const char*>::format(value.data(), ctx);
-    }
-};
-
-namespace my {
-
 /**
  * @brief 自定义字符串字面量，支持 `_cs` 后缀转换为 CString 对象
  * @param str C 风格字符串
@@ -854,5 +837,15 @@ fn operator""_cs(const char* str, size_t len)->CString {
 }
 
 } // namespace my
+
+/**
+ * @brief 为 CString 类提供标准库格式化支持
+ */
+template <>
+struct std::formatter<my::CString> : std::formatter<const char*> {
+    fn format(const my::CString& value, auto& ctx) const {
+        return std::formatter<const char*>::format(value.data(), ctx);
+    }
+};
 
 #endif // CSTRING_HPP
