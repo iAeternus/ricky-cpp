@@ -512,7 +512,7 @@ public:
             while (j > 0 && (*this)[i] != pattern[j]) {
                 j = next[j - 1];
             }
-            j += ((*this)[i] == pattern[j]); // 匹配，j前进
+            j += (*this)[i] == pattern[j]; // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
             if (j == p_size) {
                 return i - p_size + 1;
@@ -537,7 +537,7 @@ public:
             while (j > 0 && (*this)[i] != pattern[j]) {
                 j = next[j - 1];
             }
-            j += ((*this)[i] == pattern[j]); // 匹配，j前进
+            j += (*this)[i] == pattern[j]; // 匹配，j前进
             // 模式串匹配完，收集文本串匹配起点
             if (j == p_size) {
                 res.append(i - p_size + 1);

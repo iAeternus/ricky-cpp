@@ -68,31 +68,32 @@ fn should_find = []() {
     CString s2 = "caabaabaabaabaaaab";
 
     // When
-    // auto pos = s.find("def");
+    auto pos = s.find("def");
     auto pos2 = s.find('f');
-    // auto pos3 = s.find("abd");
-    // auto pos4 = s2.find("aabaabaaaa");
-    // auto pos5 = s2.find("");
+    auto pos3 = s.find("abd");
+    auto pos4 = s2.find("aabaabaaaa");
+    auto pos5 = s2.find("");
 
     // Then
-    // Assertions::assertEquals(3, pos);
+    Assertions::assertEquals(3, pos);
     Assertions::assertEquals(5, pos2);
-    // Assertions::assertEquals(npos, pos3);
-    // Assertions::assertEquals(7, pos4);
-    // Assertions::assertEquals(npos, pos5);
+    Assertions::assertEquals(npos, pos3);
+    Assertions::assertEquals(7, pos4);
+    Assertions::assertEquals(npos, pos5);
 };
 
-// fn should_find_all = []() {
-//     // Given
-//     CString s = "abcdefabc";
+fn should_find_all = []() {
+    // Given
+    CString s = "abcdefabc";
 
-//     // When
-//     auto poss = s.find_all("abc");
+    // When
+    auto poss = s.find_all("abc");
 
-//     // Then
-//     Assertions::assertEquals(2, poss.size());
-//     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
-// };
+    // Then
+    Assertions::assertEquals(2, poss.size());
+    Assertions::assertEquals(0, poss[0]);
+    Assertions::assertEquals(6, poss[1]);
+};
 
 fn should_judge_starts_with = []() {
     // Given
@@ -224,7 +225,7 @@ fn test_cstring() {
     group.addTest("should_compare", should_compare);
     group.addTest("should_slice", should_slice);
     group.addTest("should_find", should_find);
-    // group.addTest("should_find_all", should_find_all);
+    group.addTest("should_find_all", should_find_all);
     group.addTest("should_judge_starts_with", should_judge_starts_with);
     group.addTest("should_judge_ends_with", should_judge_ends_with);
     group.addTest("should_get_upper", should_get_upper);

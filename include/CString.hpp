@@ -81,8 +81,30 @@ public:
         return {begin_, length()};
     }
 
+    /**
+     * @brief 与字符串判断相等，不会拷贝
+     */
     template <typename Alloc = Allocator<char>>
-    friend bool operator==(const Self& view, const BaseCString<Alloc> cstr) {
+    friend bool operator==(const Self& view, const BaseCString<Alloc>& cstr) {
+        if (view.length() != cstr.length()) {
+            return false;
+        }
+
+        usize idx = 0;
+        for (const char c : cstr) {
+            if (view[idx] != c) {
+                return false;
+            }
+            ++idx;
+        }
+        return true;
+    }
+
+    /**
+     * @brief 与字符串判断相等，不会拷贝
+     */
+    template <typename Alloc = Allocator<char>>
+    friend bool operator==(const BaseCString<Alloc>& cstr, const Self& view) {
         if (view.length() != cstr.length()) {
             return false;
         }
@@ -480,11 +502,49 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    // usize find(const Self& pattern, usize pos = 0) const {
-    //     return npos; // TODO
-    // }
+    usize find(const Self& pattern, usize pos = 0) const {
+        if (pattern.empty()) return npos;
+        auto m_size = size(), p_size = pattern.size();
+        auto next = get_next(pattern);
+        for (usize i = pos, j = 0; i < m_size; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && (*this)[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            // 模式串匹配完，返回文本串匹配起点
+            if (j == p_size) {
+                return i - p_size + 1;
+            }
+        }
+        return npos;
+    }
 
-    // TODO find_all
+    /**
+     * @brief 查找模式串的所有匹配位置
+     * @param pattern 模式串，长度为m
+     * @return 所有匹配位置
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
+    std::vector<usize> find_all(const Self& pattern) const {
+        std::vector<usize> res;
+        if (pattern.empty()) return res;
+        auto m_size = size(), p_size = pattern.size();
+        auto next = get_next(pattern);
+        for (usize i = 0, j = 0; i < m_size; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && (*this)[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            // 模式串匹配完，收集文本串匹配起点
+            if (j == p_size) {
+                res.push_back(i - p_size + 1);
+                j = next[j - 1];
+            }
+        }
+        return res;
+    }
 
     /**
      * @brief 检查字符串是否以指定子字符串开头
@@ -703,19 +763,12 @@ public:
      * @brief 比较运算符
      */
     bool operator>(const Self& other) const { return __cmp__(other) > 0; }
-
     bool operator<(const Self& other) const { return __cmp__(other) < 0; }
-
     bool operator>=(const Self& other) const { return __cmp__(other) >= 0; }
-
     bool operator<=(const Self& other) const { return __cmp__(other) <= 0; }
-
     bool operator==(const Self& other) const { return __cmp__(other) == 0; }
-
     bool operator!=(const Self& other) const { return __cmp__(other) != 0; }
-
     bool operator==(const char* other) const { return __equals__(other); }
-
     bool operator!=(const char* other) const { return !__equals__(other); }
 
     /**
@@ -735,11 +788,11 @@ public:
         using const_reference = const value_type&;
 
         /**
-         * @brief 构造一个迭代器
-         * @param current 当前位置指针
+         * @brief 使用指针构造
+         * @param curr 当前位置指针
          */
-        explicit Iterator(const pointer current) :
-                current_(current) {}
+        explicit Iterator(const pointer curr) :
+                curr_(curr) {}
 
         Iterator(const Self& other) = default;
         Self& operator=(const Self& other) = default;
@@ -750,55 +803,28 @@ public:
         ~Iterator() = default;
 
         /**
-         * @brief 解引用运算符
-         * @return 返回当前元素的引用
-         * @note 如果迭代器无效（如超过范围），行为未定义
+         * @brief 解引用
          */
-        reference operator*() {
-            return *current_;
-        }
+        reference operator*() { return *curr_; }
+        const_reference operator*() const { return *curr_; }
+        pointer operator->() { return curr_; }
+        const_pointer operator->() const { return curr_; }
 
         /**
-         * @brief 解引用运算符（const 版本）
-         * @return 返回当前元素的 const 引用
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        const_reference operator*() const {
-            return *current_;
-        }
-
-        /**
-         * @brief 获取指向当前元素的指针
-         * @return 返回当前元素的指针
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        pointer operator->() {
-            return current_;
-        }
-
-        /**
-         * @brief 获取指向当前元素的指针（const 版本）
-         * @return 返回当前元素的 const 指针
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        const_pointer operator->() const {
-            return current_;
-        }
-
-        /**
-         * @brief 前置自增运算符
-         * 移动迭代器到下一个元素
-         * @return 返回自增后的迭代器
+         * @breif 前缀递增/递减
          */
         Self& operator++() {
-            ++current_;
+            ++curr_;
+            return *this;
+        }
+
+        Self& operator--() {
+            --curr_;
             return *this;
         }
 
         /**
-         * @brief 后置自增运算符
-         * 移动迭代器到下一个元素
-         * @return 返回自增前的迭代器
+         * @breif 后缀递增/递减
          */
         Self operator++(i32) {
             Self tmp(*this);
@@ -806,21 +832,6 @@ public:
             return tmp;
         }
 
-        /**
-         * @brief 前置自减运算符
-         * 移动迭代器到上一个元素
-         * @return 返回自减后的迭代器
-         */
-        Self& operator--() {
-            --current_;
-            return *this;
-        }
-
-        /**
-         * @brief 后置自减运算符
-         * 移动迭代器到上一个元素
-         * @return 返回自减前的迭代器
-         */
         Self operator--(i32) {
             Self tmp(*this);
             --*this;
@@ -828,63 +839,87 @@ public:
         }
 
         /**
-         * @brief 比较两个迭代器是否相等
-         * @param other 另一个迭代器
-         * @return 如果相等返回 true，否则返回 false
+         * @breif 随机访问
          */
-        bool operator==(const Self& other) const {
-            return this->current_ == other.current_;
+        Self operator+(difference_type n) const { return Self(curr_ + n); }
+        Self operator-(difference_type n) const { return Self(curr_ - n); }
+        difference_type operator-(const Self& other) const { return curr_ - other.curr_; }
+
+        /**
+         * @brief 复合赋值
+         */
+        Self& operator+=(difference_type n) {
+            curr_ += n;
+            return *this;
+        }
+
+        Self& operator-=(difference_type n) {
+            curr_ -= n;
+            return *this;
         }
 
         /**
-         * @brief 比较两个迭代器是否不相等
-         * @param other 另一个迭代器
-         * @return 如果不相等返回 true，否则返回 false
+         * @brief 下标访问
          */
-        bool operator!=(const Self& other) const {
-            return this->current_ != other.current_;
-        }
+        reference operator[](difference_type n) const { return curr_[n]; }
+
+        /**
+         * @brief 比较运算符
+         */
+        bool operator==(const Self& other) const { return curr_ == other.curr_; }
+        bool operator!=(const Self& other) const { return curr_ != other.curr_; }
+        bool operator<(const Self& other) const { return curr_ < other.curr_; }
+        bool operator>(const Self& other) const { return curr_ > other.curr_; }
+        bool operator<=(const Self& other) const { return curr_ <= other.curr_; }
+        bool operator>=(const Self& other) const { return curr_ >= other.curr_; }
 
     private:
-        pointer current_;
+        pointer curr_;
     };
 
     using iterator = Iterator<false>;
     using const_iterator = Iterator<true>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     /**
-     * @brief 获取动态数组的起始迭代器
-     * @return 返回指向第一个元素的迭代器
+     * @brief 迭代器接口
      */
-    iterator begin() {
-        return iterator(str_);
-    }
+    iterator begin() { return iterator(str_); }
+    iterator end() { return iterator(str_ + len_); }
+    const_iterator begin() const { return const_iterator(str_); }
+    const_iterator end() const { return const_iterator(str_ + len_); }
+    const_iterator cbegin() const { return begin(); }
+    const_iterator cend() const { return end(); }
 
-    /**
-     * @brief 获取动态数组的起始迭代器（常量版本）
-     * @return 返回指向第一个元素的 const 迭代器
-     */
-    const_iterator begin() const {
-        return const_iterator(str_);
-    }
-
-    /**
-     * @brief 获取动态数组的末尾迭代器
-     * @return 返回指向最后一个元素之后的迭代器
-     */
-    iterator end() {
-        return iterator(str_ + len_);
-    }
-
-    /**
-     * @brief 获取动态数组的末尾迭代器（常量版本）
-     * @return 返回指向最后一个元素之后的 const 迭代器
-     */
-    const_iterator end() const {
-        return const_iterator(str_ + len_);
-    }
+    reverse_iterator rbegin() { return reverse_iterator(str_); }
+    reverse_iterator rend() { return reverse_iterator(str_ + len_); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(str_); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(str_ + len_); }
+    const_reverse_iterator crbegin() const { return rbegin(); }
+    const_reverse_iterator crend() const { return rend(); }
 
 private:
+    /**
+     * @brief KMP辅助函数，求next数组
+     * @param pattern 模式串
+     * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
+     * @note 时间复杂度为 O(m)，m为模式串的长度
+     */
+    static std::vector<usize> get_next(const Self& pattern) {
+        auto p_size = pattern.size();
+        std::vector<usize> next(p_size, 0);
+        for (usize i = 1, j = 0; i < p_size; ++i) {
+            // 失配，j按照next数组回跳
+            while (j > 0 && pattern[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (pattern[i] == pattern[j]); // 匹配，j前进
+            next[i] = j;
+        }
+        return next;
+    }
+
     /**
      * @brief 获取去除首尾空白后的索引范围
      * @return 首尾空白后的索引范围
