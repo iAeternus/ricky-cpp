@@ -68,16 +68,16 @@ public:
      * @brief 中括号下标访问，允许负数下标
      * @note 负数下标代表倒序下标
      */
-    value_t& operator[](isize idx) {
-        return at(neg_index(idx, size()));
+    value_t& operator[](const isize idx) {
+        return at(neg_index(idx, static_cast<isize>(size())));
     }
 
     /**
      * @brief 中括号下标访问，允许负数下标
      * @note 负数下标代表倒序下标
      */
-    const value_t& operator[](isize idx) const {
-        return at(neg_index(idx, size()));
+    const value_t& operator[](const isize idx) const {
+        return at(neg_index(idx, static_cast<isize>(size())));
     }
 
     /**

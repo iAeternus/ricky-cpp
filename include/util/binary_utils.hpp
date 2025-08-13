@@ -141,7 +141,7 @@ constexpr fn highbit(u32 x)->u32 {
  */
 template <typename B>
 constexpr fn all_one(const B& x)->bool {
-    return (x & x + 1) == 0;
+    return (x & (x + 1)) == 0;
 }
 
 /**
@@ -150,7 +150,7 @@ constexpr fn all_one(const B& x)->bool {
  */
 template <typename B>
 constexpr fn only_one(const B& x)->bool {
-    return (x & x - 1) == 0;
+    return (x & (x - 1)) == 0;
 }
 
 /**

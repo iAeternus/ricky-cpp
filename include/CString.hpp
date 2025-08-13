@@ -81,10 +81,6 @@ public:
         return {begin_, length()};
     }
 
-    friend bool operator==(const Self& a, const Self& b) {
-        return a.begin_ == b.begin_ && a.end_ == b.end_;
-    }
-
     template <typename Alloc = Allocator<char>>
     friend bool operator==(const Self& view, const BaseCString<Alloc> cstr) {
         if (view.length() != cstr.length()) {
@@ -438,7 +434,7 @@ public:
      * @return 子字符串
      */
     CStringView slice(const usize start, isize end) const {
-        end = neg_index(end, length());
+        end = neg_index(end, static_cast<isize>(length()));
         return CStringView{str_ + start, end - start};
     }
 

@@ -1,21 +1,28 @@
-#ifndef TEST_HTTP
-#define TEST_HTTP
-
+/**
+ * @brief HTTP服务器
+ * @author 10494
+ * @date 2025/8/13
+ * @version 1.0
+ */
 #include "Log.hpp"
 #include "http.hpp"
-#include "UnitTest.hpp"
 
-namespace my::test::test_http {
+constexpr auto IP = "127.0.0.1";
+constexpr auto PORT = 8080;
+constexpr auto NUM_OF_THREADS = 100;
+constexpr auto STATIC_FILE_PATH = R"(F:\Develop\cpp\ricky-cpp\tests\resources\text.txt)";
 
-fn it_works = []() {
-    net::HttpServer server("127.0.0.1", 8080, 100);
+void example_http_server() {
+    using namespace my;
+
+    net::HttpServer server(IP, PORT, NUM_OF_THREADS);
     io::Log::set_level(io::Log::LogLevel::TRACE_);
 
     /*
     静态文件服务
     http://127.0.0.1:8080/static
     */
-    server.static_file("/static", R"(F:\Develop\cpp\ricky-cpp\tests\resources\text.txt)", 3600);
+    server.static_file("/static", STATIC_FILE_PATH, 3600);
 
     /*
     首页
@@ -66,16 +73,9 @@ fn it_works = []() {
     });
 
     server.start();
-};
-
-fn test_http() {
-    UnitTestGroup group{"test_http"};
-
-    group.addTest("it_works", it_works);
-
-    group.startAll();
 }
 
-} // namespace my::test::test_http
-
-#endif // TEST_HTTP
+int main() {
+    system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
+    example_http_server();
+}

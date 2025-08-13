@@ -467,7 +467,7 @@ public:
      * @return 子字符串
      */
     Self slice(usize start, isize end) const {
-        auto m_size = size();
+        const auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
         Vec<CodePoint> buf;
@@ -1003,5 +1003,14 @@ fn operator""_s(const char* str, size_t length)->util::String {
 }
 
 } // namespace my
+
+template <typename Alloc>
+struct std::formatter<my::util::BaseString<Alloc>, char> : std::formatter<string_view, char> {
+    auto format(const my::util::BaseString<Alloc>& str, auto& ctx) const {
+        auto s = str.into_string();
+        return std::formatter<std::string_view, char>::format(
+            std::string_view(s.data(), s.length()), ctx);
+    }
+};
 
 #endif // STRING_HPP

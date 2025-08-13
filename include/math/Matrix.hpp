@@ -389,7 +389,7 @@ public:
      */
     bool swap_row(usize i, usize j) {
         if (i == j) return false;
-        if (i < 0 || i >= rows_ || j < 0 || j >= rows_) {
+        if (i >= rows_ || j >= rows_) {
             throw index_out_of_bounds_exception("row index {} or {} out of range [0..{}]", SRC_LOC, i, j, rows_);
         }
         for (usize k = 0; k < cols_; ++k) {
@@ -406,7 +406,7 @@ public:
      */
     bool swap_col(usize i, usize j) {
         if (i == j) return false;
-        if (i < 0 || i >= cols_ || j < 0 || j >= cols_) {
+        if (i >= cols_ || j >= cols_) {
             throw index_out_of_bounds_exception("column index {} or {} out of range [0..{}]", SRC_LOC, i, j, cols_);
         }
         for (usize k = 0; k < rows_; ++k) {

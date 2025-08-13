@@ -10,7 +10,6 @@
  * 测试模式设置
  * - 0 基准测试（运行时间较长）
  * - 1 功能测试
- * - 2 HTTP服务器测试（阻塞）
  */
 #define TEST_MODE 1
 
@@ -66,8 +65,6 @@
 #include "test_udp.hpp"
 #include "test_tcp.hpp"
 #include "test_json_serializer.hpp"
-#elif TEST_MODE == 2
-#include "test_http.hpp"
 #endif
 
 #include <winnls.h>
@@ -129,7 +126,5 @@ auto main() -> int {
     test_udp::test_udp();
     test_tcp::test_tcp();
     test_json_serializer::test_json_serializer();
-#elif TEST_MODE == 2
-    test_http::test_http();
 #endif
 }
