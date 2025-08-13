@@ -37,7 +37,7 @@ struct PromiseImpl : Object<PromiseImpl<T>> {
     /**
      * @brief 处理协程中未捕获的异常
      */
-    void unhandled_exception() { throw; }
+    void unhandled_exception() const { throw; }
 
     void return_value(T value) noexcept { value_ = std::move(value); }
 
@@ -60,11 +60,11 @@ struct PromiseImpl<void> : public Object<PromiseImpl<void>> {
 
     std::suspend_always final_suspend() const noexcept { return {}; }
 
-    std::suspend_always yield_value() noexcept { return {}; }
+    std::suspend_always yield_value() const noexcept { return {}; }
 
-    void unhandled_exception() { throw; }
+    void unhandled_exception() const { throw; }
 
-    void return_void() noexcept {}
+    void return_void() const noexcept {}
 
     co_type get_return_object() noexcept { return co_type::from_promise(*this); }
 };

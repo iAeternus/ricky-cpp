@@ -1,6 +1,6 @@
 /**
  * @brief 一些有意思的 banner
- * @author 10494
+ * @author Ricky
  * @date 2025/8/7
  * @version 1.0
  */

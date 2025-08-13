@@ -22,7 +22,7 @@ struct CurrentCoro : std::suspend_always {
     /**
      * @brief 协程挂起时调用
      */
-    Coroutine await_suspend(Coroutine coroutine) noexcept {
+    Coroutine await_suspend(const Coroutine coroutine) noexcept {
         previous_coro_ = coroutine;
         return coroutine;
     }
@@ -43,13 +43,13 @@ struct CoroAwaiter : std::suspend_always, Object<CoroAwaiter> {
 
     CoroAwaiter() noexcept = default;
 
-    CoroAwaiter(Coroutine coro) noexcept :
+    CoroAwaiter(const Coroutine coro) noexcept :
             coro_(coro) {}
 
     /**
      * @brief 协程挂起时调用
      */
-    Coroutine await_suspend(Coroutine coro) const noexcept {
+    Coroutine await_suspend(const Coroutine coro) const noexcept {
         (void)coro;
         return coro_ ? coro_ : std::noop_coroutine();
     }
