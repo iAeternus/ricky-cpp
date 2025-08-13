@@ -113,6 +113,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory(tests)
 enable_testing()
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/example)
-    add_subdirectory(example)
+if (EXISTS ${CMAKE_SOURCE_DIR}/examples)
+    add_subdirectory(examples)
 endif ()
