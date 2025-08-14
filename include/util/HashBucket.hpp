@@ -272,7 +272,7 @@ template <typename T, typename Alloc = Allocator<RobinManager<T>>>
 class RobinHashBucket final : public HashBucket<T> {
 public:
     using value_t = T;
-    using Self = RobinHashBucket<value_t>;
+    using Self = RobinHashBucket<value_t, Alloc>;
     using Super = HashBucket<value_t>;
     using manager_t = RobinManager<value_t>;
 
@@ -339,14 +339,17 @@ public:
      * @return 返回克隆后的哈希桶指针
      */
     Self* clone() const override {
-        return new Self(*this);
+        // return new Self(*this);
+        using alloc_type = typename Alloc::template rebind<Self>::other;
+        static alloc_type alloc;
+        return alloc.create(*this);
     }
 
     /**
      * @brief 根据哈希值获取对应的管理器地址
-     * 1. 找到相同的hash值, 返回该管理器地址
-     * 2. 找到距离最近的空闲管理器, 返回该管理器地址
-     * 3. 没有空闲且相同hash值的管理器，返回nullptr
+     * @details 1. 找到相同的hash值, 返回该管理器地址
+     *          2. 找到距离最近的空闲管理器, 返回该管理器地址
+     *          3. 没有空闲且相同hash值的管理器，返回nullptr
      * @param hash_val 哈希值
      * @return 返回管理器地址，如果没有找到返回 nullptr
      */
@@ -466,7 +469,7 @@ public:
      * @param new_capacity 新的容量
      */
     void expand(usize new_capacity) noexcept override {
-        Array<manager_t> tmp_manager{std::move(robin_managers_)};
+        Array<manager_t, Alloc> tmp_manager{std::move(robin_managers_)};
         robin_managers_.resize(new_capacity);
         for (auto&& manager : tmp_manager) {
             if (manager.is_managed()) {

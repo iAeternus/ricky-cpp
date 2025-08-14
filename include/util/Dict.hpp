@@ -514,7 +514,7 @@ public:
             str.pop_back();
         }
         str.push_back('}');
-        return BaseCString{str};
+        return CString{str};
     }
 
     /**

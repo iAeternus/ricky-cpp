@@ -481,7 +481,7 @@ public:
             stream << at(i);
         }
         stream << ']';
-        return BaseCString{stream.str()};
+        return CString{stream.str()};
     }
 
 private:

@@ -1,0 +1,2 @@
+允许隐式类型转换的对象：CString、String
+为所有抛出异常的函数增加@exception注释，异常名为Exception，注释内容中再指明是哪种类型的异常变体

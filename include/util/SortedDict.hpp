@@ -121,7 +121,7 @@ public:
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << (color_ == Color::RED ? io::Color::RED : "") << '(' << key_ << ',' << val_ << ')' << io::Color::CLOSE << '\n';
-        return BaseCString{stream.str()};
+        return CString{stream.str()};
     }
 };
 
@@ -647,7 +647,7 @@ public:
         }
         std::stringstream stream;
         print_tree(root_, stream, "");
-        return BaseCString{stream.str()};
+        return CString{stream.str()};
     }
 
     /**
@@ -736,7 +736,7 @@ public:
             str.pop_back();
         }
         str.push_back('}');
-        return BaseCString{str};
+        return CString{str};
     }
 
     /**

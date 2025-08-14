@@ -19,7 +19,7 @@
 namespace my {
 
 template <typename Alloc>
-class BaseCString;
+class BasicCString;
 
 /**
  * @class CStringView
@@ -78,7 +78,7 @@ public:
      * @return 新字符串
      */
     template <typename Alloc = Allocator<char>>
-    [[nodiscard]] BaseCString<Alloc> to_string() const {
+    [[nodiscard]] BasicCString<Alloc> to_string() const {
         return {begin_, length()};
     }
 
@@ -86,7 +86,7 @@ public:
      * @brief 与字符串判断相等，不会拷贝
      */
     template <typename Alloc = Allocator<char>>
-    friend bool operator==(const Self& view, const BaseCString<Alloc>& cstr) {
+    friend bool operator==(const Self& view, const BasicCString<Alloc>& cstr) {
         if (view.length() != cstr.length()) {
             return false;
         }
@@ -105,7 +105,7 @@ public:
      * @brief 与字符串判断相等，不会拷贝
      */
     template <typename Alloc = Allocator<char>>
-    friend bool operator==(const BaseCString<Alloc>& cstr, const Self& view) {
+    friend bool operator==(const BasicCString<Alloc>& cstr, const Self& view) {
         if (view.length() != cstr.length()) {
             return false;
         }
@@ -242,22 +242,22 @@ private:
 };
 
 /**
- * @class BaseCString
+ * @class BasicCString
  * @brief C风格字符串
  * @details 自定义字符串类，提供安全的字符串操作和内存管理
  * @tparam Alloc 内存分配器
  */
 template <typename Alloc = Allocator<char>>
-class BaseCString {
+class BasicCString {
 public:
-    using Self = BaseCString<Alloc>;
+    using Self = BasicCString<Alloc>;
 
     /**
      * @brief 根据指定长度创建字符串，填充0
      * @details 实际长度为指定长度+1，尾元为'\0'
      * @param len 字符串的长度
      */
-    BaseCString(const usize len = 1) :
+    BasicCString(const usize len = 1) :
             str_(alloc_.allocate(len + 1)), len_(len) {
         std::memset(str_, 0, len + 1);
         str_[len_] = '\0';
@@ -267,7 +267,7 @@ public:
      * @brief 根据字符指针创建字符串
      * @param str 字符指针
      */
-    BaseCString(const char* str) :
+    BasicCString(const char* str) :
             Self(str, std::strlen(str)) {}
 
     /**
@@ -275,7 +275,7 @@ public:
      * @param str 字符指针
      * @param len 字符串的长度
      */
-    BaseCString(const char* str, usize len) :
+    BasicCString(const char* str, usize len) :
             Self(len) {
         std::memcpy(data(), str, len);
     }
@@ -284,13 +284,13 @@ public:
      * @brief 根据 std::basic_string 创建字符串
      * @param str std::basic_string 对象
      */
-    BaseCString(const std::basic_string<char>& str) :
+    BasicCString(const std::basic_string<char>& str) :
             Self(str.c_str(), str.size()) {}
 
     /**
      * @brief 析构函数，释放动态分配的内存
      */
-    ~BaseCString() {
+    ~BasicCString() {
         alloc_.deallocate(str_, len_ + 1);
     }
 
@@ -298,14 +298,14 @@ public:
      * @brief 拷贝构造函数
      * @param other 要拷贝的 CString 对象
      */
-    BaseCString(const Self& other) :
+    BasicCString(const Self& other) :
             Self(other.data(), other.size()) {}
 
     /**
      * @brief 移动构造函数
      * @param other 要移动的 CString 对象
      */
-    BaseCString(Self&& other) noexcept :
+    BasicCString(Self&& other) noexcept :
             alloc_(std::move(other.alloc_)), str_(other.str_), len_(other.len_) {
         other.str_ = nullptr;
         other.len_ = 0;
@@ -1000,7 +1000,7 @@ private:
 /**
  * @brief CString 类，使用默认分配器
  */
-using CString = BaseCString<Allocator<char>>;
+using CString = BasicCString<Allocator<char>>;
 
 /**
  * @brief 根据不同类型转换为 CString 对象（适用于自定义可打印类型）
@@ -1079,9 +1079,9 @@ fn operator""_cs(const char* str, const size_t len)->CString {
 /**
  * @brief 为 CString 类提供标准库格式化支持
  */
-template <>
-struct std::formatter<my::CString> : std::formatter<const char*> {
-    fn format(const my::CString& value, auto& ctx) const {
+template <typename Alloc>
+struct std::formatter<my::BasicCString<Alloc>> : std::formatter<const char*> {
+    fn format(const my::BasicCString<Alloc>& value, auto& ctx) const {
         return std::formatter<const char*>::format(value.data(), ctx);
     }
 };

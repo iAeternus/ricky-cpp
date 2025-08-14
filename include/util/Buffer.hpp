@@ -36,7 +36,7 @@ public:
      * @brief 构造函数，创建一个指定容量的Buffer
      * @param capacity 初始容量
      */
-    Buffer(usize capacity) :
+    Buffer(const usize capacity) :
             size_(0), capacity_(capacity), buf_(alloc_.allocate(capacity_)) {}
 
     /**

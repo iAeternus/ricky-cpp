@@ -54,8 +54,8 @@ public:
     }
 
     /**
-     * @brief 构造函数，根据 C 风格字符串创建字符串
-     * @param str C 风格字符串
+     * @brief 构造函数，根据字符指针创建字符串
+     * @param str 字符指针
      * @param length 字符串的长度（可选）
      * @param enc 字符串的编码（可选）
      */
@@ -78,8 +78,8 @@ public:
     }
 
     /**
-     * @brief 构造函数，根据自定义字符串创建字符串
-     * @param cstr 自定义字符串
+     * @brief 构造函数，根据C 风格字符串创建字符串
+     * @param cstr C 风格字符串
      * @param enc 字符串的编码（可选）
      */
     BasicString(const CString& cstr, const EncodingType enc = EncodingType::UTF8) :

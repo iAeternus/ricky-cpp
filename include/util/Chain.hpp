@@ -93,7 +93,7 @@ public:
         Node* next_node = nullptr;
         while (cur) {
             next_node = cur->next_;
-            alloc_.destroy(cur);
+            alloc_.destruct(cur);
             cur = next_node;
         }
         head_ = tail_ = nullptr;

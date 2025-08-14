@@ -146,16 +146,16 @@ public:
         return ptr;
     }
 
-    // /**
-    //  * @brief 安全析构对象并释放内存
-    //  * @param ptr 指向对象的指针
-    //  */
-    // fn destruct(T* ptr) const noexcept {
-    //     if (ptr != nullptr) {
-    //         destroy(ptr);
-    //         deallocate(ptr, 1);
-    //     }
-    // }
+    /**
+     * @brief 安全析构对象并释放内存
+     * @param ptr 指向对象的指针
+     */
+    fn destruct(T* ptr) noexcept {
+        if (ptr != nullptr) {
+            destroy(ptr, 1);
+            deallocate(ptr, 1);
+        }
+    }
 
 private:
     /**
@@ -164,7 +164,7 @@ private:
      *          2. 计算方式为 static_cast<size_type>(-1) / sizeof(value_type)
      * @return 最大可分配对象数量
      */
-    fn max_size() const noexcept {
+    static fn max_size() noexcept {
         return static_cast<size_type>(-1) / sizeof(value_type);
     }
 };
