@@ -13,6 +13,7 @@
 namespace my::util {
 
 /**
+ * @class ChainQueue
  * @brief 基于带尾指针的循环单链表实现的队列
  * @tparam Node 指定链表节点类型
  * @tparam Alloc 内存分配器类型
@@ -87,11 +88,11 @@ public:
     /**
      * @brief 出队操作，移除队列头部元素
      * @note 时间复杂度为 O(1)，采用头删法
+     * @exception Exception 若队空，则抛出 runtime_exception
      */
     void pop() {
         if (empty()) {
             throw runtime_exception("queue is empty.");
-            return;
         }
         auto* p = tail_->next_;
         auto* d = p->next_; // 待删除节点
@@ -107,6 +108,7 @@ public:
      * @brief 获取队列首元素的引用
      * @return 队首元素的引用
      * @note 如果队列为空，会抛出异常
+     * @exception Exception 若队空，则抛出 runtime_exception
      */
     value_t& front() {
         if (empty()) {
@@ -119,6 +121,7 @@ public:
      * @brief 获取队列首元素的常量引用
      * @return 队首元素的常量引用
      * @note 如果队列为空，会抛出异常
+     * @exception Exception 若队空，则抛出 runtime_exception
      */
     const value_t& front() const {
         if (empty()) {
@@ -131,6 +134,7 @@ public:
      * @brief 获取队列尾元素的引用
      * @return 队尾元素的引用
      * @note 如果队列为空，会抛出异常
+     * @exception Exception 若队空，则抛出 runtime_exception
      */
     value_t& tail() {
         if (empty()) {
@@ -143,6 +147,7 @@ public:
      * @brief 获取队列尾元素的常量引用
      * @return 队尾元素的常量引用
      * @note 如果队列为空，会抛出异常
+     * @exception Exception 若队空，则抛出 runtime_exception
      */
     const value_t& tail() const {
         if (empty()) {

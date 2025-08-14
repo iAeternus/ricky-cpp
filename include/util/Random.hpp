@@ -14,7 +14,12 @@
 
 namespace my::util {
 
-class Random : public Object<Random> {
+/**
+ * @class Random
+ * @brief 随机数类
+ * @details 单例类，支持生成多种不同类型的随机数
+ */
+class Random final : public Object<Random> {
 public:
     using Self = Random;
     using Super = Object<Self>;
@@ -31,14 +36,17 @@ public:
     Random& operator=(const Random&) = delete;
 
     /**
-     * @brief 生成随机数，整数在闭区间内，浮点数在左闭右开区间内
+     * @brief 生成随机数
+     * @param min 区间下界，包含
+     * @param max 区间上界，若为整数则包含，若为浮点数则不包含
+     * @return 随机数
      */
     template <typename T>
     T next(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max()) {
-        static_assert(std::is_integral<T>::value || std::is_floating_point<T>::value,
+        static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>,
                       "next() only supports integral and floating-point types");
 
-        if constexpr (std::is_integral<T>::value) {
+        if constexpr (std::is_integral_v<T>) {
             std::uniform_int_distribution<T> distribution(min, max);
             return distribution(generator_);
         } else {
@@ -48,10 +56,12 @@ public:
     }
 
     /**
-     * @brief 生成指定长度的随机字符串
+     * @brief 生成指定长度的随机字符串，只包含a-z A-Z 0-9
+     * @param len 字符串长度
+     * @return 随机字符串
      */
-    CString next_str(usize len) {
-        static const CString characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_cs;
+    CString next_str(const usize len) {
+        static const auto characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_cs;
         CString result(len);
         std::uniform_int_distribution<usize> distribution(0, characters.size() - 1);
 
@@ -64,9 +74,9 @@ public:
 
     /**
      * @brief 生成n个和为定值sum的均匀分布非负整数
-     * @note TODO n 与 sum 接近时存在死循环bug
+     * TODO n 与 sum 接近时存在死循环bug
      */
-    Vec<i32> generate_uniform_sum_numbers(i32 n, i32 sum) {
+    Vec<i32> generate_uniform_sum_numbers(const i32 n, i32 sum) {
         Vec<i32> numbers;
         if (n <= 0 || sum < 0) {
             return numbers;
@@ -82,7 +92,7 @@ public:
         }
 
         // 总元素数为 sum + n - 1（包括隔板和球）
-        i32 total_elements = sum + n - 1;
+        const i32 total_elements = sum + n - 1;
         Vec<i32> elements;
 
         // 创建数组 [1, 2, ..., total_elements]
@@ -108,7 +118,7 @@ public:
 
         // 计算相邻元素的差值，并减去1得到最终结果
         for (usize i = 1; i < board.size(); ++i) {
-            i32 diff = board[i] - board[i - 1];
+            const i32 diff = board[i] - board[i - 1];
             numbers.append(diff - 1);
         }
 
@@ -116,7 +126,7 @@ public:
     }
 
 private:
-    Random(u32 seed) :
+    explicit Random(const u32 seed) :
             generator_(seed) {}
 
     std::mt19937 generator_;

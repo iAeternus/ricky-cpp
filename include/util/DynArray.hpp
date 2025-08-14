@@ -15,21 +15,16 @@ namespace my::util {
 /**
  * @class DynArray
  * @brief 动态数组类，通过分块管理内存，支持高效的随机访问和动态扩容
- * 
- * DynArray 是一个模板类，提供了类似 std::vector 的动态数组功能
- * 通过将数据分块存储来管理内存，一定程度上优化了内存分配和访问效率
- * 容器优势：尾插、尾删
- * 
+ * @details 1. 通过将数据分块存储来管理内存
+ *          2. 容器优势：尾插、尾删
  * @tparam T 存储元素的类型
  */
 template <typename T>
 class DynArray : public Sequence<DynArray<T>, T> {
     // 动态数组块的数量，用于管理分块存储
     constexpr static i32 DYNARRAY_BLOCK_SIZE = 63;
-
     // 最小块大小，每个块的初始大小
     constexpr static usize BASE_CAP = 8ll;
-
     // 不存在块时的特殊值
     constexpr static i32 BLOCK_NOT_EXISTS = -1;
 
@@ -40,7 +35,7 @@ public:
 
     /**
      * @brief 默认构造函数
-     * 初始化为空的动态数组，无元素
+     * @details 初始化为空的动态数组，无元素
      */
     DynArray() :
             size_(0), back_block_index_(BLOCK_NOT_EXISTS), blocks_(DYNARRAY_BLOCK_SIZE, 0) {}
@@ -50,7 +45,7 @@ public:
      * @param size 动态数组的大小
      * @param item 用于填充数组的元素，默认为空值
      */
-    DynArray(usize size, const value_t& item = value_t{}) :
+    DynArray(const usize size, const value_t& item = value_t{}) :
             DynArray() {
         for (usize i = 0; i < size; ++i) {
             append(item);
@@ -193,25 +188,25 @@ public:
 
     /**
      * @brief 通过索引访问元素（非 const 版本）
+     * @details 时间复杂度O(logN)。如果索引超出范围，行为未定义
      * @param idx 元素的索引，从 0 开始
      * @return 返回指定索引处的元素的引用
-     * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    value_t& at(usize idx) {
-        i32 block_idx = get_block_idx(idx + 1);
-        usize inblock_idx = get_inblock_idx(idx + 1, block_idx);
+    value_t& at(const usize idx) {
+        const i32 block_idx = get_block_idx(idx + 1);
+        const usize inblock_idx = get_inblock_idx(idx + 1, block_idx);
         return blocks_.at(block_idx).at(inblock_idx);
     }
 
     /**
      * @brief 通过索引访问元素（const 版本）
+     * @details 时间复杂度O(logN)。如果索引超出范围，行为未定义
      * @param idx 元素的索引，从 0 开始
      * @return 返回指定索引处的元素的 const 引用
-     * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
-    const value_t& at(usize idx) const {
-        i32 block_idx = get_block_idx(idx + 1);
-        usize inblock_idx = get_inblock_idx(idx + 1, block_idx);
+    const value_t& at(const usize idx) const {
+        const i32 block_idx = get_block_idx(idx + 1);
+        const usize inblock_idx = get_inblock_idx(idx + 1, block_idx);
         return blocks_.at(block_idx).at(inblock_idx);
     }
 
@@ -262,7 +257,7 @@ public:
      * @param item 要插入的元素
      */
     template <typename U>
-    void insert(usize idx, U&& item) {
+    void insert(const usize idx, U&& item) {
         if (idx > size_) return;
 
         append(std::forward<U>(item));
@@ -423,7 +418,7 @@ public:
          * @param block_idx 块索引
          * @param inblock_idx 块内索引
          */
-        Iterator(container_t* dynarray = nullptr, usize block_idx = 0, usize inblock_idx = 0) :
+        Iterator(container_t* dynarray = nullptr, const usize block_idx = 0, const usize inblock_idx = 0) :
                 block_idx_(block_idx), inblock_idx_(inblock_idx), dynarray_(dynarray) {}
 
         /**
@@ -610,6 +605,7 @@ public:
          * @brief 获取两个迭代器的差值
          * @param other 另一个迭代器
          * @return 返回两个迭代器之间的元素数量差
+         * @exception Exception 若两个迭代器分属两个不同的容器，则抛出 runtime_exception
          */
         difference_type operator-(const Self& other) const {
             if (this->__cmp__(other) < 0) return -(other - *this);
@@ -714,10 +710,10 @@ private:
      * @return 返回块索引
      * @note 时间复杂度为 O(log n)
      */
-    static i32 get_block_idx(usize ith) {
+    static i32 get_block_idx(const usize ith) {
         i32 l = 0, r = DYNARRAY_BLOCK_SIZE;
         while (l < r) {
-            i32 mid = l + ((r - l) >> 1);
+            const i32 mid = l + ((r - l) >> 1);
             if (ith <= (exp2[mid + 1] - 1) * BASE_CAP) {
                 r = mid;
             } else {
@@ -733,7 +729,7 @@ private:
      * @param block_idx 块索引
      * @return 返回块内索引
      */
-    static usize get_inblock_idx(usize ith, i32 block_idx) {
+    static usize get_inblock_idx(const usize ith, const i32 block_idx) {
         return ith - BASE_CAP * (exp2[block_idx] - 1) - 1;
     }
 
@@ -764,18 +760,18 @@ private:
 
     /**
      * @brief 尝试唤醒一个新的块，用于扩展动态数组的存储空间
-     * 
+     *
      * 当动态数组的最后一个块已满或不存在时，会创建一个新的块，并调整其大小以容纳更多元素
      * 这个函数不会导致数组本身的扩容，只会影响内部块的管理
      */
     void try_wakeup() {
-        i32 bbi = back_block_index(); // 获取最后一个块的索引，如果不存在，返回 BLOCK_NOT_EXISTS
+        const i32 bbi = back_block_index(); // 获取最后一个块的索引，如果不存在，返回 BLOCK_NOT_EXISTS
         if (bbi == BLOCK_NOT_EXISTS || blocks_.at(bbi).full()) {
             // 如果最后一个块不存在或者已满，则需要创建新块并调整大小
             // 计算新块的大小：
             // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            usize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
+            const usize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
             ++back_block_index_;                   // 将最后一个块的索引递增，指向新块
             get_back_block().resize(new_capacity); // 调整新块的大小
         }
@@ -786,28 +782,6 @@ private:
     i32 back_block_index_;          // 最后一个块的索引
     Array<Buffer<value_t>> blocks_; // 动态块数组
 };
-
-// /**
-//  * @brief 从动态数组中选择指定类型的参数
-//  * @tparam T 目标类型
-//  * @param args 动态数组
-//  * @param idx 参数索引
-//  * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
-//  */
-// template <typename T>
-// fn opt(const DynArray<std::any>& args, usize idx)->T {
-//     if (idx < 0 || idx >= args.size()) {
-//         ValueError("Index out of range in opt function.");
-//         std::unreachable();
-//     }
-
-//     try {
-//         return std::any_cast<T>(args.at(idx));
-//     } catch (const std::bad_any_cast& e) {
-//         ValueError(std::format("Type mismatch in opt function: expected[{}], got[{}]", typeid(T).name(), args[idx].type().name()));
-//         std::unreachable();
-//     }
-// }
 
 } // namespace my::util
 

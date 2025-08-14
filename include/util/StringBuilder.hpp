@@ -24,7 +24,7 @@ public:
      * @param initial_capacity 初始预分配容量，减少扩容次数
      * @param enc 字符串编码类型，默认为 UTF8
      */
-    explicit StringBuilder(usize initial_capacity = 64, EncodingType enc = EncodingType::UTF8) :
+    explicit StringBuilder(const usize initial_capacity = 64, const EncodingType enc = EncodingType::UTF8) :
             encoding_(encoding_map(enc)) {
         buf_.reserve(initial_capacity);
     }
@@ -36,10 +36,10 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const String& pattern, usize pos = 0) {
+    usize find(const String& pattern, const usize pos = 0) {
         if (pattern.empty()) return npos;
-        auto m_size = buf_.size(), p_size = pattern.size();
-        auto next = get_next(pattern);
+        const auto m_size = buf_.size(), p_size = pattern.size();
+        const auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && buf_[i] != pattern[j]) {
@@ -83,7 +83,7 @@ public:
      * @param ch 要追加的字符
      * @return 构建器自身引用
      */
-    Self& append(char ch) {
+    Self& append(const char ch) {
         buf_.append(CodePoint(ch));
         return *this;
     }
@@ -145,7 +145,7 @@ public:
      * @param cnt 码点数组长度
      * @return 构建器自身引用
      */
-    Self& append_array(const CodePoint* cps, usize cnt) {
+    Self& append_array(const CodePoint* cps, const usize cnt) {
         buf_.reserve(buf_.size() + cnt);
         for (usize i = 0; i < cnt; ++i) {
             buf_.append(cps[i]);
@@ -185,7 +185,7 @@ public:
      * @brief 预留存储空间，减少扩容次数
      * @param new_cap 新容量
      */
-    void reserve(usize new_cap) {
+    void reserve(const usize new_cap) {
         buf_.reserve(new_cap);
     }
 
@@ -213,14 +213,14 @@ private:
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
     static Vec<usize> get_next(const String& pattern) {
-        auto p_size = pattern.size();
+        const auto p_size = pattern.size();
         Vec<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
             // 失配，j按照next数组回跳
             while (j > 0 && pattern[i] != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (pattern[i] == pattern[j]); // 匹配，j前进
+            j += pattern[i] == pattern[j]; // 匹配，j前进
             next[i] = j;
         }
         return next;

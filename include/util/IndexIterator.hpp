@@ -11,8 +11,18 @@
 
 namespace my::util {
 
+/**
+ * @class IndexIterator
+ * @brief 索引容器迭代器
+ * @tparam IsConst 是否为const迭代器
+ * @tparam C 容器类行
+ * @tparam V 元素类型
+ */
 template <bool IsConst, typename C, typename V>
 class IndexIterator : public Object<IndexIterator<IsConst, C, V>> {
+    template <bool, typename, typename>
+    friend class IndexIterator;
+
 public:
     using Super = Object<IndexIterator>;
     using Self = IndexIterator;
@@ -26,96 +36,121 @@ public:
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    explicit IndexIterator(container_t* container = nullptr, usize index = 0) :
+    explicit IndexIterator(container_t* container = nullptr, const usize index = 0) :
             container_(container), index_(index) {}
+
+    template <bool OtherConst>
+        requires(IsConst && !OtherConst)
+    explicit IndexIterator(const IndexIterator<OtherConst, C, V>& other) :
+            container_(other.container_), index_(other.index_) {}
 
     IndexIterator(const Self& other) :
             IndexIterator(other.container_, other.index_) {}
 
-    Self& operator=(const Self& other) {
-        if (this != &other) {
-            this->container_ = other.container_;
-            this->index_ = other.index_;
-        }
+    template <bool OtherConst>
+        requires(IsConst && !OtherConst)
+    Self& operator=(const IndexIterator<OtherConst, C, V>& other) {
+        this->container_ = other.container_;
+        this->index_ = other.index_;
         return *this;
     }
 
-    reference operator*() {
+    /**
+     * @brief 解引用
+     */
+    reference operator*() const noexcept
+        requires(!IsConst || std::is_const_v<container_t>)
+    {
         return container_->operator[](index_);
     }
 
-    const_reference operator*() const {
-        return container_->operator[](index_);
-    }
-
-    pointer operator->() {
+    pointer operator->() const noexcept
+        requires(!IsConst || std::is_const_v<container_t>)
+    {
         return &container_->operator[](index_);
     }
 
-    const_pointer operator->() const {
-        return &container_->operator[](index_);
-    }
-
-    Self& operator++() {
+    /**
+     * @brief 前缀递增/递减
+     */
+    Self& operator++() noexcept {
         ++index_;
         return *this;
     }
 
-    Self operator++(i32) {
-        Self tmp(*this);
-        ++index_;
-        return tmp;
-    }
-
-    Self& operator--() {
+    Self& operator--() noexcept {
         --index_;
         return *this;
     }
 
-    Self operator--(i32) {
+    /**
+     * @breif 后缀递增/递减
+     */
+    Self operator++(i32) noexcept {
         Self tmp(*this);
-        --index_;
+        ++*this;
         return tmp;
     }
 
-    Self operator+(difference_type n) const {
+    Self operator--(i32) noexcept {
+        Self tmp(*this);
+        --*this;
+        return tmp;
+    }
+
+    /**
+     * @brief 随机访问
+     */
+    Self operator+(difference_type n) const noexcept {
         return Self(container_, index_ + n);
     }
 
-    Self operator-(difference_type n) const {
+    Self operator-(difference_type n) const noexcept {
         return Self(container_, index_ - n);
     }
 
-    Self& operator+=(difference_type n) {
+    Self& operator+=(difference_type n) noexcept {
         index_ += n;
         return *this;
     }
 
-    Self& operator-=(difference_type n) {
+    Self& operator-=(difference_type n) noexcept {
         index_ -= n;
         return *this;
     }
 
-    difference_type operator-(const Self& other) const {
-        return index_ - other.index_;
+    difference_type operator-(const Self& other) const noexcept {
+        return static_cast<difference_type>(index_ - other.index_);
+    }
+
+    /**
+     * @brief 下标访问
+     */
+    reference operator[](difference_type n) const noexcept {
+        return container_->operator[](index_ + n);
     }
 
     [[nodiscard]] bool __equals__(const Self& other) const {
         return container_ == other.container_ && index_ == other.index_;
     }
 
-    bool operator==(const Self& other) const {
-        return __equals__(other);
-    }
-
-    bool operator!=(const Self& other) const {
-        return !__equals__(other);
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+        return this->index_ - other.index_;
     }
 
 private:
-    container_t* container_;
-    usize index_;
+    container_t* container_; // 容器
+    usize index_;            // 索引
 };
+
+/**
+ * @brief 推导指南
+ */
+template <typename C, typename V>
+IndexIterator(C*, usize) -> IndexIterator<false, C, V>;
+
+template <typename C, typename V>
+IndexIterator(const C*, usize) -> IndexIterator<true, C, V>;
 
 } // namespace my::util
 

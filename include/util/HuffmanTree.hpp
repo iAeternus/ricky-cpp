@@ -17,9 +17,7 @@ namespace my::util {
 /**
  * @class HuffmanTree
  * @brief 哈夫曼树类，用于文本编码和解码
- *
- * HuffmanTree 是一个基于哈夫曼编码算法的树结构，
- * 用于对文本进行压缩编码和解码，支持计算带权路径长度和平均编码长度
+ * @details 用于对文本进行压缩编码和解码，支持计算带权路径长度和平均编码长度
  */
 class HuffmanTree : public Object<HuffmanTree>, public NoCopyMove {
 public:
@@ -36,10 +34,10 @@ public:
         u32 freq;
         usize lch = NIL, rch = NIL;
 
-        Node(usize idx, const CodePoint& data, u32 freq) :
+        Node(const usize idx, const CodePoint& data, const u32 freq) :
                 idx(idx), data(data), freq(freq) {}
 
-        Node(usize idx, u32 freq, usize lch, usize rch) :
+        Node(const usize idx, const u32 freq, const usize lch, const usize rch) :
                 idx(idx), freq(freq), lch(lch), rch(rch) {}
 
         bool operator<(const Node& other) const {
@@ -51,7 +49,7 @@ public:
      * @brief 哈夫曼树构造函数
      * @param text 输入的文本，用于统计字符频率
      */
-    HuffmanTree(const String& text) :
+    explicit HuffmanTree(const String& text) :
             text_(text) {
         for (const auto& cp : text) {
             ++freqs_[cp];
@@ -71,7 +69,7 @@ public:
     /**
      * @brief 编码文本
      * @return 返回编码后的字符串
-     * @throws runtime_exception 如果编码过程中缺少字符对应的编码
+     * @exception Exception 若编码过程中缺少字符对应的编码，则抛出 runtime_exception
      */
     String encode() {
         StringBuilder sb;
@@ -88,12 +86,12 @@ public:
     /**
      * @brief 解码文本
      * @return 返回解码后的字符串
-     * @throws runtime_exception 如果编码流无效或缺少字符对应的编码
+     * @exception Exception 若编码流无效或缺少字符对应的编码，则抛出 runtime_exception
      */
     String decode() {
         StringBuilder sb;
         usize cur = root_idx_;
-        for (char bit : encoded_text_) {
+        for (const char bit : encoded_text_) {
             cur = (bit == '0') ? nodes_[cur].lch : nodes_[cur].rch;
             if (cur == NIL) throw runtime_exception("invalid encoded stream");
 
@@ -139,11 +137,12 @@ public:
      */
     f64 acl() const {
         if (freqs_.empty()) return 0.0;
-        return wpl() / f64(text_.length());
+        return wpl() / static_cast<f64>(text_.length());
     }
 
     /**
      * @brief 计算树高
+     * @exception Exception 若未构建哈夫曼树就计算树高，则抛出 runtime_exception
      */
     usize height() const {
         if (root_idx_ == NIL) throw runtime_exception("please build the tree first.");
@@ -189,7 +188,7 @@ private:
         traverse(root_idx_, ""_cs);
     }
 
-    void traverse(usize cur, CString code) {
+    void traverse(const usize cur, const CString& code) {
         if (cur == NIL) return;
         const Node& node = nodes_[cur];
 
@@ -202,7 +201,7 @@ private:
         traverse(node.rch, code + "1"_cs);
     }
 
-    usize height(usize cur_idx) const {
+    usize height(const usize cur_idx) const {
         if (cur_idx == NIL) return 0;
         const Node& node = nodes_[cur_idx];
         return 1 + std::max(height(node.lch), height(node.rch));

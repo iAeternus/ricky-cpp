@@ -29,6 +29,21 @@ template <typename T, typename... Args>
 constexpr bool is_same = IsSame<T, Args...>::value;
 
 /**
+ * @brief 判断所有类型是否相同（严格模式，包括CV限定符和引用）
+ */
+template <typename... Args>
+struct AllSame : std::true_type {};
+
+template <typename T>
+struct AllSame<T> : std::true_type {};
+
+template <typename T, typename U, typename... Rest>
+struct AllSame<T, U, Rest...> : std::bool_constant<std::is_same_v<T, U> && AllSame<U, Rest...>::value> {};
+
+template <typename... Args>
+constexpr bool all_same_v = AllSame<Args...>::value;
+
+/**
  * @brief 判断T是否是Args的子类
  */
 template <typename... Args>

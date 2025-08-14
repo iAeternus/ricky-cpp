@@ -12,6 +12,7 @@
 namespace my::util {
 
 /**
+ * @class KeyValueView
  * @brief 键值对视图
  */
 template <KeyType K, typename V>
@@ -21,7 +22,7 @@ public:
     using value_t = V;
     using Self = KeyValueView<key_t, value_t>;
 
-    KeyValueView(const key_t* key = nullptr, const value_t* value = nullptr) :
+    explicit KeyValueView(const key_t* key = nullptr, const value_t* value = nullptr) :
             key_(key), value_(value) {}
 
     KeyValueView(const Self& other) = default;
@@ -34,6 +35,11 @@ public:
         return *this;
     }
 
+    /**
+     * @brief 获取键
+     * @return 键的常量引用
+     * @exception Exception 若键为空，则抛出 null_pointer_exception
+     */
     const key_t& key() const {
         if (key_ == nullptr) {
             throw null_pointer_exception("key is null");
@@ -41,6 +47,11 @@ public:
         return *key_;
     }
 
+    /**
+     * @brief 获取值
+     * @return 值的常量引用
+     * @exception Exception 若值为空，则抛出 null_pointer_exception
+     */
     const value_t& value() const {
         if (value_ == nullptr) {
             throw null_pointer_exception("value is null");
@@ -99,7 +110,7 @@ struct tuple_element<I, my::util::KeyValueView<K, V>> {
 namespace my {
 
 // 基于索引的get函数
-template <size_t I, my::KeyType K, typename V>
+template <size_t I, KeyType K, typename V>
 auto& get(util::KeyValueView<K, V>& kv) {
     static_assert(I < 2, "KeyValueView index out of range");
     if constexpr (I == 0) {
@@ -109,7 +120,7 @@ auto& get(util::KeyValueView<K, V>& kv) {
     }
 }
 
-template <size_t I, my::KeyType K, typename V>
+template <size_t I, KeyType K, typename V>
 const auto& get(util::KeyValueView<K, V>& kv) {
     static_assert(I < 2, "KeyValueView index out of range");
     if constexpr (I == 0) {

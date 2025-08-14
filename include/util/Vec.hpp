@@ -1,5 +1,5 @@
 /**
- * @brief 向量
+ * @brief 动态数组容器
  * @author Ricky
  * @date 2025/2/28
  * @version 1.0
@@ -14,13 +14,9 @@
 namespace my::util {
 
 /**
- * @brief 动态数组（向量）容器
+ * @class Vec
+ * @brief 动态数组容器
  * @tparam T 元素类型
- * 
- * 该容器支持动态扩容，提供随机访问迭代器，时间复杂度如下：
- * - 随机访问：O(1)
- * - 末尾插入/删除：均摊 O(1)
- * - 中间插入/删除：O(n)
  */
 template <typename T, typename Alloc = Allocator<T>>
 class Vec : public Sequence<Vec<T>, T> {
@@ -41,7 +37,7 @@ public:
      * @param size 初始元素个数
      * @param val 用于填充的值，默认为值初始化
      */
-    Vec(usize size, const value_t& val = value_t{}) :
+    explicit Vec(const usize size, const value_t& val = value_t{}) :
             size_(size), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         for (usize i = 0; i < size_; ++i) {
             alloc_.construct(data_ + i, val);
@@ -134,6 +130,10 @@ public:
         capacity_ = 0;
     }
 
+    /**
+     * @brief 获取容量
+     * @return 容量
+     */
     usize capacity() const {
         return capacity_;
     }
@@ -148,60 +148,92 @@ public:
 
     /**
      * @brief 判断是否为空
-     * @return size() == 0 时返回 true
+     * @return true=是 false=否
      */
     bool empty() const noexcept {
         return size_ == 0;
     }
 
+    /**
+     * @brief 获取数据指针
+     * @note 需要用户维护指针的安全性
+     * @return 数据指针
+     */
     value_t* data() {
         return data_;
     }
 
+    /**
+     * @brief 获取数据指针（常量版本）
+     * @note 需要用户维护指针的安全性
+     * @return 数据指针
+     */
     const value_t* data() const {
         return data_;
     }
 
     /**
-     * @brief 访问首元素（非空时有效）
+     * @brief 访问首元素
+     * @note 空向量访问时行为未定义
      * @return 首元素的引用
-     * @exception 空向量访问时行为未定义
      */
     value_t& front() noexcept {
         return data_[0];
     }
 
+    /**
+     * @brief 访问首元素（常量版本）
+     * @note 空向量访问时行为未定义
+     * @return 首元素的引用
+     */
     const value_t& front() const noexcept {
         return data_[0];
     }
 
     /**
-     * @brief 访问末元素（非空时有效）
+     * @brief 访问末元素
+     * @note 空向量访问时行为未定义
      * @return 末元素的引用
-     * @exception 空向量访问时行为未定义
      */
     value_t& back() noexcept {
         return data_[size_ - 1];
     }
 
+    /**
+     * @brief 访问末元素（常量版本）
+     * @note 空向量访问时行为未定义
+     * @return 末元素的引用
+     */
     const value_t& back() const noexcept {
         return data_[size_ - 1];
     }
 
     /**
      * @brief 访问元素
+     * @note 如果索引超出范围，行为未定义
      * @param idx 元素下标
      * @return 对应元素的引用
-     * @exception 时间复杂度O(logN)。如果索引超出范围，行为未定义
      */
     value_t& at(usize idx) {
         return data_[idx];
     }
 
+    /**
+     * @brief 访问元素（常量版本）
+     * @note 如果索引超出范围，行为未定义
+     * @param idx 元素下标
+     * @return 对应元素的引用
+     */
     const value_t& at(usize idx) const {
         return data_[idx];
     }
 
+    /**
+     * @brief 线性查找元素
+     * @details 时间复杂度 O(n)
+     * @param value 目标值
+     * @return 若找到返回索引，否则返回向量长度
+     */
     usize find(const value_t& value) const {
         for (usize i = 0; i < size_; ++i) {
             if (data_[i] == value) {
@@ -212,7 +244,7 @@ public:
     }
 
     /**
-     * @brief 拷贝/移动追加
+     * @brief 追加元素到向量末尾
      * @param item 要追加的元素
      * @return 被追加元素的引用
      */
@@ -225,7 +257,7 @@ public:
     }
 
     /**
-     * @brief 原地构造追加
+     * @brief 原地构造追加元素到向量末尾
      * @param args 构造元素的参数
      */
     template <typename... Args>
@@ -246,7 +278,7 @@ public:
     void insert(usize idx, Args&&... args) {
         if (idx > size_) return;
         try_expand();
-        for (auto it = end(); it >= begin() + idx; --it) {
+        for (auto it = Super::end(); it >= Super::begin() + idx; --it) {
             *std::next(it) = std::move(*it);
         }
         alloc_.construct(data_ + idx, std::forward<Args>(args)...);
@@ -261,7 +293,7 @@ public:
         if (empty()) return;
 
         idx = neg_index(idx, static_cast<isize>(size_));
-        for (auto it = begin() + idx + 1; it != end(); ++it) {
+        for (auto it = Super::begin() + idx + 1; it != Super::end(); ++it) {
             *std::prev(it) = std::move(*it);
         }
         alloc_.destroy(data_ + idx);
@@ -269,7 +301,7 @@ public:
     }
 
     /**
-     * @brief 清空所有元素（容量不变）
+     * @brief 清空所有元素，容量不变
      */
     void clear() {
         alloc_.destroy(data_, size_);
@@ -320,7 +352,7 @@ public:
      * @return 子数组
      */
     Self slice(usize start, isize end) const {
-        auto m_size = size();
+        const auto m_size = size();
         start = neg_index(start, m_size);
         end = neg_index(end, static_cast<isize>(m_size));
         Self ans(end - start);
@@ -336,7 +368,7 @@ public:
      * @param start 起始索引
      * @return 子数组
      */
-    Self slice(usize start) const {
+    Self slice(const usize start) const {
         return slice(start, size());
     }
 
@@ -399,7 +431,7 @@ public:
     void resize(usize new_cap) {
         if (new_cap == capacity_) return;
         value_t* ptr = alloc_.allocate(new_cap);
-        usize min_size = std::min(size_, new_cap);
+        const usize min_size = std::min(size_, new_cap);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
             std::memcpy(ptr, data_, min_size * sizeof(value_t));
@@ -431,7 +463,7 @@ public:
      * @brief 预留存储空间
      * @param new_cap 新的容量
      */
-    void reserve(usize new_cap) {
+    void reserve(const usize new_cap) {
         if (new_cap > capacity_) {
             resize(std::max(new_cap, capacity_ << 1));
         }
@@ -450,264 +482,6 @@ public:
         }
         stream << ']';
         return BaseCString{stream.str()};
-    }
-
-    /**
-     * @brief 迭代器支持
-     * @tparam IsConst 是否为常量迭代器
-     */
-    template <bool IsConst>
-    class Iterator : public Object<Iterator<IsConst>> {
-        using Self = Iterator<IsConst>;
-
-    public:
-        using iterator_category = std::random_access_iterator_tag;
-        using container_t = std::conditional_t<IsConst, const Vec<value_t>, Vec<value_t>>;
-        using value_type = value_t;
-        using difference_type = std::ptrdiff_t;
-        using pointer = std::conditional_t<IsConst, const value_t*, value_t*>;
-        using const_pointer = const value_type*;
-        using reference = std::conditional_t<IsConst, const value_t&, value_t&>;
-        using const_reference = const value_type&;
-
-        /**
-         * @brief 构造一个迭代器
-         * @param vec_ptr 指向动态数组的指针
-         * @param cur_idx 当前索引
-         */
-        Iterator(container_t* vec_ptr = nullptr, usize cur_idx = 0) :
-                cur_idx_(cur_idx), vec_ptr_(vec_ptr) {}
-
-        /**
-         * @brief 拷贝构造函数
-         * @param other 需要拷贝的迭代器
-         */
-        Iterator(const Self& other) :
-                Iterator(other.vec_ptr_, other.cur_idx_) {}
-
-        /**
-         * @brief 拷贝赋值操作符
-         * @param other 需要拷贝的迭代器
-         * @return 返回自身引用
-         */
-        Self& operator=(const Self& other) {
-            this->cur_idx_ = other.cur_idx_;
-            this->vec_ptr_ = other.vec_ptr_;
-            return *this;
-        }
-
-        /**
-         * @brief 解引用运算符
-         * @return 返回当前元素的引用
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        reference operator*() {
-            return vec_ptr_->at(cur_idx_);
-        }
-
-        /**
-         * @brief 解引用运算符（const 版本）
-         * @return 返回当前元素的 const 引用
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        const_reference operator*() const {
-            return vec_ptr_->at(cur_idx_);
-        }
-
-        /**
-         * @brief 获取指向当前元素的指针
-         * @return 返回当前元素的指针
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        pointer operator->() {
-            return &vec_ptr_->at(cur_idx_);
-        }
-
-        /**
-         * @brief 获取指向当前元素的指针（const 版本）
-         * @return 返回当前元素的 const 指针
-         * @note 如果迭代器无效（如超过范围），行为未定义
-         */
-        const_pointer operator->() const {
-            return &vec_ptr_->at(cur_idx_);
-        }
-
-        /**
-         * @brief 前置自增运算符
-         * 移动迭代器到下一个元素
-         * @return 返回自增后的迭代器
-         */
-        Self& operator++() {
-            ++cur_idx_;
-            return *this;
-        }
-
-        /**
-         * @brief 后置自增运算符
-         * 移动迭代器到下一个元素
-         * @return 返回自增前的迭代器
-         */
-        Self operator++(i32) {
-            Self tmp(*this);
-            ++tmp;
-            return tmp;
-        }
-
-        /**
-         * @brief 前置自减运算符
-         * 移动迭代器到上一个元素
-         * @return 返回自减后的迭代器
-         */
-        Self& operator--() {
-            --cur_idx_;
-            return *this;
-        }
-
-        /**
-         * @brief 后置自减运算符
-         * 移动迭代器到上一个元素
-         * @return 返回自减前的迭代器
-         */
-        Self operator--(i32) {
-            Self tmp(*this);
-            --tmp;
-            return tmp;
-        }
-
-        /**
-         * @brief 跳过指定数量的元素
-         * @param n 需要跳过的元素数量
-         * @return 返回自身引用
-         */
-        Self& operator+=(difference_type n) {
-            if (n == 0) return *this;
-
-            cur_idx_ += n;
-            return *this;
-        }
-
-        /**
-         * @brief 跳过指定数量的元素
-         * @param n 需要跳过的元素数量
-         * @return 返回新的迭代器
-         */
-        Self operator+(difference_type n) const {
-            Self tmp(*this);
-            tmp += n;
-            return tmp;
-        }
-
-        /**
-         * @brief 回退指定数量的元素
-         * @param n 需要回退的元素数量
-         * @return 返回自身引用
-         */
-        Self& operator-=(difference_type n) {
-            if (n == 0) return *this;
-
-            cur_idx_ -= n;
-            return *this;
-        }
-
-        /**
-         * @brief 回退指定数量的元素
-         * @param n 需要回退的元素数量
-         * @return 返回新的迭代器
-         */
-        Self operator-(difference_type n) const {
-            Self tmp(*this);
-            tmp -= n;
-            return tmp;
-        }
-
-        /**
-         * @brief 获取两个迭代器的差值
-         * @param other 另一个迭代器
-         * @return 返回两个迭代器之间的元素数量差
-         */
-        difference_type operator-(const Self& other) const {
-            if (this->__cmp__(other) < 0) return -(other - *this);
-            if (this->vec_ptr_ != other.vec_ptr_) {
-                throw runtime_exception("iterator not belong to the same container.");
-            }
-
-            return this->cur_idx_ - other.cur_idx_;
-        }
-
-        /**
-         * @brief 比较两个迭代器是否相等
-         * @param other 另一个迭代器
-         * @return 如果相等返回 true，否则返回 false
-         */
-        bool operator==(const Self& other) const {
-            return __equals__(other);
-        }
-
-        /**
-         * @brief 比较两个迭代器是否不相等
-         * @param other 另一个迭代器
-         * @return 如果不相等返回 true，否则返回 false
-         */
-        bool operator!=(const Self& other) const {
-            return !__equals__(other);
-        }
-
-        /**
-         * @brief 比较两个迭代器的内部状态是否相等
-         * @param other 另一个迭代器
-         * @return 如果内部状态相等返回 true，否则返回 false
-         */
-        [[nodiscard]] bool __equals__(const Self& other) const {
-            return this->cur_idx_ == other.cur_idx_ && this->vec_ptr_ == other.vec_ptr_;
-        }
-
-        /**
-         * @brief 比较两个迭代器的顺序
-         * @param other 另一个迭代器
-         * @return 返回一个整数值，表示两个迭代器的顺序
-         */
-        [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-            return this->cur_idx_ - other.cur_idx_;
-        }
-
-    private:
-        usize cur_idx_;        // 当前索引
-        container_t* vec_ptr_; // 当前指向当前向量的指针
-    };
-
-    using iterator = Iterator<false>;
-    using const_iterator = Iterator<true>;
-
-    /**
-     * @brief 获取动态数组的起始迭代器
-     * @return 返回指向第一个元素的迭代器
-     */
-    iterator begin() {
-        return iterator(this);
-    }
-
-    /**
-     * @brief 获取动态数组的起始迭代器（const 版本）
-     * @return 返回指向第一个元素的 const 迭代器
-     */
-    const_iterator begin() const {
-        return const_iterator(this);
-    }
-
-    /**
-     * @brief 获取动态数组的末尾迭代器
-     * @return 返回指向最后一个元素之后的迭代器
-     */
-    iterator end() {
-        return iterator(this, size_);
-    }
-
-    /**
-     * @brief 获取动态数组的末尾迭代器（const 版本）
-     * @return 返回指向最后一个元素之后的 const 迭代器
-     */
-    const_iterator end() const {
-        return const_iterator(this, size_);
     }
 
 private:
@@ -731,10 +505,12 @@ private:
  * @tparam T 目标类型
  * @param args 动态数组
  * @param idx 参数索引
- * @return 返回目标类型的参数值，如果类型不匹配或索引超出范围则抛出ValueError
+ * @return 返回目标类型的参数值
+ * @exception Exception 若索引超出范围，则抛出 index_out_of_bounds_exception
+ * @exception Exception 若类型不匹配，则抛出 type_exception
  */
 template <typename T>
-fn opt(const Vec<std::any>& args, usize idx)->T {
+fn opt(const Vec<std::any>& args, usize idx) -> T {
     if (idx >= args.size()) {
         throw index_out_of_bounds_exception("index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
     }
@@ -746,6 +522,9 @@ fn opt(const Vec<std::any>& args, usize idx)->T {
     }
 }
 
+/**
+ * @brief 判断是否为Vec类型
+ */
 template <typename>
 struct is_vec : std::false_type {};
 

@@ -25,6 +25,7 @@ template <typename Upstream, typename Mapper, typename T>
 class MapStream;
 
 /**
+ * @class Stream
  * @brief 流CRTP基类
  */
 template <typename D, typename T>
@@ -56,7 +57,7 @@ public:
     /**
      * @brief 终止操作：收集到容器 TODO 暂定为Vec
      */
-    auto collect() && -> Vec<value_t> {
+    Vec<value_t> collect() && {
         Vec<value_t> result;
         for (auto&& elem : static_cast<D&>(*this).generator()) {
             result.append(std::forward<decltype(elem)>(elem));
@@ -76,6 +77,7 @@ public:
 };
 
 /**
+ * @class IterStream
  * @brief 迭代器流
  */
 template <typename T>
@@ -98,6 +100,7 @@ private:
 };
 
 /**
+ * @class FilterStream
  * @brief 过滤流
  */
 template <typename Upstream, typename Pred, typename T>
@@ -120,6 +123,7 @@ private:
 };
 
 /**
+ * @class MapStream
  * @brief 映射流
  */
 template <typename Upstream, typename Mapper, typename RetType>
@@ -139,7 +143,12 @@ private:
     Mapper func_;
 };
 
-// Stream工厂
+/**
+ * Stream工厂
+ * @tparam I 可迭代的类型
+ * @param iter 可迭代容器
+ * @return 迭代器流
+ */
 template <Iterable I>
 fn stream(I&& iter) {
     return IterStream(iter.begin(), iter.end());

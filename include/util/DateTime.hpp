@@ -17,8 +17,9 @@
 namespace my::util {
 
 /**
+ * @class Date
  * @brief 日期类，描述日期相关功能
- *        支持日期的创建、调整、运算、转换等操作
+ * @details 支持日期的创建、调整、运算、转换等操作
  */
 class Date : public Object<Date> {
 public:
@@ -32,10 +33,11 @@ public:
      * @param year 年份
      * @param month 月份（1-12，默认为1月）
      * @param dayOfMonth 日期（1-31，默认为1日）
-     * @return 有效的日期对象，若参数无效，则抛出 throw runtime_exception
-     * @example Date::of(2025, 2, 14) 创建日期 2025-02-14
+     * @return 有效的日期对象
+     * @example
+     * Date::of(2025, 2, 14) 创建日期 2025-02-14
      */
-    static Self of(i32 year, i32 month = 1, i32 dayOfMonth = 1) {
+    static Self of(const i32 year, const i32 month = 1, const i32 dayOfMonth = 1) {
         validate(year, month, dayOfMonth);
         return Self{year, month, dayOfMonth};
     }
@@ -45,9 +47,11 @@ public:
      * @param year 年份
      * @param dayOfYear 一年中的第几天（1-365/366）
      * @return 有效的日期对象
-     * @example Date::ofYearDay(2025, 5) 创建日期 2025-01-05
+     * @exception Exception 若年天数越界，则抛出 runtime_exception
+     * @example
+     * Date::ofYearDay(2025, 5) 创建日期 2025-01-05
      */
-    static Self ofYearDay(i32 year, i32 dayOfYear) {
+    static Self ofYearDay(const i32 year, const i32 dayOfYear) {
         validateYear(year);
         const bool isLeap = isLeapYear(year);
         if (dayOfYear < 1 || dayOfYear > (isLeap ? 366 : 365)) {
@@ -58,8 +62,8 @@ public:
         static constexpr i32 common[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
         const auto& offsets = isLeap ? leap : common;
 
-        i32 month = static_cast<i32>(std::lower_bound(std::begin(offsets), std::end(offsets), dayOfYear) - offsets) - 1;
-        i32 day = dayOfYear - offsets[month];
+        const i32 month = static_cast<i32>(std::ranges::lower_bound(offsets, dayOfYear) - offsets) - 1;
+        const i32 day = dayOfYear - offsets[month];
         return Self{year, month + 1, day};
     }
 
@@ -68,7 +72,7 @@ public:
      * @param epochDay 纪元日
      * @return 对应的日期对象
      */
-    static Self ofEpochDay(i64 epochDay) {
+    static Self ofEpochDay(const i64 epochDay) {
         return ofEpochDayImpl(epochDay);
     }
 
@@ -76,15 +80,16 @@ public:
      * @brief 解析 "yyyy-MM-dd" 格式的日期字符串
      * @param str 日期字符串
      * @return 解析成功的日期对象
-     * @exception throw runtime_exception 若字符串格式不正确
-     * @example Date::parse("2025-02-14") 解析为 2025-02-14
+     * @exception Exception 若字符串格式不正确，抛出 runtime_exception
+     * @example
+     * Date::parse("2025-02-14") 解析为 2025-02-14
      */
     static Self parse(const CString& str) {
         i32 year, month, day;
         if (sscanf_s(str.data(), "%d-%d-%d", &year, &month, &day) != 3) {
             throw runtime_exception("invalid date format");
         }
-        return Self::of(year, month, day);
+        return of(year, month, day);
     }
 
     /**
@@ -93,9 +98,9 @@ public:
      * @note 该实现依赖于 `localtime` 函数，是线程不安全的 TODO
      */
     static Self now() {
-        auto now = std::chrono::system_clock::now();
-        time_t time = std::chrono::system_clock::to_time_t(now);
-        auto time_tm = localtime(&time);
+        const auto now = std::chrono::system_clock::now();
+        const time_t time = std::chrono::system_clock::to_time_t(now);
+        const auto time_tm = localtime(&time);
         return Self{time_tm->tm_year + 1900, time_tm->tm_mon + 1, time_tm->tm_mday};
     }
 
@@ -126,8 +131,8 @@ public:
      * @return 星期数 [1,7]
      */
     i32 dayOfWeek() const noexcept {
-        i64 epochDay = toEpochDay();
-        return i32(epochDay >= -4 ? (epochDay + 4) % 7 : (epochDay + 5) % 7 + 6);
+        const i64 epochDay = toEpochDay();
+        return static_cast<i32>(epochDay >= -4 ? (epochDay + 4) % 7 : (epochDay + 5) % 7 + 6);
     }
 
     /**
@@ -143,7 +148,7 @@ public:
      * @param years 年份数
      * @return 新的日期对象
      */
-    Self plusYears(i64 years) const {
+    Self plusYears(const i64 years) const {
         return adjustDay(year_ + years, month_);
     }
 
@@ -152,8 +157,8 @@ public:
      * @param months 月份数
      * @return 新的日期对象
      */
-    Self plusMonths(i64 months) const {
-        i64 total = year_ * 12LL + (month_ - 1) + months;
+    Self plusMonths(const i64 months) const {
+        const i64 total = year_ * 12LL + (month_ - 1) + months;
         i64 newYear = total / 12;
         i32 newMonth = total % 12 + 1;
         if (newMonth < 1) {
@@ -168,7 +173,7 @@ public:
      * @param weeks 周数
      * @return 新的日期对象
      */
-    Self plusWeeks(i64 weeks) const {
+    Self plusWeeks(const i64 weeks) const {
         return plusDays(math::mul_exact(weeks, 7LL));
     }
 
@@ -177,7 +182,7 @@ public:
      * @param days 天数
      * @return 新的日期对象
      */
-    Self plusDays(i64 days) const {
+    Self plusDays(const i64 days) const {
         return ofEpochDay(toEpochDay() + days);
     }
 
@@ -186,7 +191,7 @@ public:
      * @param years 年份数
      * @return 新的日期对象
      */
-    Self minusYears(i64 years) const {
+    Self minusYears(const i64 years) const {
         return plusYears(-years);
     }
 
@@ -195,7 +200,7 @@ public:
      * @param months 月份数
      * @return 新的日期对象
      */
-    Self minusMonths(i64 months) const {
+    Self minusMonths(const i64 months) const {
         return plusMonths(-months);
     }
 
@@ -204,7 +209,7 @@ public:
      * @param weeks 周数
      * @return 新的日期对象
      */
-    Self minusWeeks(i64 weeks) const {
+    Self minusWeeks(const i64 weeks) const {
         return minusDays(math::mul_exact(weeks, 7LL));
     }
 
@@ -213,7 +218,7 @@ public:
      * @param days 天数
      * @return 新的日期对象
      */
-    Self minusDays(i64 days) const {
+    Self minusDays(const i64 days) const {
         return plusDays(-days);
     }
 
@@ -222,7 +227,7 @@ public:
      * @param year 新的年份
      * @return 新的日期对象，若年份不变则返回自身
      */
-    Self withYear(i32 year) const {
+    Self withYear(const i32 year) const {
         if (year == year_) {
             return *this;
         }
@@ -234,7 +239,7 @@ public:
      * @param month 新的月份
      * @return 新的日期对象，若月份不变则返回自身
      */
-    Self withMonth(i32 month) const {
+    Self withMonth(const i32 month) const {
         if (month == month_) {
             return *this;
         }
@@ -246,7 +251,7 @@ public:
      * @param day 新的日期
      * @return 新的日期对象，若日期不变则返回自身
      */
-    Self withDay(i32 day) const {
+    Self withDay(const i32 day) const {
         if (day == day_) {
             return *this;
         }
@@ -258,7 +263,7 @@ public:
      * @param datOfMonth 新的日期
      * @return 新的日期对象
      */
-    Self withDayOfMonth(i32 datOfMonth) const {
+    Self withDayOfMonth(const i32 datOfMonth) const {
         return of(year_, month_, datOfMonth);
     }
 
@@ -267,7 +272,7 @@ public:
      * @param dayOfYear 一年中的第几天
      * @return 新的日期对象
      */
-    Self withDayOfYear(i32 dayOfYear) const {
+    Self withDayOfYear(const i32 dayOfYear) const {
         return ofYearDay(year_, dayOfYear);
     }
 
@@ -293,13 +298,13 @@ public:
      * @return 纪元日（i64 型）
      */
     i64 toEpochDay() const {
-        i32 y = year_ - (month_ <= 2);
-        i32 m = month_;
-        i32 d = day_;
-        i64 era = (y >= 0 ? y : y - 399) / 400;
-        u32 yoe = y - era * 400;
-        u32 doy = (153 * (m > 2 ? m - 3 : m + 9) + 2) / 5 + d - 1;
-        u32 doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+        const i32 y = year_ - (month_ <= 2);
+        const i32 m = month_;
+        const i32 d = day_;
+        const i64 era = (y >= 0 ? y : y - 399) / 400;
+        const u32 yoe = y - era * 400;
+        const u32 doy = (153 * (m > 2 ? m - 3 : m + 9) + 2) / 5 + d - 1;
+        const u32 doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
         return era * 146097 + doe - 719468;
     }
 
@@ -331,21 +336,21 @@ private:
      * @param month 月份
      * @param day 日期
      */
-    Date(i32 year, i32 month, i32 day) :
+    Date(const i32 year, const i32 month, const i32 day) :
             year_(year), month_(month), day_(day) {}
 
-    static Self ofEpochDayImpl(i64 epochDay) {
-        i64 z = epochDay + 719468;
-        i64 era = (z >= 0 ? z : z - 146096) / 146097;
-        u32 doe = static_cast<u32>(z - era * 146097);
-        u32 yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    static Self ofEpochDayImpl(const i64 epochDay) {
+        const i64 z = epochDay + 719468;
+        const i64 era = (z >= 0 ? z : z - 146096) / 146097;
+        const u32 doe = static_cast<u32>(z - era * 146097);
+        const u32 yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
         i64 y = yoe + era * 400;
-        u32 doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
-        u32 mp = (5 * doy + 2) / 153;
-        u32 d = doy - (153 * mp + 2) / 5 + 1;
-        u32 m = mp < 10 ? mp + 3 : mp - 9;
+        const u32 doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+        const u32 mp = (5 * doy + 2) / 153;
+        const u32 d = doy - (153 * mp + 2) / 5 + 1;
+        const u32 m = mp < 10 ? mp + 3 : mp - 9;
         y += (m <= 2);
-        return Self{i32(y), i32(m), i32(d)};
+        return Self{static_cast<i32>(y), static_cast<i32>(m), static_cast<i32>(d)};
     }
 
     /**
@@ -357,16 +362,17 @@ private:
     Self adjustDay(i64 newYear, i32 newMonth) const {
         newYear = clampYear(newYear);
         newMonth = clampMonth(newMonth);
-        i32 newDay = math::min_(day_, daysInMonth(newYear, newMonth));
+        const i32 newDay = math::min_(day_, daysInMonth(newYear, newMonth));
         return Self{static_cast<i32>(newYear), newMonth, newDay};
     }
 
     /**
      * @brief 检查年份是否在有效范围内
      * @param year 年份
-     * @return 正常年份，否则返回错误
+     * @return 正常年份
+     * @exception Exception 若年份越界，则抛出 runtime_exception
      */
-    static i64 clampYear(i64 year) {
+    static i64 clampYear(const i64 year) {
         if (year < -999999999 || year > 999999999) {
             throw runtime_exception("year overflow");
         }
@@ -376,9 +382,10 @@ private:
     /**
      * @brief 检查月份是否在有效范围内
      * @param month 月份
-     * @return 正常月份，否则返回错误
+     * @return 正常月份
+     * @exception Exception 若月份非法，则抛出 runtime_exception
      */
-    static i32 clampMonth(i32 month) {
+    static i32 clampMonth(const i32 month) {
         if (month < 1 || month > 12) {
             throw runtime_exception("invalid month");
         }
@@ -388,8 +395,9 @@ private:
     /**
      * @brief 校验年份是否有效
      * @param year 年份
+     * @exception Exception 若年份越界，则抛出 runtime_exception
      */
-    static void validateYear(i32 year) {
+    static void validateYear(const i32 year) {
         if (year < -999999999 || year > 999999999) throw runtime_exception("year out of range");
     }
 
@@ -398,8 +406,10 @@ private:
      * @param year 年份
      * @param month 月份
      * @param day 日期
+     * @exception Exception 若月份非法，则抛出 runtime_exception
+     * @exception Exception 若月天数非法，则抛出 runtime_exception
      */
-    static void validate(i32 year, i32 month, i32 day) {
+    static void validate(const i32 year, const i32 month, const i32 day) {
         validateYear(year);
         if (month < 1 || month > 12) throw runtime_exception("invalid month");
         if (day < 1 || day > daysInMonth(year, month)) throw runtime_exception("invalid day");
@@ -410,7 +420,7 @@ private:
      * @param year 年份
      * @return 是否为闰年
      */
-    static bool isLeapYear(i32 year) noexcept {
+    static bool isLeapYear(const i32 year) noexcept {
         return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
     }
 
@@ -420,7 +430,7 @@ private:
      * @param month 月份
      * @return 该月的天数
      */
-    static i32 daysInMonth(i32 year, i32 month) noexcept {
+    static i32 daysInMonth(const i32 year, const i32 month) noexcept {
         static constexpr i32 days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
         if (month == 2 && isLeapYear(year)) return 29;
         return days[month - 1];
@@ -437,8 +447,9 @@ inline const Date Date::MAX{999999999, 12, 31};
 inline const Date Date::EPOCH{1970, 1, 1};
 
 /**
+ * @class Time
  * @brief 时间类，描述时间相关功能
- *        支持时间的创建、调整、运算、转换等操作
+ * @details 支持时间的创建、调整、运算、转换等操作
  */
 class Time : public Object<Time> {
 public:
@@ -469,10 +480,10 @@ public:
      * @param second 秒（0-59）
      * @param nanoOfSecond 纳秒（0-999999999）
      * @return 时间对象
-     * @exception throw runtime_exception 参数无效时
-     * @example Time::of(12, 30, 45) 创建时间 12:30:45
+     * @example
+     * Time::of(12, 30, 45) 创建时间 12:30:45
      */
-    static Self of(i32 hour, i32 minute = 0, i32 second = 0, i32 nanoOfSecond = 0) {
+    static Self of(const i32 hour, const i32 minute = 0, const i32 second = 0, const i32 nanoOfSecond = 0) {
         validate(hour, minute, second, nanoOfSecond);
         return Self{hour, minute, second, nanoOfSecond};
     }
@@ -485,11 +496,11 @@ public:
      */
     static Self ofSecondOfDay(i64 secondOfDay) {
         validateSecondOfDay(secondOfDay);
-        i32 hour = secondOfDay / SECONDS_PER_HOUR;
+        const i32 hour = secondOfDay / SECONDS_PER_HOUR;
         secondOfDay -= hour * SECONDS_PER_HOUR;
-        i32 minute = secondOfDay / SECONDS_PER_MINUTE;
+        const i32 minute = secondOfDay / SECONDS_PER_MINUTE;
         secondOfDay -= minute * SECONDS_PER_MINUTE;
-        return Self{hour, minute, i32(secondOfDay)};
+        return Self{hour, minute, static_cast<i32>(secondOfDay)};
     }
 
     /**
@@ -500,13 +511,13 @@ public:
      */
     static Self ofNanoOfDay(i64 nanoOfDay) {
         validateNanoOfDay(nanoOfDay);
-        i32 hour = nanoOfDay / NANOS_PER_HOUR;
+        const i32 hour = nanoOfDay / NANOS_PER_HOUR;
         nanoOfDay -= hour * NANOS_PER_HOUR;
-        i32 minute = nanoOfDay / NANOS_PER_MINUTE;
+        const i32 minute = nanoOfDay / NANOS_PER_MINUTE;
         nanoOfDay -= minute * NANOS_PER_MINUTE;
-        i32 second = nanoOfDay / NANOS_PER_SECOND;
+        const i32 second = nanoOfDay / NANOS_PER_SECOND;
         nanoOfDay -= second * NANOS_PER_SECOND;
-        return Self{hour, minute, second, i32(nanoOfDay)};
+        return Self{hour, minute, second, static_cast<i32>(nanoOfDay)};
     }
 
     /**
@@ -514,14 +525,15 @@ public:
      * @param str 时间字符串
      * @return 解析成功的时间对象
      * @exception throw runtime_exception 格式无效
-     * @example Time::parse("12:30:45") 解析为 12:30:45
+     * @example
+     * Time::parse("12:30:45") 解析为 12:30:45
      */
     static Self parse(const CString& str) {
         i32 hour, minute, second;
         if (sscanf(str.data(), "%d:%d:%d", &hour, &minute, &second) != 3) {
             throw runtime_exception("invalid time format");
         }
-        return Self::of(hour, minute, second);
+        return of(hour, minute, second);
     }
 
     /**
@@ -530,14 +542,14 @@ public:
      * @note 该实现依赖于 `localtime` 函数，是线程不安全的 TODO
      */
     static Self now() {
-        auto now = std::chrono::system_clock::now();
-        time_t time = std::chrono::system_clock::to_time_t(now);
-        auto time_tm = localtime(&time);
+        const auto now = std::chrono::system_clock::now();
+        const time_t time = std::chrono::system_clock::to_time_t(now);
+        const auto time_tm = localtime(&time);
 
         // 计算纳秒部分（当前秒内的时间差）
-        auto diff = now - std::chrono::system_clock::from_time_t(time);
-        auto nanoseconds = duration_cast<std::chrono::nanoseconds>(diff);
-        return Self{time_tm->tm_hour, time_tm->tm_min, time_tm->tm_sec, i32(nanoseconds.count())};
+        const auto diff = now - std::chrono::system_clock::from_time_t(time);
+        const auto nanoseconds = duration_cast<std::chrono::nanoseconds>(diff);
+        return Self{time_tm->tm_hour, time_tm->tm_min, time_tm->tm_sec, static_cast<i32>(nanoseconds.count())};
     }
 
     // 获取小时
@@ -557,11 +569,11 @@ public:
      * @param hours 小时数
      * @return 新的时间对象
      */
-    Self plusHours(i64 hours) const {
+    Self plusHours(const i64 hours) const {
         if (hours == 0) {
             return *this;
         }
-        i32 newHour = (hours % HOURS_PER_DAY + hour_ + HOURS_PER_DAY) % HOURS_PER_DAY;
+        const i32 newHour = (hours % HOURS_PER_DAY + hour_ + HOURS_PER_DAY) % HOURS_PER_DAY;
         return Self{newHour, minute_, second_, nano_};
     }
 
@@ -570,17 +582,17 @@ public:
      * @param minutes 分钟数
      * @return 新的时间对象
      */
-    Self plusMinutes(i64 minutes) const {
+    Self plusMinutes(const i64 minutes) const {
         if (minutes == 0) {
             return *this;
         }
-        i32 mofd = hour_ * MINUTES_PER_HOUR + minute_;
-        i32 newMofd = (minutes % MINUTES_PER_DAY + mofd + MINUTES_PER_DAY) % MINUTES_PER_DAY;
+        const i32 mofd = hour_ * MINUTES_PER_HOUR + minute_;
+        const i32 newMofd = (minutes % MINUTES_PER_DAY + mofd + MINUTES_PER_DAY) % MINUTES_PER_DAY;
         if (mofd == newMofd) {
             return *this;
         }
-        i32 newHour = newMofd / MINUTES_PER_HOUR;
-        i32 newMinute = newMofd % MINUTES_PER_HOUR;
+        const i32 newHour = newMofd / MINUTES_PER_HOUR;
+        const i32 newMinute = newMofd % MINUTES_PER_HOUR;
         return Self{newHour, newMinute, second_, nano_};
     }
 
@@ -589,18 +601,18 @@ public:
      * @param seconds 秒数
      * @return 新的时间对象
      */
-    Self plusSeconds(i64 seconds) const {
+    Self plusSeconds(const i64 seconds) const {
         if (seconds == 0) {
             return *this;
         }
-        i32 sofd = hour_ * SECONDS_PER_HOUR + minute_ * SECONDS_PER_MINUTE + second_;
-        i32 newSofd = (seconds % SECONDS_PER_DAY + sofd + SECONDS_PER_DAY) % SECONDS_PER_DAY;
+        const i32 sofd = hour_ * SECONDS_PER_HOUR + minute_ * SECONDS_PER_MINUTE + second_;
+        const i32 newSofd = (seconds % SECONDS_PER_DAY + sofd + SECONDS_PER_DAY) % SECONDS_PER_DAY;
         if (sofd == newSofd) {
             return *this;
         }
-        i32 newHour = newSofd / SECONDS_PER_HOUR;
-        i32 newMinute = (newSofd / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
-        i32 newSecond = newSofd % SECONDS_PER_MINUTE;
+        const i32 newHour = newSofd / SECONDS_PER_HOUR;
+        const i32 newMinute = (newSofd / SECONDS_PER_MINUTE) % MINUTES_PER_HOUR;
+        const i32 newSecond = newSofd % SECONDS_PER_MINUTE;
         return Self{newHour, newMinute, newSecond, nano_};
     }
 
@@ -609,19 +621,19 @@ public:
      * @param nanos 纳秒数
      * @return 新的时间对象
      */
-    Self plusNanos(i64 nanos) const {
+    Self plusNanos(const i64 nanos) const {
         if (nanos == 0) {
             return *this;
         }
-        i64 nofd = toNanoOfDay();
-        i64 newNofd = ((nanos % NANOS_PER_DAY) + nofd + NANOS_PER_DAY) % NANOS_PER_DAY;
+        const i64 nofd = toNanoOfDay();
+        const i64 newNofd = ((nanos % NANOS_PER_DAY) + nofd + NANOS_PER_DAY) % NANOS_PER_DAY;
         if (nofd == newNofd) {
             return *this;
         }
-        i32 newHour = newNofd / NANOS_PER_HOUR;
-        i32 newMinute = (newNofd / NANOS_PER_MINUTE) % MINUTES_PER_HOUR;
-        i32 newSecond = (newNofd / NANOS_PER_SECOND) % SECONDS_PER_MINUTE;
-        i32 newNano = newNofd % NANOS_PER_SECOND;
+        const i32 newHour = newNofd / NANOS_PER_HOUR;
+        const i32 newMinute = (newNofd / NANOS_PER_MINUTE) % MINUTES_PER_HOUR;
+        const i32 newSecond = (newNofd / NANOS_PER_SECOND) % SECONDS_PER_MINUTE;
+        const i32 newNano = newNofd % NANOS_PER_SECOND;
         return Self{newHour, newMinute, newSecond, newNano};
     }
 
@@ -630,7 +642,7 @@ public:
      * @param hours 小时数
      * @return 新的时间对象
      */
-    Self minusHours(i64 hours) const {
+    Self minusHours(const i64 hours) const {
         return plusHours(-(hours % HOURS_PER_DAY));
     }
 
@@ -639,7 +651,7 @@ public:
      * @param minutes 分钟数
      * @return 新的时间对象
      */
-    Self minusMinutes(i64 minutes) const {
+    Self minusMinutes(const i64 minutes) const {
         return plusMinutes(-(minutes % MINUTES_PER_DAY));
     }
 
@@ -648,7 +660,7 @@ public:
      * @param seconds 秒数
      * @return 新的时间对象
      */
-    Self minusSeconds(i64 seconds) const {
+    Self minusSeconds(const i64 seconds) const {
         return plusSeconds(-(seconds % SECONDS_PER_DAY));
     }
 
@@ -657,7 +669,7 @@ public:
      * @param nanos 纳秒数
      * @return 新的时间对象
      */
-    Self minusNanos(i64 nanos) const {
+    Self minusNanos(const i64 nanos) const {
         return plusNanos(-(nanos % NANOS_PER_DAY));
     }
 
@@ -675,7 +687,7 @@ public:
      * @param hour 小时
      * @return 新的时间对象，若小时不变则返回自身
      */
-    Self withHour(i32 hour) {
+    Self withHour(const i32 hour) const {
         if (hour == hour_) {
             return *this;
         }
@@ -687,7 +699,7 @@ public:
      * @param minute 分钟
      * @return 新的时间对象，若分钟不变则返回自身
      */
-    Self withMinute(i32 minute) {
+    Self withMinute(const i32 minute) const {
         if (minute == minute_) {
             return *this;
         }
@@ -699,7 +711,7 @@ public:
      * @param second 秒
      * @return 新的时间对象，若秒不变则返回自身
      */
-    Self withSecond(i32 second) {
+    Self withSecond(const i32 second) const {
         if (second == second_) {
             return *this;
         }
@@ -711,7 +723,7 @@ public:
      * @param nanoOfSecond 纳秒
      * @return 新的时间对象，若纳秒不变则返回自身
      */
-    Self withNano(i32 nanoOfSecond) {
+    Self withNano(const i32 nanoOfSecond) const {
         if (nanoOfSecond == nano_) {
             return *this;
         }
@@ -764,7 +776,7 @@ private:
      * @param second 秒
      * @param nanoOfSecond 纳秒
      */
-    Time(i32 hour, i32 minute = 0, i32 second = 0, i32 nanoOfSecond = 0) :
+    explicit Time(const i32 hour, const i32 minute = 0, const i32 second = 0, const i32 nanoOfSecond = 0) :
             hour_(hour), minute_(minute), second_(second), nano_(nanoOfSecond) {}
 
     /**
@@ -773,8 +785,12 @@ private:
      * @param minute 分钟
      * @param second 秒
      * @param nanoOfSecond 纳秒
+     * @exception Exception 若小时越界，则抛出 runtime_exception
+     * @exception Exception 若分钟数越界，则抛出 runtime_exception
+     * @exception Exception 若秒数越界，则抛出 runtime_exception
+     * @exception Exception 若纳秒数越界，则抛出 runtime_exception
      */
-    static void validate(i32 hour, i32 minute, i32 second, i32 nanoOfSecond) {
+    static void validate(const i32 hour, const i32 minute, const i32 second, const i32 nanoOfSecond) {
         if (hour < 0 || hour >= 24) throw runtime_exception("hour out of range");
         if (minute < 0 || minute >= 60) throw runtime_exception("minute out of range");
         if (second < 0 || second >= 60) throw runtime_exception("second out of range");
@@ -784,8 +800,9 @@ private:
     /**
      * @brief 校验当日秒数是否有效
      * @param secondOfDay 当日秒数
+     * @exception Exception 若当日秒数越界，则抛出 runtime_exception
      */
-    static void validateSecondOfDay(i64 secondOfDay) {
+    static void validateSecondOfDay(const i64 secondOfDay) {
         if (secondOfDay < 0 || secondOfDay >= 86400) {
             throw runtime_exception("second of day out of range");
         }
@@ -794,8 +811,9 @@ private:
     /**
      * @brief 校验当日纳秒数是否有效
      * @param nanoOfDay 当日纳秒数
+     * @exception Exception 若当日纳秒数越界，则抛出 runtime_exception
      */
-    static void validateNanoOfDay(i64 nanoOfDay) {
+    static void validateNanoOfDay(const i64 nanoOfDay) {
         if (nanoOfDay < 0 || nanoOfDay >= 86400 * 1000'000'000LL) {
             throw runtime_exception("nano of day out of range");
         }
@@ -814,8 +832,9 @@ inline const Time Time::MIDNIGHT(0, 0);
 inline const Time Time::NOON{12, 0};
 
 /**
+ * @class DateTime
  * @brief 日期时间类，描述日期和时间的组合
- *        支持日期时间的创建、调整、运算、转换等操作
+ * @details 支持日期时间的创建、调整、运算、转换等操作
  */
 class DateTime : public Object<DateTime> {
 public:
@@ -831,12 +850,18 @@ public:
      * @param second 秒
      * @param nanoOfSecond 纳秒
      * @return 日期时间对象
-     * @exception throw runtime_exception 参数无效时
-     * @example DateTime::of(2025, 2, 14, 12, 30) 创建日期时间 2025-02-14 12:30:00
+     * @example
+     * DateTime::of(2025, 2, 14, 12, 30) 创建日期时间 2025-02-14 12:30:00
      */
-    static Self of(i32 year, i32 month, i32 dayOfMonth, i32 hour, i32 minute = 0, i32 second = 0, i32 nanoOfSecond = 0) {
-        Date date = Date::of(year, month, dayOfMonth);
-        Time time = Time::of(hour, minute, second, nanoOfSecond);
+    static Self of(const i32 year,
+                   const i32 month,
+                   const i32 dayOfMonth,
+                   const i32 hour,
+                   const i32 minute = 0,
+                   const i32 second = 0,
+                   const i32 nanoOfSecond = 0) {
+        const Date date = Date::of(year, month, dayOfMonth);
+        const Time time = Time::of(hour, minute, second, nanoOfSecond);
         return Self{date, time};
     }
 
@@ -855,15 +880,15 @@ public:
      * @param epochSecond 纪元秒
      * @param nanoOfSecond 纳秒（可选）
      * @return 日期时间对象
-     * @exception throw runtime_exception 若纳秒超出范围
-     * @todo 考虑时差的影响
+     * @exception Exception 若纳秒数越界，则抛出 runtime_exception
+     * TODO 考虑时差的影响
      */
-    static Self ofEpochSecond(i64 epochSecond, i32 nanoOfSecond = 0) {
+    static Self ofEpochSecond(const i64 epochSecond, const i32 nanoOfSecond = 0) {
         if (nanoOfSecond < 0 || nanoOfSecond >= 999'999'999) throw runtime_exception("nano out of range");
-        i32 epochDay = epochSecond / Time::SECONDS_PER_DAY;
-        i32 secsOfDay = epochSecond % Time::SECONDS_PER_DAY;
-        auto date = Date::ofEpochDay(epochDay);
-        auto time = Time::ofNanoOfDay(secsOfDay * Time::NANOS_PER_SECOND + nanoOfSecond);
+        const i32 epochDay = epochSecond / Time::SECONDS_PER_DAY;
+        const i32 secsOfDay = epochSecond % Time::SECONDS_PER_DAY;
+        const auto date = Date::ofEpochDay(epochDay);
+        const auto time = Time::ofNanoOfDay(secsOfDay * Time::NANOS_PER_SECOND + nanoOfSecond);
         return Self{date, time};
     }
 
@@ -871,8 +896,9 @@ public:
      * @brief 解析 "yyyy-MM-dd hh:mm:ss" 格式的日期时间字符串
      * @param str 日期时间字符串
      * @return 解析成功的时间对象
-     * @exception throw runtime_exception 格式无效
-     * @example DateTime::parse("2025-02-14 12:30:45") 解析为 2025-02-14 12:30:45
+     * @exception Exception 若格式无效，则抛出 runtime_exception
+     * @example
+     * DateTime::parse("2025-02-14 12:30:45") 解析为 2025-02-14 12:30:45
      */
     static Self parse(const CString& str) {
         i32 year, month, day, hour, minute, second;
@@ -888,13 +914,13 @@ public:
      * @note 该实现依赖于 `localtime` 函数，是线程不安全的 TODO
      */
     static Self now() {
-        auto now = std::chrono::system_clock::now();
-        time_t time = std::chrono::system_clock::to_time_t(now);
-        auto time_tm = localtime(&time);
-        auto diff = now - std::chrono::system_clock::from_time_t(time);
-        auto nanoseconds = duration_cast<std::chrono::nanoseconds>(diff);
+        const auto now = std::chrono::system_clock::now();
+        const time_t time = std::chrono::system_clock::to_time_t(now);
+        const auto time_tm = localtime(&time);
+        const auto diff = now - std::chrono::system_clock::from_time_t(time);
+        const auto nanoseconds = duration_cast<std::chrono::nanoseconds>(diff);
         return Self{Date::of(time_tm->tm_year + 1900, time_tm->tm_mon + 1, time_tm->tm_mday),
-                    Time::of(time_tm->tm_hour, time_tm->tm_min, time_tm->tm_sec, i32(nanoseconds.count()))};
+                    Time::of(time_tm->tm_hour, time_tm->tm_min, time_tm->tm_sec, static_cast<i32>(nanoseconds.count()))};
     }
 
     // 获取日期部分
@@ -948,7 +974,7 @@ public:
      * @param newTime 新的时间
      * @return 新的日期时间对象
      */
-    Self with(Date newDate, Time newTime) {
+    Self with(const Date& newDate, const Time& newTime) const {
         if (date_ == newDate && time_ == newTime) {
             return *this;
         }
@@ -960,7 +986,7 @@ public:
      * @param year 新的年份
      * @return 新的日期时间对象
      */
-    Self withYear(i32 year) {
+    Self withYear(const i32 year) const {
         return with(date_.withYear(year), time_);
     }
 
@@ -969,7 +995,7 @@ public:
      * @param month 新的月份
      * @return 新的日期时间对象
      */
-    Self withMonth(i32 month) {
+    Self withMonth(const i32 month) const {
         return with(date_.withMonth(month), time_);
     }
 
@@ -978,7 +1004,7 @@ public:
      * @param dayOfMonth 新的日期
      * @return 新的日期时间对象
      */
-    Self withDayOfMonth(i32 dayOfMonth) {
+    Self withDayOfMonth(const i32 dayOfMonth) const {
         return with(date_.withDayOfMonth(dayOfMonth), time_);
     }
 
@@ -987,7 +1013,7 @@ public:
      * @param dayOfYear 一年中的第几天
      * @return 新的日期时间对象
      */
-    Self withDayOfYear(i32 dayOfYear) {
+    Self withDayOfYear(const i32 dayOfYear) const {
         return with(date_.withDayOfYear(dayOfYear), time_);
     }
 
@@ -996,7 +1022,7 @@ public:
      * @param hour 新的小时
      * @return 新的日期时间对象
      */
-    Self withHour(i32 hour) {
+    Self withHour(const i32 hour) const {
         return with(date_, time_.withHour(hour));
     }
 
@@ -1005,7 +1031,7 @@ public:
      * @param minute 新的分钟
      * @return 新的日期时间对象
      */
-    Self withMinute(i32 minute) {
+    Self withMinute(const i32 minute) const {
         return with(date_, time_.withMinute(minute));
     }
 
@@ -1014,7 +1040,7 @@ public:
      * @param second 新的秒
      * @return 新的日期时间对象
      */
-    Self withSecond(i32 second) {
+    Self withSecond(const i32 second) const {
         return with(date_, time_.withSecond(second));
     }
 
@@ -1023,7 +1049,7 @@ public:
      * @param nano 新的纳秒
      * @return 新的日期时间对象
      */
-    Self withNano(i32 nano) {
+    Self withNano(const i32 nano) const {
         return with(date_, time_.withNano(nano));
     }
 
@@ -1032,7 +1058,7 @@ public:
      * @param years 年份数
      * @return 新的日期时间对象
      */
-    Self plusYears(i64 years) {
+    Self plusYears(const i64 years) const {
         return with(date_.plusYears(years), time_);
     }
 
@@ -1041,7 +1067,7 @@ public:
      * @param months 月份数
      * @return 新的日期时间对象
      */
-    Self plusMonths(i64 months) {
+    Self plusMonths(const i64 months) const {
         return with(date_.plusMonths(months), time_);
     }
 
@@ -1050,7 +1076,7 @@ public:
      * @param weeks 周数
      * @return 新的日期时间对象
      */
-    Self plusWeeks(i64 weeks) {
+    Self plusWeeks(const i64 weeks) const {
         return with(date_.plusWeeks(weeks), time_);
     }
 
@@ -1059,7 +1085,7 @@ public:
      * @param days 天数
      * @return 新的日期时间对象
      */
-    Self plusDays(i64 days) {
+    Self plusDays(const i64 days) const {
         return with(date_.plusDays(days), time_);
     }
 
@@ -1068,7 +1094,7 @@ public:
      * @param hours 小时数
      * @return 新的日期时间对象
      */
-    Self plusHours(i64 hours) {
+    Self plusHours(const i64 hours) const {
         return with(date_, time_.plusHours(hours));
     }
 
@@ -1077,7 +1103,7 @@ public:
      * @param minutes 分钟数
      * @return 新的日期时间对象
      */
-    Self plusMinutes(i64 minutes) {
+    Self plusMinutes(const i64 minutes) const {
         return with(date_, time_.plusMinutes(minutes));
     }
 
@@ -1086,7 +1112,7 @@ public:
      * @param seconds 秒数
      * @return 新的日期时间对象
      */
-    Self plusSeconds(i64 seconds) {
+    Self plusSeconds(const i64 seconds) const {
         return with(date_, time_.plusSeconds(seconds));
     }
 
@@ -1095,7 +1121,7 @@ public:
      * @param nanos 纳秒数
      * @return 新的日期时间对象
      */
-    Self plusNanos(i64 nanos) {
+    Self plusNanos(const i64 nanos) const {
         return with(date_, time_.plusNanos(nanos));
     }
 
@@ -1104,7 +1130,7 @@ public:
      * @param years 年份数
      * @return 新的日期时间对象
      */
-    Self minusYears(i64 years) {
+    Self minusYears(const i64 years) const {
         return with(date_.minusYears(years), time_);
     }
 
@@ -1113,7 +1139,7 @@ public:
      * @param months 月份数
      * @return 新的日期时间对象
      */
-    Self minusMonths(i64 months) {
+    Self minusMonths(const i64 months) const {
         return with(date_.minusMonths(months), time_);
     }
 
@@ -1122,7 +1148,7 @@ public:
      * @param weeks 周数
      * @return 新的日期时间对象
      */
-    Self minusWeeks(i64 weeks) {
+    Self minusWeeks(const i64 weeks) const {
         return with(date_.minusWeeks(weeks), time_);
     }
 
@@ -1131,7 +1157,7 @@ public:
      * @param days 天数
      * @return 新的日期时间对象
      */
-    Self minusDays(i64 days) {
+    Self minusDays(const i64 days) const {
         return with(date_.minusDays(days), time_);
     }
 
@@ -1140,7 +1166,7 @@ public:
      * @param hours 小时数
      * @return 新的日期时间对象
      */
-    Self minusHours(i64 hours) {
+    Self minusHours(const i64 hours) const {
         return with(date_, time_.minusHours(hours));
     }
 
@@ -1149,7 +1175,7 @@ public:
      * @param minutes 分钟数
      * @return 新的日期时间对象
      */
-    Self minusMinutes(i64 minutes) {
+    Self minusMinutes(const i64 minutes) const {
         return with(date_, time_.minusMinutes(minutes));
     }
 
@@ -1158,7 +1184,7 @@ public:
      * @param seconds 秒数
      * @return 新的日期时间对象
      */
-    Self minusSeconds(i64 seconds) {
+    Self minusSeconds(const i64 seconds) const {
         return with(date_, time_.minusSeconds(seconds));
     }
 
@@ -1167,7 +1193,7 @@ public:
      * @param nanos 纳秒数
      * @return 新的日期时间对象
      */
-    Self minusNanos(i64 nanos) {
+    Self minusNanos(const i64 nanos) const {
         return with(date_, time_.minusNanos(nanos));
     }
 
@@ -1185,8 +1211,8 @@ public:
      * @return 纪元秒
      */
     i64 toEpochSecond() const {
-        i64 epochDay = date_.toEpochDay();
-        i64 secondOfDay = time_.toSecondOfDay();
+        const i64 epochDay = date_.toEpochDay();
+        const i64 secondOfDay = time_.toSecondOfDay();
         return epochDay * Time::SECONDS_PER_DAY + secondOfDay;
     }
 
@@ -1195,9 +1221,9 @@ public:
      * @return Duration 对象
      */
     Duration toDuration() const {
-        i64 epochDay = date_.toEpochDay();
-        i64 secondOfDay = time_.toSecondOfDay();
-        i32 nanoOfSecond = time_.toNanoOfDay() - secondOfDay * Time::NANOS_PER_SECOND;
+        const i64 epochDay = date_.toEpochDay();
+        const i64 secondOfDay = time_.toSecondOfDay();
+        const i32 nanoOfSecond = time_.toNanoOfDay() - secondOfDay * Time::NANOS_PER_SECOND;
         return Duration::ofSeconds(epochDay * Time::SECONDS_PER_DAY + secondOfDay, nanoOfSecond);
     }
 
@@ -1207,7 +1233,7 @@ public:
      * @return 比较结果（-1、0、1），0 表示相等
      */
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        auto date_cmp = date_.__cmp__(other.date_);
+        const auto date_cmp = date_.__cmp__(other.date_);
         return date_cmp == 0 ? time_.__cmp__(other.time_) : date_cmp;
     }
 

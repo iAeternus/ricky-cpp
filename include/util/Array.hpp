@@ -15,10 +15,7 @@ namespace my::util {
 /**
  * @class Array
  * @brief 静态数组类，提供固定大小的数组功能
- *
- * 静态数组是指数组的大小在创建时确定，并且不能动态改变，除非调用 `resize` 方法重新分配内存
- * 该类提供了数组的基本操作，如初始化、拷贝、移动、析构、元素访问、范围生成等
- *
+ * @details 静态数组是指数组的大小在创建时确定，并且不能动态改变，除非调用 `resize` 方法重新分配内存
  * @tparam T 数组元素的类型
  */
 template <typename T, typename Alloc = Allocator<T>>
@@ -172,6 +169,10 @@ public:
         return size_ == 0;
     }
 
+    /**
+     * @brief 交换两个数组
+     * @param other 另一个数组
+     */
     void swap(Self& other) noexcept {
         std::swap(alloc_, other.alloc_);
         std::swap(size_, other.size_);
@@ -180,10 +181,10 @@ public:
 
     /**
      * @brief 重新分配内存，不保留原有数据
+     * @note 调用此方法会销毁原数组中的所有元素并释放内存
      * @tparam Args 用于初始化数组元素的参数
      * @param new_size 新的数组大小
      * @param args 用于初始化新数组的参数
-     * @note 调用此方法会销毁原数组中的所有元素并释放内存
      */
     template <typename... Args>
     void resize(usize new_size, const Args&... args) {
@@ -192,9 +193,9 @@ public:
     }
 
     /**
-     * @brief 分离数组，返回数组指针和大小，并将数组置空
-     * @return 返回包含数组大小和指针的 Pair
+     * @brief 分离数组，返回数组指针和大小，并将数组置空、
      * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
+     * @return 返回包含数组大小和指针的 Pair
      */
     Pair<usize, value_t*> separate() {
         Pair<usize, value_t*> res{size_, arr_};
@@ -227,9 +228,7 @@ private:
 /**
  * @class Range
  * @brief 生成一个范围迭代器
- *
- * Range 类用于生成一个范围迭代器，可以用于遍历从 `start` 到 `end` 的整数序列
- * 迭代器支持增、减操作，并且可以生成可迭代范围
+ * @details 用于生成一个范围迭代器，可以用于遍历从 `start` 到 `end` 的整数序列
  */
 class Range : public Object<Range> {
 public:
@@ -239,7 +238,7 @@ public:
      * @param end 结束值（不包含）
      * @param step 步长
      */
-    Range(usize start, usize end, usize step = 1) :
+    Range(const usize start, const usize end, const usize step = 1) :
             start_(start), end_(end), step_(step) {}
 
     /**
@@ -247,7 +246,7 @@ public:
      * 默认起始值为 0，步长为 1
      * @param end 结束值（不包含）
      */
-    Range(usize end) :
+    Range(const usize end) :
             Range(0, end, 1) {}
 
     /**
@@ -276,7 +275,7 @@ public:
          * @param current 当前值
          * @param step 步长
          */
-        RangeIterator(usize current, usize step) :
+        RangeIterator(const usize current, const usize step) :
                 current_(current), step_(step) {}
 
         /**
@@ -386,7 +385,7 @@ private:
  * @return 返回总和
  */
 template <Iterable I, typename Init>
-fn sum(I&& obj, Init init = Init{})->Init {
+fn sum(I&& obj, Init init = Init{}) -> Init {
     for (auto&& elem : obj) {
         init += elem;
     }

@@ -24,6 +24,7 @@ enum class EncodingType {
 };
 
 /**
+ * @class Encoding
  * @brief 字符编码接口
  */
 class Encoding : Object<Encoding> {
@@ -49,9 +50,10 @@ public:
 };
 
 /**
+ * @class ASCIIEncoding
  * @brief ASCII
  */
-class ASCIIEncoding : public Encoding {
+class ASCIIEncoding final : public Encoding {
 public:
     using Self = ASCIIEncoding;
     using Super = Encoding;
@@ -71,13 +73,17 @@ public:
 };
 
 /**
+ * @class UTF8Encoding
  * @brief utf-8
  */
-class UTF8Encoding : public Encoding {
+class UTF8Encoding final : public Encoding {
 public:
     using Self = UTF8Encoding;
     using Super = Encoding;
 
+    /**
+     * @exception Exception 若码点不符合UTF-8格式，则抛出 runtime_exception
+     */
     u8 byte_size(const char* data) const override {
         if ((data[0] & 0x80) == 0) {
             return 1; // 以0    开头（0xxxxxxx），1字节编码
@@ -104,9 +110,10 @@ public:
 };
 
 /**
+ * @class UTF16Encoding
  * @brief utf-16
  */
-class UTF16Encoding : public Encoding {
+class UTF16Encoding final : public Encoding {
 public:
     using Self = UTF16Encoding;
     using Super = Encoding;
@@ -129,9 +136,10 @@ public:
 };
 
 /**
+ * @class UTF32Encoding
  * @brief utf-32
  */
-class UTF32Encoding : public Encoding {
+class UTF32Encoding final : public Encoding {
 public:
     using Self = UTF32Encoding;
     using Super = Encoding;
@@ -151,9 +159,10 @@ public:
 };
 
 /**
+ * @class GB2312Encoding
  * @brief gb2312，暂未实现
  */
-class GB2312Encoding : public Encoding {
+class GB2312Encoding final : public Encoding {
 public:
     using Self = GB2312Encoding;
     using Super = Encoding;
@@ -175,7 +184,7 @@ public:
 /**
  * @brief 编码类型-编码方式 映射 TODO 可能存在内存泄漏
  */
-fn encoding_map(EncodingType enc) -> Encoding* {
+fn encoding_map(const EncodingType enc) -> Encoding* {
     static const Dict<EncodingType, Encoding*> encoding_map_ = {
         {EncodingType::ASCII, new ASCIIEncoding{}},
         {EncodingType::UTF8, new UTF8Encoding{}},

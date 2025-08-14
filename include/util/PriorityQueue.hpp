@@ -12,6 +12,7 @@
 namespace my::util {
 
 /**
+ * @class PriorityQueue
  * @brief 优先队列，默认小根堆
  * @tparam T 元素类型
  * @tparam Comp 比较二元函数，定义第一个参数优先级高
@@ -132,21 +133,21 @@ private:
     /**
      * @brief 获取父节点索引
      */
-    usize fa(usize i) const {
+    static usize fa(const usize i) {
         return (i - 1) >> 1;
     }
 
     /**
      * @brief 获取左子节点索引
      */
-    usize lch(usize i) const {
+    static usize lch(const usize i) {
         return (i << 1) + 1;
     }
 
     /**
      * @brief 获取右子节点索引
      */
-    usize rch(usize i) const {
+    static usize rch(const usize i) {
         return (i << 1) + 2;
     }
 

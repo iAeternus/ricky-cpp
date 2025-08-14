@@ -26,6 +26,7 @@ concept TreeNodeType = requires(T a, const T& b, T&& c) {
 };
 
 /**
+ * @class TreeNode
  * @brief 树节点
  */
 template <typename T>
@@ -110,7 +111,8 @@ private:
 };
 
 /**
- * @brief 树
+ * @class TreeImpl
+ * @brief 树，用来表示层次结构
  */
 template <TreeNodeType Node, typename Alloc = Allocator<Node>>
 class TreeImpl : public Object<TreeImpl<Node, Alloc>> {
@@ -214,6 +216,9 @@ private:
     Node* root_;    // 根节点
 };
 
+/**
+ * @brief 对外别名
+ */
 template <typename T, typename Alloc = Allocator<TreeNode<T>>>
 using Tree = TreeImpl<TreeNode<T>, Alloc>;
 

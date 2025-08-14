@@ -25,6 +25,7 @@ class BaseCString;
  * @class CStringView
  * @brief C风格字符串视图
  * @details 减少拷贝次数，加速切片操作
+ * @note 源字符串生命周期必须不短于视图生命周期
  */
 class CStringView {
 public:
@@ -137,7 +138,7 @@ public:
          * @brief 使用指针构造
          * @param ptr 指针
          */
-        explicit Iterator(const pointer ptr) :
+        explicit Iterator(pointer ptr) :
                 ptr_(ptr) {}
 
         /**
@@ -502,10 +503,10 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const Self& pattern, usize pos = 0) const {
+    usize find(const Self& pattern, const usize pos = 0) const {
         if (pattern.empty()) return npos;
-        auto m_size = size(), p_size = pattern.size();
-        auto next = get_next(pattern);
+        const auto m_size = size(), p_size = pattern.size();
+        const auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && (*this)[i] != pattern[j]) {
@@ -529,8 +530,8 @@ public:
     std::vector<usize> find_all(const Self& pattern) const {
         std::vector<usize> res;
         if (pattern.empty()) return res;
-        auto m_size = size(), p_size = pattern.size();
-        auto next = get_next(pattern);
+        const auto m_size = size(), p_size = pattern.size();
+        const auto next = get_next(pattern);
         for (usize i = 0, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
             while (j > 0 && (*this)[i] != pattern[j]) {
@@ -791,7 +792,7 @@ public:
          * @brief 使用指针构造
          * @param curr 当前位置指针
          */
-        explicit Iterator(const pointer curr) :
+        explicit Iterator(pointer curr) :
                 curr_(curr) {}
 
         Iterator(const Self& other) = default;
@@ -892,10 +893,10 @@ public:
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end(); }
 
-    reverse_iterator rbegin() { return reverse_iterator(str_); }
-    reverse_iterator rend() { return reverse_iterator(str_ + len_); }
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(str_); }
-    const_reverse_iterator rend() const { return const_reverse_iterator(str_ + len_); }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
     const_reverse_iterator crbegin() const { return rbegin(); }
     const_reverse_iterator crend() const { return rend(); }
 
@@ -907,7 +908,7 @@ private:
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
     static std::vector<usize> get_next(const Self& pattern) {
-        auto p_size = pattern.size();
+        const auto p_size = pattern.size();
         std::vector<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
             // 失配，j按照next数组回跳
@@ -937,7 +938,8 @@ private:
      * @return 首尾模式后的索引范围
      */
     std::pair<usize, usize> get_trim_index(const Self& pattern) const {
-        usize l = 0, r = length(), p_size = pattern.length();
+        usize l = 0, r = length();
+        const auto p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return std::make_pair(l, r);
@@ -949,7 +951,7 @@ private:
      */
     usize get_ltrim_index() const {
         usize l = 0;
-        const usize r = length();
+        const auto r = length();
         while (l < r && str_[l] == ' ') ++l;
         return l;
     }
@@ -960,7 +962,8 @@ private:
      * @return 去除首部模式后的索引
      */
     usize get_ltrim_index(const Self& pattern) const {
-        usize l = 0, r = length(), p_size = pattern.length();
+        usize l = 0;
+        const auto r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         return l;
     }
@@ -970,7 +973,8 @@ private:
      * @return 去除尾部空白后的索引
      */
     usize get_rtrim_index() const {
-        usize l = 0, r = length();
+        constexpr usize l = 0;
+        auto r = length();
         while (l < r && str_[r - 1] == ' ') --r;
         return r;
     }
@@ -981,7 +985,8 @@ private:
      * @return 去除尾部模式后的索引
      */
     usize get_rtrim_index(const Self& pattern) const {
-        usize l = 0, r = length(), p_size = pattern.length();
+        const usize l = 0, p_size = pattern.length();
+        auto r = length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
@@ -1046,7 +1051,7 @@ fn stdstr(const CString& value) -> const char* {
  * @param ch 字符
  * @return 对应的整数值
  */
-fn c2i(char ch) -> i32 {
+fn c2i(const char ch) -> i32 {
     return ch - '0';
 }
 
@@ -1055,7 +1060,7 @@ fn c2i(char ch) -> i32 {
  * @param ch 整数
  * @return 对应的字符
  */
-fn i2c(i32 ch) -> char {
+fn i2c(const i32 ch) -> char {
     return ch + '0';
 }
 
@@ -1065,7 +1070,7 @@ fn i2c(i32 ch) -> char {
  * @param len 字符串长度
  * @return 转换后的 CString 对象
  */
-fn operator""_cs(const char* str, size_t len)->CString {
+fn operator""_cs(const char* str, const size_t len)->CString {
     return CString{str, len};
 }
 

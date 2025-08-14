@@ -270,6 +270,35 @@ fn should_remove_all = []() {
     Assertions::assertEquals("abc"_s, res2);
 };
 
+fn test_string_view = []() {
+    // Given
+    util::String s = "abc我def";
+
+    // When
+    util::StringView sv(s, 1, 5);
+    util::ConstStringView csv(s, 1, 5);
+
+    // Then
+    Assertions::assertEquals(5, sv.length());
+    Assertions::assertEquals(5, csv.length());
+    Assertions::assertEquals(util::CodePoint{'b'}, sv[0]);
+    Assertions::assertEquals(util::CodePoint{'b'}, csv[0]);
+    Assertions::assertEquals(util::CodePoint{'e'}, sv[4]);
+    Assertions::assertEquals(util::CodePoint{'e'}, csv[4]);
+    Assertions::assertEquals(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, csv[2]);
+    Assertions::assertEquals(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, csv[2]);
+    Assertions::assertEquals("bc我de"_s, sv.to_string());
+    Assertions::assertEquals("bc我de"_s, csv.to_string());
+
+    // When
+    sv[0] = 'c';
+    sv[1] = util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)};
+
+    // Then
+    Assertions::assertEquals("c我我de"_s, sv.to_string());
+    Assertions::assertEquals("c我我de"_s, csv.to_string());
+};
+
 fn test_string() {
     UnitTestGroup group{"test_string"};
 
@@ -292,6 +321,7 @@ fn test_string() {
     group.addTest("should_split", should_split);
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
+    group.addTest("test_string_view", test_string_view);
 
     group.startAll();
 }

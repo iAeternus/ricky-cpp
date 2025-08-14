@@ -15,6 +15,10 @@
 
 namespace my::util {
 
+/**
+ * @class CodePoint
+ * @brief 码点抽象
+ */
 class CodePoint : public Object<CodePoint> {
 public:
     using Self = CodePoint;
@@ -29,12 +33,12 @@ public:
     CodePoint() :
             code_size_(0), byte_code_(nullptr) {}
 
-    CodePoint(char ch) :
+    CodePoint(const char ch) :
             code_size_(sizeof(u8)), byte_code_(alloc_.allocate(code_size_)) {
         byte_code_[0] = ch;
     }
 
-    CodePoint(const char* str, Encoding* encoding) :
+    CodePoint(const char* str, const Encoding* encoding) :
             code_size_(encoding->byte_size(str)), byte_code_(alloc_.allocate(code_size_)) {
         std::memcpy(data(), str, code_size_);
     }
@@ -66,7 +70,7 @@ public:
         return *this;
     }
 
-    Self& operator=(char ch) {
+    Self& operator=(const char ch) {
         alloc_.destroy(byte_code_);
         this->code_size_ = sizeof(u8);
         this->byte_code_ = alloc_.allocate(code_size_);
@@ -94,7 +98,7 @@ public:
      * @brief 字节码长度
      */
     usize size() const noexcept {
-        return usize(code_size_);
+        return code_size_;
     }
 
     operator char() const {
@@ -102,7 +106,7 @@ public:
     }
 
     bool is_ascii() const {
-        return u32(byte_code_[0]) < 0x80;
+        return static_cast<u32>(byte_code_[0]) < 0x80;
     }
 
     bool is_blank() const {
@@ -125,18 +129,26 @@ public:
         return is_ascii() && LOWER_CASE_LETTER.contains(*this);
     }
 
+    /**
+     * @brief 转换为大写ascii字符
+     * @return 大写ascii字符
+     * @exception Exception 若码点非ascii字符，则抛出 runtime_exception
+     */
     Self upper() const {
         if (!is_ascii()) {
             throw runtime_exception("not supported yet.");
-            std::unreachable();
         }
         return Self{static_cast<char>(std::toupper(byte_code_[0]))};
     }
 
+    /**
+     * @brief 转换为小写ascii字符
+     * @return 小写ascii字符
+     * @exception Exception 若码点非ascii字符，则抛出 runtime_exception
+     */
     Self lower() const {
         if (!is_ascii()) {
             throw runtime_exception("not supported yet.");
-            std::unreachable();
         }
         return Self{static_cast<char>(std::tolower(byte_code_[0]))};
     }
@@ -150,7 +162,7 @@ public:
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        usize m_size = this->size(), o_size = other.size();
+        const usize m_size = this->size(), o_size = other.size();
         if (m_size != o_size) {
             return m_size - o_size;
         }
@@ -161,8 +173,8 @@ public:
         return this->__cmp__(other) == 0;
     }
 
-    [[nodiscard]] bool __equals__(u8 ch) const {
-        return static_cast<u8>(byte_code_[0]) == static_cast<u8>(ch);
+    [[nodiscard]] bool __equals__(const u8 ch) const {
+        return static_cast<u8>(byte_code_[0]) == ch;
     }
 
 private:
@@ -196,24 +208,24 @@ public:
     // ASCII码点静态池，避免频繁分配和锁竞争
     std::shared_ptr<const CodePoint> get(char ch) {
         static std::shared_ptr<const CodePoint> ascii_pool[128] = {};
-        unsigned char idx = static_cast<unsigned char>(ch);
+        const auto idx = static_cast<unsigned char>(ch);
         if (idx < 128) {
             if (!ascii_pool[idx]) {
                 ascii_pool[idx] = std::make_shared<CodePoint>(ch);
             }
             return ascii_pool[idx];
         }
-        auto hash = hash_t(ch);
+        const auto hash = static_cast<hash_t>(ch);
         return get_impl(hash, [ch]() { return std::make_shared<CodePoint>(ch); });
     }
 
     std::shared_ptr<const CodePoint> get(const char* str, Encoding* encoding) {
-        auto codeSize = encoding->byte_size(str);
-        // 优化：单字节ASCII直接用静态池
-        if (codeSize == 1 && static_cast<unsigned char>(str[0]) < 128) {
+        const auto code_size = encoding->byte_size(str);
+        // 单字节ASCII直接用静态池
+        if (code_size == 1 && static_cast<unsigned char>(str[0]) < 128) {
             return get(str[0]);
         }
-        auto hash = bytes_hash(str, codeSize);
+        const auto hash = bytes_hash(str, code_size);
         return get_impl(hash, [str, encoding]() { return std::make_shared<CodePoint>(str, encoding); });
     }
 
@@ -248,8 +260,9 @@ inline CodePointPool* CodePointPool::instance_ = nullptr;
 
 /**
  * @brief 获取字符串的所有码点
+ * @exception Exception 若码点越界，说明存在非法编码的码点，则抛出 runtime_exception
  */
-fn get_code_points(const char* str, usize len, Encoding* encoding)->Vec<CodePoint> {
+fn get_code_points(const char* str, const usize len, Encoding* encoding) -> Vec<CodePoint> {
     Vec<CodePoint> cps;
     usize i = 0;
     while (i < len) {

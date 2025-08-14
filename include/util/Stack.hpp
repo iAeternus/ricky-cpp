@@ -11,6 +11,12 @@
 
 namespace my::util {
 
+/**
+ * @class Stack
+ * @brief 栈容器
+ * @tparam T 元素类型
+ * @tparam Alloc 内存分配器
+ */
 template <typename T, typename Alloc = Allocator<T>>
 class Stack : public Object<Stack<T>> {
 public:
@@ -52,8 +58,8 @@ public:
 
     /**
      * @brief 查看栈顶元素
-     * @note 若栈空，则抛出 throw runtime_exception
      * @return 栈顶元素的引用
+     * @exception Exception 若栈空，则抛出 runtime_exception
      */
     value_t& peek() {
         if (empty()) {
@@ -64,8 +70,8 @@ public:
 
     /**
      * @brief 查看栈顶元素（常量版本）
-     * @note 若栈空，则抛出 throw runtime_exception
      * @return 栈顶元素的引用
+     * @exception Exception 若栈空，则抛出 runtime_exception
      */
     const value_t& peek() const {
         if (empty()) {

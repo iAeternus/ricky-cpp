@@ -11,6 +11,11 @@
 
 namespace my::util {
 
+/**
+ * @class DisjointSet
+ * @brief 并查集
+ * @tparam T 元素类型
+ */
 template <typename T>
 class DisjointSet : public Object<DisjointSet<T>> {
     /**

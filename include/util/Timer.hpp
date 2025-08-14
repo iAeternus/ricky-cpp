@@ -13,18 +13,23 @@
 
 namespace my::util {
 
+/**
+ * @class Timer
+ * @brief 高精度计时器
+ * @tparam D 时间间隔类型
+ */
 template <typename D>
 class Timer : public Object<Timer<D>> {
 public:
     using Self = Timer<D>;
 
     void start() {
-        startTime_ = std::chrono::high_resolution_clock::now();
+        start_time_ = std::chrono::high_resolution_clock::now();
     }
 
     long long end() {
-        const auto endTime = std::chrono::high_resolution_clock::now();
-        auto duration = std::chrono::duration_cast<D>(endTime - startTime_).count();
+        const auto end_time = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<D>(end_time - start_time_).count();
         return duration;
     }
 
@@ -36,9 +41,12 @@ public:
     }
 
 private:
-    std::chrono::high_resolution_clock::time_point startTime_;
+    std::chrono::high_resolution_clock::time_point start_time_;
 };
 
+/**
+ * @brief 对应时间间隔类型的计时器别名
+ */
 using Timer_s = Timer<std::chrono::seconds>;
 using Timer_ms = Timer<std::chrono::milliseconds>;
 using Timer_us = Timer<std::chrono::microseconds>;

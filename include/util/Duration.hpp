@@ -27,9 +27,10 @@ public:
      * @param days 天数
      * @return 时间间隔对象
      * @note 不允许传入受不同类型溢出影响的值
-     * @example Duration::ofDays(5) 创建 5 天的时间间隔
+     * @example
+     * Duration::ofDays(5) 创建 5 天的时间间隔
      */
-    static Self ofDays(i64 days) {
+    static Self ofDays(const i64 days) {
         return Self{math::mul_exact(days, 86400LL), 0};
     }
 
@@ -38,9 +39,10 @@ public:
      * @param hours 小时数
      * @return 时间间隔对象
      * @note 不允许传入受不同类型溢出影响的值
-     * @example Duration::ofHours(3) 创建 3 小时的时间间隔
+     * @example
+     * Duration::ofHours(3) 创建 3 小时的时间间隔
      */
-    static Self ofHours(i64 hours) {
+    static Self ofHours(const i64 hours) {
         return Self{math::mul_exact(hours, 3600LL), 0};
     }
 
@@ -49,23 +51,25 @@ public:
      * @param minutes 分钟数
      * @return 时间间隔对象
      * @note 不允许传入受不同类型溢出影响的值
-     * @example Duration::ofMinutes(45) 创建 45 分钟的时间间隔
+     * @example
+     * Duration::ofMinutes(45) 创建 45 分钟的时间间隔
      */
-    static Self ofMinutes(i64 minutes) {
+    static Self ofMinutes(const i64 minutes) {
         return Self{math::mul_exact(minutes, 60LL), 0};
     }
 
     /**
      * @brief 创建以秒和纳秒为单位的时间间隔对象。
      * @param seconds 秒数
-     * @param nanos_ 纳秒数（0-999,999,999）
+     * @param nanos 纳秒数（0-999,999,999）
      * @return 时间间隔对象
      * @exception ValueError 若纳秒超出范围
-     * @example Duration::ofSeconds(10, 500000000) 创建 10.5 秒的时间间隔
+     * @example
+     * Duration::ofSeconds(10, 500000000) 创建 10.5 秒的时间间隔
      */
-    static Self ofSeconds(i64 seconds_, i32 nanos_ = 0) {
-        validateNanos(nanos_);
-        return Self{seconds_, nanos_};
+    static Self ofSeconds(const i64 seconds, const i32 nanos = 0) {
+        validateNanos(nanos);
+        return Self{seconds, nanos};
     }
 
     /**
@@ -73,9 +77,10 @@ public:
      * @param millis 毫秒数
      * @return 时间间隔对象
      * @note 负数的处理可能正确，也可能不正确
-     * @example Duration::ofMillis(1500) 创建 1.5 秒的时间间隔
+     * @example
+     * Duration::ofMillis(1500) 创建 1.5 秒的时间间隔
      */
-    static Self ofMillis(i64 millis) {
+    static Self ofMillis(const i64 millis) {
         i64 seconds = millis / 1000;
         i32 milliRem = static_cast<i32>(millis % 1000);
         if (milliRem < 0) {
@@ -90,9 +95,10 @@ public:
      * @param nanos_ 纳秒数
      * @return 时间间隔对象
      * @exception ValueError 若纳秒超出范围
-     * @example Duration::ofNanos(500000000) 创建 0.5 秒的时间间隔
+     * @example
+     * Duration::ofNanos(500000000) 创建 0.5 秒的时间间隔
      */
-    static Self ofNanos(i64 nanos_) {
+    static Self ofNanos(const i64 nanos_) {
         i64 seconds = nanos_ / NANOS_PER_SECOND;
         i32 nanoRem = static_cast<i32>(nanos_ % NANOS_PER_SECOND);
         if (nanoRem < 0) {
@@ -131,8 +137,8 @@ public:
      * @param scalar 标量
      * @return 乘法结果的时间间隔对象（*this * scalar）
      */
-    Self operator*(i64 scalar) const {
-        i64 totalNanos = toNanos() * scalar;
+    Self operator*(const i64 scalar) const {
+        const i64 totalNanos = toNanos() * scalar;
         return ofNanos(totalNanos);
     }
 
@@ -140,13 +146,13 @@ public:
      * @brief 时间间隔除法运算。
      * @param divisor 除数
      * @return 除法结果的时间间隔对象（*this / divisor）
-     * @exception throw arithmetic_exception 除数为零
+     * @exception Exception 若除数为0，则抛出 arithmetic_exception
      */
-    Self operator/(i64 divisor) const {
+    Self operator/(const i64 divisor) const {
         if (divisor == 0) {
             throw arithmetic_exception("/ by zero");
         }
-        i64 totalNanos = toNanos();
+        const i64 totalNanos = toNanos();
         return ofNanos(totalNanos / divisor);
     }
 
@@ -206,13 +212,13 @@ public:
 
         std::stringstream stream;
         stream << "PT";
-        i64 days = toDays();
+        const i64 days = toDays();
         if (days != 0) stream << days << 'D';
-        i64 hours = (seconds_ / 3600) % 24;
+        const i64 hours = (seconds_ / 3600) % 24;
         if (hours != 0) stream << hours << 'H';
-        i64 minutes = (seconds_ / 60) % 60;
+        const i64 minutes = (seconds_ / 60) % 60;
         if (minutes != 0) stream << minutes << 'M';
-        i64 secs = seconds_ % 60;
+        const i64 secs = seconds_ % 60;
         if (secs != 0 || nanos_ != 0) {
             stream << secs;
             if (nanos_ != 0) {
@@ -229,7 +235,7 @@ private:
      * @param sec 秒数
      * @param nano 纳秒数
      */
-    Duration(i64 sec, i32 nano) :
+    Duration(const i64 sec, const i32 nano) :
             seconds_(sec), nanos_(nano) {
         validateNanos(nano);
     }
@@ -237,11 +243,12 @@ private:
     /**
      * @brief 验证纳秒数是否有效。
      * @param nanos_ 纳秒数
-     * @exception ValueError 纳秒数超出范围
+     * @exception Exception 若纳秒数超出范围，则抛出 runtime_exception
      */
-    static void validateNanos(i32 nanos_) {
-        if (nanos_ < 0 || nanos_ >= NANOS_PER_SECOND)
+    static void validateNanos(const i32 nanos_) {
+        if (nanos_ < 0 || nanos_ >= NANOS_PER_SECOND) {
             throw runtime_exception("nanoseconds out of range");
+        }
     }
 
     /**

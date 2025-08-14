@@ -38,6 +38,7 @@ enum class Color : bool {
 };
 
 /**
+ * @class RBTreeNode
  * @brief 红黑树节点，存储键值对
  */
 template <Sortable K, typename V>
@@ -66,9 +67,9 @@ public:
     Self& operator=(const Self&) = delete;
 
     RBTreeNode(Self&& other) noexcept :
-            color_(other.color_),
             key_(std::move(other.key_)),
             val_(std::move(other.value)),
+            color_(other.color_),
             lch_(other.lch_),
             rch_(other.rch_),
             p_(other.p_) {
@@ -104,6 +105,9 @@ public:
         return color_ == Color::RED;
     }
 
+    /**
+     * @exception Exception 若键类型不可排序，则抛出 type_exception
+     */
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (Comparable<key_t>) {
             return this->key_.__cmp__(other.key_);
@@ -122,16 +126,18 @@ public:
 };
 
 /**
+ * @class RBTree
  * @brief 红黑树
+ * @note 满足如下红黑性质
+ *       1. 每个节点要么是红色的，要么是黑色的
+ *       2. 根节点是黑色的
+ *       3. 叶结点（虚拟的外部节点，即NIL）是黑色的
+ *       4. 不存在两个相邻的红节点（红节点的父节点和子节点均是黑色的）
+ *       5. 对每个节点，从该节点到任意一个叶结点的简单路径上，所含黑节点的数量相同
  * @tparam Node 红黑树节点类型，须满足BiTreeNodeType约束
  * @tparam Comp 比较二元函数，定义第一个参数位于左子树
  * @tparam Alloc 内存分配器类型
- * @note 满足如下红黑性质
- * 1. 每个节点要么是红色的，要么是黑色的
- * 2. 根节点是黑色的
- * 3. 叶结点（虚拟的外部节点，即NIL）是黑色的
- * 4. 不存在两个相邻的红节点（红节点的父节点和子节点均是黑色的）
- * 5. 对每个节点，从该节点到任意一个叶结点的简单路径上，所含黑节点的数量相同
+ *
  */
 template <RBTreeNodeType Node, typename Comp = std::less<typename Node::key_t>, typename Alloc = Allocator<Node>>
 class RBTree : public Object<RBTree<Node, Comp, Alloc>> {
@@ -252,7 +258,8 @@ public:
     }
 
     /**
-     * @brief 获取最小的值，若树空抛出 runtime_exception
+     * @brief 获取最小的值
+     * @exception Exception 若树空，则抛出 runtime_exception
      */
     value_t& front() {
         if (empty()) {
@@ -262,7 +269,8 @@ public:
     }
 
     /**
-     * @brief 获取最小的值，若树空抛出 runtime_exception（常量版本）
+     * @brief 获取最小的值（常量版本）
+     * @exception Exception 若树空，则抛出 runtime_exception
      */
     const value_t& front() const {
         if (empty()) {
@@ -272,7 +280,8 @@ public:
     }
 
     /**
-     * @brief 获取最大的值，若树空抛出 runtime_exception
+     * @brief 获取最大的值
+     * @exception Exception 若树空，则抛出 runtime_exception
      */
     value_t& back() {
         if (empty()) {
@@ -282,7 +291,8 @@ public:
     }
 
     /**
-     * @brief 获取最大的值，若树空抛出 runtime_exception（常量版本）
+     * @brief 获取最大的值（常量版本）
+     * @exception Exception 若树空，则抛出 runtime_exception
      */
     const value_t& back() const {
         if (empty()) {
@@ -302,9 +312,9 @@ public:
 
     /**
      * @brief 获取指定键对应的值
-     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键
      * @return 返回对应值的可变引用
+     * @exception Exception 若键不存在，则抛出 not_found_exception
      */
     template <typename K>
     value_t& get(const K& key) {
@@ -317,9 +327,9 @@ public:
 
     /**
      * @brief 获取指定键对应的值（常量版本）
-     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键
      * @return 返回对应值的不可变引用
+     * @exception Exception 若键不存在，则抛出 not_found_exception
      */
     template <typename K>
     const value_t& get(const K& key) const {
@@ -332,7 +342,7 @@ public:
 
     /**
      * @brief 获取指定键对应的值或默认值
-     * 如果键不存在，返回默认值
+     * @details 如果键不存在，返回默认值
      * @param key 键
      * @param default_val 默认值
      * @return 返回对应值的常量引用或默认值
@@ -348,7 +358,7 @@ public:
 
     /**
      * @brief 获取指定键对应的值
-     * 如果键不存在，创建键值对，值初始化为对应类型默认值
+     * @details 如果键不存在，创建键值对，值初始化为对应类型默认值
      * @param key 键
      * @return 返回对应值的可变引用
      */
@@ -391,7 +401,7 @@ public:
 
     /**
      * @brief 删除节点
-     * 若节点不存在，则什么都不做
+     * @details 若节点不存在，则什么都不做
      * @param key 键
      */
     template <typename K>
@@ -755,25 +765,13 @@ public:
         Self& operator=(const Self& other) = default;
 
         /**
-         * @brief 解引用运算符
-         * @return 返回当前键值对的引用
+         * @brief 解引用
          */
-        const_reference operator*() const {
-            return kv_;
-        }
+        const_reference operator*() const { return kv_; }
+        const_pointer operator->() const { return &kv_; }
 
         /**
-         * @brief 获取指向当前键值对的指针
-         * @return 返回指向当前键值对的指针
-         */
-        const_pointer operator->() const {
-            return &kv_;
-        }
-
-        /**
-         * @brief 前置自增运算符
-         * 移动迭代器到下一个键值对
-         * @return 返回自增后的迭代器
+         * @breif 前缀递增/递减
          */
         Self& operator++() {
             if (curr_ != tree_->nil_) {
@@ -783,22 +781,6 @@ public:
             return *this;
         }
 
-        /**
-         * @brief 后置自增运算符
-         * 移动迭代器到下一个键值对
-         * @return 返回自增前的迭代器
-         */
-        Self operator++(int) {
-            Self tmp = *this;
-            ++*this;
-            return tmp;
-        }
-
-        /**
-         * @brief 前置自减运算符
-         * 移动迭代器到上一个键值对
-         * @return 返回自减后的迭代器
-         */
         Self& operator--() {
             if (curr_ != tree_->nil_) {
                 curr_ = tree_->prev(curr_);
@@ -808,41 +790,22 @@ public:
         }
 
         /**
-         * @brief 后置自减运算符
-         * 移动迭代器到上一个键值对
-         * @return 返回自减前的迭代器
+         * @breif 后缀递增/递减
          */
+        Self operator++(int) {
+            Self tmp = *this;
+            ++*this;
+            return tmp;
+        }
+
         Self operator--(i32) {
             Self tmp = *this;
             --*this;
             return tmp;
         }
 
-        /**
-         * @brief 比较两个迭代器是否相等
-         * @param other 另一个迭代器
-         * @return 如果相等返回 true，否则返回 false
-         */
         [[nodiscard]] bool __equals__(const Self& other) const {
             return this->tree_ == other.tree_ && this->curr_ == other.curr_;
-        }
-
-        /**
-         * @brief 比较两个迭代器是否相等
-         * @param other 另一个迭代器
-         * @return 如果相等返回 true，否则返回 false
-         */
-        bool operator==(const Self& other) const {
-            return this->__equals__(other);
-        }
-
-        /**
-         * @brief 比较两个迭代器是否不相等
-         * @param other 另一个迭代器
-         * @return 如果不相等返回 true，否则返回 false
-         */
-        bool operator!=(const Self& other) const {
-            return !this->__equals__(other);
         }
 
     private:

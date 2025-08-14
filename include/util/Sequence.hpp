@@ -12,7 +12,9 @@
 namespace my::util {
 
 /**
- * 需要子类实现 size() 和 at()
+ * @class Sequence
+ * @brief 序列CRTP基类
+ * @note 需要子类实现 size() 和 at()
  * @tparam D 实现类类型
  * @tparam T 元素类型
  */
@@ -25,22 +27,25 @@ public:
 
     using iterator = IndexIterator<false, Self, value_t>;
     using const_iterator = IndexIterator<true, Self, value_t>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    iterator begin() {
-        return iterator(this, 0);
-    }
+    /**
+     * @brief 迭代器接口
+     */
+    iterator begin() { return iterator(this, 0); }
+    iterator end() { return iterator(this, size()); }
+    const_iterator begin() const { return const_iterator(this, 0); }
+    const_iterator end() const { return const_iterator(this, size()); }
+    const_iterator cbegin() const { return begin(); }
+    const_iterator cend() const { return end(); }
 
-    iterator end() {
-        return iterator(this, size());
-    }
-
-    const_iterator begin() const {
-        return const_iterator(this, 0);
-    }
-
-    const_iterator end() const {
-        return const_iterator(this, size());
-    }
+    reverse_iterator rbegin() { return reverse_iterator(end()); }
+    reverse_iterator rend() { return reverse_iterator(begin()); }
+    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+    const_reverse_iterator crbegin() const { return rbegin(); }
+    const_reverse_iterator crend() const { return rend(); }
 
     /**
      * @brief 下标访问

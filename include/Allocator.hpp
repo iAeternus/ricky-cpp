@@ -85,7 +85,7 @@ public:
      * @param p 指向要释放内存的指针
      * @param n 要释放的对象数量
      */
-    fn deallocate(pointer p, size_type n) noexcept {
+    fn deallocate(pointer p, const size_type n) noexcept {
         if (p != nullptr) {
             ::operator delete(p, n * sizeof(value_type));
         }
@@ -115,7 +115,7 @@ public:
      * @param n 要析构的对象数量
      */
     template <typename U>
-    fn destroy(U* p, size_type n = 1) -> void {
+    fn destroy(U* p, const size_type n = 1) -> void {
         if (p == nullptr) return;
         for (size_type i = 0; i < n; ++i, ++p) {
             p->~U();

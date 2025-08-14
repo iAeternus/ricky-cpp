@@ -16,17 +16,15 @@
 namespace my::util {
 
 template <typename Alloc>
-class BaseString;
+class BasicString;
 
 /**
  * @class Dict
  * @brief 哈希字典类，提供高效的键值对存储、检索和更新功能
- *
- * Dict 是一个基于哈希表实现的字典容器，支持键值对的快速插入、查询和删除操作
- * 使用分桶和Robin哈希来处理冲突，并通过动态调整桶的大小来保持高效的负载因子
- *
+ * @details 基于哈希表实现，使用分桶和Robin哈希来处理冲突，并通过动态调整桶的大小来保持高效的负载因子
  * @tparam K 键的类型，必须是可哈希的
  * @tparam V 值的类型
+ * @tparam Alloc 内存分配器
  * @tparam Bucket 桶的类型，默认为 RobinHashBucket
  */
 template <Hashable K,
@@ -163,9 +161,9 @@ public:
 
     /**
      * @brief 获取指定键对应的值
-     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键
      * @return 返回对应值的引用
+     * @exception Exception 若键不存在，则抛出 not_found_exception
      */
     template <typename _K>
     value_t& get(const _K& key) {
@@ -179,9 +177,9 @@ public:
 
     /**
      * @brief 获取指定键对应的值（常量版本）
-     * 如果键不存在，抛出 throw not_found_exception
      * @param key 键
      * @return 返回对应值的常量引用
+     * @exception Exception 若键不存在，则抛出 not_found_exception
      */
     template <typename _K>
     const value_t& get(const _K& key) const {
@@ -834,6 +832,9 @@ private:
     constexpr static usize MIN_BUCKET_SIZE = 8;  // 最小桶大小
 };
 
+/**
+ * @brief 判断类型是否为Dict
+ */
 template <typename>
 struct is_dict : std::false_type {};
 

@@ -12,6 +12,7 @@
 namespace my::util {
 
 /**
+ * @class IterStrategy
  * @brief 迭代器移动策略基类
  */
 template <std::input_or_output_iterator I>
@@ -26,6 +27,7 @@ public:
 };
 
 /**
+ * @class IncrDecrStrategy
  * @brief 自增自减策略
  */
 template <std::bidirectional_iterator I>
@@ -53,6 +55,7 @@ public:
 };
 
 /**
+ * @class StepJumpStrategy
  * @brief 跳跃步长策略
  */
 template <std::bidirectional_iterator I, usize N>
@@ -88,6 +91,7 @@ public:
 };
 
 /**
+ * @class StrategyDrivenIterator
  * @brief 策略驱动的迭代器，根据策略定制不同的迭代行为
  */
 template <typename Strategy>
@@ -109,7 +113,7 @@ public:
     StrategyDrivenIterator() :
             iter_() {}
 
-    StrategyDrivenIterator(const iterator& iter) :
+    explicit StrategyDrivenIterator(const iterator& iter) :
             iter_(iter) {}
 
     StrategyDrivenIterator(const Self& other) :
