@@ -216,7 +216,9 @@ public:
             return ascii_pool[idx];
         }
         const auto hash = static_cast<hash_t>(ch);
-        return get_impl(hash, [ch]() { return std::make_shared<CodePoint>(ch); });
+        return get_impl(hash, [ch]() {
+            return std::make_shared<CodePoint>(ch);
+        });
     }
 
     std::shared_ptr<const CodePoint> get(const char* str, Encoding* encoding) {
@@ -226,7 +228,9 @@ public:
             return get(str[0]);
         }
         const auto hash = bytes_hash(str, code_size);
-        return get_impl(hash, [str, encoding]() { return std::make_shared<CodePoint>(str, encoding); });
+        return get_impl(hash, [str, encoding]() {
+            return std::make_shared<CodePoint>(str, encoding);
+        });
     }
 
 private:

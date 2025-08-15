@@ -6,12 +6,20 @@
  */
 #include "BiChain.hpp"
 #include "Chain.hpp"
+#include "DynArray.hpp"
 #include "SortedDict.hpp"
 #include "String.hpp"
 #include "TracingAllocator.hpp"
 #include "Vec.hpp"
 
 using namespace my;
+
+/**
+ * @brief 是否开启详细打印模式
+ * 1 = 开启
+ * 0 = 关闭
+ */
+#define VERBOSE 0
 
 /**
  * @brief 追踪对象
@@ -22,11 +30,16 @@ using namespace my;
  * 5 = util::BiChain
  * 6 = util::Dict
  * 7 = util::SortedDict
+ * 8 = util::DynArray
+ * 9 = util::Array
  */
-#define TRACE_OBJECT 7
+#define TRACE_OBJECT 1
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<char>::set_verbose(true);
+#endif
 
     // 构造
     TraceCString c1(10);
@@ -43,6 +56,9 @@ void trace_cstring() {
 
 void trace_string() {
     using TraceString = util::BasicString<mem::TracingAllocator<util::CodePoint>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<util::CodePoint>::set_verbose(true);
+#endif
 
     util::Vec<char> chs = {'a', 'b', 'c', 'd', 'e', 'f'};
 
@@ -74,6 +90,9 @@ void trace_string() {
 
 void trace_vec() {
     using TraceVec = util::Vec<i32, mem::TracingAllocator<i32>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<i32>::set_verbose(true);
+#endif
 
     // 构造
     TraceVec v(10, 99);
@@ -100,6 +119,9 @@ void trace_vec() {
 
 void trace_chain() {
     using TraceChainList = util::ChainList<i32, mem::TracingAllocator<util::ChainNode<i32>>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<util::ChainNode<i32>>::set_verbose(true);
+#endif
 
     // 构造
     TraceChainList c1;
@@ -115,6 +137,9 @@ void trace_chain() {
 
 void trace_bi_chain() {
     using TraceBiChainList = util::BiChainList<i32, mem::TracingAllocator<util::BiChainNode<i32>>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<util::BiChainNode<i32>>::set_verbose(true);
+#endif
 
     // 构造
     TraceBiChainList bc1;
@@ -138,11 +163,14 @@ void trace_bi_chain() {
 //     fn format(const BasicCString<mem::TracingAllocator<char>>& value, auto& ctx) const {
 //         return std::formatter<const char*>::format(value.data(), ctx);
 //     }
-// };内存
+// };
 
 void trace_dict() {
     // using TraceCString = BasicCString<mem::TracingAllocator<char>>;
     using TraceDict = util::Dict<std::string, i32, mem::TracingAllocator<std::string>>; // TODO 用TraceCString会段错误
+#if VERBOSE == 1
+    mem::TracingAllocator<std::string>::set_verbose(true);
+#endif
 
     // 构造
     TraceDict d1;
@@ -175,6 +203,9 @@ void trace_dict() {
 
 void trace_sorted_dict() {
     using TraceSortedDict = util::SortedDict<i32, i32, std::less<i32>, mem::TracingAllocator<util::RBTreeNode<i32, i32>>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<util::RBTreeNode<i32, i32>>::set_verbose(true);
+#endif
 
     // 构造
     TraceSortedDict sd1;
@@ -202,6 +233,41 @@ void trace_sorted_dict() {
     sd1.clear();
 }
 
+void trace_dyn_array() {
+    // using TraceDynArray = util::DynArray<i32, >;
+}
+
+void trace_array() {
+    using TraceArray = util::Array<i32, mem::TracingAllocator<i32>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<i32>::set_verbose(true);
+#endif
+
+    // 构造
+    TraceArray a1(10, 99);
+    TraceArray a2 = {1, 2, 3};
+
+    // 拷贝
+    TraceArray a3(a1);
+    TraceArray a4 = a2;
+
+    // 移动
+    TraceArray a5(std::move(a3));
+    TraceArray a6 = std::move(a4);
+
+    // resize
+    a1.resize(5);
+    a2.resize(10);
+
+    // write
+    for (i32 i = 0; i < 5; ++i) {
+        a1[i] = i;
+    }
+    for (i32 i = 0; i < 10; ++i) {
+        a2[i] = i;
+    }
+}
+
 int main() {
 #if TRACE_OBJECT == 1
     trace_cstring();
@@ -217,5 +283,9 @@ int main() {
     trace_dict();
 #elif TRACE_OBJECT == 7
     trace_sorted_dict();
+#elif TRACE_OBJECT == 8
+    trace_dyn_array();
+#elif TRACE_OBJECT == 9
+    trace_array();
 #endif
 }
