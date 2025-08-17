@@ -18,6 +18,8 @@ namespace my::util {
  * @details 1. 通过将数据分块存储来管理内存
  *          2. 容器优势：尾插、尾删
  * @tparam T 存储元素的类型
+ * TODO 该数据结构已被标记为不安全，可能导致段错误
+ * TODO 该数据结构还未完全适配Allocator，暂时也无法测试内存泄露
  */
 template <typename T>
 class DynArray : public Sequence<DynArray<T>, T> {

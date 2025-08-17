@@ -33,7 +33,7 @@ using namespace my;
  * 8 = util::DynArray
  * 9 = util::Array
  */
-#define TRACE_OBJECT 1
+#define TRACE_OBJECT 8
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;

@@ -3,13 +3,13 @@
 
 #include "ricky_test.hpp"
 #include "Stream.hpp"
-// #include "Pair.hpp"
+#include "Pair.hpp"
 
 namespace my::test::test_stream {
 
 fn should_operates = []() {
     // Given
-    util::DynArray<i32> d = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    util::Vec<i32> d = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
     // When
     auto res = util::stream(d)
@@ -23,11 +23,11 @@ fn should_operates = []() {
 
 fn should_map_objects = []() {
     // Given
-    util::DynArray<std::pair<i32, i32>> pairs = {{1, 1}, {2, 2}, {3, 3}};
+    util::Vec<Pair<i32, i32>> pairs = {{1, 1}, {2, 2}, {3, 3}};
 
     // When
     auto res = util::stream(pairs)
-                   .map([](const auto& item) { return item.first; })
+                   .map([](const auto& item) { return item.first(); })
                    .collect();
 
     // When

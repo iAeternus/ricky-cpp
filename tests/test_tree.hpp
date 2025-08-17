@@ -26,7 +26,7 @@ fn should_dfs = []() {
     t.add_child(t.root(), 3);
     t.add_child(t.root(), 4);
     t.add_child(t.root()->subs_[0], 5);
-    util::DynArray<i32> res;
+    util::Vec<i32> res;
 
     // When
     t.dfs([&res](const auto& v) {
@@ -45,7 +45,7 @@ fn should_bfs = []() {
     t.add_child(t.root(), 3);
     t.add_child(t.root(), 4);
     t.add_child(t.root()->subs_[0], 5);
-    util::DynArray<i32> res;
+    util::Vec<i32> res;
 
     // When
     t.bfs([&res](const auto& v) {

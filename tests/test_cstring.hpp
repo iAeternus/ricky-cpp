@@ -205,8 +205,8 @@ fn test_cstring_view = []() {
     util::Vec<char> chs;
 
     // When
-    CStringView sv = str.slice(1, 6);
-    for (char c : sv) {
+    const CStringView sv = str.slice(1, 6);
+    for (const char c : sv) {
         chs.append(c);
     }
 

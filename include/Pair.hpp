@@ -26,6 +26,8 @@ class Pair : public Object<Pair<S, T>> {
 public:
     using Self = Pair<S, T>;
 
+    Pair() noexcept = default;
+
     Pair(S first, T second) :
             first_(std::move(first)), second_(std::move(second)) {}
 
@@ -127,8 +129,8 @@ public:
     }
 
 private:
-    S first_;
-    T second_;
+    S first_{};
+    T second_{};
 };
 
 } // namespace my

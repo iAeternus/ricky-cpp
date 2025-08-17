@@ -23,7 +23,7 @@ class BasicCString;
 
 /**
  * @class CStringView
- * @brief C风格字符串视图
+ * @brief C风格字符串只读视图
  * @details 减少拷贝次数，加速切片操作
  * @note 源字符串生命周期必须不短于视图生命周期
  */
@@ -32,11 +32,18 @@ public:
     using Self = CStringView;
 
     /**
+     * @brief 根据首指针构造
+     * @param str 指向字符串首地址
+     */
+    explicit CStringView(const char* str) noexcept :
+            begin_(str), end_(str ? str + std::strlen(str) : nullptr) {}
+
+    /**
      * @brief 通过首尾指针构造
      * @param begin 指向切片首地址
      * @param end 指向切片尾后地址
      */
-    CStringView(char* begin, char* end) :
+    CStringView(const char* begin, const char* end) :
             begin_(begin), end_(end) {}
 
     /**
@@ -44,32 +51,41 @@ public:
      * @param begin 指向切片首地址
      * @param size 切片长度
      */
-    CStringView(char* begin, const usize size) :
+    CStringView(const char* begin, const usize size) :
             begin_(begin), end_(begin_ + size) {}
+
+    /**
+     * @brief 从 CString 隐式转换
+     * @tparam Alloc 内存分配器
+     * @param cstr C风格字符串
+     */
+    template <typename Alloc = Allocator<char>>
+    CStringView(const BasicCString<Alloc>& cstr) noexcept :
+            begin_(cstr.data()), end_(cstr.data() + cstr.size()) {}
 
     /**
      * @brief 字符串视图长度
      * @return 字符串视图长度
      */
-    usize length() const {
-        return end_ - begin_;
+    usize length() const noexcept {
+        return begin_ ? (end_ - begin_) : 0;
+    }
+
+    /**
+     * @brief 判断是否为空视图
+     * @return true=是 false=否
+     */
+    bool empty() const noexcept {
+        return length() == 0;
     }
 
     /**
      * @brief 字符串切片索引访问操作符
+     * @note 不检查越界
      * @param idx 索引位置
      * @return 索引位置的字符引用
      */
-    char& operator[](const usize idx) {
-        return *(begin_ + idx);
-    }
-
-    /**
-     * @brief 字符串切片索引访问操作符（常量版本）
-     * @param idx 索引位置
-     * @return 索引位置的字符常量引用
-     */
-    const char& operator[](const usize idx) const {
+    char operator[](const usize idx) const noexcept {
         return *(begin_ + idx);
     }
 
@@ -120,125 +136,15 @@ public:
         return true;
     }
 
-    /**
-     * @brief 迭代器支持
-     * @tparam IsConst 是否为常量迭代器
-     */
-    template <bool IsConst>
-    class Iterator {
-    public:
-        using Self = Iterator<IsConst>;
-        using iterator_category = std::random_access_iterator_tag;
-        using value_type = std::conditional_t<IsConst, const char, char>;
-        using difference_type = std::ptrdiff_t;
-        using pointer = value_type*;
-        using reference = value_type&;
+    using iterator = const char*;
+    using const_iterator = const char*;
 
-        /**
-         * @brief 使用指针构造
-         * @param ptr 指针
-         */
-        explicit Iterator(pointer ptr) :
-                ptr_(ptr) {}
-
-        /**
-         * @brief 解引用
-         */
-        reference operator*() const { return *ptr_; }
-        pointer operator->() const { return ptr_; }
-
-        /**
-         * @brief 前缀递增/递减
-         */
-        Self& operator++() {
-            ++ptr_;
-            return *this;
-        }
-
-        Self& operator--() {
-            --ptr_;
-            return *this;
-        }
-
-        /**
-         * @breif 后缀递增/递减
-         */
-        Self operator++(int) {
-            Self tmp = *this;
-            ++*this;
-            return tmp;
-        }
-
-        Self operator--(int) {
-            Self tmp = *this;
-            --*this;
-            return tmp;
-        }
-
-        /**
-         * @breif 随机访问
-         */
-        Self operator+(difference_type n) const { return Self(ptr_ + n); }
-        Self operator-(difference_type n) const { return Self(ptr_ - n); }
-        difference_type operator-(const Self& other) const { return ptr_ - other.ptr_; }
-
-        /**
-         * @brief 复合赋值
-         */
-        Self& operator+=(difference_type n) {
-            ptr_ += n;
-            return *this;
-        }
-
-        Self& operator-=(difference_type n) {
-            ptr_ -= n;
-            return *this;
-        }
-
-        /**
-         * @brief 下标访问
-         */
-        reference operator[](difference_type n) const { return ptr_[n]; }
-
-        /**
-         * @brief 比较运算符
-         */
-        bool operator==(const Self& other) const { return ptr_ == other.ptr_; }
-        bool operator!=(const Self& other) const { return ptr_ != other.ptr_; }
-        bool operator<(const Self& other) const { return ptr_ < other.ptr_; }
-        bool operator>(const Self& other) const { return ptr_ > other.ptr_; }
-        bool operator<=(const Self& other) const { return ptr_ <= other.ptr_; }
-        bool operator>=(const Self& other) const { return ptr_ >= other.ptr_; }
-
-    private:
-        pointer ptr_;
-    };
-
-    using iterator = Iterator<false>;
-    using const_iterator = Iterator<true>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-
-    /**
-     * @brief 迭代器接口
-     */
-    iterator begin() { return iterator(begin_); }
-    iterator end() { return iterator(end_); }
-    const_iterator begin() const { return const_iterator(begin_); }
-    const_iterator end() const { return const_iterator(end_); }
-    const_iterator cbegin() const { return begin(); }
-    const_iterator cend() const { return end(); }
-
-    reverse_iterator rbegin() { return reverse_iterator(end()); }
-    reverse_iterator rend() { return reverse_iterator(begin()); }
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
-    const_reverse_iterator crbegin() const { return rbegin(); }
-    const_reverse_iterator crend() const { return rend(); }
+    [[nodiscard]] const_iterator begin() const noexcept { return begin_; }
+    [[nodiscard]] const_iterator end() const noexcept { return end_; }
 
 private:
-    char* begin_; // 指向切片首地址
-    char* end_;   // 指向切片尾后地址
+    const char* begin_; // 指向切片首地址
+    const char* end_;   // 指向切片尾后地址
 };
 
 /**
@@ -279,6 +185,13 @@ public:
             Self(len) {
         std::memcpy(data(), str, len);
     }
+
+    /**
+     * @brief 从字符串视图构造
+     * @param view 字符串视图
+     */
+    BasicCString(const CStringView view) :
+            Self(view.begin(), view.length()) {}
 
     /**
      * @brief 根据 std::basic_string 创建字符串
@@ -349,6 +262,15 @@ public:
     }
 
     /**
+     * @brief 从字符串视图赋值
+     * @param view 字符串视图
+     * @return 自身的引用
+     */
+    Self& operator=(const CStringView view) {
+        return *this = Self(view);
+    }
+
+    /**
      * @brief 创建单字符字符串
      */
     [[nodiscard]] static Self of(char ch) {
@@ -408,6 +330,37 @@ public:
      */
     const char& operator[](const usize idx) const {
         return str_[idx];
+    }
+
+    /**
+     * @brief 与字符串视图拼接
+     * @param view 要拼接的字符串视图
+     * @return 拼接后的新字符串
+     */
+    Self operator+(const CStringView view) const {
+        Self res(len_ + view.length());
+        std::memcpy(res.str_, str_, len_);
+        std::memcpy(res.str_ + len_, view.begin(), view.length());
+        res.str_[res.len_] = '\0';
+        return res;
+    }
+
+    /**
+     * @brief 追加字符串视图
+     * @param view 要追加的字符串视图
+     * @return 自身的引用
+     */
+    Self& operator+=(const CStringView view) {
+        const auto view_len = view.length();
+        char* new_str = alloc_.allocate(len_ + view_len + 1);
+        std::memcpy(new_str, str_, len_);
+        std::memcpy(new_str + len_, view.begin(), view_len);
+        alloc_.deallocate(str_, len_ + 1);
+
+        str_ = new_str;
+        len_ += view_len;
+        str_[len_] = '\0';
+        return *this;
     }
 
     /**
@@ -505,7 +458,32 @@ public:
      */
     usize find(const Self& pattern, const usize pos = 0) const {
         if (pattern.empty()) return npos;
-        const auto m_size = size(), p_size = pattern.size();
+        const auto m_size = size(), p_size = pattern.length();
+        const auto next = get_next(pattern);
+        for (usize i = pos, j = 0; i < m_size; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && (*this)[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            // 模式串匹配完，返回文本串匹配起点
+            if (j == p_size) {
+                return i - p_size + 1;
+            }
+        }
+        return npos;
+    }
+
+    /**
+     * @brief 查找模式串视图的第一个匹配位置
+     * @param pattern 模式串视图，长度为m
+     * @param pos 起始查找位置（可选）
+     * @return 模式串的第一个匹配位置，未找到返回 `npos`
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
+    usize find(const CStringView& pattern, const usize pos = 0) const {
+        if (pattern.empty()) return npos;
+        const auto m_size = size(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
@@ -530,7 +508,33 @@ public:
     std::vector<usize> find_all(const Self& pattern) const {
         std::vector<usize> res;
         if (pattern.empty()) return res;
-        const auto m_size = size(), p_size = pattern.size();
+        const auto m_size = size(), p_size = pattern.length();
+        const auto next = get_next(pattern);
+        for (usize i = 0, j = 0; i < m_size; ++i) {
+            // 失配，j按照next回跳
+            while (j > 0 && (*this)[i] != pattern[j]) {
+                j = next[j - 1];
+            }
+            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            // 模式串匹配完，收集文本串匹配起点
+            if (j == p_size) {
+                res.push_back(i - p_size + 1);
+                j = next[j - 1];
+            }
+        }
+        return res;
+    }
+
+    /**
+     * @brief 查找模式串的所有匹配位置
+     * @param pattern 模式串视图，长度为m
+     * @return 所有匹配位置
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
+    std::vector<usize> find_all(const CStringView& pattern) const {
+        std::vector<usize> res;
+        if (pattern.empty()) return res;
+        const auto m_size = size(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = 0, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
@@ -886,19 +890,19 @@ public:
     /**
      * @brief 迭代器接口
      */
-    iterator begin() { return iterator(str_); }
-    iterator end() { return iterator(str_ + len_); }
-    const_iterator begin() const { return const_iterator(str_); }
-    const_iterator end() const { return const_iterator(str_ + len_); }
-    const_iterator cbegin() const { return begin(); }
-    const_iterator cend() const { return end(); }
+    [[nodiscard]] iterator begin() { return iterator(str_); }
+    [[nodiscard]] iterator end() { return iterator(str_ + len_); }
+    [[nodiscard]] const_iterator begin() const { return const_iterator(str_); }
+    [[nodiscard]] const_iterator end() const { return const_iterator(str_ + len_); }
+    [[nodiscard]] const_iterator cbegin() const { return begin(); }
+    [[nodiscard]] const_iterator cend() const { return end(); }
 
-    reverse_iterator rbegin() { return reverse_iterator(end()); }
-    reverse_iterator rend() { return reverse_iterator(begin()); }
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
-    const_reverse_iterator crbegin() const { return rbegin(); }
-    const_reverse_iterator crend() const { return rend(); }
+    [[nodiscard]] reverse_iterator rbegin() { return reverse_iterator(end()); }
+    [[nodiscard]] reverse_iterator rend() { return reverse_iterator(begin()); }
+    [[nodiscard]] const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
+    [[nodiscard]] const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
+    [[nodiscard]] const_reverse_iterator crbegin() const { return rbegin(); }
+    [[nodiscard]] const_reverse_iterator crend() const { return rend(); }
 
 private:
     /**
@@ -908,7 +912,7 @@ private:
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
     static std::vector<usize> get_next(const Self& pattern) {
-        const auto p_size = pattern.size();
+        const auto p_size = pattern.length();
         std::vector<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
             // 失配，j按照next数组回跳
