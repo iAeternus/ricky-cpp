@@ -111,7 +111,7 @@ private:
     }
 
     static fn parseStr(JsonType::JsonStr& jsonStr)->Json {
-        return Json{jsonStr.slice(1, -1)}; // 去掉 ""
+        return Json{jsonStr.slice(1, -1).to_string()}; // 去掉 ""
     }
 
     static fn parseNum(JsonType::JsonStr& jsonStr)->Json {

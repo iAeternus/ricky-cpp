@@ -7,8 +7,7 @@
 #ifndef STRING_HPP
 #define STRING_HPP
 
-#include "CodePoint.hpp"
-#include "Encoding.hpp"
+#include "StringView.hpp"
 
 namespace my::util {
 
@@ -21,6 +20,7 @@ class BasicString : public Sequence<BasicString<Alloc>, CodePoint> {
 public:
     using Self = BasicString<Alloc>;
     using Super = Sequence<Self, CodePoint>;
+    using View = BasicStringView<typename Super::const_iterator, Alloc>;
 
     static constexpr usize SSO_MAX_SIZE = 16; // SSO最大码点数
 
@@ -83,7 +83,7 @@ public:
      * @param enc 字符串的编码（可选）
      */
     BasicString(const CString& cstr, const EncodingType enc = EncodingType::UTF8) :
-            BasicString(cstr.data(), cstr.size(), enc) {}
+            BasicString(cstr.data(), cstr.length(), enc) {}
 
     /**
      * @brief 构造函数，根据码点创建字符串
@@ -119,14 +119,27 @@ public:
     BasicString(Iter first, Iter last, Encoding* encoding) :
             length_(static_cast<usize>(std::distance(first, last))), is_sso_(length_ <= SSO_MAX_SIZE), encoding_(encoding) {
         if (is_sso_) {
-            std::uninitialized_copy(first, last, sso_);
+            // std::uninitialized_copy(first, last, sso_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(sso_ + i, *first++);
+            }
             code_points_ = sso_;
         } else {
             heap_ = alloc_.allocate(length_);
-            std::uninitialized_copy(first, last, heap_);
+            // std::uninitialized_copy(first, last, heap_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_ + i, *first++);
+            }
             code_points_ = heap_;
         }
     }
+
+    /**
+     * @brief 根据字符串视图构造，
+     * @param view
+     */
+    BasicString(const View view) :
+            Self(view.begin(), view.end(), view.encoding()) {}
 
     /**
      * @brief 拷贝构造函数
@@ -311,10 +324,10 @@ public:
      * @return 拼接后的新字符串
      */
     Self operator+(const Self& other) const {
-        const usize m_size = this->size(), o_size = other.size();
+        const usize m_size = this->length(), o_size = other.length();
         Self res{m_size + o_size, this->encoding()};
         for (usize i = 0; i < m_size; ++i) {
-            res[i] = (*this)[i];
+            res[i] = this->operator[](i);
         }
         for (usize i = 0; i < o_size; ++i) {
             res[m_size + i] = other[i];
@@ -328,10 +341,10 @@ public:
      * @return 拼接后的新字符串
      */
     Self operator+(const CString& other) const {
-        const usize m_size = this->size(), o_size = other.size();
+        const usize m_size = this->length(), o_size = other.length();
         Self res{m_size + o_size, this->encoding()};
         for (usize i = 0; i < m_size; ++i) {
-            res[i] = (*this)[i];
+            res[i] = this->operator[](i);
         }
         for (usize i = 0; i < o_size; ++i) {
             res[m_size + i] = *CodePointPool::instance().get(other[i]);
@@ -368,11 +381,11 @@ public:
      */
     Self operator*(usize n) {
         usize pos = 0;
-        const auto m_size = size();
+        const auto m_size = length();
         Self res{m_size * n, encoding()};
         while (n--) {
             for (usize i = 0; i < m_size; ++i) {
-                res[pos++] = (*this)[i];
+                res[pos++] = this->operator[](i);
             }
         }
         return res;
@@ -423,13 +436,17 @@ public:
     }
 
     /**
-     * @brief 获取字符串的长度
+     * @brief 获取字符串的长度，适配可迭代约束
      * @return 字符串的长度
      */
     usize size() const {
         return length_;
     }
 
+    /**
+     * @brief 获取字符串的长度
+     * @return 字符串的长度
+     */
     usize length() const {
         return length_;
     }
@@ -483,16 +500,14 @@ public:
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
-    Self slice(usize start, isize end) const {
-        const auto m_size = size();
-        start = neg_index(start, m_size);
-        end = neg_index(end, static_cast<isize>(m_size));
-        Vec<CodePoint> buf;
-        for (usize i = start; i < end; ++i) {
-            buf.append(code_points_[i]);
-        }
-        auto [size, arr] = buf.separate();
-        return Self(arr, end - start, encoding_);
+    View slice(const usize start, isize end) const {
+        end = neg_index(end, static_cast<isize>(length()));
+        // Vec<CodePoint> buf;
+        // for (usize i = start; i < end; ++i) {
+        //     buf.append(code_points_[i]);
+        // }
+        // auto [size, arr] = buf.separate();
+        return View(Super::begin() + start, Super::begin() + static_cast<usize>(end), encoding_->type());
     }
 
     /**
@@ -500,7 +515,7 @@ public:
      * @param start 起始索引
      * @return 子字符串
      */
-    Self slice(const usize start) const {
+    View slice(const usize start) const {
         return slice(start, size());
     }
 
@@ -520,16 +535,16 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const Self& pattern, const usize pos = 0) const {
+    usize find(const View pattern, const usize pos = 0) const {
         if (pattern.empty()) return npos;
-        const auto m_size = size(), p_size = pattern.size();
+        const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
-            while (j > 0 && (*this)[i] != pattern[j]) {
+            while (j > 0 && this->operator[](i) != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            j += this->operator[](i) == pattern[j]; // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
             if (j == p_size) {
                 return i - p_size + 1;
@@ -544,17 +559,17 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    Vec<usize> find_all(const Self& pattern) const {
+    Vec<usize> find_all(const View pattern) const {
         Vec<usize> res;
         if (pattern.empty()) return res;
-        const auto m_size = size(), p_size = pattern.size();
+        const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = 0, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
-            while (j > 0 && (*this)[i] != pattern[j]) {
+            while (j > 0 && this->operator[](i) != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            j += this->operator[](i) == pattern[j]; // 匹配，j前进
             // 模式串匹配完，收集文本串匹配起点
             if (j == p_size) {
                 res.append(i - p_size + 1);
@@ -569,8 +584,8 @@ public:
      * @param prefix 要检查的子字符串
      * @return 是否以指定子字符串开头
      */
-    bool starts_with(const Self& prefix) const {
-        if (size() < prefix.size()) {
+    bool starts_with(const View prefix) const {
+        if (length() < prefix.size()) {
             return false;
         }
         return slice(0, prefix.size()) == prefix;
@@ -581,11 +596,11 @@ public:
      * @param suffix 要检查的子字符串
      * @return 是否以指定子字符串结尾
      */
-    bool ends_with(const Self& suffix) const {
-        if (size() < suffix.size()) {
+    bool ends_with(const View suffix) const {
+        if (length() < suffix.size()) {
             return false;
         }
-        return slice(size() - suffix.size()) == suffix;
+        return slice(length() - suffix.size()) == suffix;
     }
 
     /**
@@ -594,7 +609,7 @@ public:
      */
     Self upper() const {
         Self res{*this};
-        const auto m_size = size();
+        const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = res[i].upper();
         }
@@ -607,7 +622,7 @@ public:
      */
     Self lower() const {
         Self res{*this};
-        const auto m_size = size();
+        const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = res[i].lower();
         }
@@ -618,7 +633,7 @@ public:
      * @brief 去除字符串首尾的空白字符
      * @return 去除空白后的字符串
      */
-    Self trim() const {
+    View trim() const {
         auto [l, r] = get_trim_index();
         return slice(l, r);
     }
@@ -627,7 +642,7 @@ public:
      * @brief 去除字符串首部的空白字符
      * @return 去除首部空白后的字符串
      */
-    Self ltrim() const {
+    View ltrim() const {
         return slice(get_ltrim_index());
     }
 
@@ -635,7 +650,7 @@ public:
      * @brief 去除字符串尾部的空白字符
      * @return 去除尾部空白后的字符串
      */
-    Self rtrim() const {
+    View rtrim() const {
         return slice(get_rtrim_index());
     }
 
@@ -644,7 +659,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self trim(const Self& pattern) const {
+    View trim(const View pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return slice(l, r);
     }
@@ -654,7 +669,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self ltrim(const Self& pattern) const {
+    View ltrim(const View pattern) const {
         return slice(get_ltrim_index(pattern));
     }
 
@@ -663,7 +678,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self rtrim(const Self& pattern) const {
+    View rtrim(const View pattern) const {
         return slice(get_rtrim_index(pattern));
     }
 
@@ -682,7 +697,7 @@ public:
         usize total_len = 0;
         for (auto&& elem : iter) {
             elem_strs.append(cstr(elem));
-            total_len += elem_strs.back().size() + length_;
+            total_len += elem_strs.back().length() + length_;
         }
         if (!elem_strs.empty()) {
             total_len -= length_;
@@ -703,7 +718,7 @@ public:
 
         for (; elem_it != elem_end; ++elem_it) {
             for (usize i = 0; i < length_; ++i) {
-                result[pos++] = (*this)[i];
+                result[pos++] = this->operator[](i);
             }
             const auto& elem_str = *elem_it;
             for (char i : elem_str) {
@@ -720,19 +735,19 @@ public:
      * @param new_ 替换的新字符串
      * @return 替换后的新字符串
      */
-    Self replace(const Self& old_, const Self& new_) const {
+    Self replace(const View old_, const View new_) const {
         const auto indices = find_all(old_);
-        const auto m_size = size();
-        Self result{m_size + indices.size() * (new_.size() - old_.size()), encoding()};
+        const auto m_size = length();
+        Self result{m_size + indices.size() * (new_.length() - old_.length()), encoding()};
         for (usize i = 0, j = 0, k = 0; i < m_size; ++i) {
             if (j < indices.size() && i == indices[j]) {
                 for (auto&& c : new_) {
                     result.code_points_[k++] = c;
                 }
-                i += old_.size() - 1;
+                i += old_.length() - 1;
                 ++j;
             } else {
-                result.code_points_[k++] = (*this)[i];
+                result.code_points_[k++] = this->operator[](i);
             }
         }
         return result;
@@ -752,7 +767,7 @@ public:
         }
 
         usize match_cnt = 1;
-        for (usize r = l + 1, m_size = size(); r < m_size; ++r) {
+        for (usize r = l + 1, m_size = length(); r < m_size; ++r) {
             if ((*this)[r] == right) {
                 --match_cnt;
             } else if ((*this)[r] == left) {
@@ -773,11 +788,11 @@ public:
      * @param max_split 最大分割次数（可选，-1表示无限制）
      * @return 分割后的字符串向量
      */
-    Vec<Self> split(const Self& pattern, const isize max_split = -1) const {
+    Vec<Self> split(const View pattern, const isize max_split = -1) const {
         Vec<Self> res;
         usize start = 0;
         usize split_cnt = 0;
-        const auto m_size = size(), p_size = pattern.size();
+        const auto m_size = length(), p_size = pattern.length();
         const auto actual_splits = (max_split < 0) ? m_size : std::min(static_cast<usize>(max_split), m_size);
 
         // 空模式处理：按每个字符分割
@@ -815,7 +830,7 @@ public:
      * @return 删除后的字符串
      */
     Self remove_all(CodePoint&& codePoint) const {
-        const auto m_size = size();
+        const auto m_size = length();
         Vec<CodePoint> buf;
         for (usize i = 0; i < m_size; ++i) {
             if ((*this)[i] != codePoint) {
@@ -833,7 +848,7 @@ public:
      * @return 删除后的字符串
      */
     Self remove_all(Pred<const CodePoint&>&& pred) const {
-        const auto m_size = size();
+        const auto m_size = length();
         Vec<CodePoint> buf;
         for (usize i = 0; i < m_size; ++i) {
             if (!pred((*this)[i])) {
@@ -876,14 +891,14 @@ public:
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        auto min_size = std::min(this->size(), other.size());
+        auto min_size = std::min(this->length(), other.length());
         for (usize i = 0; i < min_size; ++i) {
-            auto cmp = (*this)[i].__cmp__(other[i]);
+            auto cmp = this->operator[](i).__cmp__(other[i]);
             if (cmp != 0) {
                 return cmp;
             }
         }
-        return static_cast<usize>(this->size() - other.size());
+        return static_cast<usize>(this->length() - other.length());
     }
 
 private:
@@ -909,7 +924,7 @@ private:
      * @return 首尾空白后的索引范围
      */
     Pair<usize, usize> get_trim_index() const {
-        usize l = 0, r = size();
+        usize l = 0, r = length();
         while (l < r && (*this)[l].is_blank()) ++l;
         while (l < r && (*this)[r - 1].is_blank()) --r;
         return {l, r};
@@ -920,8 +935,8 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    Pair<usize, usize> get_trim_index(const Self& pattern) const {
-        usize l = 0, r = size(), p_size = pattern.size();
+    Pair<usize, usize> get_trim_index(const View pattern) const {
+        usize l = 0, r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return {l, r};
@@ -933,7 +948,7 @@ private:
      */
     usize get_ltrim_index() const {
         usize l = 0;
-        const auto r = size();
+        const auto r = length();
         while (l < r && (*this)[l].is_blank()) ++l;
         return l;
     }
@@ -943,9 +958,9 @@ private:
      * @param pattern 要去除的模式
      * @return 去除首部模式后的索引
      */
-    usize get_ltrim_index(const Self& pattern) const {
+    usize get_ltrim_index(const View pattern) const {
         usize l = 0;
-        const auto r = size(), p_size = pattern.size();
+        const auto r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         return l;
     }
@@ -956,7 +971,7 @@ private:
      */
     usize get_rtrim_index() const {
         constexpr usize l = 0;
-        auto r = size();
+        auto r = length();
         while (l < r && (*this)[r - 1].is_blank()) --r;
         return r;
     }
@@ -966,9 +981,9 @@ private:
      * @param pattern 要去除的模式
      * @return 去除尾部模式后的索引
      */
-    usize get_rtrim_index(const Self& pattern) const {
-        const usize l = 0, p_size = pattern.size();
-        auto r = size();
+    usize get_rtrim_index(const View pattern) const {
+        const usize l = 0, p_size = pattern.length();
+        auto r = length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
@@ -979,8 +994,8 @@ private:
      * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
-    static Vec<usize> get_next(const Self& pattern) {
-        const auto p_size = pattern.size();
+    static Vec<usize> get_next(const View pattern) {
+        const auto p_size = pattern.length();
         Vec<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
             // 失配，j按照next数组回跳
@@ -1011,147 +1026,9 @@ private:
 using String = BasicString<Allocator<CodePoint>>;
 
 /**
- * @class BasicStringView
- * @brief 字符串视图模板，支持常量/非常量视图
- * @note 源字符串生命周期必须不短于视图生命周期
- * @tparam Iter 迭代器类型
- */
-template <typename Iter, typename Alloc = Allocator<CodePoint>>
-class BasicStringView : public Object<BasicStringView<Iter>> {
-public:
-    using iterator = Iter;
-    using const_iterator = Iter;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-    using value_type = typename std::iterator_traits<Iter>::value_type;
-    using size_type = usize;
-
-    constexpr BasicStringView() noexcept = default;
-
-    /**
-     * @brief 通过首尾迭代器构造
-     * @param begin 视图起始迭代器
-     * @param end 视图结束迭代器（尾后）
-     * @param enc 字符串编码
-     */
-    constexpr BasicStringView(Iter begin, Iter end, const EncodingType enc = EncodingType::UTF8) noexcept :
-            begin_(begin), end_(end), encoding_(encoding_map(enc)) {}
-
-    /**
-     * @brief 通过字符串对象构造全视图（非const）
-     */
-    explicit BasicStringView(BasicString<Alloc>& str) noexcept :
-            begin_(str.begin()), end_(str.end()), encoding_(str.encoding()) {}
-
-    /**
-     * @brief 通过字符串对象构造全视图（const）
-     */
-    explicit BasicStringView(const BasicString<Alloc>& str) noexcept :
-            begin_(str.cbegin()), end_(str.cend()), encoding_(str.encoding()) {}
-
-    /**
-     * @brief 通过绝对首索引和视图长度构造（非const）
-     */
-    BasicStringView(BasicString<Alloc>& str, usize pos, usize len) noexcept :
-            encoding_(str.encoding()) {
-        const auto size = str.size();
-        pos = std::min(pos, size);
-        len = std::min(len, size - pos);
-
-        begin_ = str.begin() + pos;
-        end_ = begin_ + len;
-    }
-
-    /**
-     * @brief 通过绝对首索引和视图长度构造（const）
-     */
-    BasicStringView(const BasicString<Alloc>& str, usize pos, usize len) noexcept :
-            encoding_(str.encoding()) {
-        const auto size = str.size();
-        pos = std::min(pos, size);
-        len = std::min(len, size - pos);
-
-        begin_ = str.cbegin() + pos;
-        end_ = begin_ + len;
-    }
-
-    /**
-     * @brief 视图长度（码点数）
-     */
-    constexpr size_type length() const noexcept {
-        return static_cast<size_type>(std::distance(begin_, end_));
-    }
-
-    /**
-     * @brief 索引访问，无边界检查
-     */
-    decltype(auto) operator[](size_type idx) noexcept {
-        return *(begin_ + idx);
-    }
-
-    /**
-     * @brief 索引访问，无边界检查
-     */
-    decltype(auto) operator[](size_type idx) const noexcept {
-        return *(begin_ + idx);
-    }
-
-    /**
-     * @brief 转换为完整字符串，会拷贝数据
-     */
-    constexpr BasicString<Alloc> to_string() const {
-        return BasicString<Alloc>{begin_, end_, encoding_};
-    }
-
-    /**
-     * @brief 与字符串比较
-     * @return true=相等 false=不相等
-     */
-    template <typename S>
-        requires all_same_v<std::remove_cvref_t<S>, BasicString<Alloc>>
-    constexpr bool operator==(S&& str) const noexcept {
-        if (length() != str.size()) return false;
-        return std::equal(begin_, end_, str.begin());
-    }
-
-    // 迭代器接口
-    iterator begin() noexcept { return begin_; }
-    iterator end() noexcept { return end_; }
-    const_iterator begin() const noexcept { return begin_; }
-    const_iterator end() const noexcept { return end_; }
-    const_iterator cbegin() const noexcept { return begin_; }
-    const_iterator cend() const noexcept { return end_; }
-
-    reverse_iterator rbegin() { return reverse_iterator(end()); }
-    reverse_iterator rend() { return reverse_iterator(begin()); }
-    const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-    const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
-    const_reverse_iterator crbegin() const { return rbegin(); }
-    const_reverse_iterator crend() const { return rend(); }
-
-private:
-    Iter begin_{};       // 视图起始迭代器
-    Iter end_{};         // 视图结束迭代器（尾后）
-    Encoding* encoding_; // 编码信息（不拥有所有权）
-};
-
-/**
  * @brief 视图类型别名
  */
-using StringView = BasicStringView<String::iterator, Allocator<CodePoint>>;
-using ConstStringView = BasicStringView<String::const_iterator, Allocator<CodePoint>>;
-
-/**
- * @brief 推导指南
- */
-template <typename Iter>
-BasicStringView(Iter, Iter) -> BasicStringView<Iter>;
-
-template <typename S>
-BasicStringView(S&&) -> BasicStringView<typename std::remove_cvref_t<S>::iterator>;
-
-template <typename S>
-BasicStringView(S&&, usize, usize) -> BasicStringView<typename std::remove_cvref_t<S>::iterator>;
+using StringView = BasicStringView<String::const_iterator, Allocator<CodePoint>>;
 
 } // namespace my::util
 

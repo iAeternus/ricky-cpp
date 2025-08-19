@@ -63,10 +63,10 @@ fn should_find = []() {
     util::String s2 = "caabaabaabaabaaaab";
 
     // When
-    auto pos = s.find("def");
+    auto pos = s.find("def"_s);
     auto pos2 = s.find(util::CodePoint('f'));
-    auto pos3 = s.find("abd");
-    auto pos4 = s2.find("aabaabaaaa");
+    auto pos3 = s.find("abd"_s);
+    auto pos4 = s2.find("aabaabaaaa"_s);
     auto pos5 = s2.find(""_s);
 
     // Then
@@ -82,7 +82,7 @@ fn should_find_all = []() {
     util::String s = "abcdefabc";
 
     // When
-    auto poss = s.find_all("abc");
+    auto poss = s.find_all("abc"_s);
 
     // Then
     Assertions::assertEquals(2, poss.size());
@@ -94,8 +94,8 @@ fn should_judge_starts_with = []() {
     util::String s = "abcdef";
 
     // When
-    bool res = s.starts_with("abc");
-    bool res2 = s.starts_with("abd");
+    bool res = s.starts_with("abc"_s);
+    bool res2 = s.starts_with("abd"_s);
 
     // Then
     Assertions::assertTrue(res);
@@ -107,8 +107,8 @@ fn should_judge_ends_with = []() {
     util::String s = "abcdef";
 
     // When
-    bool res = s.ends_with("def");
-    bool res2 = s.ends_with("deg");
+    bool res = s.ends_with("def"_s);
+    bool res2 = s.ends_with("deg"_s);
 
     // Then
     Assertions::assertTrue(res);
@@ -153,7 +153,7 @@ fn should_replace = []() {
     util::String s = "abcdefabc";
 
     // When
-    auto res = s.replace("abc", "def");
+    auto res = s.replace("abc"_s, "def"_s);
 
     // Then
     Assertions::assertEquals("defdefdef"_s, res);
@@ -181,7 +181,7 @@ fn should_maintain_encoding = []() {
     Assertions::assertEquals("你好世界"_s, s.slice(0, s.size()));
 
     // When
-    auto res = s.replace("你", "你们");
+    auto res = s.replace("你"_s, "你们"_s);
 
     // Then
     Assertions::assertEquals("你们好世界"_s, res);
@@ -228,16 +228,16 @@ fn should_fail_match_if_str_invalid = []() {
 };
 
 fn should_split = []() {
-    Assertions::assertEquals("[a,b,c]"_cs, "a/b/c"_s.split("/").__str__());
-    Assertions::assertEquals("[,,a,b]"_cs, "//a/b"_s.split("/").__str__());
-    Assertions::assertEquals("[a,,b]"_cs, "a//b"_s.split("/").__str__());
-    Assertions::assertEquals("[a,b,,]"_cs, "a/b//"_s.split("/").__str__());
-    Assertions::assertEquals("[a,b,c/d]"_cs, "a/b/c/d"_s.split("/", 2).__str__());
+    Assertions::assertEquals("[a,b,c]"_cs, "a/b/c"_s.split("/"_s).__str__());
+    Assertions::assertEquals("[,,a,b]"_cs, "//a/b"_s.split("/"_s).__str__());
+    Assertions::assertEquals("[a,,b]"_cs, "a//b"_s.split("/"_s).__str__());
+    Assertions::assertEquals("[a,b,,]"_cs, "a/b//"_s.split("/"_s).__str__());
+    Assertions::assertEquals("[a,b,c/d]"_cs, "a/b/c/d"_s.split("/"_s, 2).__str__());
 };
 
 fn should_compare = []() {
     // Given
-    util::String s = "abc";
+    util::String s = "abc"_s;
     util::String s2 = "abd"_s;
     util::String s3 = "abcc"_s;
     util::String s4 = "abc"_s;
@@ -276,28 +276,34 @@ fn test_string_view = []() {
 
     // When
     util::StringView sv(s, 1, 5);
-    util::ConstStringView csv(s, 1, 5);
 
     // Then
     Assertions::assertEquals(5, sv.length());
-    Assertions::assertEquals(5, csv.length());
     Assertions::assertEquals(util::CodePoint{'b'}, sv[0]);
-    Assertions::assertEquals(util::CodePoint{'b'}, csv[0]);
     Assertions::assertEquals(util::CodePoint{'e'}, sv[4]);
-    Assertions::assertEquals(util::CodePoint{'e'}, csv[4]);
-    Assertions::assertEquals(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, csv[2]);
-    Assertions::assertEquals(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, csv[2]);
+    Assertions::assertEquals(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, sv[2]);
     Assertions::assertEquals("bc我de"_s, sv.to_string());
-    Assertions::assertEquals("bc我de"_s, csv.to_string());
-
-    // When
-    sv[0] = 'c';
-    sv[1] = util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)};
-
-    // Then
-    Assertions::assertEquals("c我我de"_s, sv.to_string());
-    Assertions::assertEquals("c我我de"_s, csv.to_string());
 };
+
+// fn should_string_view_compare = []() {
+//     // Given
+//     util::StringView s = "abc"_s;
+//     util::StringView s2 = "abd"_s;
+//     util::StringView s3 = "abcc"_s;
+//     util::StringView s4 = "abc"_s;
+//
+//     // When
+//     cmp_t res = s.__cmp__(s2);
+//     cmp_t res2 = s.__cmp__(s3);
+//     cmp_t res3 = s2.__cmp__(s3);
+//     cmp_t res4 = s.__cmp__(s4);
+//
+//     // Then
+//     Assertions::assertEquals(-1, res);
+//     Assertions::assertEquals(-1, res2);
+//     Assertions::assertEquals(1, res3);
+//     Assertions::assertEquals(0, res4);
+// };
 
 fn test_string() {
     UnitTestGroup group{"test_string"};
@@ -322,6 +328,7 @@ fn test_string() {
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
     group.addTest("test_string_view", test_string_view);
+    // group.addTest("should_string_view_compare", should_string_view_compare);
 
     group.startAll();
 }

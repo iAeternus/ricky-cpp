@@ -22,7 +22,7 @@ fn should_append = []() {
     util::DynArray<CString> d;
 
     // When
-    for (usize i = 0; i < n; ++i) {
+    for (i32 i = 0; i < n; ++i) {
         d.append(cstr(i));
     }
 

@@ -35,7 +35,7 @@ public:
      * @brief 根据首指针构造
      * @param str 指向字符串首地址
      */
-    explicit CStringView(const char* str) noexcept :
+    CStringView(const char* str) noexcept :
             begin_(str), end_(str ? str + std::strlen(str) : nullptr) {}
 
     /**
@@ -62,6 +62,14 @@ public:
     template <typename Alloc = Allocator<char>>
     CStringView(const BasicCString<Alloc>& cstr) noexcept :
             begin_(cstr.data()), end_(cstr.data() + cstr.size()) {}
+
+    /**
+     * @brief 字符串视图长度，适配可迭代约束
+     * @return 字符串视图长度
+     */
+    usize size() const noexcept {
+        return begin_ ? (end_ - begin_) : 0;
+    }
 
     /**
      * @brief 字符串视图长度
@@ -98,42 +106,58 @@ public:
         return {begin_, length()};
     }
 
+    // /**
+    //  * @brief 与字符串判断相等，不会拷贝
+    //  */
+    // template <typename Alloc = Allocator<char>>
+    // friend bool operator==(const Self& view, const BasicCString<Alloc>& cstr) {
+    //     if (view.length() != cstr.length()) {
+    //         return false;
+    //     }
+    //
+    //     usize idx = 0;
+    //     for (const char c : cstr) {
+    //         if (view[idx] != c) {
+    //             return false;
+    //         }
+    //         ++idx;
+    //     }
+    //     return true;
+    // }
+    //
+    // /**
+    //  * @brief 与字符串判断相等，不会拷贝
+    //  */
+    // template <typename Alloc = Allocator<char>>
+    // friend bool operator==(const BasicCString<Alloc>& cstr, const Self& view) {
+    //     if (view.length() != cstr.length()) {
+    //         return false;
+    //     }
+    //
+    //     usize idx = 0;
+    //     for (const char c : cstr) {
+    //         if (view[idx] != c) {
+    //             return false;
+    //         }
+    //         ++idx;
+    //     }
+    //     return true;
+    // }
+
     /**
-     * @brief 与字符串判断相等，不会拷贝
+     * @brief 判断切片是否相等
+     * @param v1 第一个切片
+     * @param v2 第二个切片
+     * @return true=相等 false=不相等
      */
-    template <typename Alloc = Allocator<char>>
-    friend bool operator==(const Self& view, const BasicCString<Alloc>& cstr) {
-        if (view.length() != cstr.length()) {
+    friend bool operator==(const Self& v1, const Self& v2) {
+        if (v1.length() != v2.length()) {
             return false;
         }
-
-        usize idx = 0;
-        for (const char c : cstr) {
-            if (view[idx] != c) {
-                return false;
-            }
-            ++idx;
+        if (v1.begin_ == v2.begin_) {
+            return true;
         }
-        return true;
-    }
-
-    /**
-     * @brief 与字符串判断相等，不会拷贝
-     */
-    template <typename Alloc = Allocator<char>>
-    friend bool operator==(const BasicCString<Alloc>& cstr, const Self& view) {
-        if (view.length() != cstr.length()) {
-            return false;
-        }
-
-        usize idx = 0;
-        for (const char c : cstr) {
-            if (view[idx] != c) {
-                return false;
-            }
-            ++idx;
-        }
-        return true;
+        return std::equal(v1.begin_, v1.end_, v2.begin_);
     }
 
     using iterator = const char*;
@@ -261,14 +285,14 @@ public:
         return *this;
     }
 
-    /**
-     * @brief 从字符串视图赋值
-     * @param view 字符串视图
-     * @return 自身的引用
-     */
-    Self& operator=(const CStringView view) {
-        return *this = Self(view);
-    }
+    // /**
+    //  * @brief 从字符串视图赋值
+    //  * @param view 字符串视图
+    //  * @return 自身的引用
+    //  */
+    // Self& operator=(const CStringView view) {
+    //     return *this = Self(view);
+    // }
 
     /**
      * @brief 创建单字符字符串
@@ -311,7 +335,7 @@ public:
      * @return 字符串是否非空
      */
     operator bool() {
-        return size() != 0;
+        return length() != 0;
     }
 
     /**
@@ -330,37 +354,6 @@ public:
      */
     const char& operator[](const usize idx) const {
         return str_[idx];
-    }
-
-    /**
-     * @brief 与字符串视图拼接
-     * @param view 要拼接的字符串视图
-     * @return 拼接后的新字符串
-     */
-    Self operator+(const CStringView view) const {
-        Self res(len_ + view.length());
-        std::memcpy(res.str_, str_, len_);
-        std::memcpy(res.str_ + len_, view.begin(), view.length());
-        res.str_[res.len_] = '\0';
-        return res;
-    }
-
-    /**
-     * @brief 追加字符串视图
-     * @param view 要追加的字符串视图
-     * @return 自身的引用
-     */
-    Self& operator+=(const CStringView view) {
-        const auto view_len = view.length();
-        char* new_str = alloc_.allocate(len_ + view_len + 1);
-        std::memcpy(new_str, str_, len_);
-        std::memcpy(new_str + len_, view.begin(), view_len);
-        alloc_.deallocate(str_, len_ + 1);
-
-        str_ = new_str;
-        len_ += view_len;
-        str_[len_] = '\0';
-        return *this;
     }
 
     /**
@@ -449,48 +442,48 @@ public:
         return npos;
     }
 
-    /**
-     * @brief 查找模式串的第一个匹配位置
-     * @param pattern 模式串，长度为m
-     * @param pos 起始查找位置（可选）
-     * @return 模式串的第一个匹配位置，未找到返回 `npos`
-     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
-     */
-    usize find(const Self& pattern, const usize pos = 0) const {
-        if (pattern.empty()) return npos;
-        const auto m_size = size(), p_size = pattern.length();
-        const auto next = get_next(pattern);
-        for (usize i = pos, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && (*this)[i] != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += (*this)[i] == pattern[j]; // 匹配，j前进
-            // 模式串匹配完，返回文本串匹配起点
-            if (j == p_size) {
-                return i - p_size + 1;
-            }
-        }
-        return npos;
-    }
+    // /**
+    //  * @brief 查找模式串的第一个匹配位置
+    //  * @param pattern 模式串，长度为m
+    //  * @param pos 起始查找位置
+    //  * @return 模式串的第一个匹配位置，未找到返回 `npos`
+    //  * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+    //  */
+    // usize find(const Self& pattern, const usize pos = 0) const {
+    //     if (pattern.empty()) return npos;
+    //     const auto m_size = size(), p_size = pattern.length();
+    //     const auto next = get_next(pattern);
+    //     for (usize i = pos, j = 0; i < m_size; ++i) {
+    //         // 失配，j按照next回跳
+    //         while (j > 0 && this->operator[](i) != pattern[j]) {
+    //             j = next[j - 1];
+    //         }
+    //         j += this->operator[](i) == pattern[j]; // 匹配，j前进
+    //         // 模式串匹配完，返回文本串匹配起点
+    //         if (j == p_size) {
+    //             return i - p_size + 1;
+    //         }
+    //     }
+    //     return npos;
+    // }
 
     /**
      * @brief 查找模式串视图的第一个匹配位置
      * @param pattern 模式串视图，长度为m
-     * @param pos 起始查找位置（可选）
+     * @param pos 起始查找位置
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const CStringView& pattern, const usize pos = 0) const {
+    usize find(const CStringView pattern, const usize pos = 0) const {
         if (pattern.empty()) return npos;
-        const auto m_size = size(), p_size = pattern.length();
+        const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
-            while (j > 0 && (*this)[i] != pattern[j]) {
+            while (j > 0 && this->operator[](i) != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            j += this->operator[](i) == pattern[j]; // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
             if (j == p_size) {
                 return i - p_size + 1;
@@ -499,31 +492,31 @@ public:
         return npos;
     }
 
-    /**
-     * @brief 查找模式串的所有匹配位置
-     * @param pattern 模式串，长度为m
-     * @return 所有匹配位置
-     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
-     */
-    std::vector<usize> find_all(const Self& pattern) const {
-        std::vector<usize> res;
-        if (pattern.empty()) return res;
-        const auto m_size = size(), p_size = pattern.length();
-        const auto next = get_next(pattern);
-        for (usize i = 0, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && (*this)[i] != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += (*this)[i] == pattern[j]; // 匹配，j前进
-            // 模式串匹配完，收集文本串匹配起点
-            if (j == p_size) {
-                res.push_back(i - p_size + 1);
-                j = next[j - 1];
-            }
-        }
-        return res;
-    }
+    // /**
+    //  * @brief 查找模式串的所有匹配位置
+    //  * @param pattern 模式串，长度为m
+    //  * @return 所有匹配位置
+    //  * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+    //  */
+    // std::vector<usize> find_all(const Self& pattern) const {
+    //     std::vector<usize> res;
+    //     if (pattern.empty()) return res;
+    //     const auto m_size = size(), p_size = pattern.length();
+    //     const auto next = get_next(pattern);
+    //     for (usize i = 0, j = 0; i < m_size; ++i) {
+    //         // 失配，j按照next回跳
+    //         while (j > 0 && this->operator[](i) != pattern[j]) {
+    //             j = next[j - 1];
+    //         }
+    //         j += this->operator[](i) == pattern[j]; // 匹配，j前进
+    //         // 模式串匹配完，收集文本串匹配起点
+    //         if (j == p_size) {
+    //             res.push_back(i - p_size + 1);
+    //             j = next[j - 1];
+    //         }
+    //     }
+    //     return res;
+    // }
 
     /**
      * @brief 查找模式串的所有匹配位置
@@ -531,17 +524,17 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    std::vector<usize> find_all(const CStringView& pattern) const {
+    std::vector<usize> find_all(const CStringView pattern) const {
         std::vector<usize> res;
         if (pattern.empty()) return res;
-        const auto m_size = size(), p_size = pattern.length();
+        const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = 0, j = 0; i < m_size; ++i) {
             // 失配，j按照next回跳
-            while (j > 0 && (*this)[i] != pattern[j]) {
+            while (j > 0 && this->operator[](i) != pattern[j]) {
                 j = next[j - 1];
             }
-            j += (*this)[i] == pattern[j]; // 匹配，j前进
+            j += this->operator[](i) == pattern[j]; // 匹配，j前进
             // 模式串匹配完，收集文本串匹配起点
             if (j == p_size) {
                 res.push_back(i - p_size + 1);
@@ -556,11 +549,11 @@ public:
      * @param prefix 要检查的子字符串
      * @return 是否以指定子字符串开头
      */
-    bool starts_with(const Self& prefix) const {
-        if (length() < prefix.size()) {
+    bool starts_with(const CStringView prefix) const {
+        if (length() < prefix.length()) {
             return false;
         }
-        return slice(0, prefix.size()) == prefix;
+        return slice(0, prefix.length()) == prefix;
     }
 
     /**
@@ -568,11 +561,11 @@ public:
      * @param suffix 要检查的子字符串
      * @return 是否以指定子字符串结尾
      */
-    bool ends_with(const Self& suffix) const {
-        if (length() < suffix.size()) {
+    bool ends_with(const CStringView suffix) const {
+        if (length() < suffix.length()) {
             return false;
         }
-        return slice(length() - suffix.size()) == suffix;
+        return slice(length() - suffix.length()) == suffix;
     }
 
     /**
@@ -631,7 +624,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    CStringView trim(const Self& pattern) const {
+    CStringView trim(const CStringView pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return slice(l, r);
     }
@@ -641,7 +634,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    CStringView ltrim(const Self& pattern) const {
+    CStringView ltrim(const CStringView pattern) const {
         return slice(get_ltrim_index(pattern));
     }
 
@@ -650,7 +643,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    CStringView rtrim(const Self& pattern) const {
+    CStringView rtrim(const CStringView pattern) const {
         return slice(get_rtrim_index(pattern));
     }
 
@@ -700,25 +693,56 @@ public:
         return res;
     }
 
+    // /**
+    //  * @brief 字符串拼接操作符
+    //  * @param other 要拼接的 CString 对象
+    //  * @return 拼接后的新字符串
+    //  */
+    // Self operator+(const Self& other) const {
+    //     Self res(len_ + other.len_);
+    //     std::memcpy(res.str_, str_, len_);
+    //     std::memcpy(res.str_ + len_, other.str_, other.len_ + 1);
+    //     return res;
+    // }
+    //
+    // /**
+    //  * @brief 字符串拼接操作符
+    //  * @param str 要拼接的字符串
+    //  * @return 拼接后的新字符串
+    //  */
+    // Self operator+(const char* str) const {
+    //     return *this + Self{str};
+    // }
+
     /**
-     * @brief 字符串拼接操作符
-     * @param other 要拼接的 CString 对象
+     * @brief 与字符串视图拼接
+     * @param view 要拼接的字符串视图
      * @return 拼接后的新字符串
      */
-    Self operator+(const Self& other) const {
-        Self res(len_ + other.len_);
+    Self operator+(const CStringView view) const {
+        Self res(len_ + view.length());
         std::memcpy(res.str_, str_, len_);
-        std::memcpy(res.str_ + len_, other.str_, other.len_ + 1);
+        std::memcpy(res.str_ + len_, view.begin(), view.length());
+        res.str_[res.len_] = '\0';
         return res;
     }
 
     /**
-     * @brief 字符串拼接操作符
-     * @param str 要拼接的字符串
-     * @return 拼接后的新字符串
+     * @brief 追加字符串视图
+     * @param view 要追加的字符串视图
+     * @return 自身的引用
      */
-    Self operator+(const char* str) const {
-        return *this + Self{str};
+    Self& operator+=(const CStringView view) {
+        const auto view_len = view.length();
+        char* new_str = alloc_.allocate(len_ + view_len + 1);
+        std::memcpy(new_str, str_, len_);
+        std::memcpy(new_str + len_, view.begin(), view_len);
+        alloc_.deallocate(str_, len_ + 1);
+
+        str_ = new_str;
+        len_ += view_len;
+        str_[len_] = '\0';
+        return *this;
     }
 
     /**
@@ -734,7 +758,7 @@ public:
      * @return 字符串的哈希值
      */
     [[nodiscard]] hash_t __hash__() const {
-        return bytes_hash(data(), size());
+        return bytes_hash(data(), length());
     }
 
     /**
@@ -911,7 +935,7 @@ private:
      * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
-    static std::vector<usize> get_next(const Self& pattern) {
+    static std::vector<usize> get_next(const CStringView pattern) {
         const auto p_size = pattern.length();
         std::vector<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
@@ -941,7 +965,7 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    std::pair<usize, usize> get_trim_index(const Self& pattern) const {
+    std::pair<usize, usize> get_trim_index(const CStringView pattern) const {
         usize l = 0, r = length();
         const auto p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
@@ -965,7 +989,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除首部模式后的索引
      */
-    usize get_ltrim_index(const Self& pattern) const {
+    usize get_ltrim_index(const CStringView pattern) const {
         usize l = 0;
         const auto r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
@@ -988,7 +1012,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除尾部模式后的索引
      */
-    usize get_rtrim_index(const Self& pattern) const {
+    usize get_rtrim_index(const CStringView pattern) const {
         const usize l = 0, p_size = pattern.length();
         auto r = length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;

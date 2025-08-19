@@ -35,6 +35,12 @@ public:
     virtual ~Encoding() = default;
 
     /**
+     * @brief 获取编码类型
+     * @return 编码类型
+     */
+    virtual EncodingType type() const noexcept = 0;
+
+    /**
      * @brief 返回当前编码方式，开头字符的字节数
      */
     virtual u8 byte_size(const char* data) const = 0;
@@ -58,6 +64,10 @@ public:
     using Self = ASCIIEncoding;
     using Super = Encoding;
 
+    EncodingType type() const noexcept override {
+        return EncodingType::ASCII;
+    }
+
     u8 byte_size(const char* data) const override {
         (void)data; // cheer the compiler
         return 1;
@@ -80,6 +90,10 @@ class UTF8Encoding final : public Encoding {
 public:
     using Self = UTF8Encoding;
     using Super = Encoding;
+
+    EncodingType type() const noexcept override {
+        return EncodingType::UTF8;
+    }
 
     /**
      * @exception Exception 若码点不符合UTF-8格式，则抛出 runtime_exception
@@ -118,6 +132,10 @@ public:
     using Self = UTF16Encoding;
     using Super = Encoding;
 
+    EncodingType type() const noexcept override {
+        return EncodingType::UTF16;
+    }
+
     u8 byte_size(const char* data) const override {
         if ((data[0] & 0xFC) == 0xD8) {
             return 4; // 以110110开头（110110xx 110111xx），4字节编码
@@ -144,6 +162,10 @@ public:
     using Self = UTF32Encoding;
     using Super = Encoding;
 
+    EncodingType type() const noexcept override {
+        return EncodingType::UTF32;
+    }
+
     u8 byte_size(const char* data) const override {
         (void)data;
         return 4;
@@ -166,6 +188,10 @@ class GB2312Encoding final : public Encoding {
 public:
     using Self = GB2312Encoding;
     using Super = Encoding;
+
+    EncodingType type() const noexcept override {
+        return EncodingType::GB2312;
+    }
 
     u8 byte_size(const char* data) const override {
         (void)data;
