@@ -65,6 +65,7 @@
 #include "test_udp.hpp"
 #include "test_tcp.hpp"
 #include "test_json_serializer.hpp"
+#include "test_string_algorithm.hpp"
 #endif
 
 #include <winnls.h>
@@ -126,5 +127,6 @@ auto main() -> int {
     test_udp::test_udp();
     test_tcp::test_tcp();
     test_json_serializer::test_json_serializer();
+    test_string_algorithm::test_string_algorithm();
 #endif
 }

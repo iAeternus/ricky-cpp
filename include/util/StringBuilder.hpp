@@ -36,22 +36,18 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const String& pattern, const usize pos = 0) {
-        if (pattern.empty()) return npos;
-        const auto m_size = buf_.size(), p_size = pattern.size();
-        const auto next = get_next(pattern);
-        for (usize i = pos, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && buf_[i] != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += (buf_[i] == pattern[j]); // 匹配，j前进
-            // 模式串匹配完，返回文本串匹配起点
-            if (j == p_size) {
-                return i - p_size + 1;
-            }
-        }
-        return npos;
+    usize find(const StringView& pattern, const usize pos = 0) const {
+        return StringAlgorithm::kmp_find(buf_.begin() + pos, buf_.end(), pattern.begin(), pattern.end());
+    }
+
+    /**
+     * @brief 查找模式串的所有匹配位置
+     * @param pattern 模式串，长度为m
+     * @return 所有匹配位置
+     * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
+     */
+    Vec<usize> find_all(const StringView& pattern) const {
+        return StringAlgorithm::kmp_find_all(buf_.begin(), buf_.end(), pattern.begin(), pattern.end());
     }
 
     /**
@@ -59,7 +55,7 @@ public:
      * @param str 要追加的字符串
      * @return 构建器自身引用
      */
-    Self& append(const String& str) {
+    Self& append(const StringView& str) {
         if (!str.empty()) {
             buf_.reserve(buf_.size() + str.size());
             buf_.extend(str);
@@ -72,7 +68,7 @@ public:
      * @param cstr 要追加的 CString
      * @return 构建器自身引用
      */
-    Self& append(const CString& cstr) {
+    Self& append(const CStringView& cstr) {
         buf_.reserve(buf_.size() + cstr.length());
         buf_.extend(cstr);
         return *this;
@@ -122,7 +118,7 @@ public:
     template <typename... Args>
     Self& append_format(std::format_string<Args...> fmt, Args&&... args) {
         const auto formatted = std::format(fmt, std::forward<Args>(args)...);
-        return append(formatted);
+        return append(CStringView(formatted.c_str(), formatted.length()));
     }
 
     /**
@@ -131,7 +127,7 @@ public:
      * @param count 码点数量
      * @return 构建器自身引用
      */
-    Self& append_n(const CodePoint& cp, usize count) {
+    Self& append_n(const CodePoint& cp, const usize count) {
         buf_.reserve(buf_.size() + count);
         for (usize i = 0; i < count; ++i) {
             buf_.append(cp);
@@ -203,27 +199,6 @@ public:
      */
     bool empty() const noexcept {
         return buf_.empty();
-    }
-
-private:
-    /**
-     * @brief KMP辅助函数，求next数组
-     * @param pattern 模式串
-     * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
-     * @note 时间复杂度为 O(m)，m为模式串的长度
-     */
-    static Vec<usize> get_next(const String& pattern) {
-        const auto p_size = pattern.size();
-        Vec<usize> next(p_size, 0);
-        for (usize i = 1, j = 0; i < p_size; ++i) {
-            // 失配，j按照next数组回跳
-            while (j > 0 && pattern[i] != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += pattern[i] == pattern[j]; // 匹配，j前进
-            next[i] = j;
-        }
-        return next;
     }
 
 private:

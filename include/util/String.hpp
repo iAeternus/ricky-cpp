@@ -119,14 +119,12 @@ public:
     BasicString(Iter first, Iter last, Encoding* encoding) :
             length_(static_cast<usize>(std::distance(first, last))), is_sso_(length_ <= SSO_MAX_SIZE), encoding_(encoding) {
         if (is_sso_) {
-            // std::uninitialized_copy(first, last, sso_);
             for (usize i = 0; i < length_; ++i) {
                 alloc_.construct(sso_ + i, *first++);
             }
             code_points_ = sso_;
         } else {
             heap_ = alloc_.allocate(length_);
-            // std::uninitialized_copy(first, last, heap_);
             for (usize i = 0; i < length_; ++i) {
                 alloc_.construct(heap_ + i, *first++);
             }
@@ -138,7 +136,7 @@ public:
      * @brief 根据字符串视图构造，
      * @param view
      */
-    BasicString(const View view) :
+    BasicString(const View& view) :
             Self(view.begin(), view.end(), view.encoding()) {}
 
     /**
@@ -323,7 +321,7 @@ public:
      * @param other 要拼接的字符串对象
      * @return 拼接后的新字符串
      */
-    Self operator+(const Self& other) const {
+    Self operator+(const View& other) const {
         const usize m_size = this->length(), o_size = other.length();
         Self res{m_size + o_size, this->encoding()};
         for (usize i = 0; i < m_size; ++i) {
@@ -340,7 +338,7 @@ public:
      * @param other 要拼接的C风格字符串对象
      * @return 拼接后的新字符串
      */
-    Self operator+(const CString& other) const {
+    Self operator+(const CStringView& other) const {
         const usize m_size = this->length(), o_size = other.length();
         Self res{m_size + o_size, this->encoding()};
         for (usize i = 0; i < m_size; ++i) {
@@ -357,7 +355,7 @@ public:
      * @param other 要拼接的字符串对象
      * @return 自身的引用
      */
-    Self& operator+=(const Self& other) {
+    Self& operator+=(const View& other) {
         Self res = *this + other;
         *this = std::move(res);
         return *this;
@@ -368,7 +366,7 @@ public:
      * @param other 要拼接的C风格字符串对象
      * @return 自身的引用
      */
-    Self& operator+=(const CString& other) {
+    Self& operator+=(const CStringView& other) {
         Self res = *this + other;
         *this = std::move(res);
         return *this;
@@ -495,18 +493,13 @@ public:
     }
 
     /**
-     * @brief 字符串切片，返回指定范围的子字符串 TODO StringView
+     * @brief 字符串切片，返回指定范围的子字符串
      * @param start 起始索引
      * @param end 结束索引（不包含）
      * @return 子字符串
      */
     View slice(const usize start, isize end) const {
         end = neg_index(end, static_cast<isize>(length()));
-        // Vec<CodePoint> buf;
-        // for (usize i = start; i < end; ++i) {
-        //     buf.append(code_points_[i]);
-        // }
-        // auto [size, arr] = buf.separate();
         return View(Super::begin() + start, Super::begin() + static_cast<usize>(end), encoding_->type());
     }
 
@@ -535,22 +528,8 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const View pattern, const usize pos = 0) const {
-        if (pattern.empty()) return npos;
-        const auto m_size = length(), p_size = pattern.length();
-        const auto next = get_next(pattern);
-        for (usize i = pos, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && this->operator[](i) != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += this->operator[](i) == pattern[j]; // 匹配，j前进
-            // 模式串匹配完，返回文本串匹配起点
-            if (j == p_size) {
-                return i - p_size + 1;
-            }
-        }
-        return npos;
+    usize find(const View& pattern, const usize pos = 0) const {
+        return StringAlgorithm::kmp_find(Super::begin() + pos, Super::end(), pattern.begin(), pattern.end());
     }
 
     /**
@@ -559,24 +538,8 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    Vec<usize> find_all(const View pattern) const {
-        Vec<usize> res;
-        if (pattern.empty()) return res;
-        const auto m_size = length(), p_size = pattern.length();
-        const auto next = get_next(pattern);
-        for (usize i = 0, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && this->operator[](i) != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += this->operator[](i) == pattern[j]; // 匹配，j前进
-            // 模式串匹配完，收集文本串匹配起点
-            if (j == p_size) {
-                res.append(i - p_size + 1);
-                j = next[j - 1];
-            }
-        }
-        return res;
+    Vec<usize> find_all(const View& pattern) const {
+        return StringAlgorithm::kmp_find_all(Super::begin(), Super::end(), pattern.begin(), pattern.end());
     }
 
     /**
@@ -584,7 +547,7 @@ public:
      * @param prefix 要检查的子字符串
      * @return 是否以指定子字符串开头
      */
-    bool starts_with(const View prefix) const {
+    bool starts_with(const View& prefix) const {
         if (length() < prefix.size()) {
             return false;
         }
@@ -596,7 +559,7 @@ public:
      * @param suffix 要检查的子字符串
      * @return 是否以指定子字符串结尾
      */
-    bool ends_with(const View suffix) const {
+    bool ends_with(const View& suffix) const {
         if (length() < suffix.size()) {
             return false;
         }
@@ -659,7 +622,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    View trim(const View pattern) const {
+    View trim(const View& pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return slice(l, r);
     }
@@ -669,7 +632,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    View ltrim(const View pattern) const {
+    View ltrim(const View& pattern) const {
         return slice(get_ltrim_index(pattern));
     }
 
@@ -678,7 +641,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    View rtrim(const View pattern) const {
+    View rtrim(const View& pattern) const {
         return slice(get_rtrim_index(pattern));
     }
 
@@ -735,7 +698,7 @@ public:
      * @param new_ 替换的新字符串
      * @return 替换后的新字符串
      */
-    Self replace(const View old_, const View new_) const {
+    Self replace(const View& old_, const View& new_) const {
         const auto indices = find_all(old_);
         const auto m_size = length();
         Self result{m_size + indices.size() * (new_.length() - old_.length()), encoding()};
@@ -788,7 +751,7 @@ public:
      * @param max_split 最大分割次数（可选，-1表示无限制）
      * @return 分割后的字符串向量
      */
-    Vec<Self> split(const View pattern, const isize max_split = -1) const {
+    Vec<Self> split(const View& pattern, const isize max_split = -1) const {
         Vec<Self> res;
         usize start = 0;
         usize split_cnt = 0;
@@ -830,16 +793,9 @@ public:
      * @return 删除后的字符串
      */
     Self remove_all(CodePoint&& codePoint) const {
-        const auto m_size = length();
-        Vec<CodePoint> buf;
-        for (usize i = 0; i < m_size; ++i) {
-            if ((*this)[i] != codePoint) {
-                buf.append((*this)[i]);
-            }
-        }
-        const auto length = buf.size();
-        auto [size, code_points] = buf.separate();
-        return Self(code_points, length, encoding_);
+        return remove_all([&](const auto& cp) {
+            return cp == codePoint;
+        });
     }
 
     /**
@@ -935,7 +891,7 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    Pair<usize, usize> get_trim_index(const View pattern) const {
+    Pair<usize, usize> get_trim_index(const View& pattern) const {
         usize l = 0, r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
@@ -958,7 +914,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除首部模式后的索引
      */
-    usize get_ltrim_index(const View pattern) const {
+    usize get_ltrim_index(const View& pattern) const {
         usize l = 0;
         const auto r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
@@ -981,31 +937,11 @@ private:
      * @param pattern 要去除的模式
      * @return 去除尾部模式后的索引
      */
-    usize get_rtrim_index(const View pattern) const {
+    usize get_rtrim_index(const View& pattern) const {
         const usize l = 0, p_size = pattern.length();
         auto r = length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
-    }
-
-    /**
-     * @brief KMP辅助函数，求next数组
-     * @param pattern 模式串
-     * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
-     * @note 时间复杂度为 O(m)，m为模式串的长度
-     */
-    static Vec<usize> get_next(const View pattern) {
-        const auto p_size = pattern.length();
-        Vec<usize> next(p_size, 0);
-        for (usize i = 1, j = 0; i < p_size; ++i) {
-            // 失配，j按照next数组回跳
-            while (j > 0 && pattern[i] != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += pattern[i] == pattern[j]; // 匹配，j前进
-            next[i] = j;
-        }
-        return next;
     }
 
 private:

@@ -19,7 +19,7 @@ using namespace my;
  * 1 = 开启
  * 0 = 关闭
  */
-#define VERBOSE 0
+#define VERBOSE 1
 
 /**
  * @brief 追踪对象
@@ -33,7 +33,7 @@ using namespace my;
  * 8 = util::DynArray
  * 9 = util::Array
  */
-#define TRACE_OBJECT 8
+#define TRACE_OBJECT 2
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;

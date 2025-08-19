@@ -11,7 +11,7 @@ fn it_works = []() {
     util::StringBuilder sb;
 
     // When
-    sb.append("aaa"_s).append("bbb"_cs).append("ccc").append("你好"_s).append('R');
+    sb.append("aaa"_s).append("bbb").append("ccc").append("你好"_s).append('R');
 
     // Then
     Assertions::assertEquals("aaabbbccc你好R"_s, sb.build());
@@ -58,7 +58,7 @@ fn should_find = []() {
     sb.append("abcdef").append("\r\n\r\r").append("defghi");
 
     // When
-    auto pos = sb.find("\r\n\r\r");
+    auto pos = sb.find("\r\n\r\r"_s);
 
     // Then
     Assertions::assertEquals(6, pos);
@@ -81,7 +81,7 @@ constexpr i32 N = 1e5;
 fn speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
     for (usize i = 0; i < N; ++i) {
-        sb.append("abcdef"_s);
+        sb.append("abcdef");
     }
     auto str = sb.build();
     Assertions::assertEquals(N * 6, str.size());
@@ -90,7 +90,7 @@ fn speed_of_string_builder_append_string = []() {
 fn speed_of_std_string_append_string = []() {
     std::string str;
     for (usize i = 0; i < N; ++i) {
-        str += "abcdef"_cs.data();
+        str += "abcdef";
     }
     Assertions::assertEquals(N * 6, str.length());
 };

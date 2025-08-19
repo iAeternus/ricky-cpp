@@ -10,6 +10,7 @@
 
 #include "CodePoint.hpp"
 #include "Encoding.hpp"
+#include "StringAlgorithm.hpp"
 
 namespace my::util {
 
@@ -20,6 +21,7 @@ class BasicString;
  * @class BasicStringView
  * @brief 字符串视图只读视图
  * @note 源字符串生命周期必须不短于视图生命周期
+ * @note 不推荐直接使用 BasicStringView，建议使用 StringView
  * @tparam Iter 迭代器类型
  */
 template <typename Iter, typename Alloc = Allocator<CodePoint>>
@@ -30,24 +32,6 @@ public:
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     constexpr BasicStringView() noexcept = default;
-
-    // /**
-    //  * @breif 通过字符指针和长度构造
-    //  * @param str 字符指针
-    //  * @param size 长度
-    //  */
-    // BasicStringView(const char* str, const usize size) noexcept :
-    //         begin_(Iter{str}), end_(Iter{str + size}), encoding_(encoding_map(EncodingType::ASCII)) {}
-    //
-    // /**
-    //  * @breif 通过字符指针构造
-    //  * @param str 字符指针
-    //  */
-    // BasicStringView(const char* str) noexcept :
-    //         Self(str, str + std::strlen(str)) {}
-    //
-    // BasicStringView(const char* begin, const char* end) noexcept :
-    //         begin_(Iter{begin}), end_(Iter{end}), encoding_(encoding_map(EncodingType::ASCII)) {}
 
     /**
      * @brief 通过首尾迭代器构造
@@ -158,22 +142,8 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const Self pattern, const usize pos = 0) const {
-        if (pattern.empty()) return npos;
-        const auto m_size = length(), p_size = pattern.length();
-        const auto next = get_next(pattern);
-        for (usize i = pos, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && this->operator[](i) != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += this->operator[](i) == pattern[j]; // 匹配，j前进
-            // 模式串匹配完，返回文本串匹配起点
-            if (j == p_size) {
-                return i - p_size + 1;
-            }
-        }
-        return npos;
+    usize find(const Self& pattern, const usize pos = 0) const {
+        return StringAlgorithm::kmp_find(begin() + pos, end(), pattern.begin(), pattern.end());
     }
 
     /**
@@ -182,24 +152,8 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    Vec<usize> find_all(const Self pattern) const {
-        Vec<usize> res;
-        if (pattern.empty()) return res;
-        const auto m_size = length(), p_size = pattern.length();
-        const auto next = get_next(pattern);
-        for (usize i = 0, j = 0; i < m_size; ++i) {
-            // 失配，j按照next回跳
-            while (j > 0 && this->operator[](i) != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += this->operator[](i) == pattern[j]; // 匹配，j前进
-            // 模式串匹配完，收集文本串匹配起点
-            if (j == p_size) {
-                res.append(i - p_size + 1);
-                j = next[j - 1];
-            }
-        }
-        return res;
+    Vec<usize> find_all(const Self& pattern) const {
+        return StringAlgorithm::kmp_find_all(begin(), end(), pattern.begin(), pattern.end());
     }
 
     /**
@@ -207,7 +161,7 @@ public:
      * @param prefix 要检查的子字符串
      * @return 是否以指定子字符串开头
      */
-    bool starts_with(const Self prefix) const {
+    bool starts_with(const Self& prefix) const {
         if (length() < prefix.size()) {
             return false;
         }
@@ -219,7 +173,7 @@ public:
      * @param suffix 要检查的子字符串
      * @return 是否以指定子字符串结尾
      */
-    bool ends_with(const Self suffix) const {
+    bool ends_with(const Self& suffix) const {
         if (length() < suffix.size()) {
             return false;
         }
@@ -256,7 +210,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self trim(const Self pattern) const {
+    Self trim(const Self& pattern) const {
         auto [l, r] = get_trim_index(pattern);
         return slice(l, r);
     }
@@ -266,7 +220,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self ltrim(const Self pattern) const {
+    Self ltrim(const Self& pattern) const {
         return slice(get_ltrim_index(pattern));
     }
 
@@ -275,7 +229,7 @@ public:
      * @param pattern 要去除的模式
      * @return 去除模式后的字符串
      */
-    Self rtrim(const Self pattern) const {
+    Self rtrim(const Self& pattern) const {
         return slice(get_rtrim_index(pattern));
     }
 
@@ -296,17 +250,16 @@ public:
         return std::equal(begin_, end_, other.begin_);
     }
 
-    // TODO 段错误
-    // [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-    //     auto min_size = std::min(this->length(), other.length());
-    //     for (usize i = 0; i < min_size; ++i) {
-    //         auto cmp = this->operator[](i).__cmp__(other[i]);
-    //         if (cmp != 0) {
-    //             return cmp;
-    //         }
-    //     }
-    //     return static_cast<usize>(this->length() - other.length());
-    // }
+    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+        auto min_size = std::min(this->length(), other.length());
+        for (usize i = 0; i < min_size; ++i) {
+            auto cmp = this->operator[](i).__cmp__(other[i]);
+            if (cmp != 0) {
+                return cmp;
+            }
+        }
+        return static_cast<usize>(this->length() - other.length());
+    }
 
     // 迭代器接口
     const_iterator begin() const noexcept { return begin_; }
@@ -336,7 +289,7 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    Pair<usize, usize> get_trim_index(const Self pattern) const {
+    Pair<usize, usize> get_trim_index(const Self& pattern) const {
         usize l = 0, r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
@@ -359,7 +312,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除首部模式后的索引
      */
-    usize get_ltrim_index(const Self pattern) const {
+    usize get_ltrim_index(const Self& pattern) const {
         usize l = 0;
         const auto r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
@@ -382,31 +335,11 @@ private:
      * @param pattern 要去除的模式
      * @return 去除尾部模式后的索引
      */
-    usize get_rtrim_index(const Self pattern) const {
+    usize get_rtrim_index(const Self& pattern) const {
         const usize l = 0, p_size = pattern.length();
         auto r = length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
-    }
-
-    /**
-     * @brief KMP辅助函数，求next数组
-     * @param pattern 模式串
-     * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
-     * @note 时间复杂度为 O(m)，m为模式串的长度
-     */
-    static Vec<usize> get_next(const Self pattern) {
-        const auto p_size = pattern.length();
-        Vec<usize> next(p_size, 0);
-        for (usize i = 1, j = 0; i < p_size; ++i) {
-            // 失配，j按照next数组回跳
-            while (j > 0 && pattern[i] != pattern[j]) {
-                j = next[j - 1];
-            }
-            j += pattern[i] == pattern[j]; // 匹配，j前进
-            next[i] = j;
-        }
-        return next;
     }
 
 private:

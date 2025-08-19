@@ -285,25 +285,26 @@ fn test_string_view = []() {
     Assertions::assertEquals("bc我de"_s, sv.to_string());
 };
 
-// fn should_string_view_compare = []() {
-//     // Given
-//     util::StringView s = "abc"_s;
-//     util::StringView s2 = "abd"_s;
-//     util::StringView s3 = "abcc"_s;
-//     util::StringView s4 = "abc"_s;
-//
-//     // When
-//     cmp_t res = s.__cmp__(s2);
-//     cmp_t res2 = s.__cmp__(s3);
-//     cmp_t res3 = s2.__cmp__(s3);
-//     cmp_t res4 = s.__cmp__(s4);
-//
-//     // Then
-//     Assertions::assertEquals(-1, res);
-//     Assertions::assertEquals(-1, res2);
-//     Assertions::assertEquals(1, res3);
-//     Assertions::assertEquals(0, res4);
-// };
+fn should_string_view_compare = []() {
+    // Given
+    util::String s = "abc_abd_abcc";
+    util::StringView s1(s, 0, 3);
+    util::StringView s2(s, 4, 3);
+    util::StringView s3(s, 8, 4);
+    util::StringView s4(s, 0, 3);
+
+    // When
+    cmp_t res = s1.__cmp__(s2);
+    cmp_t res2 = s1.__cmp__(s3);
+    cmp_t res3 = s2.__cmp__(s3);
+    cmp_t res4 = s1.__cmp__(s4);
+
+    // Then
+    Assertions::assertEquals(-1, res);
+    Assertions::assertEquals(-1, res2);
+    Assertions::assertEquals(1, res3);
+    Assertions::assertEquals(0, res4);
+};
 
 fn test_string() {
     UnitTestGroup group{"test_string"};
@@ -328,7 +329,7 @@ fn test_string() {
     group.addTest("should_compare", should_compare);
     group.addTest("should_remove_all", should_remove_all);
     group.addTest("test_string_view", test_string_view);
-    // group.addTest("should_string_view_compare", should_string_view_compare);
+    group.addTest("should_string_view_compare", should_string_view_compare);
 
     group.startAll();
 }
