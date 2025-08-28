@@ -19,16 +19,17 @@ namespace my::util {
  * @class CodePoint
  * @brief 码点抽象
  */
-class CodePoint : public Object<CodePoint> {
+template <EncodingType Enc = EncodingType::UTF8>
+class CodePoint : public Object<CodePoint<Enc>> {
 public:
-    using Self = CodePoint;
+    using Self = CodePoint<Enc>;
     using Super = Object<Self>;
     using Alloc = Allocator<char>;
 
-    static const Array<CodePoint> BLANK;
-    static const Array<CodePoint> DIGIT;
-    static const Array<CodePoint> LOWER_CASE_LETTER;
-    static const Array<CodePoint> UPPER_CASE_LETTER;
+    static const Array<Self> BLANK;
+    static const Array<Self> DIGIT;
+    static const Array<Self> LOWER_CASE_LETTER;
+    static const Array<Self> UPPER_CASE_LETTER;
 
     CodePoint() :
             code_size_(0), byte_code_(nullptr) {}
@@ -38,8 +39,8 @@ public:
         byte_code_[0] = ch;
     }
 
-    CodePoint(const char* str, const Encoding* encoding) :
-            code_size_(encoding->byte_size(str)), byte_code_(alloc_.allocate(code_size_)) {
+    CodePoint(const char* str) :
+            code_size_(EncodingTraits<Enc>::char_size(str)), byte_code_(alloc_.allocate(code_size_)) {
         std::memcpy(data(), str, code_size_);
     }
 
@@ -99,6 +100,13 @@ public:
      */
     usize size() const noexcept {
         return code_size_;
+    }
+
+    /**
+     * @brief 获取编码类型
+     */
+    static constexpr EncodingType encoding() noexcept {
+        return Enc;
     }
 
     operator char() const {
@@ -183,16 +191,21 @@ private:
     char* byte_code_; // 字节码
 };
 
-inline const Array<CodePoint> CodePoint::BLANK = {' ', '\0', '\t', '\n', '\r', '\v', '\f'};
-inline const Array<CodePoint> CodePoint::DIGIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
-inline const Array<CodePoint> CodePoint::LOWER_CASE_LETTER = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
-inline const Array<CodePoint> CodePoint::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+template <EncodingType Enc>
+inline const Array<CodePoint<Enc>> CodePoint<Enc>::BLANK = {' ', '\0', '\t', '\n', '\r', '\v', '\f'};
+template <EncodingType Enc>
+inline const Array<CodePoint<Enc>> CodePoint<Enc>::DIGIT = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+template <EncodingType Enc>
+inline const Array<CodePoint<Enc>> CodePoint<Enc>::LOWER_CASE_LETTER = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'};
+template <EncodingType Enc>
+inline const Array<CodePoint<Enc>> CodePoint<Enc>::UPPER_CASE_LETTER = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 /**
  * @brief 码点内存池
  * @note 性能堪忧，是构造函数的一半，但可以节省内存
  */
-class CodePointPool : public Object<CodePointPool> {
+template <EncodingType Enc = EncodingType::UTF8>
+class CodePointPool : public Object<CodePointPool<Enc>> {
 public:
     using Self = CodePointPool;
     using Super = Object<Self>;
@@ -206,30 +219,30 @@ public:
     }
 
     // ASCII码点静态池，避免频繁分配和锁竞争
-    std::shared_ptr<const CodePoint> get(char ch) {
-        static std::shared_ptr<const CodePoint> ascii_pool[128] = {};
+    std::shared_ptr<const CodePoint<Enc>> get(char ch) {
+        static std::shared_ptr<const CodePoint<Enc>> ascii_pool[128] = {};
         const auto idx = static_cast<unsigned char>(ch);
         if (idx < 128) {
             if (!ascii_pool[idx]) {
-                ascii_pool[idx] = std::make_shared<CodePoint>(ch);
+                ascii_pool[idx] = std::make_shared<CodePoint<Enc>>(ch);
             }
             return ascii_pool[idx];
         }
         const auto hash = static_cast<hash_t>(ch);
         return get_impl(hash, [ch]() {
-            return std::make_shared<CodePoint>(ch);
+            return std::make_shared<CodePoint<Enc>>(ch);
         });
     }
 
-    std::shared_ptr<const CodePoint> get(const char* str, Encoding* encoding) {
-        const auto code_size = encoding->byte_size(str);
+    std::shared_ptr<const CodePoint<Enc>> get(const char* str) {
+        const auto code_size = EncodingTraits<Enc>::char_size(str);
         // 单字节ASCII直接用静态池
         if (code_size == 1 && static_cast<unsigned char>(str[0]) < 128) {
             return get(str[0]);
         }
         const auto hash = bytes_hash(str, code_size);
-        return get_impl(hash, [str, encoding]() {
-            return std::make_shared<CodePoint>(str, encoding);
+        return get_impl(hash, [str]() {
+            return std::make_shared<CodePoint<Enc>>(str);
         });
     }
 
@@ -237,7 +250,7 @@ private:
     CodePointPool() = default;
 
     template <typename F>
-    std::shared_ptr<const CodePoint> get_impl(hash_t hash, F&& factory) {
+    std::shared_ptr<const CodePoint<Enc>> get_impl(hash_t hash, F&& factory) {
         std::shared_lock lock(mutex_);
         if (pool_.contains(hash)) {
             return pool_.get(hash);
@@ -257,20 +270,22 @@ private:
 private:
     static CodePointPool* instance_;
     mutable std::shared_mutex mutex_;
-    Dict<hash_t, std::shared_ptr<const CodePoint>> pool_;
+    Dict<hash_t, std::shared_ptr<const CodePoint<Enc>>> pool_;
 };
 
-inline CodePointPool* CodePointPool::instance_ = nullptr;
+template <EncodingType Enc>
+inline CodePointPool<Enc>* CodePointPool<Enc>::instance_ = nullptr;
 
 /**
  * @brief 获取字符串的所有码点
  * @exception Exception 若码点越界，说明存在非法编码的码点，则抛出 runtime_exception
  */
-fn get_code_points(const char* str, const usize len, Encoding* encoding) -> Vec<CodePoint> {
-    Vec<CodePoint> cps;
+template <EncodingType Enc>
+fn get_code_points(const char* str, const usize len) -> Vec<CodePoint<Enc>> {
+    Vec<CodePoint<Enc>> cps;
     usize i = 0;
     while (i < len) {
-        cps.append(*CodePointPool::instance().get(str + i, encoding));
+        cps.append(*CodePointPool<Enc>::instance().get(str + i));
         i += cps.back().size();
         if (i > len) throw runtime_exception("invalid encoding, code point out of range");
     }

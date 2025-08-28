@@ -15,7 +15,8 @@ namespace my::util {
  * @class StringBuilder
  * @brief 字符串构建器
  */
-class StringBuilder : public Object<StringBuilder> {
+template <EncodingType Enc = EncodingType::UTF8>
+class StringBuilder : public Object<StringBuilder<Enc>> {
 public:
     using Self = StringBuilder;
 
@@ -24,9 +25,15 @@ public:
      * @param initial_capacity 初始预分配容量，减少扩容次数
      * @param enc 字符串编码类型，默认为 UTF8
      */
-    explicit StringBuilder(const usize initial_capacity = 64, const EncodingType enc = EncodingType::UTF8) :
-            encoding_(encoding_map(enc)) {
+    explicit StringBuilder(const usize initial_capacity = 64, const EncodingType enc = EncodingType::UTF8) {
         buf_.reserve(initial_capacity);
+    }
+
+    /**
+     * @brief 获取编码类型
+     */
+    static constexpr EncodingType encoding() noexcept {
+        return Enc;
     }
 
     /**
@@ -89,7 +96,7 @@ public:
      * @param cp 要追加的码点
      * @return 构建器自身引用
      */
-    Self& append(const CodePoint& cp) {
+    Self& append(const CodePoint<Enc>& cp) {
         buf_.append(cp);
         return *this;
     }
@@ -127,7 +134,7 @@ public:
      * @param count 码点数量
      * @return 构建器自身引用
      */
-    Self& append_n(const CodePoint& cp, const usize count) {
+    Self& append_n(const CodePoint<Enc>& cp, const usize count) {
         buf_.reserve(buf_.size() + count);
         for (usize i = 0; i < count; ++i) {
             buf_.append(cp);
@@ -141,7 +148,7 @@ public:
      * @param cnt 码点数组长度
      * @return 构建器自身引用
      */
-    Self& append_array(const CodePoint* cps, const usize cnt) {
+    Self& append_array(const CodePoint<Enc>* cps, const usize cnt) {
         buf_.reserve(buf_.size() + cnt);
         for (usize i = 0; i < cnt; ++i) {
             buf_.append(cps[i]);
@@ -157,7 +164,7 @@ public:
     [[nodiscard]] String build() const {
         Vec tmp(buf_);
         auto [size, code_points] = tmp.separate();
-        return {code_points, size, encoding_};
+        return {code_points, size};
     }
 
     /**
@@ -167,7 +174,7 @@ public:
      */
     [[nodiscard]] String build_move() {
         auto [size, code_points] = buf_.separate();
-        return {code_points, size, encoding_};
+        return {code_points, size};
     }
 
     /**
@@ -202,9 +209,17 @@ public:
     }
 
 private:
-    Vec<CodePoint> buf_; // 码点缓冲区，存储所有追加内容
-    Encoding* encoding_; // 字符串编码类型
+    Vec<CodePoint<Enc>> buf_; // 码点缓冲区，存储所有追加内容
 };
+
+/**
+ * @brief StringBuilder 类型别名
+ */
+using Utf16StringBuilder = StringBuilder<EncodingType::UTF16>;
+using Utf32StringBuilder = StringBuilder<EncodingType::UTF32>;
+using Gb2312StringBuilder = StringBuilder<EncodingType::GB2312>;
+using Latin1StringBuilder = StringBuilder<EncodingType::LATIN1>;
+using AsciiStringBuilder = StringBuilder<EncodingType::ASCII>;
 
 } // namespace my::util
 

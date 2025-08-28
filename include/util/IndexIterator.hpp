@@ -36,12 +36,12 @@ public:
     using reference = value_type&;
     using const_reference = const value_type&;
 
-    explicit IndexIterator(container_t* container = nullptr, const usize index = 0) :
+    IndexIterator(container_t* container = nullptr, const usize index = 0) :
             container_(container), index_(index) {}
 
     template <bool OtherConst>
         requires(IsConst && !OtherConst)
-    explicit IndexIterator(const IndexIterator<OtherConst, C, V>& other) :
+    IndexIterator(const IndexIterator<OtherConst, C, V>& other) :
             container_(other.container_), index_(other.index_) {}
 
     IndexIterator(const Self& other) :

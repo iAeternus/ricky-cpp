@@ -40,7 +40,7 @@ public:
      * @return json字符串
      */
     static fn parse(const Json& json)->JsonType::JsonStr {
-        return util::String{json.__str__(), util::EncodingType::UTF8};
+        return util::String{json.__str__()};
     }
 
 private:
@@ -50,7 +50,7 @@ private:
      * @param stopSign 停止字符
      * @return 解析后的JSON对象和剩余的字符串
      */
-    static fn parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint& stopSign)->Pair<Json, JsonType::JsonStr> {
+    static fn parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint<>& stopSign)->Pair<Json, JsonType::JsonStr> {
         jsonStr = jsonStr.trim();
         if (jsonStr.size() == 0) {
             throw argument_exception("json string is empty");

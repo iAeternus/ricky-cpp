@@ -30,11 +30,11 @@ public:
      */
     struct Node {
         usize idx;
-        CodePoint data;
+        CodePoint<> data;
         u32 freq;
         usize lch = NIL, rch = NIL;
 
-        Node(const usize idx, const CodePoint& data, const u32 freq) :
+        Node(const usize idx, const CodePoint<>& data, const u32 freq) :
                 idx(idx), data(data), freq(freq) {}
 
         Node(const usize idx, const u32 freq, const usize lch, const usize rch) :
@@ -208,12 +208,12 @@ private:
     }
 
 private:
-    String text_;                  // 原始文本
-    String encoded_text_;          // 编码后的文本
-    Vec<Node> nodes_;              // 树结构
-    Dict<CodePoint, CString> key_; // 密钥
-    Dict<CodePoint, u32> freqs_;   // 字符出现频率
-    usize root_idx_ = NIL;         // 根索引
+    String text_;                    // 原始文本
+    String encoded_text_;            // 编码后的文本
+    Vec<Node> nodes_;                // 树结构
+    Dict<CodePoint<>, CString> key_; // 密钥
+    Dict<CodePoint<>, u32> freqs_;   // 字符出现频率
+    usize root_idx_ = NIL;           // 根索引
 };
 
 } // namespace my::util

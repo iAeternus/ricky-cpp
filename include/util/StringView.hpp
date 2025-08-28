@@ -9,12 +9,11 @@
 #define STRING_VIEW_HPP
 
 #include "CodePoint.hpp"
-#include "Encoding.hpp"
 #include "StringAlgorithm.hpp"
 
 namespace my::util {
 
-template <typename Alloc>
+template <EncodingType Enc, typename Alloc>
 class BasicString;
 
 /**
@@ -24,10 +23,11 @@ class BasicString;
  * @note 不推荐直接使用 BasicStringView，建议使用 StringView
  * @tparam Iter 迭代器类型
  */
-template <typename Iter, typename Alloc = Allocator<CodePoint>>
+template <typename Iter, EncodingType Enc = EncodingType::UTF8, typename Alloc = Allocator<CodePoint<Enc>>>
 class BasicStringView : public Object<BasicStringView<Iter>> {
 public:
-    using Self = BasicStringView<Iter, Alloc>;
+    using Self = BasicStringView<Iter, Enc, Alloc>;
+    using String = BasicString<Enc, Alloc>;
     using const_iterator = Iter;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -39,20 +39,19 @@ public:
      * @param end 视图尾后迭代器
      * @param enc 字符串编码
      */
-    BasicStringView(Iter begin, Iter end, const EncodingType enc = EncodingType::UTF8) noexcept :
-            begin_(begin), end_(end), encoding_(encoding_map(enc)) {}
+    BasicStringView(Iter begin, Iter end) noexcept :
+            begin_(begin), end_(end) {}
 
     /**
      * @brief 通过字符串对象构造全视图
      */
-    BasicStringView(const BasicString<Alloc>& str) noexcept :
-            begin_(str.cbegin()), end_(str.cend()), encoding_(str.encoding()) {}
+    BasicStringView(const String& str) noexcept :
+            begin_(str.cbegin()), end_(str.cend()) {}
 
     /**
      * @brief 通过绝对首索引和视图长度构造
      */
-    BasicStringView(const BasicString<Alloc>& str, usize pos, usize len) noexcept :
-            encoding_(str.encoding()) {
+    BasicStringView(const String& str, usize pos, usize len) noexcept {
         const auto size = str.length();
         pos = std::min(pos, size);
         len = std::min(len, size - pos);
@@ -85,11 +84,10 @@ public:
     }
 
     /**
-     * @brief 获取编码
-     * @return 编码
+     * @brief 获取编码类型
      */
-    constexpr Encoding* encoding() const noexcept {
-        return encoding_;
+    static constexpr EncodingType encoding() noexcept {
+        return Enc;
     }
 
     /**
@@ -107,7 +105,7 @@ public:
      */
     Self slice(usize start, isize end) const {
         end = neg_index(end, static_cast<isize>(length()));
-        return Self(begin() + start, begin() + static_cast<usize>(end), encoding_->type());
+        return Self(begin() + start, begin() + static_cast<usize>(end));
     }
 
     /**
@@ -124,7 +122,7 @@ public:
      * @param c 要查找的字符
      * @return 字符的位置，未找到返回 `npos`
      */
-    usize find(const CodePoint& c) const {
+    usize find(const CodePoint<Enc>& c) const {
         usize idx = 0;
         for (auto it = begin(); it != end(); ++it) {
             if (*it == c) {
@@ -236,8 +234,8 @@ public:
     /**
      * @brief 转换为完整字符串，会拷贝数据
      */
-    constexpr BasicString<Alloc> to_string() const {
-        return BasicString<Alloc>{begin_, end_, encoding_};
+    constexpr String to_string() const {
+        return String{begin_, end_};
     }
 
     [[nodiscard]] bool __equals__(const Self& other) const {
@@ -343,9 +341,8 @@ private:
     }
 
 private:
-    Iter begin_{};       // 视图起始迭代器
-    Iter end_{};         // 视图结束迭代器（尾后）
-    Encoding* encoding_; // 编码信息（不拥有所有权）
+    Iter begin_{}; // 视图起始迭代器
+    Iter end_{};   // 视图结束迭代器（尾后）
 };
 
 /**

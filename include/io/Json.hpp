@@ -529,7 +529,7 @@ private:
         util::StringBuilder res;
         res.append('[');
 
-        util::String curr_indent(indent * depth);
+        util::String curr_indent(indent * depth, ' ');
         bool first = true;
         for (const auto& item : arr) {
             if (!first) res.append(',');
@@ -541,7 +541,7 @@ private:
             first = false;
         }
 
-        res.append('\n').append(util::String(indent * (depth - 1))).append(']');
+        res.append('\n').append(util::String(indent * (depth - 1), ' ')).append(']');
         return res.build();
     }
 
@@ -554,7 +554,7 @@ private:
         util::StringBuilder res;
         res.append('{');
 
-        util::String curr_indent(indent * depth);
+        util::String curr_indent(indent * depth, ' ');
         bool first = true;
         for (const auto& [key, value] : dict) {
             if (!first) res.append(',');
@@ -569,7 +569,7 @@ private:
             first = false;
         }
 
-        res.append('\n').append(util::String(indent * (depth - 1))).append('}');
+        res.append('\n').append(util::String(indent * (depth - 1), ' ')).append('}');
         return res.build();
     }
 

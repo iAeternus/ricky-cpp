@@ -718,13 +718,13 @@ public:
         std::stringstream stream;
         stream << '{';
         for_each([&](const auto& key, const auto& val) {
-            if constexpr (is_same<key_t, CString, String, std::string>) {
+            if constexpr (is_same<key_t, CString/*, String*/, std::string>) {
                 stream << '\"' << key << '\"';
             } else {
                 stream << key;
             }
             stream << ':';
-            if constexpr (is_same<value_t, CString, String, std::string>) {
+            if constexpr (is_same<value_t, CString/*, String*/, std::string>) {
                 stream << '\"' << val << '\"';
             } else {
                 stream << val;

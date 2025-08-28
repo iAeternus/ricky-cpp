@@ -11,7 +11,7 @@
  * - 0 基准测试（运行时间较长）
  * - 1 功能测试
  */
-#define TEST_MODE 1
+#define TEST_MODE 0
 
 #if TEST_MODE == 0
 #include "test_speed.hpp"

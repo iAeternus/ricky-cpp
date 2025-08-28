@@ -34,7 +34,7 @@ fn should_append_n = []() {
     util::StringBuilder sb;
 
     // When
-    sb.append_n(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, 10);
+    sb.append_n(util::CodePoint{"我"}, 10);
 
     // Then
     Assertions::assertEquals("我我我我我我我我我我"_s, sb.build());
@@ -43,7 +43,7 @@ fn should_append_n = []() {
 fn should_append_array = []() {
     // Given
     util::StringBuilder sb;
-    const util::CodePoint cps[] = {'a', util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, 'b', 'c'};
+    const util::CodePoint<> cps[] = {'a', util::CodePoint{"我"}, 'b', 'c'};
 
     // When
     sb.append_array(cps, std::size(cps));

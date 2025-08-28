@@ -281,7 +281,7 @@ fn test_string_view = []() {
     Assertions::assertEquals(5, sv.length());
     Assertions::assertEquals(util::CodePoint{'b'}, sv[0]);
     Assertions::assertEquals(util::CodePoint{'e'}, sv[4]);
-    Assertions::assertEquals(util::CodePoint{"我", util::encoding_map(util::EncodingType::UTF8)}, sv[2]);
+    Assertions::assertEquals(util::CodePoint{"我"}, sv[2]);
     Assertions::assertEquals("bc我de"_s, sv.to_string());
 };
 

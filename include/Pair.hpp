@@ -13,8 +13,6 @@
 
 namespace my {
 
-class String;
-
 /**
  * @class Pair
  * @brief 有序二元组
@@ -112,14 +110,14 @@ public:
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << '(';
-        if constexpr (is_same<S, CString, String, std::string>) {
+        stream << '('; // TODO
+        if constexpr (is_same<S, CString/*, String*/, std::string>) {
             stream << '\"' << first_ << '\"';
         } else {
             stream << first_;
         }
         stream << ", ";
-        if constexpr (is_same<T, CString, String, std::string>) {
+        if constexpr (is_same<T, CString/*, String*/, std::string>) {
             stream << '\"' << second_ << '\"';
         } else {
             stream << second_;

@@ -15,9 +15,6 @@
 
 namespace my::util {
 
-template <typename Alloc>
-class BasicString;
-
 /**
  * @class Dict
  * @brief 哈希字典类，提供高效的键值对存储、检索和更新功能
@@ -495,13 +492,13 @@ public:
         std::stringstream stream;
         stream << '{';
         for (auto&& item : *this) {
-            if constexpr (is_same<key_t, CString, String, std::string>) {
+            if constexpr (is_same<key_t, CString/*, String*/, std::string>) {
                 stream << '\"' << item.key() << '\"';
             } else {
                 stream << item.key();
             }
             stream << ':';
-            if constexpr (is_same<value_t, CString, String, std::string>) {
+            if constexpr (is_same<value_t, CString/*, String*/, std::string>) {
                 stream << '\"' << item.value() << '\"';
             } else {
                 stream << item.value();

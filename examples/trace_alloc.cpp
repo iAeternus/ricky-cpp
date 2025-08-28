@@ -55,9 +55,10 @@ void trace_cstring() {
 }
 
 void trace_string() {
-    using TraceString = util::BasicString<mem::TracingAllocator<util::CodePoint>>;
+    using TraceString = util::BasicString<util::EncodingType::UTF8, mem::TracingAllocator<util::CodePoint<>>>;
+    using Utf16TraceString = util::BasicString<util::EncodingType::UTF16, mem::TracingAllocator<util::CodePoint<util::EncodingType::UTF16>>>;
 #if VERBOSE == 1
-    mem::TracingAllocator<util::CodePoint>::set_verbose(true);
+    mem::TracingAllocator<util::CodePoint<>>::set_verbose(true);
 #endif
 
     util::Vec<char> chs = {'a', 'b', 'c', 'd', 'e', 'f'};
@@ -65,10 +66,10 @@ void trace_string() {
     // 构造
     TraceString c1("你好世界abcdef");
     TraceString c2("abcdef"_cs);
-    TraceString c3("abcdef"_cs, util::EncodingType::ASCII);
-    TraceString c4(util::CodePoint("我", util::encoding_map(util::EncodingType::UTF8)));
+    Utf16TraceString c3("你好世界abcdef"_cs);
+    TraceString c4(util::CodePoint("我"));
     TraceString c5(10, 'a');
-    TraceString c6(chs.begin(), chs.end(), util::encoding_map(util::EncodingType::ASCII));
+    TraceString c6(chs.begin(), chs.end());
 
     // 拷贝
     TraceString c7(c5);

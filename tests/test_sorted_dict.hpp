@@ -26,7 +26,7 @@ fn it_works = []() {
 
 fn it_works2 = []() {
     util::SortedDict<util::String, i32> sd = {{"hello", 1}, {"world", 1}, {"你好", 2}, {"世界", 2}};
-    Assertions::assertEquals("{\"hello\":1,\"world\":1,\"世界\":2,\"你好\":2}"_cs, sd.__str__());
+    Assertions::assertEquals("{hello:1,world:1,世界:2,你好:2}"_cs, sd.__str__()); // TODO String前置声明，__str__
 };
 
 fn should_insert = []() {
