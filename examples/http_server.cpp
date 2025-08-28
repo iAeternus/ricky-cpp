@@ -20,9 +20,9 @@ void example_http_server() {
 
     /**
      * 静态文件服务
-     * http://127.0.0.1:8080/static
+     * http://127.0.0.1:8080/static.txt
      */
-    server.static_file("/static", STATIC_FILE_PATH, 3600);
+    server.static_file("/static.txt", STATIC_FILE_PATH, 3600);
 
     /**
      * 首页

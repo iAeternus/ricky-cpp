@@ -232,10 +232,60 @@ public:
     }
 
     /**
+     * @brief 将当前字符串以pattern作为分隔符分割
+     * @param pattern 分隔符
+     * @param max_split 最大分割次数（可选，-1表示无限制）
+     * @return 分割后的字符串向量
+     */
+    Vec<Self> split(const Self& pattern, const isize max_split = -1) const {
+        Vec<Self> res;
+        usize start = 0;
+        usize split_cnt = 0;
+        const auto m_size = length(), p_size = pattern.length();
+        const auto actual_splits = (max_split < 0) ? m_size : std::min(static_cast<usize>(max_split), m_size);
+
+        // 空模式处理：按每个字符分割
+        if (pattern.empty()) {
+            for (usize i = 0; i < actual_splits; ++i) {
+                res.append(Self(operator[](i)));
+            }
+            if (actual_splits < m_size) {
+                res.append(slice(actual_splits));
+            }
+            return res;
+        }
+
+        const auto positions = find_all(pattern);
+        for (const auto& pos : positions) {
+            if (max_split >= 0 && split_cnt >= actual_splits) {
+                break;
+            }
+            if (pos >= start && pos <= m_size) {
+                res.append(slice(start, pos));
+                start = pos + p_size;
+                split_cnt++;
+            }
+        }
+
+        // 添加最后一段
+        res.append(slice(start));
+
+        return res;
+    }
+
+    /**
      * @brief 转换为完整字符串，会拷贝数据
      */
     constexpr String to_string() const {
         return String{begin_, end_};
+    }
+
+    /**
+     * @brief 返回字符串的哈希值
+     * @return 字符串的哈希值
+     */
+    [[nodiscard]] hash_t __hash__() const {
+        return to_string().__hash__();
     }
 
     [[nodiscard]] bool __equals__(const Self& other) const {

@@ -233,7 +233,7 @@ public:
     static Self from_i32(const i32 val) {
         char buf[16];
         const auto len = std::snprintf(buf, sizeof(buf), "%d", val);
-        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+        return Self(buf, static_cast<usize>(len));
     }
 
     /**
@@ -242,7 +242,7 @@ public:
     static Self from_u32(const u32 val) {
         char buf[16];
         const auto len = std::snprintf(buf, sizeof(buf), "%u", val);
-        return Self(buf, static_cast<usize>(len), EncodingType::UTF8);
+        return Self(buf, static_cast<usize>(len));
     }
 
     /**
@@ -733,7 +733,7 @@ public:
         // 空模式处理：按每个字符分割
         if (pattern.empty()) {
             for (usize i = 0; i < actual_splits; ++i) {
-                res.append(Self((*this)[i]));
+                res.append(Self(operator[](i)));
             }
             if (actual_splits < m_size) {
                 res.append(slice(actual_splits));
@@ -779,8 +779,8 @@ public:
         const auto m_size = length();
         Vec<CodePoint<Enc>> buf;
         for (usize i = 0; i < m_size; ++i) {
-            if (!pred((*this)[i])) {
-                buf.append((*this)[i]);
+            if (!pred(operator[](i))) {
+                buf.append(operator[](i));
             }
         }
         const auto length = buf.size();

@@ -108,9 +108,9 @@ struct HttpRequest : public Object<HttpRequest> {
      * @brief 获取HTTP版本号
      */
     float http_version() const {
-        if (version.starts_with("HTTP/1.1")) return 1.1f;
-        if (version.starts_with("HTTP/1.0")) return 1.0f;
-        if (version.starts_with("HTTP/2.0")) return 2.0f;
+        if (version.starts_with("HTTP/1.1"_s)) return 1.1f;
+        if (version.starts_with("HTTP/1.0"_s)) return 1.0f;
+        if (version.starts_with("HTTP/2.0"_s)) return 2.0f;
         return 0.0f;
     }
 };
@@ -151,7 +151,7 @@ struct HttpResponse : public Object<HttpResponse> {
     /**
      * @brief 设置重定向 TODO 有问题！
      */
-    void set_redirect(const util::String& location, HttpStatusCode code = HttpStatusCode::FOUND) {
+    void set_redirect(const util::String& location, const HttpStatusCode code = HttpStatusCode::FOUND) {
         status = code;
         headers["Location"_s] = location;
         body.clear();
@@ -261,7 +261,7 @@ public:
      * @param path 请求路径
      * @param handler 处理函数
      */
-    void add_route(HttpMethod method, const util::String& path, RouterHandler handler) {
+    void add_route(HttpMethod method, const util::String& path, const RouterHandler& handler) {
         std::lock_guard<std::mutex> lock(routes_mutex_);
         routes_[method][path] = handler;
     }
@@ -271,7 +271,7 @@ public:
      * @param path 请求路径
      * @param handler 处理函数
      */
-    void get(const util::String& path, RouterHandler handler) {
+    void get(const util::String& path, const RouterHandler& handler) {
         add_route(HttpMethod::GET, path, handler);
     }
 
@@ -280,7 +280,7 @@ public:
      * @param path 请求路径
      * @param handler 处理函数
      */
-    void post(const util::String& path, RouterHandler handler) {
+    void post(const util::String& path, const RouterHandler& handler) {
         add_route(HttpMethod::POST, path, handler);
     }
 
@@ -290,7 +290,7 @@ public:
      * @param fs_path 文件系统路径
      * @param cache_max_age 缓存最大时间（秒），0表示不缓存
      */
-    void static_file(const util::String& url_path, const util::String fs_path, u32 cache_max_age = 0) {
+    void static_file(const util::String& url_path, const util::String& fs_path, u32 cache_max_age = 0) {
         static_dirs_[url_path] = {fs_path, cache_max_age};
     }
 
@@ -307,7 +307,7 @@ private:
     /**
      * @brief 发送错误响应
      */
-    void send_error_response(Socket& client, HttpStatusCode status) {
+    static void send_error_response(const Socket& client, HttpStatusCode status) {
         HttpResponse resp;
         resp.status = status;
 
@@ -331,7 +331,7 @@ private:
      * @param client 客户端
      * @param resp HTTP响应
      */
-    void send_response(Socket& client, const HttpResponse& resp) {
+    static void send_response(const Socket& client, const HttpResponse& resp) {
         util::StringBuilder response_builder;
 
         // 状态行
@@ -437,7 +437,7 @@ private:
         io::Log::debug("Request line: {}", SRC_LOC, line);
 
         // 解析请求行
-        auto parts = line.split(" ");
+        auto parts = line.split(" "_s);
         if (parts.size() < 3) {
             throw runtime_exception("Invalid request line: {}", SRC_LOC, line);
         }
@@ -463,7 +463,7 @@ private:
 
             auto key = header_line.slice(0, colon_pos).trim();
             auto value = header_line.slice(colon_pos + 1).trim();
-            req.headers[key.lower()] = value;
+            req.headers[key.to_string().lower()] = value;
         }
 
         // 读取请求体
@@ -485,7 +485,7 @@ private:
     /**
      * @brief 读取一行数据
      */
-    util::String read_line(Socket& client) {
+    static util::String read_line(const Socket& client) {
         util::StringBuilder line;
         char c;
 
@@ -507,7 +507,7 @@ private:
      * @param method_str 方法字符串
      * @return HttpMethod枚举值
      */
-    HttpMethod parse_method(const util::String& method_str) {
+    static HttpMethod parse_method(const util::String& method_str) {
         static const util::Dict<util::String, HttpMethod> method_map = {
             {"GET", HttpMethod::GET},
             {"POST", HttpMethod::POST},
@@ -527,14 +527,14 @@ private:
      * @brief 解析查询参数
      * @param req HTTP请求
      */
-    void parse_query_params(HttpRequest& req) {
+    static void parse_query_params(HttpRequest& req) {
         auto path_end = req.path.find(util::CodePoint('?'));
         if (path_end == npos) return;
 
         auto query_str = req.path.slice(path_end + 1);
         req.path = req.path.slice(0, path_end);
 
-        auto params = query_str.split("&");
+        auto params = query_str.split("&"_s);
         for (const auto& param : params) {
             auto eq_pos = param.find(util::CodePoint('='));
             if (eq_pos != npos) {
@@ -553,7 +553,7 @@ private:
      * @param client 客户端
      * @return 是否处理成功
      */
-    bool handle_static_file(HttpRequest& req, Socket& client) {
+    bool handle_static_file(const HttpRequest& req, const Socket& client) {
         // 只处理GET和HEAD请求
         if (req.method != HttpMethod::GET && req.method != HttpMethod::HEAD) {
             return false;
@@ -565,7 +565,8 @@ private:
                 util::String fs_path = config.fspath + req.path.slice(url_prefix.length());
 
                 // 防止路径遍历攻击
-                if (fs_path.find("..") != npos) {
+                if (fs_path.find(".."_s) != npos) {
+                    io::Log::error("Path traversal detected: {}", SRC_LOC, fs_path);
                     send_error_response(client, HttpStatusCode::FORBIDDEN);
                     return true;
                 }
@@ -590,7 +591,7 @@ private:
                     // 设置MIME类型
                     auto ext_pos = fs_path.find_last_of('.');
                     if (ext_pos != npos) {
-                        auto ext = fs_path.slice(ext_pos + 1).lower();
+                        auto ext = fs_path.slice(ext_pos + 1).to_string().lower();
                         if (mime_types_.contains(ext)) {
                             resp.set_content_type(mime_types_[ext]);
                         } else {
