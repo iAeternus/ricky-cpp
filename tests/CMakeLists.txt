@@ -17,34 +17,34 @@ target_link_options(RICKY_CPP_TESTS PRIVATE $<TARGET_PROPERTY:RICKY_CPP,LINK_OPT
 
 # 链接主项目的库
 get_target_property(MAIN_LIBS RICKY_CPP LINK_LIBRARIES)
-if(MAIN_LIBS)
+if (MAIN_LIBS)
     target_link_libraries(RICKY_CPP_TESTS PRIVATE ${MAIN_LIBS})
-endif()
+endif ()
 
 # 测试专用配置
 target_compile_definitions(RICKY_CPP_TESTS PRIVATE UNIT_TESTING=1)
 
 # 禁用LTO
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(RICKY_CPP_TESTS PRIVATE -fno-lto)
     target_link_options(RICKY_CPP_TESTS PRIVATE -fno-lto)
-endif()
+endif ()
 
 # 确保控制台应用程序
-if(WIN32)
-    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+if (WIN32)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
         target_link_options(RICKY_CPP_TESTS PRIVATE -Wl,-subsystem,console)
-    elseif(MSVC)
+    elseif (MSVC)
         set_target_properties(RICKY_CPP_TESTS PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
-    endif()
-endif()
+    endif ()
+endif ()
 
 # 大对象支持
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(RICKY_CPP_TESTS PRIVATE -Wa,-mbig-obj)
-elseif(MSVC)
+elseif (MSVC)
     target_compile_options(RICKY_CPP_TESTS PRIVATE /bigobj)
-endif()
+endif ()
 
 # -------------------------------------------------------------------
 # 输出与测试注册
