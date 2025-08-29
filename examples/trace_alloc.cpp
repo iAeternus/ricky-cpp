@@ -64,8 +64,8 @@ void trace_string() {
     util::Vec<char> chs = {'a', 'b', 'c', 'd', 'e', 'f'};
 
     // 构造
-    TraceString c1("你好世界abcdef");
-    TraceString c2("abcdef"_cs);
+    TraceString c1("你好世界ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+    TraceString c2("你好世界abcdef"_cs);
     Utf16TraceString c3("你好世界abcdef"_cs);
     TraceString c4(util::CodePoint("我"));
     TraceString c5(10, 'a');
@@ -82,11 +82,15 @@ void trace_string() {
     // +
     TraceString c11;
     for (i32 i = 0; i < 1024; ++i) {
-        c11 += c1;
+        c11 += c2;
     }
 
     // clear
     c4.clear();
+
+    // swap
+    c1.swap(c2);
+    c2.swap(c1);
 }
 
 void trace_vec() {
@@ -116,6 +120,10 @@ void trace_vec() {
     for (i32 i = 0; i < 512; ++i) {
         v2.pop();
     }
+
+    // swap
+    v.swap(v2);
+    v2.swap(v);
 }
 
 void trace_chain() {

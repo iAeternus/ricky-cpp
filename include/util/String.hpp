@@ -147,17 +147,19 @@ public:
      * @param other 要移动的字符串对象
      */
     BasicString(Self&& other) noexcept :
-            length_(other.length_), is_sso_(other.is_sso_) {
+            alloc_(std::move(other.alloc_)),
+            length_(other.length_),
+            is_sso_(other.is_sso_) {
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, std::move(other[i]));
+                alloc_.construct(sso_data + i, std::move(other.sso_data[i]));
             }
         } else {
             heap_storage = other.heap_storage;
+            other.heap_storage = nullptr;
         }
         other.length_ = 0;
         other.is_sso_ = true;
-        other.heap_storage = nullptr;
     }
 
     /**
@@ -179,22 +181,23 @@ public:
      * @return 自身的引用
      */
     Self& operator=(const Self& other) {
-        if (this == &other) return *this;
-        if (!is_sso_ && heap_storage != nullptr) {
-            alloc_.destroy(heap_storage, length_);
-            alloc_.deallocate(heap_storage, length_);
-            heap_storage = nullptr;
-        }
-        this->length_ = other.length_;
-        this->is_sso_ = other.is_sso_;
-        if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, other[i]);
+        if (this != &other) {
+            if (!is_sso_ && heap_storage != nullptr) {
+                alloc_.destroy(heap_storage, length_);
+                alloc_.deallocate(heap_storage, length_);
+                heap_storage = nullptr;
             }
-        } else {
-            heap_storage = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_storage + i, other[i]);
+            length_ = other.length_;
+            is_sso_ = other.is_sso_;
+            if (is_sso_) {
+                for (usize i = 0; i < length_; ++i) {
+                    alloc_.construct(sso_data + i, other.sso_data[i]);
+                }
+            } else {
+                heap_storage = alloc_.allocate(length_);
+                for (usize i = 0; i < length_; ++i) {
+                    alloc_.construct(heap_storage + i, other.heap_storage[i]);
+                }
             }
         }
         return *this;
@@ -206,24 +209,26 @@ public:
      * @return 自身的引用
      */
     Self& operator=(Self&& other) noexcept {
-        if (this == &other) return *this;
-        if (!is_sso_ && heap_storage != nullptr) {
-            alloc_.destroy(heap_storage, length_);
-            alloc_.deallocate(heap_storage, length_);
-            heap_storage = nullptr;
-        }
-        this->length_ = other.length_;
-        this->is_sso_ = other.is_sso_;
-        if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, std::move(other[i]));
+        if (this != &other) {
+            if (!is_sso_ && heap_storage != nullptr) {
+                alloc_.destroy(heap_storage, length_);
+                alloc_.deallocate(heap_storage, length_);
+                heap_storage = nullptr;
             }
-        } else {
-            heap_storage = other.heap_storage;
-            other.heap_storage = nullptr;
+            alloc_ = std::move(other.alloc_);
+            length_ = other.length_;
+            is_sso_ = other.is_sso_;
+            if (is_sso_) {
+                for (usize i = 0; i < length_; ++i) {
+                    alloc_.construct(sso_data + i, std::move(other.sso_data[i]));
+                }
+            } else {
+                heap_storage = other.heap_storage;
+                other.heap_storage = nullptr;
+            }
+            other.length_ = 0;
+            other.is_sso_ = true;
         }
-        other.length_ = 0;
-        other.is_sso_ = true;
         return *this;
     }
 
@@ -788,12 +793,65 @@ public:
         return Self(code_points, length);
     }
 
-    // /**
-    //  * @brief 交换两个字符串
-    //  */
-    // void swap(const Self& _) noexcept {
-    //     // TODO
-    // }
+    /**
+     * @brief 交换两个字符串
+     */
+    /**
+     * @brief 交换两个字符串
+     */
+    void swap(Self& other) noexcept {
+        std::swap(alloc_, other.alloc_);
+        std::swap(length_, other.length_);
+        std::swap(is_sso_, other.is_sso_);
+
+        if (is_sso_ && other.is_sso_) {
+            for (usize i = 0; i < SSO_CAPACITY; ++i) {
+                std::swap(sso_data[i], other.sso_data[i]);
+            }
+        } else if (!is_sso_ && !other.is_sso_) {
+            std::swap(heap_storage, other.heap_storage);
+        } else {
+            CodePoint<Enc> temp_buffer[SSO_CAPACITY];
+
+            if (is_sso_) {
+                for (usize i = 0; i < SSO_CAPACITY; ++i) {
+                    temp_buffer[i] = std::move(sso_data[i]);
+                }
+                if (other.length_ <= SSO_CAPACITY) {
+                    for (usize i = 0; i < other.length_; ++i) {
+                        sso_data[i] = std::move(other.heap_storage[i]);
+                    }
+                    alloc_.destroy(other.heap_storage, other.length_);
+                    alloc_.deallocate(other.heap_storage, other.length_);
+                    other.heap_storage = nullptr;
+                } else {
+                    heap_storage = other.heap_storage;
+                    other.heap_storage = nullptr;
+                }
+                for (usize i = 0; i < SSO_CAPACITY; ++i) {
+                    other.sso_data[i] = std::move(temp_buffer[i]);
+                }
+            } else {
+                for (usize i = 0; i < SSO_CAPACITY; ++i) {
+                    temp_buffer[i] = std::move(other.sso_data[i]);
+                }
+                if (length_ <= SSO_CAPACITY) {
+                    for (usize i = 0; i < length_; ++i) {
+                        other.sso_data[i] = std::move(heap_storage[i]);
+                    }
+                    alloc_.destroy(heap_storage, length_);
+                    alloc_.deallocate(heap_storage, length_);
+                    heap_storage = nullptr;
+                } else {
+                    other.heap_storage = heap_storage;
+                    heap_storage = nullptr;
+                }
+                for (usize i = 0; i < SSO_CAPACITY; ++i) {
+                    sso_data[i] = std::move(temp_buffer[i]);
+                }
+            }
+        }
+    }
 
     /**
      * @brief 返回字符串的 C 风格字符串表示
