@@ -796,9 +796,6 @@ public:
     /**
      * @brief 交换两个字符串
      */
-    /**
-     * @brief 交换两个字符串
-     */
     void swap(Self& other) noexcept {
         std::swap(alloc_, other.alloc_);
         std::swap(length_, other.length_);
