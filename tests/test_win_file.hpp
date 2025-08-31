@@ -33,7 +33,7 @@ fn should_fail_to_construct_if_mode_invalid = []() {
     auto path = fs::win::join(CLASS_PATH, "test1.txt");
 
     // When & Then
-    Assertions::assertThrows("invalid value x, that only support [w, r, a]", [path]() {
+    Assertions::assertThrows("Invalid value x, that only support [w, r, a]", [path]() {
         fs::win::File(path, "x");
     });
 };

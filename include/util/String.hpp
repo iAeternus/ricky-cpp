@@ -371,7 +371,7 @@ public:
      */
     CodePoint<Enc>& at(usize index) {
         if (index > length_) {
-            throw index_out_of_bounds_exception("index {} out of bounds [0..{}]", SRC_LOC, index, length_);
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", SRC_LOC, index, length_);
         }
         return operator[](index);
     }
@@ -384,7 +384,7 @@ public:
      */
     const CodePoint<Enc>& at(const usize index) const {
         if (index > length_) {
-            throw index_out_of_bounds_exception("index {} out of bounds [0..{}]", SRC_LOC, index, length_);
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", SRC_LOC, index, length_);
         }
         return operator[](index);
     }
@@ -719,7 +719,7 @@ public:
             }
         }
 
-        throw runtime_exception("unmatched parentheses, too many left parentheses");
+        throw runtime_exception("Unmatched parentheses, too many left parentheses");
     }
 
     /**

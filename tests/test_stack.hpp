@@ -29,7 +29,7 @@ fn should_fail_to_peek_if_stack_is_empty = []() {
     util::Stack<i32> st;
 
     // When & Then
-    Assertions::assertThrows("stack is empty.", [&]() {
+    Assertions::assertThrows("Stack is empty.", [&]() {
         st.peek();
     });
 };

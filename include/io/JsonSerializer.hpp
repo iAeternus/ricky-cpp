@@ -86,7 +86,7 @@ public:
     static void do_deserialize(const util::String& str, util::Vec<T>& res) {
         auto json = parse_json(str);
         if (!json.is<JsonType::JsonArray>()) {
-            throw type_exception("expected array for container");
+            throw type_exception("Expected array for container");
         }
         res.clear();
         const auto& array = json.into<JsonType::JsonArray>();
@@ -101,7 +101,7 @@ public:
     static void do_deserialize(const util::String& str, util::Dict<util::String, V>& res) {
         auto json = parse_json(str);
         if (!json.is<JsonType::JsonDict>()) {
-            throw type_exception("expected dict for container");
+            throw type_exception("Expected dict for container");
         }
         res.clear();
         const auto& dict = json.into<JsonType::JsonDict>();

@@ -95,7 +95,7 @@ public:
      */
     void sendto(const char* data, usize size, i32 flags = 0) const {
         if (server_addr_.get_socklen() == 0) {
-            throw runtime_exception("server address is not set");
+            throw runtime_exception("Server address is not set");
         }
         socket_.sendto(data, size, server_addr_, flags);
     }

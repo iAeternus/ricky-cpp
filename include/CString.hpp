@@ -43,7 +43,7 @@ public:
      * @param begin 指向切片首地址
      * @param end 指向切片尾后地址
      */
-    CStringView(const char* begin, const char* end) :
+    CStringView(const char* begin, const char* end) noexcept :
             begin_(begin), end_(end) {}
 
     /**
@@ -51,7 +51,7 @@ public:
      * @param begin 指向切片首地址
      * @param size 切片长度
      */
-    CStringView(const char* begin, const usize size) :
+    CStringView(const char* begin, const usize size) noexcept :
             begin_(begin), end_(begin_ + size) {}
 
     /**
@@ -67,7 +67,7 @@ public:
      * @brief 字符串视图长度，适配可迭代约束
      * @return 字符串视图长度
      */
-    usize size() const noexcept {
+    constexpr usize size() const noexcept {
         return begin_ ? (end_ - begin_) : 0;
     }
 
@@ -75,7 +75,7 @@ public:
      * @brief 字符串视图长度
      * @return 字符串视图长度
      */
-    usize length() const noexcept {
+    constexpr usize length() const noexcept {
         return begin_ ? (end_ - begin_) : 0;
     }
 
@@ -83,8 +83,8 @@ public:
      * @brief 判断是否为空视图
      * @return true=是 false=否
      */
-    bool empty() const noexcept {
-        return length() == 0;
+    constexpr bool empty() const noexcept {
+        return begin_ == end_;
     }
 
     /**
@@ -93,7 +93,7 @@ public:
      * @param idx 索引位置
      * @return 索引位置的字符引用
      */
-    char operator[](const usize idx) const noexcept {
+    constexpr char operator[](const usize idx) const noexcept {
         return *(begin_ + idx);
     }
 
@@ -102,8 +102,8 @@ public:
      * @return 新字符串
      */
     template <typename Alloc = Allocator<char>>
-    [[nodiscard]] BasicCString<Alloc> to_string() const {
-        return {begin_, length()};
+    [[nodiscard]] constexpr BasicCString<Alloc> to_string() const {
+        return BasicCString<Alloc>{begin_, length()};
     }
 
     /**
@@ -112,7 +112,7 @@ public:
      * @param v2 第二个切片
      * @return true=相等 false=不相等
      */
-    friend bool operator==(const Self& v1, const Self& v2) {
+    friend constexpr bool operator==(const Self& v1, const Self& v2) {
         if (v1.length() != v2.length()) {
             return false;
         }
@@ -125,8 +125,8 @@ public:
     using iterator = const char*;
     using const_iterator = const char*;
 
-    [[nodiscard]] const_iterator begin() const noexcept { return begin_; }
-    [[nodiscard]] const_iterator end() const noexcept { return end_; }
+    [[nodiscard]] constexpr const_iterator begin() const noexcept { return begin_; }
+    [[nodiscard]] constexpr const_iterator end() const noexcept { return end_; }
 
 private:
     const char* begin_; // 指向切片首地址
@@ -189,7 +189,7 @@ public:
     /**
      * @brief 析构函数，释放动态分配的内存
      */
-    ~BasicCString() {
+    ~BasicCString() noexcept {
         alloc_.deallocate(str_, len_ + 1);
     }
 
@@ -220,6 +220,7 @@ public:
 
         char* new_str = alloc_.allocate(other.len_ + 1);
         std::memcpy(new_str, other.str_, other.len_ + 1);
+
         alloc_.deallocate(str_, len_ + 1);
 
         str_ = new_str;
@@ -237,9 +238,10 @@ public:
         if (this == &other) return *this;
 
         alloc_.deallocate(str_, len_ + 1);
+
+        alloc_ = std::move(other.alloc_);
         str_ = other.str_;
         len_ = other.len_;
-        alloc_ = std::move(other.alloc_);
 
         other.str_ = nullptr;
         other.len_ = 0;
@@ -271,7 +273,7 @@ public:
      * @brief 隐式转换为 const char* 类型
      * @return 字符串的 const char* 表示
      */
-    operator const char*() const {
+    operator const char*() const noexcept {
         return data();
     }
 
@@ -279,7 +281,7 @@ public:
      * @brief 隐式转换为 char* 类型
      * @return 字符串的 char* 表示
      */
-    operator char*() {
+    operator char*() noexcept {
         return data();
     }
 
@@ -287,7 +289,7 @@ public:
      * @brief 隐式转换为 boolean 类型（非空为 true）
      * @return 字符串是否非空
      */
-    operator bool() {
+    operator bool() noexcept {
         return length() != 0;
     }
 
@@ -313,7 +315,7 @@ public:
      * @brief 获取字符串的长度，适配可迭代约束
      * @return 字符串的长度
      */
-    usize size() const {
+    constexpr usize size() const noexcept {
         return len_;
     }
 
@@ -321,7 +323,7 @@ public:
      * @brief 获取字符串的长度
      * @return 字符串的长度
      */
-    usize length() const {
+    constexpr usize length() const noexcept {
         return len_;
     }
 
@@ -329,7 +331,7 @@ public:
      * @brief 判断字符串是否为空
      * @return true=是 false=否
      */
-    bool empty() const {
+    constexpr bool empty() const noexcept {
         return len_ == 0;
     }
 
@@ -337,7 +339,7 @@ public:
      * @brief 获取字符串的起始地址
      * @return 字符串的起始地址
      */
-    char* data() {
+    constexpr char* data() noexcept {
         return str_;
     }
 
@@ -345,18 +347,25 @@ public:
      * @brief 获取字符串的起始地址（常量版本）
      * @return 字符串的起始地址
      */
-    const char* data() const {
+    constexpr const char* data() const noexcept {
         return str_;
     }
 
     /**
-     * @brief 字符串切片，返回指定范围的子字符串
+     * @brief 字符串切片，返回指定范围的子视图
      * @param start 起始索引
      * @param end 结束索引（不包含）
-     * @return 子字符串
+     * @return 子视图，若起始索引大于长度，则返回空视图
      */
     CStringView slice(const usize start, isize end) const {
+        if (start > len_) {
+            return CStringView{nullptr, nullptr};
+        }
+
         end = neg_index(end, static_cast<isize>(length()));
+        if (end > static_cast<isize>(len_)) {
+            end = len_;
+        }
         return CStringView{str_ + start, end - start};
     }
 
@@ -372,7 +381,7 @@ public:
     /**
      * @brief 查找指定字符，找不到返回npos
      */
-    usize find(const char ch) const {
+    usize find(const char ch) const noexcept {
         const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             if (str_[i] == ch) {
@@ -385,7 +394,7 @@ public:
     /**
      * @brief 查找第一个不匹配的位置，若全部匹配，返回npos
      */
-    usize find_first_not_of(const char ch) const {
+    usize find_first_not_of(const char ch) const noexcept {
         const auto m_size = length();
         for (usize i = 0; i < m_size; ++i) {
             if (str_[i] != ch) {
@@ -402,7 +411,7 @@ public:
      * @return 模式串的第一个匹配位置，未找到返回 `npos`
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    usize find(const CStringView& pattern, const usize pos = 0) const {
+    usize find(const CStringView& pattern, const usize pos = 0) const noexcept {
         if (pattern.empty()) return npos;
         const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
@@ -426,7 +435,7 @@ public:
      * @return 所有匹配位置
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
-    std::vector<usize> find_all(const CStringView& pattern) const {
+    std::vector<usize> find_all(const CStringView& pattern) const noexcept {
         std::vector<usize> res;
         if (pattern.empty()) return res;
         const auto m_size = length(), p_size = pattern.length();
@@ -817,7 +826,7 @@ private:
      * @note next[i]: 模式串[0, i)中最长相等前后缀的长度为next[i]
      * @note 时间复杂度为 O(m)，m为模式串的长度
      */
-    static std::vector<usize> get_next(const CStringView& pattern) {
+    static std::vector<usize> get_next(const CStringView& pattern) noexcept {
         const auto p_size = pattern.length();
         std::vector<usize> next(p_size, 0);
         for (usize i = 1, j = 0; i < p_size; ++i) {
@@ -835,7 +844,7 @@ private:
      * @brief 获取去除首尾空白后的索引范围
      * @return 首尾空白后的索引范围
      */
-    std::pair<usize, usize> get_trim_index() const {
+    std::pair<usize, usize> get_trim_index() const noexcept {
         usize l = 0, r = length();
         while (l < r && str_[l] == ' ') ++l;
         while (l < r && str_[r - 1] == ' ') --r;
@@ -847,7 +856,7 @@ private:
      * @param pattern 要去除的模式
      * @return 首尾模式后的索引范围
      */
-    std::pair<usize, usize> get_trim_index(const CStringView& pattern) const {
+    std::pair<usize, usize> get_trim_index(const CStringView& pattern) const noexcept {
         usize l = 0, r = length();
         const auto p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
@@ -859,7 +868,7 @@ private:
      * @brief 获取去除首部空白后的索引
      * @return 去除首部空白后的索引
      */
-    usize get_ltrim_index() const {
+    usize get_ltrim_index() const noexcept {
         usize l = 0;
         const auto r = length();
         while (l < r && str_[l] == ' ') ++l;
@@ -871,7 +880,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除首部模式后的索引
      */
-    usize get_ltrim_index(const CStringView& pattern) const {
+    usize get_ltrim_index(const CStringView& pattern) const noexcept {
         usize l = 0;
         const auto r = length(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
@@ -882,7 +891,7 @@ private:
      * @brief 获取去除尾部空白后的索引
      * @return 去除尾部空白后的索引
      */
-    usize get_rtrim_index() const {
+    usize get_rtrim_index() const noexcept {
         constexpr usize l = 0;
         auto r = length();
         while (l < r && str_[r - 1] == ' ') --r;
@@ -894,7 +903,7 @@ private:
      * @param pattern 要去除的模式
      * @return 去除尾部模式后的索引
      */
-    usize get_rtrim_index(const CStringView& pattern) const {
+    usize get_rtrim_index(const CStringView& pattern) const noexcept {
         const usize l = 0, p_size = pattern.length();
         auto r = length();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
@@ -906,6 +915,27 @@ private:
     char* str_;     // 存储字符串的动态数组
     usize len_;     // 字符串的长度
 };
+
+/**
+ * @brief 推导指南
+ */
+template <typename Alloc = Allocator<char>>
+BasicCString(usize) -> BasicCString<Alloc>;
+
+template <typename Alloc = Allocator<char>>
+BasicCString(const char*) -> BasicCString<Alloc>;
+
+template <typename Alloc = Allocator<char>>
+BasicCString(const char*, usize) -> BasicCString<Alloc>;
+
+template <typename Alloc = Allocator<char>>
+BasicCString(const CStringView&) -> BasicCString<Alloc>;
+
+template <typename Alloc = Allocator<char>>
+BasicCString(const std::basic_string<char>&) -> BasicCString<Alloc>;
+
+template <typename Alloc = Allocator<char>>
+BasicCString(usize, char) -> BasicCString<Alloc>;
 
 /**
  * @brief CString 类，使用默认分配器
@@ -952,7 +982,7 @@ fn cstr(const T& value) -> CString {
  * @param value CString 对象
  * @return 标准 C 风格字符串
  */
-fn stdstr(const CString& value) -> const char* {
+constexpr fn stdstr(const CString& value) noexcept -> const char* {
     return value.data();
 }
 
@@ -961,7 +991,7 @@ fn stdstr(const CString& value) -> const char* {
  * @param ch 字符
  * @return 对应的整数值
  */
-fn c2i(const char ch) -> i32 {
+constexpr fn c2i(const char ch) noexcept -> i32 {
     return ch - '0';
 }
 
@@ -970,7 +1000,7 @@ fn c2i(const char ch) -> i32 {
  * @param ch 整数
  * @return 对应的字符
  */
-fn i2c(const i32 ch) -> char {
+constexpr fn i2c(const i32 ch) noexcept -> char {
     return ch + '0';
 }
 

@@ -512,7 +512,7 @@ private:
 template <typename T>
 fn opt(const Vec<std::any>& args, usize idx) -> T {
     if (idx >= args.size()) {
-        throw index_out_of_bounds_exception("index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
+        throw index_out_of_bounds_exception("Index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
     }
 
     try {

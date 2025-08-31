@@ -92,7 +92,7 @@ public:
      */
     void pop() {
         if (empty()) {
-            throw runtime_exception("queue is empty.");
+            throw runtime_exception("Queue is empty.");
         }
         auto* p = tail_->next_;
         auto* d = p->next_; // 待删除节点
@@ -112,7 +112,7 @@ public:
      */
     value_t& front() {
         if (empty()) {
-            throw runtime_exception("queue is empty.");
+            throw runtime_exception("Queue is empty.");
         }
         return tail_->next_->next_->value_;
     }
@@ -125,7 +125,7 @@ public:
      */
     const value_t& front() const {
         if (empty()) {
-            throw runtime_exception("queue is empty.");
+            throw runtime_exception("Queue is empty.");
         }
         return tail_->next_->next_->value_;
     }
@@ -138,7 +138,7 @@ public:
      */
     value_t& tail() {
         if (empty()) {
-            throw runtime_exception("queue is empty.");
+            throw runtime_exception("Queue is empty.");
         }
         return tail_->value_;
     }
@@ -151,7 +151,7 @@ public:
      */
     const value_t& tail() const {
         if (empty()) {
-            throw runtime_exception("queue is empty.");
+            throw runtime_exception("Queue is empty.");
         }
         return tail_->value_;
     }

@@ -177,7 +177,7 @@ public:
     Socket(u64 socket) :
             socket_(socket) {
         if (socket_ == INVALID_SOCKET) {
-            throw runtime_exception("invalid socket");
+            throw runtime_exception("Invalid socket");
         }
     }
 
@@ -209,7 +209,7 @@ public:
             break;
         case SOCK_RDM:
         case SOCK_SEQPACKET:
-            throw runtime_exception("unsupported socket type");
+            throw runtime_exception("Unsupported socket type");
         default:
             protocol = 0; // 让系统选择默认协议
         }

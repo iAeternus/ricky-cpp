@@ -28,7 +28,7 @@ fn should_construct = []() {
 };
 
 fn should_fail_to_parse_if_invalid_format = []() {
-    Assertions::assertThrows("invalid complex number format", []() {
+    Assertions::assertThrows("Invalid complex number format", []() {
         math::Complex c = "-1a + 2i";
     });
 };

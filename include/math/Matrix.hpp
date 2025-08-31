@@ -116,7 +116,7 @@ public:
 
         value_t& operator[](usize j) {
             if (j >= cols_) {
-                throw index_out_of_bounds_exception("column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
+                throw index_out_of_bounds_exception("Column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
             }
             return data_[start_col_ + j];
         }
@@ -137,7 +137,7 @@ public:
 
         const value_t& operator[](usize j) const {
             if (j >= cols_) {
-                throw index_out_of_bounds_exception("column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
+                throw index_out_of_bounds_exception("Column index {} out of bounds [0..{}]", SRC_LOC, j, cols_);
             }
             return data_[start_col_ + j];
         }
@@ -156,7 +156,7 @@ public:
         size_t index = 0;
         for (auto&& row : init_list) {
             if (usize(row.size()) != cols_) {
-                throw argument_exception("inconsistent row sizes in initializer list");
+                throw argument_exception("Inconsistent row sizes in initializer list");
             }
             for (auto&& item : row) {
                 data_.at(index++) = std::move(item);
@@ -208,14 +208,14 @@ public:
 
     value_t& at(usize i, usize j) {
         if (i >= rows_ || j >= cols_) {
-            throw index_out_of_bounds_exception("index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
+            throw index_out_of_bounds_exception("Index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
         }
         return at_impl(i, j);
     }
 
     const value_t& at(usize i, usize j) const {
         if (i >= rows_ || j >= cols_) {
-            throw index_out_of_bounds_exception("index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
+            throw index_out_of_bounds_exception("Index [{}, {}] out of bounds [0..{}, 0..{}]", SRC_LOC, i, j, rows_, cols_);
         }
         return at_impl(i, j);
     }

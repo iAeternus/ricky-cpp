@@ -55,7 +55,7 @@ public:
         validateYear(year);
         const bool isLeap = isLeapYear(year);
         if (dayOfYear < 1 || dayOfYear > (isLeap ? 366 : 365)) {
-            throw runtime_exception("day of year out of range");
+            throw runtime_exception("Day of year out of range");
         }
 
         static constexpr i32 leap[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
@@ -87,7 +87,7 @@ public:
     static Self parse(const CString& str) {
         i32 year, month, day;
         if (sscanf_s(str.data(), "%d-%d-%d", &year, &month, &day) != 3) {
-            throw runtime_exception("invalid date format");
+            throw runtime_exception("Invalid date format");
         }
         return of(year, month, day);
     }
@@ -374,7 +374,7 @@ private:
      */
     static i64 clampYear(const i64 year) {
         if (year < -999999999 || year > 999999999) {
-            throw runtime_exception("year overflow");
+            throw runtime_exception("Year overflow");
         }
         return year;
     }
@@ -387,7 +387,7 @@ private:
      */
     static i32 clampMonth(const i32 month) {
         if (month < 1 || month > 12) {
-            throw runtime_exception("invalid month");
+            throw runtime_exception("Invalid month");
         }
         return month;
     }

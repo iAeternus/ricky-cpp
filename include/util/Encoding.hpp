@@ -51,7 +51,7 @@ struct EncodingTraits<EncodingType::UTF8> {
         if ((data[0] & 0xF8) == 0xF0) {
             return 4; // 以11110开头（11110xxx），4字节编码
         }
-        throw runtime_exception("invalid CodePoint");
+        throw runtime_exception("Invalid CodePoint");
     }
 
     static bool is_valid(const char* data, const usize length) {
@@ -151,7 +151,7 @@ struct EncodingTraits<EncodingType::GB2312> {
         } else if (first >= 0xA1 && first <= 0xF7) {
             return 2; // GB2312汉字
         }
-        throw runtime_exception("invalid GB2312 sequence");
+        throw runtime_exception("Invalid GB2312 sequence");
     }
 
     static bool is_valid(const char* data, const usize length) {
@@ -293,7 +293,7 @@ struct EncodingTraits<EncodingType::ASCII> {
 //         if ((data[0] & 0xF8) == 0xF0) {
 //             return 4; // 以11110开头（11110xxx），4字节编码
 //         }
-//         throw runtime_exception("invalid CodePoint");
+//         throw runtime_exception("Invalid CodePoint");
 //     }
 //
 //     Self* clone() const override {

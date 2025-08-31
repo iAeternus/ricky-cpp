@@ -87,7 +87,7 @@ public:
             tokenize(expr);
             this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
-            throw runtime_exception("tokenization error: {}", SRC_LOC, ex.what());
+            throw runtime_exception("Tokenization error: {}", SRC_LOC, ex.what());
         }
     }
 
@@ -102,7 +102,7 @@ public:
      * @brief 转为后缀表达式
      */
     util::Vec<Token> to_post() const {
-        if (!valid_) throw runtime_exception("invalid expression");
+        if (!valid_) throw runtime_exception("Invalid expression");
         return in2post();
     }
 
@@ -110,7 +110,7 @@ public:
      * @brief 计算表达式值
      */
     f64 eval() const {
-        if (!valid_) throw runtime_exception("invalid expression");
+        if (!valid_) throw runtime_exception("Invalid expression");
         return eval_post(in2post());
     }
 

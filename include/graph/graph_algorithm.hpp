@@ -319,7 +319,6 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     auto cmp = [](const Elem& a, const Elem& b) {
         return a.first() < b.first(); // 最小堆
     };
-    // std::priority_queue<Elem, std::vector<Elem>, decltype(cmp)> pq(cmp);
     util::PriorityQueue<Elem, decltype(cmp)> pq;
 
     dis[0] = 0; // TODO 任选一个节点开始
@@ -387,7 +386,6 @@ auto kruskal = [](const auto& g, auto&& _) -> Tree<N, E, Idx> { // TODO 段错�
         return a.w < b.w; // 最小堆：权重小的优先级高
     };
 
-    // std::priority_queue<Edge, std::vector<Edge>, decltype(cmp)> pq(cmp);
     util::PriorityQueue<Edge, decltype(cmp)> pq;
 
     // 3. 遍历所有边并加入优先队列（无向图每条边只添加一次）
@@ -434,7 +432,6 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
     dis[s] = E{};
 
     using Node = Pair<E, Idx>;
-    // std::priority_queue<Node, std::vector<Node>, std::greater<>> pq;
     util::PriorityQueue<Node, std::greater<>> pq;
     pq.push(E{}, s);
 

@@ -222,8 +222,8 @@ fn should_fail_match_if_str_invalid = []() {
     util::String s = "{a";
 
     // When & Then
-    Assertions::assertThrows("unmatched parentheses, too many left parentheses", [&]() {
-        s.match('{', '}');
+    Assertions::assertThrows("Unmatched parentheses, too many left parentheses", [&]() {
+        auto _ = s.match('{', '}');
     });
 };
 

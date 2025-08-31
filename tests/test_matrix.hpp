@@ -41,11 +41,11 @@ fn should_fail_to_get_if_index_out_of_bounds = []() {
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When & Then
-    Assertions::assertThrows("index [2, 3] out of bounds [0..3, 0..3]", [&]() {
+    Assertions::assertThrows("Index [2, 3] out of bounds [0..3, 0..3]", [&]() {
         m.at(2, 3);
     });
 
-    Assertions::assertThrows("column index 3 out of bounds [0..3]", [&]() {
+    Assertions::assertThrows("Column index 3 out of bounds [0..3]", [&]() {
         m[2][3];
     });
 };

@@ -51,19 +51,19 @@ public:
         return *this;
     }
 
-    S& first() {
+    constexpr S& first() noexcept {
         return first_;
     }
 
-    const S& first() const {
+    constexpr const S& first() const noexcept {
         return first_;
     }
 
-    T& second() {
+    constexpr T& second() noexcept {
         return second_;
     }
 
-    const T& second() const {
+    constexpr const T& second() const noexcept {
         return second_;
     }
 
@@ -110,14 +110,14 @@ public:
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << '('; // TODO
-        if constexpr (is_same<S, CString/*, String*/, std::string>) {
+        stream << '('; // TODO String
+        if constexpr (is_same<S, CString /*, String*/, std::string>) {
             stream << '\"' << first_ << '\"';
         } else {
             stream << first_;
         }
         stream << ", ";
-        if constexpr (is_same<T, CString/*, String*/, std::string>) {
+        if constexpr (is_same<T, CString /*, String*/, std::string>) {
             stream << '\"' << second_ << '\"';
         } else {
             stream << second_;

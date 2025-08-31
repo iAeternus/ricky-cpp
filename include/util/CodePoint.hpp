@@ -144,7 +144,7 @@ public:
      */
     Self upper() const {
         if (!is_ascii()) {
-            throw runtime_exception("not supported yet.");
+            throw runtime_exception("Not supported yet.");
         }
         return Self{static_cast<char>(std::toupper(byte_code_[0]))};
     }

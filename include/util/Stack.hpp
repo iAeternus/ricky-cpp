@@ -63,7 +63,7 @@ public:
      */
     value_t& peek() {
         if (empty()) {
-            throw runtime_exception("stack is empty.");
+            throw runtime_exception("Stack is empty.");
         }
         return data_.back();
     }

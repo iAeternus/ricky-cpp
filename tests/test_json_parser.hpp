@@ -32,7 +32,7 @@ fn should_fail_to_parse_if_json_str_is_empty = []() {
     // Given
     util::String s = "   ";
 
-    Assertions::assertThrows("invalid simple parse: ", [&]() {
+    Assertions::assertThrows("Invalid simple parse: ", [&]() {
         io::JsonParser::parse(s);
     });
 };
@@ -41,7 +41,7 @@ fn should_dump = []() {
     // Given
     util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
 
-    // When 
+    // When
     auto res = io::JsonParser::parse(s).dump(2);
     auto res2 = io::JsonParser::parse(s).dump(4);
 

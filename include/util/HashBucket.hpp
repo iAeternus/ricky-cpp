@@ -461,7 +461,7 @@ public:
             }
             value_manager.add_move_dist();
         }
-        throw runtime_exception("bucket is full");
+        throw runtime_exception("Bucket is full");
     }
 
     /**

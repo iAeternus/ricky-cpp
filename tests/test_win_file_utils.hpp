@@ -83,7 +83,7 @@ fn should_fail_to_mkdir_if_path_not_found = []() {
 };
 
 fn should_fail_to_remove_if_file_or_dir_not_found = []() {
-    Assertions::assertThrows(R"(file or directory not found in F:\Develop\cpp\ricky-cpp\tests\resources\tmp1\tmp2)", []() {
+    Assertions::assertThrows(R"(File or directory not found in F:\Develop\cpp\ricky-cpp\tests\resources\tmp1\tmp2)", []() {
         fs::win::remove(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
     });
 };

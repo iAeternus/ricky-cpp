@@ -210,7 +210,7 @@ fn should_fail_to_opt_if_index_out_of_bounds = []() {
     util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
     // When & Then
-    Assertions::assertThrows("index 10 out of bounds [0..10] in opt function.", [&]() {
+    Assertions::assertThrows("Index 10 out of bounds [0..10] in opt function.", [&]() {
         util::opt<i32>(v, 10);
     });
 };

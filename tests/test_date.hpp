@@ -26,9 +26,9 @@ fn should_fail_to_construct_by_month_and_day_if_args_invalid = []() {
 };
 
 fn should_fail_to_construct_by_day_of_year_if_args_invalid = []() {
-    Assertions::assertThrows("day of year out of range", []() { util::Date::ofYearDay(2025, 0); });
-    Assertions::assertThrows("day of year out of range", []() { util::Date::ofYearDay(2025, 366); });
-    Assertions::assertThrows("day of year out of range", []() { util::Date::ofYearDay(2024, 367); });
+    Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2025, 0); });
+    Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2025, 366); });
+    Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2024, 367); });
 };
 
 fn should_parse = []() {

@@ -40,7 +40,7 @@ fn should_fail_to_pop_if_queue_is_empty = []() {
     util::Queue<i32> q;
 
     // When & Then
-    Assertions::assertThrows("queue is empty.", [&]() {
+    Assertions::assertThrows("Queue is empty.", [&]() {
         q.pop();
     });
 };
@@ -50,7 +50,7 @@ fn should_fail_to_get_front_if_queue_is_empty = []() {
     util::Queue<i32> q;
 
     // When & Then
-    Assertions::assertThrows("queue is empty.", [&]() {
+    Assertions::assertThrows("Queue is empty.", [&]() {
         q.front();
     });
 };
@@ -60,7 +60,7 @@ fn should_fail_to_get_tail_if_queue_is_empty = []() {
     util::Queue<i32> q;
 
     // When & Then
-    Assertions::assertThrows("queue is empty.", [&]() {
+    Assertions::assertThrows("Queue is empty.", [&]() {
         q.tail();
     });
 };

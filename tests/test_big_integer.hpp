@@ -51,13 +51,13 @@ fn should_construct_with_c_string = []() {
 };
 
 fn should_fail_to_construct_if_str_invalid = []() {
-    Assertions::assertThrows("invalid string", []() {
+    Assertions::assertThrows("Invalid string", []() {
         math::BigInteger bi = nullptr;
     });
 };
 
 fn should_fail_to_construct_if_invalid_char_in_str = []() {
-    Assertions::assertThrows("invalid character in string", []() {
+    Assertions::assertThrows("Invalid character in string", []() {
         math::BigInteger bi = "123a456";
     });
 };

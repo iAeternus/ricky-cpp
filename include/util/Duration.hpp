@@ -247,7 +247,7 @@ private:
      */
     static void validateNanos(const i32 nanos_) {
         if (nanos_ < 0 || nanos_ >= NANOS_PER_SECOND) {
-            throw runtime_exception("nanoseconds out of range");
+            throw runtime_exception("Nanoseconds out of range");
         }
     }
 

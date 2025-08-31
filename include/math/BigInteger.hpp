@@ -27,20 +27,20 @@ public:
     /**
      * @brief 默认构造函数，创建值为0的大整数
      */
-    BigInteger() :
+    BigInteger() noexcept :
             sign_(true), length_(1), num_(1, 0) {}
 
     /**
      * @brief 从32位整数构造
      */
-    BigInteger(i32 n) {
-        *this = i64(n);
+    BigInteger(const i32 n) noexcept {
+        *this = static_cast<i64>(n);
     }
 
     /**
      * @brief 从64位整数构造
      */
-    BigInteger(i64 n) {
+    BigInteger(const i64 n) noexcept {
         *this = n;
     }
 
@@ -71,15 +71,15 @@ public:
     /**
      * @brief 从32位整数赋值
      */
-    Self& operator=(i32 n) {
-        *this = i64(n);
+    Self& operator=(const i32 n) {
+        *this = static_cast<i64>(n);
         return *this;
     }
 
     /**
      * @brief 从64位整数赋值
      */
-    Self& operator=(i64 n) {
+    Self& operator=(i64 n) noexcept {
         num_.clear();
         if (n == 0) {
             *this = ZERO;
@@ -106,16 +106,20 @@ public:
      * @brief 从字符串赋值
      */
     Self& operator=(const char* str) {
-        if (!str || !*str) throw runtime_exception("invalid string");
+        if (!str || !*str) {
+            throw runtime_exception("Invalid string");
+        }
 
-        auto len = std::strlen(str);
+        const auto len = std::strlen(str);
         i32 tmp = 0, ten = 1, stop = 0;
         num_.clear();
-        sign_ = (str[0] != '-');
+        sign_ = str[0] != '-';
         if (!sign_) stop = 1;
 
         for (isize i = len; i > stop; --i) {
-            if (!std::isdigit(str[i - 1])) throw runtime_exception("invalid character in string");
+            if (!std::isdigit(str[i - 1])) {
+                throw runtime_exception("Invalid character in string");
+            }
             tmp += c2i(str[i - 1]) * ten;
             ten *= 10;
             if ((len - i) % WIDTH + 1 == WIDTH) {
@@ -139,46 +143,46 @@ public:
     Self& operator=(const Self& other) = default;
     Self& operator=(Self&& other) noexcept = default;
 
-    usize size() const {
+    constexpr usize size() const noexcept {
         return length_;
     }
 
     /**
-    * @brief 判断是否为奇数
-    * @return true=是 false=否
-    */
-    bool is_odd() const {
+     * @brief 判断是否为奇数
+     * @return true=是 false=否
+     */
+    constexpr bool is_odd() const noexcept {
         return num_.front() & 1;
     }
 
     /**
-    * @brief 判断是否为偶数
-    * @return true=是 false=否
-    */
-    bool is_even() const {
+     * @brief 判断是否为偶数
+     * @return true=是 false=否
+     */
+    constexpr bool is_even() const noexcept{
         return !is_odd();
     }
 
-    bool is_pos() const {
+    constexpr bool is_pos() const noexcept {
         return sign_;
     }
 
-    bool is_neg() const {
+    constexpr bool is_neg() const noexcept {
         return !sign_;
     }
 
-    bool is_zero() const {
+    constexpr bool is_zero() const noexcept {
         return this->__equals__(ZERO);
     }
 
-    bool is_one() const {
+    constexpr bool is_one() const noexcept {
         return this->__equals__(ONE);
     }
 
     /**
-    * @brief 左移n个十进制位，低位补0
-    */
-    Self left_shift(usize n) const {
+     * @brief 左移n个十进制位，低位补0
+     */
+    Self left_shift(usize n) const noexcept {
         auto bit_shift = n % WIDTH;
         Self ans;
         ans.length_ = n + 1;
@@ -194,24 +198,26 @@ public:
     }
 
     /**
-    * @brief 右移n个十进制位，丢弃低位，TODO 运算会导致性能问题，有待优化
-    */
-    Self right_shift(usize n) const {
+     * @brief 右移n个十进制位，丢弃低位，TODO 运算会导致性能问题，有待优化
+     */
+    Self right_shift(const usize n) const {
         if (n >= length_) {
             return {0};
         }
         return *this / TEN.pow(n);
     }
 
-    Self abs() const {
+    constexpr Self abs() const noexcept {
         Self ans{*this};
         ans.sign_ = true;
         return ans;
     }
 
-    const Self& operator+() const {
+    constexpr Self operator+() const noexcept {
         return *this;
     }
+
+    // TODO 优化到这里 ---
 
     friend Self operator+(const Self& a, const Self& b) {
         if (!b.sign_) {
@@ -221,13 +227,13 @@ public:
             return b - (-a);
         }
         Self ans;
-        i32 carry = 0, aa, bb;
-        auto a_size = a.num_.size(), b_size = b.num_.size();
-        auto max_size = math::max_(a_size, b_size);
+        i32 carry = 0;
+        const auto a_size = a.num_.size(), b_size = b.num_.size();
+        const auto max_size = std::max(a_size, b_size);
         ans.num_.clear();
         for (usize i = 0; i < max_size; ++i) {
-            aa = a_size <= i ? 0 : a.num_[i];
-            bb = b_size <= i ? 0 : b.num_[i];
+            const i32 aa = a_size <= i ? 0 : a.num_[i];
+            const i32 bb = b_size <= i ? 0 : b.num_[i];
             ans.num_.append((aa + bb + carry) % BASE);
             carry = (aa + bb + carry) / BASE;
         }
@@ -273,13 +279,13 @@ public:
             return -(b - a);
         }
         Self ans;
-        i32 carry = 0, aa, bb;
-        usize a_size = a.num_.size(), b_size = b.num_.size();
-        usize max_size = math::max_(a_size, b_size);
+        i32 carry = 0;
+        const auto a_size = a.num_.size(), b_size = b.num_.size();
+        const auto max_size = std::max(a_size, b_size);
         ans.num_.clear();
         for (usize i = 0; i < max_size; ++i) {
-            aa = a.num_[i];
-            bb = b_size <= i ? 0 : b.num_[i];
+            const i32 aa = a.num_[i];
+            const i32 bb = b_size <= i ? 0 : b.num_[i];
             ans.num_.append((aa - bb - carry + BASE) % BASE);
             carry = aa < bb + carry ? 1 : 0;
         }
@@ -304,11 +310,11 @@ public:
     }
 
     friend Self operator*(const Self& a, const Self& b) {
-        auto a_size = a.num_.size(), b_size = b.num_.size();
+        const auto a_size = a.num_.size(), b_size = b.num_.size();
         util::Vec<i64> res;
         for (usize i = 0; i < a_size; ++i) {
             for (usize j = 0; j < b_size; ++j) {
-                i64 tmp = i64(a.num_[i]) * i64(b.num_[j]);
+                i64 tmp = static_cast<i64>(a.num_[i]) * static_cast<i64>(b.num_[j]);
                 i + j < res.size() ? res[i + j] += tmp : res.append(tmp);
             }
         }
@@ -318,10 +324,10 @@ public:
         Self ans;
         ans.sign_ = a.sign_ == b.sign_ || (res.size() == 1 && res[0] == 0);
         ans.num_.clear();
-        auto resSize = res.size();
-        i64 carry = 0, tmp;
+        const auto resSize = res.size();
+        i64 carry = 0;
         for (usize i = 0; i < resSize; ++i) {
-            tmp = res[i];
+            const i64 tmp = res[i];
             ans.num_.append((tmp + carry) % BASE);
             carry = (tmp + carry) / BASE;
         }
@@ -366,19 +372,18 @@ public:
         if (b.is_zero()) {
             throw arithmetic_exception("/ by zero");
         }
-        Self aa = a.abs();
-        Self bb = b.abs();
+        const Self aa = a.abs();
+        const Self bb = b.abs();
 
         if (aa < bb) {
             return ZERO;
         }
 
-        // 使用更精确的除法算法
         Self quotient;
         Self current;
         auto a_digits = aa.__str__();
 
-        for (char c : a_digits) {
+        for (const char c : a_digits) {
             current = current * TEN + Self(c - '0');
             if (current < bb) {
                 quotient = quotient * TEN;
@@ -412,8 +417,8 @@ public:
     }
 
     /**
-    * @brief 幂运算，base^exp
-    */
+     * @brief 幂运算，base^exp
+     */
     friend Self operator^(Self base, Self exp) {
         Self ans{ONE};
         while (!exp.is_zero()) {
@@ -427,8 +432,8 @@ public:
     }
 
     /**
-    * @brief 幂运算，this^exp
-    */
+     * @brief 幂运算，this^exp
+     */
     Self pow(i64 exp) const {
         Self ans{ONE};
         Self base = *this;
@@ -443,30 +448,30 @@ public:
     }
 
     /**
-    * 截取 [low, high] 位到一个新数字，新数字与原数字符号相同
-    * @param low 低位（包括），从1开始
-    * @param high 高位（包括），从1开始
-    * @return 新数字，若为非法截取，返回0
-    */
-    Self slice(usize low, usize high) const {
+     * 截取 [low, high] 位到一个新数字，新数字与原数字符号相同
+     * @param low 低位（包括），从1开始
+     * @param high 高位（包括），从1开始
+     * @return 新数字，若为非法截取，返回0
+     */
+    Self slice(const usize low, const usize high) const {
         if (low > high || low < 1 || high > this->size()) {
             return ZERO;
         }
-        auto divisor = Self(10).pow(low - 1);
-        auto modulus = Self(10).pow(high - low + 1);
+        const auto divisor = Self(10).pow(low - 1);
+        const auto modulus = Self(10).pow(high - low + 1);
         return (*this / divisor) % modulus;
     }
 
     /**
-    * 截取从低位 low 开始的所有位到一个新数字，新数字与原数字符号相同
-    * @param low 低位（包括），从1开始
-    * @return 新数字，若为非法截取，返回0
-    */
-    Self slice(usize low) const {
+     * 截取从低位 low 开始的所有位到一个新数字，新数字与原数字符号相同
+     * @param low 低位（包括），从1开始
+     * @return 新数字，若为非法截取，返回0
+     */
+    Self slice(const usize low) const {
         if (low < 1 || low > this->size()) {
             return ZERO;
         }
-        auto divisor = Self(10).pow(low - 1);
+        const auto divisor = Self(10).pow(low - 1);
         return *this / divisor;
     }
 
@@ -474,7 +479,7 @@ public:
      * @brief 计算除法的商和余数
      * @param other 除数
      * @return 包含商和余数的pair
-     * @throws throw runtime_exception 当除数为零时
+     * @exception Exception 若除数为零，则抛出 runtime_exception
      */
     Pair<BigInteger, BigInteger> div_rem(const Self& other) const {
         return Pair{*this / other, *this % other};
@@ -514,39 +519,41 @@ public:
         return CString{stream.str()};
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] constexpr cmp_t __cmp__(const Self& other) const noexcept {
         if (this->is_pos() && other.is_neg()) {
             return 1;
-        } else if (this->is_neg() && other.is_pos()) {
+        }
+        if (this->is_neg() && other.is_pos()) {
             return -1;
-        } else if (this->is_pos() && other.is_pos()) {
+        }
+        if (this->is_pos() && other.is_pos()) {
             if (this->length_ < other.length_) {
                 return -1;
-            } else if (this->length_ > other.length_) {
-                return 1;
-            } else {
-                auto a_size = this->num_.size();
-                for (isize i = a_size - 1; i >= 0; --i) {
-                    if (this->num_[i] < other.num_[i]) {
-                        return -1;
-                    } else if (this->num_[i] > other.num_[i]) {
-                        return 1;
-                    }
-                }
-                return 0;
             }
-        } else {
-            return other.abs().__cmp__(this->abs());
+            if (this->length_ > other.length_) {
+                return 1;
+            }
+            const auto a_size = this->num_.size();
+            for (isize i = a_size - 1; i >= 0; --i) {
+                if (this->num_[i] < other.num_[i]) {
+                    return -1;
+                }
+                if (this->num_[i] > other.num_[i]) {
+                    return 1;
+                }
+            }
+            return 0;
         }
+        return other.abs().__cmp__(this->abs());
     }
 
 private:
-    BigInteger(bool sign, usize length, util::Vec<i32>&& num) :
+    BigInteger(const bool sign, const usize length, util::Vec<i32>&& num) :
             sign_(sign), length_(length), num_(std::move(num)) {}
 
     /**
-    * @brief 移除前导0
-    */
+     * @brief 移除前导0
+     */
     static void cut_leading_zero(util::Vec<i32>& num) {
         if (num.empty()) return;
         while (num.back() == 0 && num.size() != 1) {
@@ -555,8 +562,8 @@ private:
     }
 
     /**
-    * @brief 计算长度，每4字节存8个10进制位
-    */
+     * @brief 计算长度，每4字节存8个10进制位
+     */
     void calc_len() {
         cut_leading_zero(num_);
         i32 tmp = num_.back();

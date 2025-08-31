@@ -115,7 +115,7 @@ public:
      * @param n 要析构的对象数量
      */
     template <typename U>
-    fn destroy(U* p, const size_type n = 1) -> void {
+    fn destroy(U* p, const size_type n = 1) noexcept -> void {
         if (p == nullptr) return;
         for (size_type i = 0; i < n; ++i, ++p) {
             p->~U();
@@ -132,7 +132,7 @@ public:
      *
      */
     template <typename... Args>
-    fn create(Args&&... args) -> pointer {
+    fn create(Args&&... args) noexcept -> pointer {
         auto* ptr = allocate(1);
         if (!ptr) return nullptr;
 
@@ -140,7 +140,7 @@ public:
             construct(ptr, std::forward<Args>(args)...);
         } catch (...) {
             destroy(ptr);
-            throw;
+            return nullptr;
         }
 
         return ptr;
