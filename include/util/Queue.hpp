@@ -37,7 +37,7 @@ public:
      */
     ~ChainQueue() {
         clear();
-        alloc_.destroy(tail_);
+        alloc_.destruct(tail_);
     }
 
     /**
@@ -64,7 +64,7 @@ public:
         while (p != tail_) {
             auto* d = p;
             p = p->next_;
-            alloc_.destroy(d);
+            alloc_.destruct(d);
         }
         tail_->next_ = tail_;
         size_ = 0;
@@ -100,7 +100,7 @@ public:
             tail_ = p;      // 更新尾节点为起始节点
         }
         p->next_ = d->next_;
-        alloc_.destroy(d);
+        alloc_.destruct(d);
         --size_;
     }
 

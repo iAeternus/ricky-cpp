@@ -52,37 +52,37 @@ struct GetJsonTypeIDStrict {
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonInt> {
+struct GetJsonTypeIDStrict<JsonType::JsonInt> {
     constexpr static i8 ID = 0;
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonFloat> {
+struct GetJsonTypeIDStrict<JsonType::JsonFloat> {
     constexpr static i8 ID = 1;
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonBool> {
+struct GetJsonTypeIDStrict<JsonType::JsonBool> {
     constexpr static i8 ID = 2;
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonStr> {
+struct GetJsonTypeIDStrict<JsonType::JsonStr> {
     constexpr static i8 ID = 3;
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonArray> {
+struct GetJsonTypeIDStrict<JsonType::JsonArray> {
     constexpr static i8 ID = 4;
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonDict> {
+struct GetJsonTypeIDStrict<JsonType::JsonDict> {
     constexpr static i8 ID = 5;
 };
 
 template <>
-struct GetJsonTypeIDStrict<typename JsonType::JsonNull> {
+struct GetJsonTypeIDStrict<JsonType::JsonNull> {
     constexpr static i8 ID = 6;
 };
 
@@ -106,51 +106,51 @@ template <JsonTypeStrictConcept T>
 struct JsonTypeTrait;
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonInt> {
-    using Type = typename JsonType::JsonInt;
-    static constexpr const char* name = "JsonInt";
+struct JsonTypeTrait<JsonType::JsonInt> {
+    using Type = JsonType::JsonInt;
+    static constexpr auto name = "JsonInt";
 };
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonFloat> {
-    using Type = typename JsonType::JsonFloat;
-    static constexpr const char* name = "JsonFloat";
+struct JsonTypeTrait<JsonType::JsonFloat> {
+    using Type = JsonType::JsonFloat;
+    static constexpr auto name = "JsonFloat";
 };
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonBool> {
-    using Type = typename JsonType::JsonBool;
-    static constexpr const char* name = "JsonBool";
+struct JsonTypeTrait<JsonType::JsonBool> {
+    using Type = JsonType::JsonBool;
+    static constexpr auto name = "JsonBool";
 };
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonStr> {
-    using Type = typename JsonType::JsonStr;
-    static constexpr const char* name = "JsonStr";
+struct JsonTypeTrait<JsonType::JsonStr> {
+    using Type = JsonType::JsonStr;
+    static constexpr auto name = "JsonStr";
 };
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonArray> {
-    using Type = typename JsonType::JsonArray;
-    static constexpr const char* name = "JsonArray";
+struct JsonTypeTrait<JsonType::JsonArray> {
+    using Type = JsonType::JsonArray;
+    static constexpr auto name = "JsonArray";
 };
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonDict> {
-    using Type = typename JsonType::JsonDict;
-    static constexpr const char* name = "JsonDict";
+struct JsonTypeTrait<JsonType::JsonDict> {
+    using Type = JsonType::JsonDict;
+    static constexpr auto name = "JsonDict";
 };
 
 template <>
-struct JsonTypeTrait<typename JsonType::JsonNull> {
-    using Type = typename JsonType::JsonNull;
-    static constexpr const char* name = "JsonNull";
+struct JsonTypeTrait<JsonType::JsonNull> {
+    using Type = JsonType::JsonNull;
+    static constexpr auto name = "JsonNull";
 };
 
 template <>
 struct JsonTypeTrait<Json> {
     using Type = Json;
-    static constexpr const char* name = "Json";
+    static constexpr auto name = "Json";
 };
 
 /**

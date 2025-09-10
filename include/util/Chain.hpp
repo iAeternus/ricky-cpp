@@ -90,11 +90,11 @@ public:
      */
     void clear() {
         auto* cur = head_;
-        Node* next_node = nullptr;
+        Node* next = nullptr;
         while (cur) {
-            next_node = cur->next_;
+            next = cur->next_;
             alloc_.destruct(cur);
-            cur = next_node;
+            cur = next;
         }
         head_ = tail_ = nullptr;
         size_ = 0;

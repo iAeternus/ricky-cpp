@@ -23,7 +23,7 @@ using DefaultIdx = u64;
 template <typename E = f64, typename Idx = DefaultIdx>
 struct Edge : public Object<Edge<E>> {
     Idx to; // 终点ID
-    E w;     // 边权
+    E w;    // 边权
 
     using Self = Edge<E>;
 

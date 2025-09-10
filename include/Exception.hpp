@@ -74,7 +74,12 @@ public:
     explicit Exception(const ExceptionType type, CString&& message,
                        const std::source_location loc = SRC_LOC,
                        std::exception_ptr nested = nullptr) :
-            type_(type), message_(std::move(message)), loc_(loc), nested_(std::move(nested)), formatted_message_(format_message()) {}
+            type_(type),
+            message_(std::move(message)),
+            loc_(loc),
+            nested_(std::move(nested)) {
+        formatted_message_ = format_message();
+    }
 
     /**
      * @brief 获取异常信息
@@ -188,7 +193,7 @@ private:
  * @return 异常对象
  */
 fn exception(const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> Exception {
-    return Exception(type, std::move(message), loc);
+    return Exception(type, std::move(message), loc, nullptr);
 }
 
 /**

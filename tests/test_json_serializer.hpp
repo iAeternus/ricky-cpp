@@ -33,11 +33,13 @@ DEFINE_JSON_ADAPTER(Person);
 fn it_works = []() {
     // Given
     Person p{"Ricky", 20, true, {100, 90, 80}, {{"city", "Beijing"}, {"street", "No.1"}}};
+    util::String s = R"({"name":"Ricky","age":20,"is_student":true,"scores":[100,90,80],"address":{"city":"Beijing","street":"No.1"}})";
     io::JsonSerializer js;
 
     // When
-    auto res = js.serialize(p);
-    auto p2 = js.deserialize<Person>(res);
+    auto res = js.serialize(p); // TODO \u
+    io::println(res);
+    auto p2 = js.deserialize<Person>(s);
 
     // Then
     Assertions::assertEquals(p, p2);

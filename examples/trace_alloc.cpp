@@ -7,6 +7,7 @@
 #include "BiChain.hpp"
 #include "Chain.hpp"
 #include "DynArray.hpp"
+#include "Queue.hpp"
 #include "SortedDict.hpp"
 #include "String.hpp"
 #include "TracingAllocator.hpp"
@@ -32,8 +33,9 @@ using namespace my;
  * 7 = util::SortedDict
  * 8 = util::DynArray
  * 9 = util::Array
+ * 10 = util::Queue
  */
-#define TRACE_OBJECT 2
+#define TRACE_OBJECT 10
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
@@ -277,6 +279,29 @@ void trace_array() {
     }
 }
 
+void trace_queue() {
+    using TraceQueue = util::ChainQueue<util::ChainNode<i32>, mem::TracingAllocator<util::ChainNode<i32>>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<i32>::set_verbose(true);
+#endif
+
+    // 构造
+    TraceQueue q1;
+
+    // push
+    for (i32 i = 0; i < 1024; ++i) {
+        q1.push(i);
+    }
+
+    // pop
+    for (i32 i = 0; i < 512; ++i) {
+        q1.pop();
+    }
+
+    // clear
+    q1.clear();
+}
+
 int main() {
 #if TRACE_OBJECT == 1
     trace_cstring();
@@ -296,5 +321,7 @@ int main() {
     trace_dyn_array();
 #elif TRACE_OBJECT == 9
     trace_array();
+#elif TRACE_OBJECT == 10
+    trace_queue();
 #endif
 }
