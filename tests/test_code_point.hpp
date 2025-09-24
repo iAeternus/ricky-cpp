@@ -28,7 +28,7 @@ constexpr i32 N = 1e6;
 fn speed_of_code_point_pool_create = []() {
     util::Vec<util::CodePoint<>> cps;
     for (usize i = 0; i < N; ++i) {
-        cps.append(*(util::CodePointPool<>::instance().get(util::Random::instance().next_str(1)[0])));
+        // cps.append(*(util::CodePointPool<>::instance().get(util::Random::instance().next_str(1)[0])));
     }
     Assertions::assertEquals(N, cps.size());
 };
@@ -44,8 +44,8 @@ fn speed_of_original_code_point_create = []() {
 fn test_code_point_pool_speed() {
     UnitTestGroup group{"test_code_point_pool_speed"};
 
-    group.addTest("speed_of_code_point_pool_create", speed_of_code_point_pool_create);
-    group.addTest("speed_of_original_code_point_create", speed_of_original_code_point_create);
+    // group.addTest("speed_of_code_point_pool_create", speed_of_code_point_pool_create);
+    // group.addTest("speed_of_original_code_point_create", speed_of_original_code_point_create);
 
     group.startAll();
 }

@@ -13,19 +13,20 @@ namespace my::util {
 
 /**
  * @class IndexIterator
- * @brief 索引容器迭代器
+ * @brief 索引容器迭代器 TODO Alloc
  * @tparam IsConst 是否为const迭代器
  * @tparam C 容器类行
  * @tparam V 元素类型
  */
-template <bool IsConst, typename C, typename V>
-class IndexIterator : public Object<IndexIterator<IsConst, C, V>> {
-    template <bool, typename, typename>
+template <bool IsConst, typename C, typename V, typename Alloc = Allocator<V>>
+class IndexIterator : public Object<IndexIterator<IsConst, C, V, Alloc>> {
+    template <bool, typename, typename, typename>
     friend class IndexIterator;
 
 public:
     using Super = Object<IndexIterator>;
     using Self = IndexIterator;
+    using allocator_type = Alloc;
 
     using container_t = std::conditional_t<IsConst, const C, C>;
     using iterator_category = std::random_access_iterator_tag;
@@ -144,13 +145,13 @@ private:
 };
 
 /**
- * @brief 推导指南
+ * @brief 推导指南 TODO Alloc
  */
-template <typename C, typename V>
-IndexIterator(C*, usize) -> IndexIterator<false, C, V>;
+template <typename C, typename V, typename Alloc = Allocator<V>>
+IndexIterator(C*, usize) -> IndexIterator<false, C, V, Alloc>;
 
-template <typename C, typename V>
-IndexIterator(const C*, usize) -> IndexIterator<true, C, V>;
+template <typename C, typename V, typename Alloc = Allocator<V>>
+IndexIterator(const C*, usize) -> IndexIterator<true, C, V, Alloc>;
 
 } // namespace my::util
 

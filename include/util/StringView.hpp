@@ -18,16 +18,17 @@ class BasicString;
 
 /**
  * @class BasicStringView
- * @brief 字符串视图只读视图
+ * @brief 字符串视图只读视图  TODO Alloc
  * @note 源字符串生命周期必须不短于视图生命周期
  * @note 不推荐直接使用 BasicStringView，建议使用 StringView
  * @tparam Iter 迭代器类型
  */
-template <typename Iter, EncodingType Enc = EncodingType::UTF8, typename Alloc = Allocator<CodePoint<Enc>>>
+template <typename Iter, EncodingType Enc = EncodingType::UTF8, typename Alloc = Allocator<char>>
 class BasicStringView : public Object<BasicStringView<Iter>> {
 public:
     using Self = BasicStringView<Iter, Enc, Alloc>;
     using String = BasicString<Enc, Alloc>;
+    using allocator_type = Alloc;
     using const_iterator = Iter;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -37,7 +38,6 @@ public:
      * @brief 通过首尾迭代器构造
      * @param begin 视图起始迭代器
      * @param end 视图尾后迭代器
-     * @param enc 字符串编码
      */
     BasicStringView(Iter begin, Iter end) noexcept :
             begin_(begin), end_(end) {}

@@ -23,10 +23,10 @@ concept RBTreeNodeType = requires(T a, const T& b, T&& c) {
     { T() } -> std::same_as<T>;
     { a = std::move(c) } -> std::same_as<T&>;
     { T(std::move(c)) } -> std::same_as<T>;
-    { a.key_ };
-    { a.lch_ };
-    { a.rch_ };
-    { a.p_ };
+    { a.key };
+    { a.lch };
+    { a.rch };
+    { a.p };
 };
 
 /**
@@ -42,50 +42,49 @@ enum class Color : bool {
  * @brief 红黑树节点，存储键值对
  */
 template <Sortable K, typename V>
-class RBTreeNode : public Object<RBTreeNode<K, V>> {
-public:
+struct RBTreeNode : Object<RBTreeNode<K, V>> {
     using key_t = K;
     using value_t = V;
     using Self = RBTreeNode<key_t, value_t>;
     using Callback = Consumer<const KeyValueView<key_t, value_t>&>;
 
-    key_t key_;   // 键
-    value_t val_; // 值
-    Color color_; // 颜色
-    Self* lch_;   // 指向左孩子的指针
-    Self* rch_;   // 指向右孩子的指针
-    Self* p_;     // 指向父节点的指针，定义根节点的父指针指向NIL
+    key_t key;   // 键
+    value_t val; // 值
+    Color color; // 颜色
+    Self* lch;   // 指向左孩子的指针
+    Self* rch;   // 指向右孩子的指针
+    Self* p;     // 指向父节点的指针，定义根节点的父指针指向NIL
 
     explicit RBTreeNode(const key_t& key = key_t{}, const value_t& value = value_t{}, const Color color = Color::RED,
                         Self* lch = nullptr, Self* rch = nullptr, Self* parent = nullptr) :
-            key_(key), val_(value), color_(color), lch_(lch), rch_(rch), p_(parent) {}
+            key(key), val(value), color(color), lch(lch), rch(rch), p(parent) {}
 
     explicit RBTreeNode(key_t&& key, value_t&& value, const Color color = Color::RED) :
-            key_(std::move(key)), val_(std::move(value)), color_(color), lch_(nullptr), rch_(nullptr), p_(nullptr) {}
+            key(std::move(key)), val(std::move(value)), color(color), lch(nullptr), rch(nullptr), p(nullptr) {}
 
     RBTreeNode(const Self&) = delete;
     Self& operator=(const Self&) = delete;
 
     RBTreeNode(Self&& other) noexcept :
-            key_(std::move(other.key_)),
-            val_(std::move(other.value)),
-            color_(other.color_),
-            lch_(other.lch_),
-            rch_(other.rch_),
-            p_(other.p_) {
-        other.lch_ = other.rch_ = other.p_ = nullptr;
+            key(std::move(other.key)),
+            val(std::move(other.value)),
+            color(other.color),
+            lch(other.lch),
+            rch(other.rch),
+            p(other.p) {
+        other.lch = other.rch = other.p = nullptr;
     }
 
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        this->color_ = other.color_;
-        this->key_ = std::move(other.key_);
-        this->val_ = std::move(other.val_);
-        this->lch_ = other.lch_;
-        this->rch_ = other.rch_;
-        this->p_ = other.p_;
-        other.lch_ = other.rch_ = other.p_ = nullptr;
+        this->color = other.color;
+        this->key = std::move(other.key);
+        this->val = std::move(other.val);
+        this->lch = other.lch;
+        this->rch = other.rch;
+        this->p = other.p;
+        other.lch = other.rch = other.p = nullptr;
         return *this;
     }
 
@@ -94,7 +93,7 @@ public:
      * @return true=是 false=否
      */
     bool is_black() const noexcept {
-        return color_ == Color::BLACK;
+        return color == Color::BLACK;
     }
 
     /**
@@ -102,7 +101,7 @@ public:
      * @return true=是 false=否
      */
     bool is_red() const noexcept {
-        return color_ == Color::RED;
+        return color == Color::RED;
     }
 
     /**
@@ -110,9 +109,9 @@ public:
      */
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         if constexpr (Comparable<key_t>) {
-            return this->key_.__cmp__(other.key_);
+            return this->key.__cmp__(other.key);
         } else if constexpr (Subtractble<key_t>) {
-            return this->key_ - other.key_;
+            return this->key - other.key;
         } else {
             throw type_exception("key type[{}] is not sortable", SRC_LOC, dtype(key_t));
         }
@@ -120,7 +119,7 @@ public:
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << (color_ == Color::RED ? io::Color::RED : "") << '(' << key_ << ',' << val_ << ')' << io::Color::CLOSE << '\n';
+        stream << (color == Color::RED ? io::Color::RED : "") << '(' << key << ',' << val << ')' << io::Color::CLOSE << '\n';
         return CString{stream.str()};
     }
 };
@@ -265,7 +264,7 @@ public:
         if (empty()) {
             throw runtime_exception("red-black-tree is empty");
         }
-        return find_min(root_)->val_;
+        return find_min(root_)->val;
     }
 
     /**
@@ -276,7 +275,7 @@ public:
         if (empty()) {
             throw runtime_exception("red-black-tree is empty");
         }
-        return find_min(root_)->val_;
+        return find_min(root_)->val;
     }
 
     /**
@@ -287,7 +286,7 @@ public:
         if (empty()) {
             throw runtime_exception("red-black-tree is empty");
         }
-        return find_max(root_)->val_;
+        return find_max(root_)->val;
     }
 
     /**
@@ -298,7 +297,7 @@ public:
         if (empty()) {
             throw runtime_exception("red-black-tree is empty");
         }
-        return find_max(root_)->val_;
+        return find_max(root_)->val;
     }
 
     /**
@@ -322,7 +321,7 @@ public:
         if (p == nullptr) {
             throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
         }
-        return p->val_;
+        return p->val;
     }
 
     /**
@@ -337,7 +336,7 @@ public:
         if (p == nullptr) {
             throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
         }
-        return p->val_;
+        return p->val;
     }
 
     /**
@@ -353,7 +352,7 @@ public:
         if (p == nullptr) {
             return default_val;
         }
-        return p->val_;
+        return p->val;
     }
 
     /**
@@ -368,7 +367,7 @@ public:
         if (p == nullptr) {
             return insert(std::forward<K>(key), value_t{});
         }
-        return p->val_;
+        return p->val;
     }
 
     /**
@@ -718,13 +717,13 @@ public:
         std::stringstream stream;
         stream << '{';
         for_each([&](const auto& key, const auto& val) {
-            if constexpr (is_same<key_t, CString/*, String*/, std::string>) {
+            if constexpr (is_same<key_t, CString /*, String*/, std::string>) {
                 stream << '\"' << key << '\"';
             } else {
                 stream << key;
             }
             stream << ':';
-            if constexpr (is_same<value_t, CString/*, String*/, std::string>) {
+            if constexpr (is_same<value_t, CString /*, String*/, std::string>) {
                 stream << '\"' << val << '\"';
             } else {
                 stream << val;
@@ -814,7 +813,7 @@ public:
          */
         void update_kv() {
             if (curr_ != tree_->nil_) {
-                kv_.set(&curr_->key_, &curr_->val_);
+                kv_.set(&curr_->key, &curr_->val);
             }
         }
 
@@ -872,7 +871,7 @@ private:
     void create_nil() {
         nil_ = alloc_.allocate(1);
         alloc_.construct(nil_, key_t{}, value_t{}, Color::BLACK);
-        nil_->lch_ = nil_->rch_ = nil_->p_ = nil_;
+        nil_->lch = nil_->rch = nil_->p = nil_;
     }
 
     /**
@@ -880,8 +879,8 @@ private:
      */
     void clear(Node* root) {
         if (root == nil_) return;
-        clear(root->lch_);
-        clear(root->rch_);
+        clear(root->lch);
+        clear(root->rch);
         alloc_.destroy(root);
         alloc_.deallocate(root, 1);
     }
@@ -892,8 +891,8 @@ private:
     void print_tree(const Node* root, std::stringstream& stream, const CString& prefix) const {
         if (root == nil_) return;
         stream << prefix.data() << "+-- " << root->__str__().data();
-        print_tree(root->lch_, stream, prefix + "|   ");
-        print_tree(root->rch_, stream, prefix + "|   ");
+        print_tree(root->lch, stream, prefix + "|   ");
+        print_tree(root->rch, stream, prefix + "|   ");
     }
 
     /**
@@ -901,9 +900,9 @@ private:
      */
     void inorder_for_each(Node* node, Callback callback) const {
         if (node == nil_) return;
-        inorder_for_each(node->lch_, callback);
-        callback(node->key_, node->val_);
-        inorder_for_each(node->rch_, callback);
+        inorder_for_each(node->lch, callback);
+        callback(node->key, node->val);
+        inorder_for_each(node->rch, callback);
     }
 
     /**
@@ -911,9 +910,9 @@ private:
      */
     void inorder_for_each_rev(Node* node, Callback callback) const {
         if (node == nil_) return;
-        inorder_for_each_rev(node->rch_, callback);
-        callback(node->key_, node->val_);
-        inorder_for_each_rev(node->lch_, callback);
+        inorder_for_each_rev(node->rch, callback);
+        callback(node->key, node->val);
+        inorder_for_each_rev(node->lch, callback);
     }
 
     /**
@@ -925,24 +924,24 @@ private:
         Node* x = root_;
         while (x != nil_) {
             y = x;
-            if (comp_(z->key_, x->key_)) {
-                x = x->lch_;
+            if (comp_(z->key, x->key)) {
+                x = x->lch;
             } else {
-                x = x->rch_;
+                x = x->rch;
             }
         }
-        z->p_ = y;
+        z->p = y;
         if (y == nil_) {
             root_ = z;
-        } else if (comp_(z->key_, y->key_)) {
-            y->lch_ = z;
+        } else if (comp_(z->key, y->key)) {
+            y->lch = z;
         } else {
-            y->rch_ = z;
+            y->rch = z;
         }
-        z->lch_ = z->rch_ = nil_;
-        z->color_ = Color::RED;
+        z->lch = z->rch = nil_;
+        z->color = Color::RED;
         insert_fixup(z); // 调整
-        return z->val_;
+        return z->val;
     }
 
     /**
@@ -955,21 +954,21 @@ private:
      * a   b    r_rot     b   c
      */
     void left_rotate(Node* x) {
-        Node* y = x->rch_; // 设置y
-        x->rch_ = y->lch_; // 将y的左子树变为x的右子树
-        if (y->lch_ != nil_) {
-            y->lch_->p_ = x;
+        Node* y = x->rch; // 设置y
+        x->rch = y->lch;  // 将y的左子树变为x的右子树
+        if (y->lch != nil_) {
+            y->lch->p = x;
         }
-        y->p_ = x->p_;
-        if (x->p_ == nil_) {
+        y->p = x->p;
+        if (x->p == nil_) {
             root_ = y;
-        } else if (x == x->p_->lch_) {
-            x->p_->lch_ = y;
+        } else if (x == x->p->lch) {
+            x->p->lch = y;
         } else {
-            x->p_->rch_ = y;
+            x->p->rch = y;
         }
-        y->lch_ = x; // 将x放在y的左边
-        x->p_ = y;
+        y->lch = x; // 将x放在y的左边
+        x->p = y;
     }
 
     /**
@@ -982,21 +981,21 @@ private:
      * a   b    r_rot     b   c
      */
     void right_rotate(Node* x) {
-        Node* y = x->lch_; // 设置y
-        x->lch_ = y->rch_; // 将y的右子树变为x的左子树
-        if (y->rch_ != nil_) {
-            y->rch_->p_ = x;
+        Node* y = x->lch; // 设置y
+        x->lch = y->rch;  // 将y的右子树变为x的左子树
+        if (y->rch != nil_) {
+            y->rch->p = x;
         }
-        y->p_ = x->p_;
-        if (x->p_ == nil_) {
+        y->p = x->p;
+        if (x->p == nil_) {
             root_ = y;
-        } else if (x == x->p_->rch_) {
-            x->p_->rch_ = y;
+        } else if (x == x->p->rch) {
+            x->p->rch = y;
         } else {
-            x->p_->lch_ = y;
+            x->p->lch = y;
         }
-        y->rch_ = x; // 将x放在y的右边
-        x->p_ = y;
+        y->rch = x; // 将x放在y的右边
+        x->p = y;
     }
 
     /**
@@ -1007,46 +1006,46 @@ private:
      * Case 3. z的叔节点y是黑色的且z是一个左孩子：将父/爷节点变色，对爷节点右旋
      */
     void insert_fixup(Node* z) {
-        while (z->p_->is_red()) {
-            if (z->p_ == z->p_->p_->lch_) {
-                Node* y = z->p_->p_->rch_; // 叔节点
+        while (z->p->is_red()) {
+            if (z->p == z->p->p->lch) {
+                Node* y = z->p->p->rch; // 叔节点
                 if (y->is_red()) {
                     // Case 1: 叔节点为红色
-                    z->p_->color_ = y->color_ = Color::BLACK;
-                    z->p_->p_->color_ = Color::RED;
-                    z = z->p_->p_;
+                    z->p->color = y->color = Color::BLACK;
+                    z->p->p->color = Color::RED;
+                    z = z->p->p;
                 } else {
                     // Case 2/3: 叔节点为黑色
-                    if (z == z->p_->rch_) {
+                    if (z == z->p->rch) {
                         // Case 2: z是右孩子
-                        z = z->p_;
+                        z = z->p;
                         left_rotate(z);
                     }
                     // Case 3: z是左孩子
-                    z->p_->color_ = Color::BLACK;
-                    z->p_->p_->color_ = Color::RED;
-                    right_rotate(z->p_->p_);
+                    z->p->color = Color::BLACK;
+                    z->p->p->color = Color::RED;
+                    right_rotate(z->p->p);
                 }
             } else {
                 // 对称情况
-                Node* y = z->p_->p_->lch_;
+                Node* y = z->p->p->lch;
                 if (y->is_red()) {
-                    z->p_->color_ = Color::BLACK;
-                    y->color_ = Color::BLACK;
-                    z->p_->p_->color_ = Color::RED;
-                    z = z->p_->p_;
+                    z->p->color = Color::BLACK;
+                    y->color = Color::BLACK;
+                    z->p->p->color = Color::RED;
+                    z = z->p->p;
                 } else {
-                    if (z == z->p_->lch_) {
-                        z = z->p_;
+                    if (z == z->p->lch) {
+                        z = z->p;
                         right_rotate(z);
                     }
-                    z->p_->color_ = Color::BLACK;
-                    z->p_->p_->color_ = Color::RED;
-                    left_rotate(z->p_->p_);
+                    z->p->color = Color::BLACK;
+                    z->p->p->color = Color::RED;
+                    left_rotate(z->p->p);
                 }
             }
         }
-        root_->color_ = Color::BLACK;
+        root_->color = Color::BLACK;
     }
 
     /**
@@ -1054,8 +1053,8 @@ private:
      */
     Node* find_min(Node* node) const {
         if (node == nil_) return nil_;
-        while (node->lch_ != nil_) {
-            node = node->lch_;
+        while (node->lch != nil_) {
+            node = node->lch;
         }
         return node;
     }
@@ -1065,8 +1064,8 @@ private:
      */
     Node* find_max(Node* node) const {
         if (node == nil_) return nil_;
-        while (node->rch_ != nil_) {
-            node = node->rch_;
+        while (node->rch != nil_) {
+            node = node->rch;
         }
         return node;
     }
@@ -1080,10 +1079,10 @@ private:
     Node* tree_search(const K& key) const {
         Node* p = root_;
         while (p != nil_) {
-            if (comp_(key, p->key_)) {
-                p = p->lch_;
-            } else if (comp_(p->key_, key)) {
-                p = p->rch_;
+            if (comp_(key, p->key)) {
+                p = p->lch;
+            } else if (comp_(p->key, key)) {
+                p = p->rch;
             } else {
                 return p;
             }
@@ -1095,14 +1094,14 @@ private:
      * @brief 用一棵以 v 为根的子树替换以 u 为根的子树，并成为后者父亲的孩子结点
      */
     void transplant(Node* u, Node* v) {
-        if (u->p_ == nil_) {
+        if (u->p == nil_) {
             root_ = v;
-        } else if (u == u->p_->lch_) {
-            u->p_->lch_ = v;
+        } else if (u == u->p->lch) {
+            u->p->lch = v;
         } else {
-            u->p_->rch_ = v;
+            u->p->rch = v;
         }
-        v->p_ = u->p_;
+        v->p = u->p;
     }
 
     /**
@@ -1110,28 +1109,28 @@ private:
      */
     void remove_impl(Node* z) {
         Node *y = z, *x = nil_;
-        Color y_original_color = y->color_;
-        if (z->lch_ == nil_) {
-            x = z->rch_;
-            transplant(z, z->rch_);
-        } else if (z->rch_ == nil_) {
-            x = z->lch_;
-            transplant(z, z->lch_);
+        Color y_original_color = y->color;
+        if (z->lch == nil_) {
+            x = z->rch;
+            transplant(z, z->rch);
+        } else if (z->rch == nil_) {
+            x = z->lch;
+            transplant(z, z->lch);
         } else {
-            y = find_min(z->rch_);
-            y_original_color = y->color_;
-            x = y->rch_;
-            if (y->p_ == z) {
-                x->p_ = y;
+            y = find_min(z->rch);
+            y_original_color = y->color;
+            x = y->rch;
+            if (y->p == z) {
+                x->p = y;
             } else {
-                transplant(y, y->rch_);
-                y->rch_ = z->rch_;
-                y->rch_->p_ = y;
+                transplant(y, y->rch);
+                y->rch = z->rch;
+                y->rch->p = y;
             }
             transplant(z, y);
-            y->lch_ = z->lch_;
-            y->lch_->p_ = y;
-            y->color_ = z->color_;
+            y->lch = z->lch;
+            y->lch->p = y;
+            y->color = z->color;
         }
         if (y_original_color == Color::BLACK) {
             delete_fixup(x);
@@ -1147,66 +1146,66 @@ private:
      */
     void delete_fixup(Node* x) {
         while (x != root_ && x->is_black()) {
-            if (x == x->p_->lch_) {
-                Node* w = x->p_->rch_; // 兄弟节点
+            if (x == x->p->lch) {
+                Node* w = x->p->rch; // 兄弟节点
                 if (w->is_red()) {
                     // Case 1: 兄弟节点w是红色的
-                    w->color_ = Color::BLACK;
-                    x->p_->color_ = Color::RED;
-                    left_rotate(x->p_);
-                    w = x->p_->rch_;
+                    w->color = Color::BLACK;
+                    x->p->color = Color::RED;
+                    left_rotate(x->p);
+                    w = x->p->rch;
                 }
-                if ((w->lch_ == nil_ || w->lch_->is_black()) && (w->rch_ == nil_ || w->rch_->is_black())) {
+                if ((w->lch == nil_ || w->lch->is_black()) && (w->rch == nil_ || w->rch->is_black())) {
                     // Case 2: 兄弟节点w是黑色，且w的两个子节点都是黑色的
-                    w->color_ = Color::RED;
-                    x = x->p_;
+                    w->color = Color::RED;
+                    x = x->p;
                 } else {
-                    if (w->rch_->is_black()) {
+                    if (w->rch->is_black()) {
                         // Case 3: 兄弟节点w是黑色，w的左孩子是红色，右孩子是黑色
-                        w->lch_->color_ = Color::BLACK;
-                        w->color_ = Color::RED;
+                        w->lch->color = Color::BLACK;
+                        w->color = Color::RED;
                         right_rotate(w);
-                        w = x->p_->rch_;
+                        w = x->p->rch;
                     }
                     // Case 4: 兄弟节点w是黑色，w的右孩子是红色
-                    w->color_ = x->p_->color_;
-                    x->p_->color_ = Color::BLACK;
-                    if (w->rch_ != nil_) {
-                        w->rch_->color_ = Color::BLACK;
+                    w->color = x->p->color;
+                    x->p->color = Color::BLACK;
+                    if (w->rch != nil_) {
+                        w->rch->color = Color::BLACK;
                     }
-                    left_rotate(x->p_);
+                    left_rotate(x->p);
                     x = root_; // 终止循环
                 }
             } else {
                 // 对称情况
-                Node* w = x->p_->lch_;
+                Node* w = x->p->lch;
                 if (w->is_red()) {
-                    w->color_ = Color::BLACK;
-                    x->p_->color_ = Color::RED;
-                    right_rotate(x->p_);
-                    w = x->p_->lch_;
+                    w->color = Color::BLACK;
+                    x->p->color = Color::RED;
+                    right_rotate(x->p);
+                    w = x->p->lch;
                 }
-                if ((w->lch_ == nil_ || w->lch_->is_black()) && (w->rch_ == nil_ || w->rch_->is_black())) {
-                    w->color_ = Color::RED;
-                    x = x->p_;
+                if ((w->lch == nil_ || w->lch->is_black()) && (w->rch == nil_ || w->rch->is_black())) {
+                    w->color = Color::RED;
+                    x = x->p;
                 } else {
-                    if (w->lch_->is_black()) {
-                        w->rch_->color_ = Color::BLACK;
-                        w->color_ = Color::RED;
+                    if (w->lch->is_black()) {
+                        w->rch->color = Color::BLACK;
+                        w->color = Color::RED;
                         left_rotate(w);
-                        w = x->p_->lch_;
+                        w = x->p->lch;
                     }
-                    w->color_ = x->p_->color_;
-                    x->p_->color_ = Color::BLACK;
-                    if (w->lch_ != nil_) {
-                        w->lch_->color_ = Color::BLACK;
+                    w->color = x->p->color;
+                    x->p->color = Color::BLACK;
+                    if (w->lch != nil_) {
+                        w->lch->color = Color::BLACK;
                     }
-                    right_rotate(x->p_);
+                    right_rotate(x->p);
                     x = root_;
                 }
             }
         }
-        x->color_ = Color::BLACK;
+        x->color = Color::BLACK;
     }
 
     /**
@@ -1214,14 +1213,14 @@ private:
      */
     Node* next(Node* curr) const {
         if (!curr) return nullptr;
-        if (curr->rch_ != nil_) {
-            return find_min(curr->rch_);
+        if (curr->rch != nil_) {
+            return find_min(curr->rch);
         }
         // 右子树为空时，找到第一个有左孩子的祖先节点
-        Node* next = curr->p_;
-        while (next != nil_ && curr == next->rch_) {
+        Node* next = curr->p;
+        while (next != nil_ && curr == next->rch) {
             curr = next;
-            next = next->p_;
+            next = next->p;
         }
         return next;
     }
@@ -1231,14 +1230,14 @@ private:
      */
     Node* prev(Node* curr) const {
         if (!curr) return nullptr;
-        if (curr->lch_ != nil_) {
-            return find_max(curr->lch_);
+        if (curr->lch != nil_) {
+            return find_max(curr->lch);
         }
         // 左子树为空时，找到第一个有右孩子的祖先节点
-        Node* prev = curr->p_;
-        while (prev != nil_ && curr == prev->lch_) {
+        Node* prev = curr->p;
+        while (prev != nil_ && curr == prev->lch) {
             curr = prev;
-            prev = prev->p_;
+            prev = prev->p;
         }
         return prev;
     }

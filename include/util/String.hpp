@@ -13,13 +13,19 @@ namespace my::util {
 
 /**
  * @class String
- * @brief 字符串，支持 Unicode 编码和多种操作
+ * @brief 字符串，支持 Unicode 编码和多种操作  TODO Alloc
  */
-template <EncodingType Enc = EncodingType::UTF8, typename Alloc = Allocator<CodePoint<Enc>>>
-class BasicString : public Sequence<BasicString<Enc, Alloc>, CodePoint<Enc>> {
+template <EncodingType Enc, typename Alloc = Allocator<char>>
+class BasicString : public Sequence<BasicString<Enc, Alloc>, CodePoint<Enc, Alloc>, Alloc> {
 public:
     using Self = BasicString<Enc, Alloc>;
-    using Super = Sequence<Self, CodePoint<Enc>>;
+    using Super = Sequence<Self, CodePoint<Enc, Alloc>, Alloc>;
+    using value_t = CodePoint<Enc, Alloc>;
+
+    // 分配器别名
+    using CharAlloc = typename Alloc::template rebind<char>::other;
+    using CodePointAlloc = typename Alloc::template rebind<CodePoint<Enc, Alloc>>::other;
+
     using View = BasicStringView<typename Super::const_iterator, Enc, Alloc>;
 
     // SSO容量
@@ -28,15 +34,15 @@ public:
     /**
      * @brief 默认构造函数，创建一个空字符串
      */
-    BasicString() :
-            length_(0), is_sso_(true) {}
+    BasicString(const Alloc alloc = Alloc{}) :
+            alloc_(alloc), length_(0), is_sso_(true) {}
 
     /**
      * @brief 构造函数，使用码点数组和编码创建字符串
      * @param code_points 码点数组
      * @param length 码点数量
      */
-    BasicString(const CodePoint<Enc>* code_points, const usize length) :
+    BasicString(const value_t* code_points, const usize length) :
             length_(length), is_sso_(length <= SSO_CAPACITY) {
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
@@ -55,17 +61,33 @@ public:
      * @param str 字符指针
      * @param length 字符串的长度（可选）
      */
+    // BasicString(const char* str, usize length = npos) {
+    //     length = ifelse(length != npos, length, std::strlen(str));
+    //     auto [size, arr] = get_code_points<Enc, CodePointAlloc>(str, length, alloc_).separate();
+    //     length_ = size;
+    //     is_sso_ = length_ <= SSO_CAPACITY;
+    //     if (is_sso_) {
+    //         for (usize i = 0; i < length_; ++i) {
+    //             alloc_.construct(sso_data + i, arr[i]);
+    //         }
+    //     } else {
+    //         heap_storage = arr;
+    //     }
+    // }
     BasicString(const char* str, usize length = npos) {
         length = ifelse(length != npos, length, std::strlen(str));
-        auto [size, arr] = get_code_points<Enc>(str, length).separate();
-        length_ = size;
+        auto cps_vec = get_code_points<Enc, CharAlloc>(str, length);
+        length_ = cps_vec.size();
         is_sso_ = length_ <= SSO_CAPACITY;
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, arr[i]);
+                alloc_.construct(sso_data + i, std::move(cps_vec[i]));
             }
         } else {
-            heap_storage = arr;
+            heap_storage = alloc_.allocate(length_);
+            for (usize i = 0; i < length_; ++i) {
+                alloc_.construct(heap_storage + i, std::move(cps_vec[i]));
+            }
         }
     }
 
@@ -80,7 +102,7 @@ public:
      * @brief 构造函数，根据码点创建字符串
      * @param cp 码点
      */
-    BasicString(const CodePoint<Enc>& cp) :
+    BasicString(const value_t& cp) :
             BasicString(cp.data(), cp.size()) {}
 
     /**
@@ -88,7 +110,7 @@ public:
      * @param length 字符串的长度
      * @param cp 码点，用于填充整个字符串
      */
-    BasicString(const usize length, const CodePoint<Enc>& cp = ' ') :
+    BasicString(const usize length, const value_t& cp = ' ') :
             length_(length), is_sso_(length <= SSO_CAPACITY) {
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
@@ -118,8 +140,8 @@ public:
     }
 
     /**
-     * @brief 根据字符串视图构造，
-     * @param view
+     * @brief 根据字符串视图构造
+     * @param view 字符串视图
      */
     BasicString(const View& view) :
             Self(view.begin(), view.end()) {}
@@ -129,7 +151,7 @@ public:
      * @param other 要拷贝的字符串对象
      */
     BasicString(const Self& other) :
-            length_(other.length_), is_sso_(other.is_sso_) {
+            alloc_(other.alloc_), length_(other.length_), is_sso_(other.is_sso_) {
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
                 alloc_.construct(sso_data + i, other[i]);
@@ -284,7 +306,7 @@ public:
         std::string result;
         result.reserve(byte_length());
         for (usize i = 0; i < length_; ++i) {
-            const CodePoint<Enc>& cp = operator[](i);
+            const value_t& cp = operator[](i);
             result.append(cp.data(), cp.size());
         }
         return result;
@@ -319,7 +341,8 @@ public:
             res[i] = this->operator[](i);
         }
         for (usize i = 0; i < o_size; ++i) {
-            res[m_size + i] = *CodePointPool<Enc>::instance().get(other[i]);
+            // res[m_size + i] = *CodePointPool<Enc>::instance().get(other[i]);
+            res[m_size + i] = other[i];
         }
         return res;
     }
@@ -369,7 +392,7 @@ public:
      * @return 索引位置的码点
      * @exception Exception 若下标越界，则抛出 index_out_of_bounds_exception
      */
-    CodePoint<Enc>& at(usize index) {
+    value_t& at(usize index) {
         if (index > length_) {
             throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", SRC_LOC, index, length_);
         }
@@ -382,7 +405,7 @@ public:
      * @return 索引位置的码点
      * @exception Exception 若下标越界，则抛出 index_out_of_bounds_exception
      */
-    const CodePoint<Enc>& at(const usize index) const {
+    const value_t& at(const usize index) const {
         if (index > length_) {
             throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", SRC_LOC, index, length_);
         }
@@ -394,7 +417,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的码点
      */
-    CodePoint<Enc>& operator[](const usize index) {
+    value_t& operator[](const usize index) {
         if (is_sso_) {
             return sso_data[index];
         }
@@ -406,7 +429,7 @@ public:
      * @param index 索引位置
      * @return 索引位置的码点
      */
-    const CodePoint<Enc>& operator[](const usize index) const {
+    const value_t& operator[](const usize index) const {
         if (is_sso_) {
             return sso_data[index];
         }
@@ -494,7 +517,7 @@ public:
      * @param c 要查找的字符
      * @return 字符的位置，未找到返回 `npos`
      */
-    usize find(const CodePoint<Enc>& c) const {
+    usize find(const value_t& c) const {
         return Super::find(c);
     }
 
@@ -700,7 +723,7 @@ public:
      * @return 包含两个字符的子字符串
      * @exception Exception 若字符不匹配，则抛出 runtime_exception
      */
-    Self match(const CodePoint<Enc>& left, const CodePoint<Enc>& right) const {
+    Self match(const value_t& left, const value_t& right) const {
         const auto l = find(left);
         if (l == npos) {
             return Self{};
@@ -769,7 +792,7 @@ public:
      * @param codePoint 要删除的字符
      * @return 删除后的字符串
      */
-    Self remove_all(CodePoint<Enc>&& codePoint) const {
+    Self remove_all(value_t&& codePoint) const {
         return remove_all([&](const auto& cp) {
             return cp == codePoint;
         });
@@ -780,7 +803,7 @@ public:
      * @param pred 谓词
      * @return 删除后的字符串
      */
-    Self remove_all(Pred<const CodePoint<Enc>&>&& pred) const {
+    Self remove_all(Pred<const value_t&>&& pred) const {
         const auto m_size = length();
         Vec<CodePoint<Enc>> buf;
         for (usize i = 0; i < m_size; ++i) {
@@ -808,7 +831,7 @@ public:
         } else if (!is_sso_ && !other.is_sso_) {
             std::swap(heap_storage, other.heap_storage);
         } else {
-            CodePoint<Enc> temp_buffer[SSO_CAPACITY];
+            value_t temp_buffer[SSO_CAPACITY];
 
             if (is_sso_) {
                 for (usize i = 0; i < SSO_CAPACITY; ++i) {
@@ -969,34 +992,34 @@ private:
     }
 
 private:
-    Alloc alloc_{}; // 内存分配器
-    usize length_;  // 字符数量
-    bool is_sso_;   // 是否是SSO
+    CodePointAlloc alloc_{}; // 内存分配器
+    usize length_;           // 字符数量
+    bool is_sso_;            // 是否是SSO
     union {
-        CodePoint<Enc> sso_data[SSO_CAPACITY]; // SSO缓冲区
-        CodePoint<Enc>* heap_storage{};        // 堆存储区
+        value_t sso_data[SSO_CAPACITY]; // SSO缓冲区
+        value_t* heap_storage{};        // 堆存储区
     };
 };
 
 /**
  * @brief String 类型别名
  */
-using String = BasicString<EncodingType::UTF8, Allocator<CodePoint<EncodingType::UTF8>>>;
-using Utf16String = BasicString<EncodingType::UTF16, Allocator<CodePoint<EncodingType::UTF16>>>;
-using Utf32String = BasicString<EncodingType::UTF32, Allocator<CodePoint<EncodingType::UTF32>>>;
-using Gb2312String = BasicString<EncodingType::GB2312, Allocator<CodePoint<EncodingType::GB2312>>>;
-using Latin1String = BasicString<EncodingType::LATIN1, Allocator<CodePoint<EncodingType::LATIN1>>>;
-using AsciiString = BasicString<EncodingType::ASCII, Allocator<CodePoint<EncodingType::ASCII>>>;
+using String = BasicString<EncodingType::UTF8>;
+using Utf16String = BasicString<EncodingType::UTF16>;
+using Utf32String = BasicString<EncodingType::UTF32>;
+using Gb2312String = BasicString<EncodingType::GB2312>;
+using Latin1String = BasicString<EncodingType::LATIN1>;
+using AsciiString = BasicString<EncodingType::ASCII>;
 
 /**
  * @brief StringView 类型别名
  */
-using StringView = BasicStringView<String::const_iterator, EncodingType::UTF8, Allocator<CodePoint<EncodingType::UTF8>>>;
-using Utf16StringView = BasicStringView<String::const_iterator, EncodingType::UTF16, Allocator<CodePoint<EncodingType::UTF16>>>;
-using Utf32StringView = BasicStringView<String::const_iterator, EncodingType::UTF32, Allocator<CodePoint<EncodingType::UTF32>>>;
-using Gb2312StringView = BasicStringView<String::const_iterator, EncodingType::GB2312, Allocator<CodePoint<EncodingType::GB2312>>>;
-using Latin1StringView = BasicStringView<String::const_iterator, EncodingType::LATIN1, Allocator<CodePoint<EncodingType::LATIN1>>>;
-using AsciiStringView = BasicStringView<String::const_iterator, EncodingType::ASCII, Allocator<CodePoint<EncodingType::ASCII>>>;
+using StringView = BasicStringView<String::const_iterator>;
+using Utf16StringView = BasicStringView<String::const_iterator, EncodingType::UTF16>;
+using Utf32StringView = BasicStringView<String::const_iterator, EncodingType::UTF32>;
+using Gb2312StringView = BasicStringView<String::const_iterator, EncodingType::GB2312>;
+using Latin1StringView = BasicStringView<String::const_iterator, EncodingType::LATIN1>;
+using AsciiStringView = BasicStringView<String::const_iterator, EncodingType::ASCII>;
 
 } // namespace my::util
 
@@ -1010,6 +1033,26 @@ namespace my {
  */
 fn operator""_s(const char* str, size_t length)->util::String {
     return util::String{str, length};
+}
+
+fn operator""_s16(const char* str, size_t length)->util::Utf16String {
+    return util::Utf16String{str, length};
+}
+
+fn operator""_s32(const char* str, size_t length)->util::Utf32String {
+    return util::Utf32String{str, length};
+}
+
+fn operator""_sgb(const char* str, size_t length)->util::Gb2312String {
+    return util::Gb2312String{str, length};
+}
+
+fn operator""_slat(const char* str, size_t length)->util::Latin1String {
+    return util::Latin1String{str, length};
+}
+
+fn operator""_sasc(const char* str, size_t length)->util::AsciiString {
+    return util::AsciiString{str, length};
 }
 
 } // namespace my

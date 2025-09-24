@@ -182,6 +182,22 @@ bool operator!=(const Allocator<T>&, const Allocator<U>&) noexcept {
     return false;
 }
 
+// /**
+//  * @brief 分配器哈希函数
+//  */
+// template <typename Alloc>
+// struct AllocHash {
+//     size_t operator()(const Alloc& alloc) const noexcept {
+//         // 对于无状态分配器，返回固定值
+//         if constexpr (std::is_empty_v<Alloc>) {
+//             return 0;
+//         } else {
+//             // 对于有状态分配器，使用地址哈希
+//             return std::hash<const void*>{}(static_cast<const void*>(&alloc));
+//         }
+//     }
+// };
+
 } // namespace my
 
 #endif // ALLOCATOR_HPP

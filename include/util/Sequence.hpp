@@ -13,20 +13,21 @@ namespace my::util {
 
 /**
  * @class Sequence
- * @brief 序列CRTP基类
+ * @brief 序列CRTP基类  TODO Alloc
  * @note 需要子类实现 size() 和 at()
  * @tparam D 实现类类型
  * @tparam T 元素类型
  */
-template <typename D, typename T>
-class Sequence : public Object<Sequence<D, T>> {
+template <typename D, typename T, typename Alloc = Allocator<T>>
+class Sequence : public Object<Sequence<D, T, Alloc>> {
 public:
     using value_t = T;
-    using Self = Sequence<D, value_t>;
-    using Super = Object<Sequence<D, value_t>>;
+    using Self = Sequence<D, value_t, Alloc>;
+    using Super = Object<Sequence<D, value_t, Alloc>>;
+    using allocator_type = Alloc;
 
-    using iterator = IndexIterator<false, Self, value_t>;
-    using const_iterator = IndexIterator<true, Self, value_t>;
+    using iterator = IndexIterator<false, Self, value_t, typename Alloc::template rebind<value_t>::other>;
+    using const_iterator = IndexIterator<true, Self, value_t, typename Alloc::template rebind<value_t>::other>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 

@@ -35,7 +35,7 @@ using namespace my;
  * 9 = util::Array
  * 10 = util::Queue
  */
-#define TRACE_OBJECT 10
+#define TRACE_OBJECT 2
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
@@ -56,9 +56,10 @@ void trace_cstring() {
     TraceCString c6 = std::move(c4);
 }
 
+// TODO 存在内存泄漏问题！
 void trace_string() {
-    using TraceString = util::BasicString<util::EncodingType::UTF8, mem::TracingAllocator<util::CodePoint<>>>;
-    using Utf16TraceString = util::BasicString<util::EncodingType::UTF16, mem::TracingAllocator<util::CodePoint<util::EncodingType::UTF16>>>;
+    using TraceString = util::BasicString<util::EncodingType::UTF8, mem::TracingAllocator<char>>;
+    using Utf16TraceString = util::BasicString<util::EncodingType::UTF16, mem::TracingAllocator<char>>;
 #if VERBOSE == 1
     mem::TracingAllocator<util::CodePoint<>>::set_verbose(true);
 #endif
@@ -69,7 +70,7 @@ void trace_string() {
     TraceString c1("你好世界ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
     TraceString c2("你好世界abcdef"_cs);
     Utf16TraceString c3("你好世界abcdef"_cs);
-    TraceString c4(util::CodePoint("我"));
+    TraceString c4("我");
     TraceString c5(10, 'a');
     TraceString c6(chs.begin(), chs.end());
 

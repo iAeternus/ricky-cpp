@@ -11,11 +11,11 @@ fn it_works = []() {
     util::StringBuilder sb;
 
     // When
-    sb.append("aaa"_s).append("bbb").append("ccc").append("你好"_s).append('R');
+    sb.append("aaa"_s).append("bbb").append("ccc").append("你好呀"_s).append('R');
 
     // Then
-    Assertions::assertEquals("aaabbbccc你好R"_s, sb.build());
-    Assertions::assertEquals("aaabbbccc你好R"_s, sb.build_move());
+    Assertions::assertEquals("aaabbbccc你好呀R"_s, sb.build());
+    Assertions::assertEquals("aaabbbccc你好呀R"_s, sb.build_move());
 };
 
 fn should_append_format_string = []() {

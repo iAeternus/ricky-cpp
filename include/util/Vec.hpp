@@ -28,17 +28,19 @@ public:
     /**
      * @brief 默认构造函数
      * @note 创建一个空向量，容量为0
+     * @param alloc 内存分配器
      */
-    Vec() :
-            size_(0), capacity_(DEFAULT_CAPACITY), data_(alloc_.allocate(capacity_)) {}
+    Vec(const Alloc& alloc = Alloc{}) :
+            alloc_(alloc), size_(0), capacity_(DEFAULT_CAPACITY), data_(alloc_.allocate(capacity_)) {}
 
     /**
      * @brief 构造指定大小的向量并用默认值填充
      * @param size 初始元素个数
      * @param val 用于填充的值，默认为值初始化
+     * @param alloc 内存分配器
      */
-    explicit Vec(const usize size, const value_t& val = value_t{}) :
-            size_(size), capacity_(size_), data_(alloc_.allocate(capacity_)) {
+    explicit Vec(const usize size, const value_t& val = value_t{}, const Alloc& alloc = Alloc{}) :
+            alloc_(alloc), size_(size), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         for (usize i = 0; i < size_; ++i) {
             alloc_.construct(data_ + i, val);
         }
@@ -47,9 +49,10 @@ public:
     /**
      * @brief 从初始化列表构造
      * @param init_list 初始化列表，元素将被拷贝
+     * @param alloc 内存分配器
      */
-    Vec(std::initializer_list<value_t>&& init_list) :
-            size_(init_list.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
+    Vec(std::initializer_list<value_t>&& init_list, const Alloc& alloc = Alloc{}) :
+            alloc_(alloc), size_(init_list.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : init_list) {
             alloc_.construct(data_ + pos, std::forward<decltype(item)>(item));
@@ -61,10 +64,11 @@ public:
      * @brief 从可迭代对象构造
      * @tparam I 满足Iterable概念的类型
      * @param iter 可迭代对象，元素将被拷贝
+     * @param alloc 内存分配器
      */
     template <Iterable I>
-    Vec(I&& iter) :
-            size_(iter.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
+    Vec(I&& iter, const Alloc& alloc = Alloc{}) :
+            alloc_(alloc), size_(iter.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : iter) {
             alloc_.construct(data_ + pos, std::forward<value_t>(item));
