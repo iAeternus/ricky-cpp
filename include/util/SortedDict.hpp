@@ -46,7 +46,6 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
     using key_t = K;
     using value_t = V;
     using Self = RBTreeNode<key_t, value_t>;
-    using Callback = Consumer<const KeyValueView<key_t, value_t>&>;
 
     key_t key;   // 键
     value_t val; // 值
@@ -305,8 +304,9 @@ public:
      * @param key 需要检查的键
      * @return 如果键存在返回 true，否则返回 false
      */
-    bool contains(const key_t& key) const {
-        return tree_search(key) != nullptr;
+    template<typename K>
+    bool contains(K&& key) const {
+        return tree_search(std::forward<K>(key)) != nullptr;
     }
 
     /**
@@ -347,8 +347,8 @@ public:
      * @return 返回对应值的常量引用或默认值
      */
     template <typename K>
-    const value_t& get_or_default(const K& key, const value_t& default_val) const {
-        Node* p = tree_search(key);
+    const value_t& get_or_default(K&& key, const value_t& default_val) const {
+        Node* p = tree_search(std::forward<K>(key));
         if (p == nullptr) {
             return default_val;
         }
@@ -1075,8 +1075,7 @@ private:
      * @param key 键
      * @return 若找到，返回指向目标节点的指针，否则返回 nullptr
      */
-    template <typename K>
-    Node* tree_search(const K& key) const {
+    Node* tree_search(const key_t& key) const {
         Node* p = root_;
         while (p != nil_) {
             if (comp_(key, p->key)) {
