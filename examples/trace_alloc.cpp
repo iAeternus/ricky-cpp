@@ -56,7 +56,7 @@ void trace_cstring() {
     TraceCString c6 = std::move(c4);
 }
 
-// TODO 存在内存泄漏问题！
+// TODO 存在内存泄漏问题！段错误！
 void trace_string() {
     using TraceString = util::BasicString<util::EncodingType::UTF8, mem::TracingAllocator<char>>;
     using Utf16TraceString = util::BasicString<util::EncodingType::UTF16, mem::TracingAllocator<char>>;
