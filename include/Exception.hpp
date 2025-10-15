@@ -16,7 +16,7 @@
 namespace my {
 
 //// 前向声明
-//void log_exception(const char*, std::source_location);
+// void log_exception(const char*, std::source_location);
 
 /**
  * @brief 异常类型枚举
@@ -104,12 +104,12 @@ public:
         return message_;
     }
 
-//    /**
-//     * @brief 记录异常到日志
-//     */
-//    void log() const {
-//        log_exception(what(), loc_);
-//    }
+    //    /**
+    //     * @brief 记录异常到日志
+    //     */
+    //    void log() const {
+    //        log_exception(what(), loc_);
+    //    }
 
     /**
      * @brief 异常类型转字符串
@@ -243,8 +243,7 @@ fn check(const bool condition, const ExceptionType type, format_string_wrapper<A
     template <typename... Args>                                                                 \
     fn NAME##_exception(format_string_wrapper<Args...> fmt_w, Args&&... args)->Exception {      \
         return Exception(TYPE, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc); \
-    }                                                                                           \
-                                                                                                \
+    }
 
 DEFINE_EXCEPTION_FACTORY(runtime, ExceptionType::RuntimeException)                      // 运行时异常
 DEFINE_EXCEPTION_FACTORY(logic, ExceptionType::LogicException)                          // 逻辑异常

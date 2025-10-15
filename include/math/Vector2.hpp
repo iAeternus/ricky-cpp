@@ -36,12 +36,12 @@ public:
         return y_;
     }
 
-    fn x(f64 x)->Self& {
+    fn x(f64 x) -> Self& {
         this->x_ = x;
         return *this;
     }
 
-    fn y(f64 y)->Self& {
+    fn y(f64 y) -> Self& {
         this->y_ = y;
         return *this;
     }

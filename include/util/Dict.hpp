@@ -492,13 +492,13 @@ public:
         std::stringstream stream;
         stream << '{';
         for (auto&& item : *this) {
-            if constexpr (is_same<key_t, CString/*, String*/, std::string>) {
+            if constexpr (is_same<key_t, CString /*, String*/, std::string>) {
                 stream << '\"' << item.key() << '\"';
             } else {
                 stream << item.key();
             }
             stream << ':';
-            if constexpr (is_same<value_t, CString/*, String*/, std::string>) {
+            if constexpr (is_same<value_t, CString /*, String*/, std::string>) {
                 stream << '\"' << item.value() << '\"';
             } else {
                 stream << item.value();

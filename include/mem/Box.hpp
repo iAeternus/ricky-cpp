@@ -45,9 +45,7 @@ public:
      * @return 当前Box
      */
     Self& operator=(Self&& other) noexcept {
-        if(this == &other) return *this;
-
-        
+        if (this == &other) return *this;
     }
 
     ~Box();

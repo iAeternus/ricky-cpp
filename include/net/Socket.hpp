@@ -62,7 +62,7 @@ fn closesocket(i32 socket) {
  * @brief 获取套接字错误信息
  * @return 错误信息字符串
  */
-fn error_msg()->CString {
+fn error_msg() -> CString {
     CString error_msg{256};
 #if _WIN32 || _WIN64
     int errorno = WSAGetLastError();
@@ -527,10 +527,9 @@ public:
         DWORD timeout = timeout_ms;
         set_option(SOL_SOCKET, receive ? SO_RCVTIMEO : SO_SNDTIMEO, &timeout, sizeof(timeout));
 #else
-        struct timeval tv {
+        struct timeval tv{
             .tv_sec = static_cast<time_t>(timeout_ms / 1000),
-            .tv_usec = static_cast<suseconds_t>((timeout_ms % 1000) * 1000)
-        };
+            .tv_usec = static_cast<suseconds_t>((timeout_ms % 1000) * 1000)};
         set_option(SOL_SOCKET, receive ? SO_RCVTIMEO : SO_SNDTIMEO, &tv, sizeof(tv));
 #endif
     }

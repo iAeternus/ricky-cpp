@@ -9,8 +9,6 @@
 
 namespace my::async {
 
-
-
 } // namespace my::async
 
 #endif // THREAD_HPP

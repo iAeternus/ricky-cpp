@@ -304,7 +304,7 @@ public:
      * @param key 需要检查的键
      * @return 如果键存在返回 true，否则返回 false
      */
-    template<typename K>
+    template <typename K>
     bool contains(K&& key) const {
         return tree_search(std::forward<K>(key)) != nullptr;
     }

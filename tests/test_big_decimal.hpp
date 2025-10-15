@@ -87,7 +87,7 @@ fn test_mul = []() {
 
 fn test_div = []() {
     // Given
-    math::BigDecimal bd =   "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
+    math::BigDecimal bd = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     math::BigDecimal bd2 = "-3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     math::BigDecimal bd3 = "0.2";
     math::BigDecimal bd4 = "6";
@@ -108,7 +108,7 @@ fn test_div = []() {
 fn test_scale = []() {
     // Given
     math::BigDecimal bd("123.456789");
-    
+
     // When & Then
     Assertions::assertEquals("123.456789000"_cs, bd.scale(9, math::RoundingMode::HALF_UP).__str__());
     Assertions::assertEquals("123.457"_cs, bd.scale(3, math::RoundingMode::HALF_UP).__str__());
@@ -119,17 +119,17 @@ fn test_scale = []() {
 
 fn test_round = []() {
     math::BigDecimal bd("123.456789");
-    
+
     // 测试有效数字舍入
     Assertions::assertEquals("123.000000"_cs, bd.round(3, math::RoundingMode::HALF_UP).__str__());
     Assertions::assertEquals("123.500000"_cs, bd.round(4, math::RoundingMode::HALF_UP).__str__());
     Assertions::assertEquals("123.460000"_cs, bd.round(5, math::RoundingMode::HALF_UP).__str__());
     Assertions::assertEquals("123.457000"_cs, bd.round(6, math::RoundingMode::HALF_UP).__str__());
-    
+
     // 测试边界情况
     math::BigDecimal bd2("0.5");
     Assertions::assertEquals("0.5"_cs, bd2.round(1, math::RoundingMode::HALF_UP).__str__());
-    
+
     math::BigDecimal bd3("-0.5");
     Assertions::assertEquals("-0.5"_cs, bd3.round(1, math::RoundingMode::HALF_UP).__str__());
 
@@ -145,13 +145,13 @@ fn test_rounding_mode = []() {
 fn test_move_point = []() {
     // Given
     math::BigDecimal bd("123.456789");
-    
+
     // When & Then
     Assertions::assertEquals("12345.6789"_cs, bd.move_point_right(2).__str__());
     Assertions::assertEquals("1.23456789"_cs, bd.move_point_left(2).__str__());
     Assertions::assertEquals("123456789"_cs, bd.move_point_right(6).__str__());
     Assertions::assertEquals("0.123456789"_cs, bd.move_point_left(3).__str__());
-    
+
     // 测试负数
     math::BigDecimal neg_bd("-123.456789");
     Assertions::assertEquals("-12345.6789"_cs, neg_bd.move_point_right(2).__str__());
@@ -164,7 +164,7 @@ fn test_strip_trailing_zeros = []() {
     math::BigDecimal bd2("123.000000");
     math::BigDecimal bd3("123.0");
     math::BigDecimal bd4("0.0");
-    
+
     // When & Then
     Assertions::assertEquals("123.456"_cs, bd.strip_trailing_zeros().__str__());
     Assertions::assertEquals("123"_cs, bd2.strip_trailing_zeros().__str__());
@@ -177,15 +177,15 @@ fn test_sqrt = []() {
     math::BigDecimal bd("2");
     math::BigDecimal bd2("0.25");
     math::BigDecimal bd3("100");
-    
+
     // When & Then
     Assertions::assertEquals("1.4142135624"_cs, bd.sqrt(10).__str__());
     Assertions::assertEquals("0.5"_cs, bd2.sqrt(1).__str__());
     Assertions::assertEquals("10"_cs, bd3.sqrt(0).__str__());
-    
+
     // 测试精度控制
     Assertions::assertEquals("1.41421356237309504880"_cs, bd.sqrt(20).__str__());
-    
+
     // 测试负数
     Assertions::assertThrows("Cannot calculate square root of negative number", []() {
         math::BigDecimal(-1).sqrt();
@@ -197,7 +197,7 @@ fn test_precision = []() {
     math::BigDecimal bd("123.456789");
     math::BigDecimal bd2("0.000123456789");
     math::BigDecimal bd3("100.00");
-    
+
     // When & Then
     Assertions::assertEquals(9u, bd.precision());
     Assertions::assertEquals(9u, bd2.precision());

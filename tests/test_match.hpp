@@ -14,11 +14,9 @@ fn it_works = []() {
     // When
     auto res = match(v, [](const std::string& s) {
         Assertions::assertEquals("abc", s);
-        return s;
-    }, [](float d) {
+        return s; }, [](float d) {
         Assertions::assertEquals(0.1f, d);
-        return std::to_string(d);
-    });
+        return std::to_string(d); });
 
     // Then
     Assertions::assertEquals("0.100000", res);
@@ -27,11 +25,9 @@ fn it_works = []() {
     v = "abc";
     auto res2 = match(v, [](const std::string& s) {
         Assertions::assertEquals("abc", s);
-        return s;
-    }, [](float d) {
+        return s; }, [](float d) {
         Assertions::assertEquals(0.1f, d);
-        return std::to_string(d);
-    });
+        return std::to_string(d); });
 
     // Then
     Assertions::assertEquals("abc", res2);

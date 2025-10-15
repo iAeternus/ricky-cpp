@@ -18,7 +18,7 @@ public:
      * @param jsonStr json字符串，引用传递会做修剪处理
      * @return json对象
      */
-    static fn parse(JsonType::JsonStr& jsonStr)->Json {
+    static fn parse(JsonType::JsonStr& jsonStr) -> Json {
         jsonStr = jsonStr.trim();
 
         if (jsonStr[0] == util::CodePoint{'{'}) {
@@ -39,7 +39,7 @@ public:
      * @param json json对象
      * @return json字符串
      */
-    static fn parse(const Json& json)->JsonType::JsonStr {
+    static fn parse(const Json& json) -> JsonType::JsonStr {
         return util::String{json.__str__()};
     }
 
@@ -50,7 +50,7 @@ private:
      * @param stopSign 停止字符
      * @return 解析后的JSON对象和剩余的字符串
      */
-    static fn parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint<>& stopSign)->Pair<Json, JsonType::JsonStr> {
+    static fn parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint<>& stopSign) -> Pair<Json, JsonType::JsonStr> {
         jsonStr = jsonStr.trim();
         if (jsonStr.size() == 0) {
             throw argument_exception("Json string is empty");
@@ -82,7 +82,7 @@ private:
         return {parse(match), remain};
     }
 
-    static fn parseDict(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseDict(JsonType::JsonStr& jsonStr) -> Json {
         JsonType::JsonDict dict;
         jsonStr = jsonStr.slice(1, -1).trim(); // 去掉 {}
 
@@ -98,7 +98,7 @@ private:
         return Json{std::move(dict)};
     }
 
-    static fn parseArray(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseArray(JsonType::JsonStr& jsonStr) -> Json {
         JsonType::JsonArray arr;
         jsonStr = jsonStr.slice(1, -1).trim(); // 去掉 []
 
@@ -110,11 +110,11 @@ private:
         return Json{std::move(arr)};
     }
 
-    static fn parseStr(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseStr(JsonType::JsonStr& jsonStr) -> Json {
         return Json{jsonStr.slice(1, -1).to_string()}; // 去掉 ""
     }
 
-    static fn parseNum(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseNum(JsonType::JsonStr& jsonStr) -> Json {
         bool isFloat = false;
         for (auto c : jsonStr) {
             if (!c.is_digit()) {
@@ -129,14 +129,14 @@ private:
         return isFloat ? Json{make_float(atof(str))} : Json{make_int(atoll(str))};
     }
 
-    static fn parseNull(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseNull(JsonType::JsonStr& jsonStr) -> Json {
         if (jsonStr != JsonType::JsonStr{"null", 4}) {
             throw runtime_exception("Invalid null parse: {}", jsonStr);
         }
         return Json{JsonType::JsonNull{}};
     }
 
-    static fn parseBool(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseBool(JsonType::JsonStr& jsonStr) -> Json {
         using namespace my::util;
         if (jsonStr == "true"_s) {
             return Json{true};
@@ -147,7 +147,7 @@ private:
         }
     }
 
-    static fn parseSimple(JsonType::JsonStr& jsonStr)->Json {
+    static fn parseSimple(JsonType::JsonStr& jsonStr) -> Json {
         if (jsonStr[0].is_digit()) {
             return parseNum(jsonStr); // num
         } else if (jsonStr[0] == util::CodePoint{'n'}) {

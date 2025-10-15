@@ -20,7 +20,7 @@ static constexpr char PATH_SEP = '\\';
  * @brief 判断文件或文件夹是否存在
  * @return true=存在 false=不存在
  */
-fn exists(const char* path)->bool {
+fn exists(const char* path) -> bool {
     auto attributes = GetFileAttributesA(path);
     return (attributes != INVALID_FILE_ATTRIBUTES);
 }
@@ -29,7 +29,7 @@ fn exists(const char* path)->bool {
  * @brief 判断是否为文件
  * @return true=是 false=否
  */
-fn isfile(const char* path)->bool {
+fn isfile(const char* path) -> bool {
     auto attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
@@ -38,7 +38,7 @@ fn isfile(const char* path)->bool {
  * @brief 判断是否为文件夹
  * @return true=是 false=否
  */
-fn isdir(const char* path)->bool {
+fn isdir(const char* path) -> bool {
     auto attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0);
 }
@@ -82,7 +82,7 @@ fn remove(const char* path) {
  * @brief 拼接两个路径，若第一个路径结尾没有分隔符，会添加一个分隔符
  * @return 拼接后的路径
  */
-fn join(const char* path1, const char* path2)->CString {
+fn join(const char* path1, const char* path2) -> CString {
     auto len1 = std::strlen(path1);
     auto len2 = std::strlen(path2);
     if (len1 == 0) return CString(path2);
@@ -117,7 +117,7 @@ fn join(const char* path1, const char* path2)->CString {
  * @brief 列出文件夹中的文件名
  * @return 文件名集合
  */
-fn listdir(const char* path)->util::Vec<CString> {
+fn listdir(const char* path) -> util::Vec<CString> {
     WIN32_FIND_DATAA find_data;
     auto handle = FindFirstFileA(join(path, "*"), &find_data);
 

@@ -229,7 +229,7 @@ public:
     }
 
     RowView operator[](usize i) {
-        if ( i >= rows_) {
+        if (i >= rows_) {
             throw index_out_of_bounds_exception("row index {} out of range [0..{}]", i, rows_);
         }
         return RowView{data_, i * cols_, cols_};

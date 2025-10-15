@@ -9,8 +9,6 @@
 
 namespace my::async {
 
-
-    
 } // namespace my::async
 
 #endif // MUTEX_HPP

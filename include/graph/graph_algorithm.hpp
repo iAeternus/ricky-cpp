@@ -261,8 +261,8 @@ auto prim = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     if (n == 0) return t;
 
     util::Vec<bool> vis(n, false);
-    util::Vec<E> dis(n, TYPE_MAX(E));   // 到树的最小距离
-    util::Vec<Idx> fa(n, npos); // MST父节点ID
+    util::Vec<E> dis(n, TYPE_MAX(E)); // 到树的最小距离
+    util::Vec<Idx> fa(n, npos);       // MST父节点ID
 
     dis[0] = 0; // TODO 任选一个节点开始
     for (Idx i = 0; i < n; ++i) {
@@ -311,8 +311,8 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     if (n == 0) return t;
 
     util::Vec<bool> vis(n, false);
-    util::Vec<E> dis(n, TYPE_MAX(E));   // 到树的最小距离
-    util::Vec<Idx> fa(n, npos); // MST父节点ID
+    util::Vec<E> dis(n, TYPE_MAX(E)); // 到树的最小距离
+    util::Vec<Idx> fa(n, npos);       // MST父节点ID
 
     // 优先队列：存储 (距离, 节点ID) ，最小距离优先
     using Elem = Pair<E, Idx>;
@@ -491,7 +491,7 @@ auto floyd = [](const auto& g, auto&& _) -> math::Matrix<E> {
 //  */
 // template <typename N = f64, typename E = f64, typename Idx = DefaultIdx>
 // auto topological_sort_bfs = [](const auto& g, auto&& _) -> util::Vec<Idx> {
-//     // TODO  
+//     // TODO
 // };
 
 } // namespace my::graph

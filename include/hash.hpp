@@ -19,7 +19,7 @@ namespace my {
  * @return 哈希值
  */
 template <Hashable K>
-fn my_hash_impl(const K& key, std::true_type)->hash_t {
+fn my_hash_impl(const K& key, std::true_type) -> hash_t {
     return key.__hash__();
 }
 
@@ -31,7 +31,7 @@ fn my_hash_impl(const K& key, std::true_type)->hash_t {
  * @return 哈希值
  */
 template <Hashable K>
-fn my_hash_impl(const K& key, std::false_type)->hash_t {
+fn my_hash_impl(const K& key, std::false_type) -> hash_t {
     return std::hash<K>{}(key);
 }
 
@@ -43,7 +43,7 @@ fn my_hash_impl(const K& key, std::false_type)->hash_t {
  * @return 哈希值
  */
 template <Hashable K>
-fn my_hash(const K& key)->hash_t {
+fn my_hash(const K& key) -> hash_t {
     return my_hash_impl(key, std::bool_constant<MyLikeHashable<K>>{});
 }
 
@@ -53,7 +53,7 @@ fn my_hash(const K& key)->hash_t {
  * @param ptr 指向字节数据的指针，该数组至少应有4个字节的长度
  * @return 解码后的32位无符号整数
  */
-fn decode_fixed32(const char* ptr)->u32 {
+fn decode_fixed32(const char* ptr) -> u32 {
     const auto buffer = reinterpret_cast<const u8*>(ptr);
     return (static_cast<u32>(buffer[0]) | (static_cast<u32>(buffer[1]) << 8) | (static_cast<u32>(buffer[2]) << 16) | (static_cast<u32>(buffer[3]) << 24));
 }
@@ -65,9 +65,9 @@ fn decode_fixed32(const char* ptr)->u32 {
  * @param data 指向字节数据的指针
  * @param n 数据长度（以字节为单位）
  * @param seed 可选的种子值，默认为0xbc9f1d34
- * @return 计算得到的哈希值 
+ * @return 计算得到的哈希值
  */
-fn bytes_hash(const char* data, const size_t n, const u32 seed = 0xbc9f1d34)->hash_t {
+fn bytes_hash(const char* data, const size_t n, const u32 seed = 0xbc9f1d34) -> hash_t {
     constexpr hash_t m = 0xc6a4a793;
     constexpr hash_t r = 24;
     const char* end = data + n;

@@ -86,12 +86,10 @@ public:
     TreeImpl() :
             root_(nullptr), size_(0) {}
 
-
-
 private:
     Alloc alloc_{}; // 内存分配器
-    Node* root_; // 根节点
-    usize size_; // 节点数
+    Node* root_;    // 根节点
+    usize size_;    // 节点数
 };
 
 /**
