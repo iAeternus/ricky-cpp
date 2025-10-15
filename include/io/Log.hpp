@@ -37,7 +37,7 @@ public:
         static constexpr i32 INACTIVE_ = I32_MAX;
 
         static constexpr const char* LEVEL_NAMES[] = {"TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"};
-        static constexpr const char* LEVEL_COLORS[] = {Color::AQUA, Color::DEEPGREEN, Color::GREEN, Color::YELLOW, Color::RED, Color::PURPLE};
+        static constexpr const char* LEVEL_COLORS[] = {color::Color::AQUA, color::Color::DEEPGREEN, color::Color::GREEN, color::Color::YELLOW, color::Color::RED, color::Color::PURPLE};
     };
 
     /**
@@ -271,9 +271,9 @@ private:
     static void print_log_handler(const LogHandler& evt, const char* msg, const util::DateTime& date_time, const char* file_name, i32 line) {
         fprintf(evt.output_, "%s %s%-5s%s %s:%d ",
                 date_time.__str__().data(),
-                evt.enable_color_ ? LogLevel::LEVEL_COLORS[evt.level_] : Color::CLOSE,
+                evt.enable_color_ ? LogLevel::LEVEL_COLORS[evt.level_] : color::Color::CLOSE,
                 LogLevel::LEVEL_NAMES[evt.level_],
-                Color::CLOSE,
+                color::Color::CLOSE,
                 file_name, line);
         fprintf(evt.output_, "%s", msg);
         fprintf(evt.output_, "\n");

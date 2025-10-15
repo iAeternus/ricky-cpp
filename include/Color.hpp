@@ -7,7 +7,7 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-namespace my::io {
+namespace my::color {
 
 /**
  * @brief 控制台打印颜色转义码
@@ -23,9 +23,10 @@ public:
     constexpr static auto PURPLE = "\033[35m";
     constexpr static auto DEEPGREEN = "\033[36m";
     constexpr static auto WHITE = "\033[37m";
+    constexpr static auto CYAN = "\033[46m";
     constexpr static auto AQUA = "\033[94m";
 };
 
-} // namespace my::io
+} // namespace my::color
 
 #endif // COLOR_HPP

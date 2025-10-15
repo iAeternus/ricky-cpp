@@ -100,7 +100,7 @@ public:
     static Self now() {
         const auto now = std::chrono::system_clock::now();
         const time_t time = std::chrono::system_clock::to_time_t(now);
-        const auto time_tm = localtime(&time);
+        const auto time_tm = std::localtime(&time);
         return Self{time_tm->tm_year + 1900, time_tm->tm_mon + 1, time_tm->tm_mday};
     }
 
@@ -544,7 +544,7 @@ public:
     static Self now() {
         const auto now = std::chrono::system_clock::now();
         const time_t time = std::chrono::system_clock::to_time_t(now);
-        const auto time_tm = localtime(&time);
+        const auto time_tm = std::localtime(&time);
 
         // 计算纳秒部分（当前秒内的时间差）
         const auto diff = now - std::chrono::system_clock::from_time_t(time);
@@ -916,7 +916,7 @@ public:
     static Self now() {
         const auto now = std::chrono::system_clock::now();
         const time_t time = std::chrono::system_clock::to_time_t(now);
-        const auto time_tm = localtime(&time);
+        const auto time_tm = std::localtime(&time);
         const auto diff = now - std::chrono::system_clock::from_time_t(time);
         const auto nanoseconds = duration_cast<std::chrono::nanoseconds>(diff);
         return Self{Date::of(time_tm->tm_year + 1900, time_tm->tm_mon + 1, time_tm->tm_mday),

@@ -20,10 +20,10 @@ protected:
 
     constexpr NoCopy() = default;
     ~NoCopy() = default;
-    
+
     NoCopy(const Self&) = delete;
     Self& operator=(const Self&) = delete;
-    
+
     NoCopy(Self&&) noexcept = default;
     Self& operator=(Self&&) noexcept = default;
 };
@@ -38,10 +38,10 @@ protected:
 
     constexpr NoMove() = default;
     ~NoMove() = default;
-    
+
     NoMove(const Self&) = default;
     Self& operator=(const Self&) = default;
-    
+
     NoMove(Self&&) noexcept = delete;
     Self& operator=(Self&&) noexcept = delete;
 };
@@ -59,9 +59,24 @@ protected:
 
     NoCopyMove(const Self&) = delete;
     Self& operator=(const Self&) = delete;
-    
+
     NoCopyMove(Self&&) noexcept = delete;
     Self& operator=(Self&&) noexcept = delete;
+};
+
+/**
+ * @brief 单例类
+ */
+template <typename T>
+class Singleton {
+    Singleton() = delete;
+    ~Singleton() = delete;
+
+public:
+    [[nodiscard]] static auto instance() -> T& {
+        static T instance;
+        return instance;
+    }
 };
 
 } // namespace my

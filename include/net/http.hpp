@@ -404,7 +404,7 @@ private:
                     }
                 } else {
                     resp.status = HttpStatusCode::METHOD_NOT_ALLOWED;
-                    resp.headers["Allow"_s] = get_allowed_methods(req.path);
+                    resp.headers["Allow"_s] = get_methods(req.path);
                     resp.set_body("<h1>405 Method Not Allowed</h1>", "text/html");
                 }
             }
@@ -631,7 +631,7 @@ private:
      * @param path URL
      * @return 支持的HTTP方法
      */
-    util::String get_allowed_methods(const util::String& path) {
+    util::String get_methods(const util::String& path) {
         util::StringBuilder methods;
         bool first = true;
 

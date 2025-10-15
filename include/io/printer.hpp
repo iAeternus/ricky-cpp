@@ -8,7 +8,7 @@
 #define PRINTER_HPP
 
 #include "Object.hpp"
-#include "Color.hpp"
+#include "../Color.hpp"
 
 namespace my::io {
 
@@ -109,7 +109,7 @@ class ColorPrinter : public Printer {
 public:
     using Super = Printer;
 
-    ColorPrinter(std::FILE* file_ptr, CString color = Color::WHITE) :
+    ColorPrinter(std::FILE* file_ptr, CString color = color::Color::WHITE) :
             Printer(file_ptr), color_(std::move(color)) {}
 
     template <Printable T, Printable... Args>
@@ -124,7 +124,7 @@ public:
     }
 
     void closecolor() const {
-        Super::__print__(Color::CLOSE);
+        Super::__print__(color::Color::CLOSE);
     }
 
     void setcolor(CString color) {
@@ -137,8 +137,8 @@ private:
 
 static Printer println{stdout};
 static Printer print{stdout, " ", " "};
-static ColorPrinter my_warner{stdin, Color::YELLOW};
-static ColorPrinter my_error{stderr, Color::RED};
+static ColorPrinter my_warner{stdin, color::Color::YELLOW};
+static ColorPrinter my_error{stderr, color::Color::RED};
 
 }; // namespace my::io
 

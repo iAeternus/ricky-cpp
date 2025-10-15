@@ -8,10 +8,9 @@
 #define EXCEPTION_HPP
 
 #include "Object.hpp"
+#include "ricky_format.hpp"
 
 #include <exception>
-#include <source_location>
-#include <format>
 #include <unordered_map>
 
 // 前向声明

@@ -8,7 +8,7 @@
 #define SORTED_DICT_HPP
 
 #include "KeyValue.hpp"
-#include "Color.hpp"
+#include "../Color.hpp"
 #include "Pair.hpp"
 
 namespace my::util {
@@ -118,7 +118,7 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
 
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
-        stream << (color == Color::RED ? io::Color::RED : "") << '(' << key << ',' << val << ')' << io::Color::CLOSE << '\n';
+        stream << (color == Color::RED ? color::Color::RED : "") << '(' << key << ',' << val << ')' << color::Color::CLOSE << '\n';
         return CString{stream.str()};
     }
 };

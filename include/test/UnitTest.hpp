@@ -13,8 +13,8 @@
 
 namespace my::test {
 
-static io::ColorPrinter test_passed{stdout, io::Color::GREEN};
-static io::ColorPrinter test_failed{stdout, io::Color::RED};
+static io::ColorPrinter test_passed{stdout, color::Color::GREEN};
+static io::ColorPrinter test_failed{stdout, color::Color::RED};
 
 /**
  * 单元测试类

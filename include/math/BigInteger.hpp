@@ -159,7 +159,7 @@ public:
      * @brief 判断是否为偶数
      * @return true=是 false=否
      */
-    constexpr bool is_even() const noexcept{
+    constexpr bool is_even() const noexcept {
         return !is_odd();
     }
 
@@ -190,10 +190,11 @@ public:
         while (ans.num_.size() <= n) {
             ans.num_.append(0);
         }
-        ans.num_[n] = 1;
-        while (bit_shift--) {
-            ans.num_[n] *= 10;
-        }
+        // ans.num_[n] = 1;
+        // while (bit_shift--) {
+        //     ans.num_[n] *= 10;
+        // }
+        ans.num_[n] = pow10(bit_shift); // TODO 这个优化是正确的吗，需要测试
         return ans * (*this);
     }
 
@@ -579,12 +580,12 @@ private:
     }
 
 private:
-    bool sign_;          ///< true=正数 false=负数
-    usize length_;       ///< 十进制位数
-    util::Vec<i32> num_; ///< 逆序存储，每4字节存WIDTH个10进制位
+    bool sign_;          // true=正数 false=负数
+    usize length_;       // 十进制位数
+    util::Vec<i32> num_; // 逆序存储，每4字节存WIDTH个10进制位
 
-    static constexpr i32 BASE = 100000000; ///< 存储基数
-    static constexpr i32 WIDTH = 8;        ///< 每个基本单元存储的十进制位数
+    static constexpr i32 BASE = 100000000; // 存储基数
+    static constexpr i32 WIDTH = 8;        // 每个基本单元存储的十进制位数
 };
 
 inline const BigInteger BigInteger::ZERO{};
