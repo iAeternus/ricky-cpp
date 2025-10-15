@@ -13,14 +13,10 @@
 #include <exception>
 #include <unordered_map>
 
-// 前向声明
-namespace my::io {
-
-void log_exception(const char*, std::source_location);
-
-} // namespace my::io
-
 namespace my {
+
+//// 前向声明
+//void log_exception(const char*, std::source_location);
 
 /**
  * @brief 异常类型枚举
@@ -108,12 +104,12 @@ public:
         return message_;
     }
 
-    /**
-     * @brief 记录异常到日志
-     */
-    void log() const {
-        io::log_exception(what(), loc_);
-    }
+//    /**
+//     * @brief 记录异常到日志
+//     */
+//    void log() const {
+//        log_exception(what(), loc_);
+//    }
 
     /**
      * @brief 异常类型转字符串

@@ -36,4 +36,14 @@ using format_string_wrapper = basic_format_string_wrapper<std::type_identity_t<A
 
 } // namespace my
 
+/**
+ * @brief 为std::source_location提供格式化支持
+ */
+template <>
+struct std::formatter<std::source_location> : std::formatter<std::string_view> {
+    auto format(const std::source_location& loc, format_context& ctx) const {
+        return std::formatter<std::string_view>::format(std::format("{}:{}", loc.file_name(), loc.line()), ctx);
+    }
+};
+
 #endif // RICKY_CPP_RICKY_FORMAT_HPP

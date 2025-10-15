@@ -1061,8 +1061,7 @@ template <my::util::EncodingType Enc, typename Alloc>
 struct std::formatter<my::util::BasicString<Enc, Alloc>, char> : std::formatter<string_view, char> {
     auto format(const my::util::BasicString<Enc, Alloc>& str, auto& ctx) const {
         auto s = str.into_string();
-        return std::formatter<std::string_view, char>::format(
-            std::string_view(s.data(), s.length()), ctx);
+        return std::formatter<std::string_view, char>::format(std::string_view(s.data(), s.length()), ctx);
     }
 };
 

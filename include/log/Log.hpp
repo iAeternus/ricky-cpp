@@ -5,8 +5,8 @@
  * @version 1.0
  */
 
-#ifndef LOG2_HPP
-#define LOG2_HPP
+#ifndef LOG_HPP
+#define LOG_HPP
 
 // #include "String.hpp"
 #include "Exception.hpp"
@@ -24,42 +24,18 @@
 #include <unistd.h>
 #endif // _WIN32
 
-/**
- * TODO 优化原有的日志功能，支持格式化/文件输出/线程安全
- *
- * # Examples
- * // 预定义文件日志路径
- * add_definitions(-DFILE_LOG1_PATH="${CMAKE_CURRENT_SOURCE_DIR}/logs/log1/")
- *
- * // 打印控制台日志
- * log::set_consolelog_level(fastlog::LogLevel::Trace);
- * log::console.trace("hello world");
- * log::console.debug("hello world");
- * log::console.info("hello world");
- * log::console.warn("hello world");
- * log::console.error("hello world");
- * log::console.fatal("hello world");
- *
- * // 输出文件日志
- * log::file::get_logger("file_log1").info("hello world log1,count : {}, vec :{}", count++, vec);
- * log::file::get_logger("file_log2").info("hello world log1,count : {}, vec :{}", count++, vec);
- *
- * // 注册文件日志器
- * auto &file_logger1 = log::file::make_logger("file_log1", FILE_LOG1_PATH);
- */
-
 namespace my::log {
 
 /**
  * @brief 日志级别
  */
 enum class LogLevel {
-    TRACE,
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    FATAL,
+    Trace,
+    Debug,
+    Info,
+    Warn,
+    Error,
+    Fatal,
 };
 
 /**
@@ -74,24 +50,24 @@ public:
 
     const char* color() const {
         switch (level_) {
-        case LogLevel::TRACE: return color::Color::CYAN;
-        case LogLevel::DEBUG: return color::Color::BLUE;
-        case LogLevel::INFO: return color::Color::GREEN;
-        case LogLevel::WARN: return color::Color::YELLOW;
-        case LogLevel::ERROR: return color::Color::RED;
-        case LogLevel::FATAL: return color::Color::PURPLE;
+        case LogLevel::Trace: return color::Color::CYAN;
+        case LogLevel::Debug: return color::Color::BLUE;
+        case LogLevel::Info: return color::Color::GREEN;
+        case LogLevel::Warn: return color::Color::YELLOW;
+        case LogLevel::Error: return color::Color::RED;
+        case LogLevel::Fatal: return color::Color::PURPLE;
         default: throw argument_exception("Unknown log level");
         }
     }
 
     CString __str__() const {
         switch (level_) {
-        case LogLevel::TRACE: return "TRACE";
-        case LogLevel::DEBUG: return "DEBUG";
-        case LogLevel::INFO: return "INFO";
-        case LogLevel::WARN: return "WARN";
-        case LogLevel::ERROR: return "ERROR";
-        case LogLevel::FATAL: return "FATAL";
+        case LogLevel::Trace: return "Trace";
+        case LogLevel::Debug: return "Debug";
+        case LogLevel::Info: return "Info";
+        case LogLevel::Warn: return "Warn";
+        case LogLevel::Error: return "Error";
+        case LogLevel::Fatal: return "Fatal";
         default: throw argument_exception("Unknown log level");
         }
     }
@@ -143,33 +119,33 @@ public:
     }
 
     template <typename... Args>
-    void trace(format_string_wrapper<Args...> fmt, Args&&... args) {
-        format<LogLevel::TRACE>(fmt, std::forward<Args>(args)...);
+    void trace(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+        format<LogLevel::Trace>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void debug(format_string_wrapper<Args...> fmt, Args&&... args) {
-        format<LogLevel::DEBUG, Args...>(fmt, std::forward<Args>(args)...);
+    void debug(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+        format<LogLevel::Debug, Args...>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void info(format_string_wrapper<Args...> fmt, Args&&... args) {
-        format<LogLevel::INFO>(fmt, std::forward<Args>(args)...);
+    void info(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+        format<LogLevel::Info>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void warn(format_string_wrapper<Args...> fmt, Args&&... args) {
-        format<LogLevel::WARN, Args...>(fmt, std::forward<Args>(args)...);
+    void warn(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+        format<LogLevel::Warn, Args...>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void error(format_string_wrapper<Args...> fmt, Args&&... args) {
-        format<LogLevel::ERROR, Args...>(fmt, std::forward<Args>(args)...);
+    void error(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+        format<LogLevel::Error, Args...>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void fatal(format_string_wrapper<Args...> fmt, Args&&... args) {
-        format<LogLevel::FATAL>(fmt, std::forward<Args>(args)...);
+    void fatal(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+        format<LogLevel::Fatal>(fmt_w, std::forward<Args>(args)...);
     }
 
 private:
@@ -192,7 +168,7 @@ private:
     }
 
 private:
-    LogLevel level_{LogLevel::DEBUG};
+    LogLevel level_{LogLevel::Debug};
 };
 
 class ConsoleLogger : public BasicLogger<ConsoleLogger> {
@@ -220,4 +196,4 @@ static fn set_consolelog_level(LogLevel level) {
 
 } // namespace my::log
 
-#endif // LOG2_HPP
+#endif // LOG_HPP

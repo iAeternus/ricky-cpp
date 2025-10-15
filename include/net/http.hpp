@@ -33,6 +33,31 @@ enum class HttpMethod {
     UNKNOWN
 };
 
+} // namespace my::net
+
+// 为 HttpMethod 提供格式化支持
+template <>
+struct std::formatter<my::net::HttpMethod> : std::formatter<std::string_view> {
+    auto format(my::net::HttpMethod method, std::format_context& ctx) const {
+        std::string_view str = "UNKNOWN";
+        switch (method) {
+        case my::net::HttpMethod::GET: str = "GET"; break;
+        case my::net::HttpMethod::POST: str = "POST"; break;
+        case my::net::HttpMethod::PUT: str = "PUT"; break;
+        case my::net::HttpMethod::DELETE: str = "DELETE"; break;
+        case my::net::HttpMethod::CONNECT: str = "CONNECT"; break;
+        case my::net::HttpMethod::OPTIONS: str = "OPTIONS"; break;
+        case my::net::HttpMethod::TRACE: str = "TRACE"; break;
+        case my::net::HttpMethod::PATCH: str = "PATCH"; break;
+        case my::net::HttpMethod::HEAD: str = "HEAD"; break;
+        default: break;
+        }
+        return std::formatter<std::string_view>::format(str, ctx);
+    }
+};
+
+namespace my::net {
+
 /**
  * @brief HTTP状态码
  */
@@ -218,7 +243,7 @@ public:
      * @note 该函数会阻塞直到服务器关闭
      */
     void start() {
-        io::Log::info("HTTP server started on {}:{}", SRC_LOC, server_.get_local_ip(), server_.get_local_port());
+        log::console.info("HTTP server started on {}:{}", server_.get_local_ip(), server_.get_local_port());
 
         loop {
             try {
@@ -232,7 +257,7 @@ public:
 
                 // 检查连接限制
                 if (max_connections_ > 0 && active_connections_.load() >= max_connections_) {
-                    io::Log::warn("Connection limit reached ({}/{})", SRC_LOC, active_connections_.load(), max_connections_);
+                    log::console.warn("Connection limit reached ({}/{})", active_connections_.load(), max_connections_);
                     send_error_response(*client, HttpStatusCode::SERVICE_UNAVAILABLE);
                     client->close();
                     continue;
@@ -244,13 +269,13 @@ public:
                     try {
                         handle_connection(*client);
                     } catch (const std::exception& ex) {
-                        io::Log::error("Request processing error: {}", SRC_LOC, ex.what());
+                        log::console.error("Request processing error: {}", ex.what());
                     }
                     client->close();
                     --active_connections_;
                 });
             } catch (const std::exception& ex) {
-                io::Log::error("Connection error: {}", SRC_LOC, ex.what());
+                log::console.error("Connection error: {}", ex.what());
             }
         }
     }
@@ -359,7 +384,7 @@ private:
 
         // 发送响应
         auto response_str = response_builder.build();
-        io::Log::debug("Sending response: {}", SRC_LOC, response_str);
+        log::console.debug("Sending response: {}", response_str);
         client.send_bytes(response_str.__str__().data(), response_str.length());
     }
 
@@ -371,7 +396,7 @@ private:
         try {
             // 接收并解析HTTP请求
             auto req = parse_request(client);
-            io::Log::info("Request: {} {}", SRC_LOC, req.method, req.path);
+            log::console.info("Request: {} {}", req.method, req.path);
 
             // 检查HTTP版本
             if (req.http_version() > 1.1f) {
@@ -412,11 +437,11 @@ private:
             // 发送HTTP响应
             send_response(client, resp);
         } catch (const std::exception& ex) {
-            io::Log::error("Request error: {}", SRC_LOC, ex.what());
+            log::console.error("Request error: {}", ex.what());
             try {
                 send_error_response(client, HttpStatusCode::INTERNAL_SERVER_ERROR);
             } catch (const std::exception& inner_ex) {
-                io::Log::error("Failed to send error response: {}", SRC_LOC, inner_ex.what());
+                log::console.error("Failed to send error response: {}", inner_ex.what());
             }
         }
     }
@@ -434,7 +459,7 @@ private:
         if (line.empty()) {
             throw runtime_exception("Empty request");
         }
-        io::Log::debug("Request line: {}", SRC_LOC, line);
+        log::console.debug("Request line: {}", SRC_LOC, line);
 
         // 解析请求行
         auto parts = line.split(" "_s);
@@ -454,7 +479,7 @@ private:
             auto header_line = read_line(client);
             if (header_line.empty()) break; // 空行结束头部
 
-            io::Log::debug("Header: {}", SRC_LOC, header_line);
+            log::console.debug("Header: {}", header_line);
 
             auto colon_pos = header_line.find(util::CodePoint(':'));
             if (colon_pos == npos) {
@@ -472,10 +497,10 @@ private:
                 auto content_length = std::stoull(req.headers["content-length"_s].into_string());
                 if (content_length > 0 && content_length <= MAX_BODY_SIZE) {
                     req.body = client.recv_bytes(content_length);
-                    io::Log::debug("Request body: {}", SRC_LOC, req.body);
+                    log::console.debug("Request body: {}", req.body);
                 }
             } catch (const std::exception& e) {
-                io::Log::error("Invalid Content-Length: {}", SRC_LOC, e.what());
+                log::console.error("Invalid Content-Length: {}", e.what());
             }
         }
 
@@ -566,7 +591,7 @@ private:
 
                 // 防止路径遍历攻击
                 if (fs_path.find(".."_s) != npos) {
-                    io::Log::error("Path traversal detected: {}", SRC_LOC, fs_path);
+                    log::console.error("Path traversal detected: {}", fs_path);
                     send_error_response(client, HttpStatusCode::FORBIDDEN);
                     return true;
                 }
@@ -617,7 +642,7 @@ private:
                     send_response(client, resp);
                     return true;
                 } catch (const std::exception& e) {
-                    io::Log::error("File error: {} - {}", SRC_LOC, fs_path, e.what());
+                    log::console.error("File error: {} - {}", fs_path, e.what());
                     send_error_response(client, HttpStatusCode::INTERNAL_SERVER_ERROR);
                     return true;
                 }
@@ -675,37 +700,12 @@ private:
 
 } // namespace my::net
 
-namespace std {
-
 // 为 HttpStatusCode 提供格式化支持
 template <>
-struct formatter<my::net::HttpStatusCode> : std::formatter<int> {
+struct std::formatter<my::net::HttpStatusCode> : std::formatter<int> {
     auto format(my::net::HttpStatusCode code, std::format_context& ctx) const {
         return std::formatter<int>::format(static_cast<int>(code), ctx);
     }
 };
-
-// 为 HttpMethod 提供格式化支持
-template <>
-struct formatter<my::net::HttpMethod> : std::formatter<std::string_view> {
-    auto format(my::net::HttpMethod method, std::format_context& ctx) const {
-        std::string_view str = "UNKNOWN";
-        switch (method) {
-        case my::net::HttpMethod::GET: str = "GET"; break;
-        case my::net::HttpMethod::POST: str = "POST"; break;
-        case my::net::HttpMethod::PUT: str = "PUT"; break;
-        case my::net::HttpMethod::DELETE: str = "DELETE"; break;
-        case my::net::HttpMethod::CONNECT: str = "CONNECT"; break;
-        case my::net::HttpMethod::OPTIONS: str = "OPTIONS"; break;
-        case my::net::HttpMethod::TRACE: str = "TRACE"; break;
-        case my::net::HttpMethod::PATCH: str = "PATCH"; break;
-        case my::net::HttpMethod::HEAD: str = "HEAD"; break;
-        default: break;
-        }
-        return std::formatter<std::string_view>::format(str, ctx);
-    }
-};
-
-} // namespace std
 
 #endif // HTTP_HPP

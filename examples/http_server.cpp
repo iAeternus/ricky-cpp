@@ -16,7 +16,7 @@ void example_http_server() {
     using namespace my;
 
     net::HttpServer server(IP, PORT, NUM_OF_THREADS);
-    io::Log::set_level(io::Log::LogLevel::TRACE_);
+    log::set_consolelog_level(log::LogLevel::Debug);
 
     /**
      * 静态文件服务

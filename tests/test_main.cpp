@@ -49,7 +49,6 @@
 #include "test_date_time.hpp"
 #include "test_stack.hpp"
 #include "test_queue.hpp"
-#include "test_log.hpp"
 #include "test_tree.hpp"
 #include "test_sorted_dict.hpp"
 #include "test_vec.hpp"
@@ -111,7 +110,6 @@ auto main() -> int {
     test_date_time::test_date_time();
     test_stack::test_stack();
     test_queue::test_queue();
-    test_log::test_log();
     test_tree::test_tree();
     test_sorted_dict::test_sorted_dict();
     test_vec::test_vec();
