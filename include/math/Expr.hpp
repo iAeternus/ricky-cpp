@@ -87,7 +87,7 @@ public:
             tokenize(expr);
             this->valid_ = check_brackets();
         } catch (const std::exception& ex) {
-            throw runtime_exception("Tokenization error: {}", SRC_LOC, ex.what());
+            throw runtime_exception("Tokenization error: {}", ex.what());
         }
     }
 
@@ -146,7 +146,7 @@ private:
                 } else if (is_op(c)) {
                     tokens_.append(Token::OPERATOR, CString::of(c));
                 } else if (c != ' ') {
-                    throw runtime_exception("invalid character: {}", SRC_LOC, c);
+                    throw runtime_exception("invalid character: {}", c);
                 }
             }
         }
@@ -163,15 +163,15 @@ private:
         if (dot_pos != std::string::npos) {
             // 还有其他小数点
             if (num.find('.', dot_pos + 1) != std::string::npos) {
-                throw runtime_exception("invalid number (multiple dots): {}", SRC_LOC, num);
+                throw runtime_exception("invalid number (multiple dots): {}", num);
             }
             // 小数点在开头或结尾
             if (dot_pos == 0 || dot_pos == num.length() - 1) {
-                throw runtime_exception("invalid number (misplaced dot): {}", SRC_LOC, num);
+                throw runtime_exception("invalid number (misplaced dot): {}", num);
             }
         }
         if (num[0] == '-' && num.size() == 1) {
-            throw runtime_exception("invalid operator position: {}", SRC_LOC, num);
+            throw runtime_exception("invalid operator position: {}", num);
         }
     }
 
@@ -325,14 +325,14 @@ private:
         if (op == "^") {
             return std::pow(a, b);
         }
-        throw runtime_exception("unknown operator: {}", SRC_LOC, op);
+        throw runtime_exception("unknown operator: {}", op);
     }
 
     static f64 eval_unary_op(f64 x, const CString& op) {
         if (op == "u-") {
             return -x;
         } else {
-            throw runtime_exception("unknown unary operator: {}", SRC_LOC, op);
+            throw runtime_exception("unknown unary operator: {}", op);
         }
     }
 

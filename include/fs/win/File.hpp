@@ -32,7 +32,7 @@ public:
             dwCreationDisposition = OPEN_ALWAYS;
             SetFilePointer(fh_, 0, nullptr, FILE_END);
         } else {
-            throw argument_exception("Invalid value {}, that only support [w, r, a]", SRC_LOC, mode);
+            throw argument_exception("Invalid value {}, that only support [w, r, a]", mode);
         }
 
         fh_ = CreateFileA(

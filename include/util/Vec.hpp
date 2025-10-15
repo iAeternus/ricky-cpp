@@ -516,13 +516,13 @@ private:
 template <typename T>
 fn opt(const Vec<std::any>& args, usize idx) -> T {
     if (idx >= args.size()) {
-        throw index_out_of_bounds_exception("Index {} out of bounds [0..{}] in opt function.", SRC_LOC, idx, args.size());
+        throw index_out_of_bounds_exception("Index {} out of bounds [0..{}] in opt function.", idx, args.size());
     }
 
     try {
         return std::any_cast<T>(args.at(idx));
     } catch (const std::bad_any_cast& e) {
-        throw type_exception("type mismatch in opt function: expected[{}], got[{}]", SRC_LOC, dtype(T), args[idx].type().name());
+        throw type_exception("type mismatch in opt function: expected[{}], got[{}]", dtype(T), args[idx].type().name());
     }
 }
 

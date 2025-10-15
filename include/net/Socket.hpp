@@ -31,7 +31,7 @@ fn win_startup() {
 
     WSADATA wsaData;
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        throw runtime_exception("WSAStartup failed: {}", SRC_LOC, WSAGetLastError());
+        throw runtime_exception("WSAStartup failed: {}", WSAGetLastError());
     }
 
     atexit([]() {
@@ -104,7 +104,7 @@ public:
         if (ip == nullptr) {
             addr_.sin_addr.s_addr = INADDR_ANY; // 绑定到任意地址
         } else if (inet_pton(AF_INET, ip, &addr_.sin_addr) != 1) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
     }
 
@@ -141,7 +141,7 @@ public:
     CString get_ip(int family = AF_INET) const {
         CString ip{16};
         if (inet_ntop(family, &addr_.sin_addr, ip.data(), 16) == nullptr) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
         return ip;
     }
@@ -216,7 +216,7 @@ public:
 
         socket_ = socket(family, type, protocol);
         if (socket_ == INVALID_SOCKET) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
 
         // 设置地址重用选项
@@ -268,7 +268,7 @@ public:
         SockAddrIn addr;
         socklen_t len = addr.get_socklen();
         if (getsockname(socket_, addr.get_sockaddr(), &len) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
         return addr;
     }
@@ -282,7 +282,7 @@ public:
         SockAddrIn addr;
         socklen_t len = addr.get_socklen();
         if (getpeername(socket_, addr.get_sockaddr(), &len) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
         return addr;
     }
@@ -332,7 +332,7 @@ public:
     void bind(const char* ip, u16 port) const {
         SockAddrIn addr(ip, port);
         if (::bind(socket_, addr.get_sockaddr(), addr.get_socklen()) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
     }
 
@@ -343,7 +343,7 @@ public:
      */
     void listen(i32 backlog = SOMAXCONN) const {
         if (::listen(socket_, backlog) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
     }
 
@@ -358,7 +358,7 @@ public:
 
         auto client_socket = ::accept(socket_, client_addr.get_sockaddr(), &addr_len);
         if (client_socket == INVALID_SOCKET) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
         return Self(client_socket);
     }
@@ -373,7 +373,7 @@ public:
     void connect(const char* ip, u16 port) const {
         SockAddrIn addr(ip, port);
         if (::connect(socket_, addr.get_sockaddr(), addr.get_socklen()) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
     }
 
@@ -389,7 +389,7 @@ public:
         while (size > 0) {
             auto num_send = ::send(socket_, ptr, size, flags);
             if (num_send == SOCKET_ERROR) {
-                throw runtime_exception(error_msg());
+                throw runtime_exception("{}", error_msg());
             } else if (num_send == 0) {
                 continue;
             }
@@ -411,7 +411,7 @@ public:
         while (size > 0) {
             auto recvd = ::recv(socket_, ptr, size, flags);
             if (recvd == SOCKET_ERROR) {
-                throw runtime_exception(error_msg());
+                throw runtime_exception("{}", error_msg());
             }
             ptr += recvd;
             size -= recvd;
@@ -445,7 +445,7 @@ public:
         i32 head_size = 0;
         auto recvd = ::recv(socket_, reinterpret_cast<char*>(&head_size), 4, flags);
         if (recvd == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         } else if (recvd == 0) {
             return CString{}; // 连接已关闭
         }
@@ -464,9 +464,9 @@ public:
     void sendto(const char* data, i32 size, const SockAddrIn& to, i32 flags = 0) const {
         auto num_send = ::sendto(socket_, data, size, flags, to.get_sockaddr(), to.get_socklen());
         if (num_send == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         } else if (num_send != size) {
-            throw runtime_exception(std::format("failed to send all data.{}/{}", num_send, size));
+            throw runtime_exception("failed to send all data.{}/{}", num_send, size);
         }
     }
 
@@ -481,7 +481,7 @@ public:
         CString data{1024}; // 初始大小为1024字节
         i32 addr_len = from.get_socklen();
         if (::recvfrom(socket_, data.data(), data.size(), flags, from.get_sockaddr(), &addr_len) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
         return {data, from};
     }
@@ -498,7 +498,7 @@ public:
         } else if (mode == "w") {
             ::setsockopt(socket_, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<char*>(&size), sizeof(size));
         } else {
-            throw runtime_exception(std::format("invalid buffer mode {}. Should be 'r' or 'w'.", mode));
+            throw runtime_exception("invalid buffer mode {}. Should be 'r' or 'w'.", mode);
         }
     }
 
@@ -512,7 +512,7 @@ public:
      */
     void set_option(i32 level, i32 optname, const void* optval, socklen_t optlen) const {
         if (setsockopt(socket_, level, optname, reinterpret_cast<const char*>(optval), optlen) == SOCKET_ERROR) {
-            throw runtime_exception(error_msg());
+            throw runtime_exception("{}", error_msg());
         }
     }
 

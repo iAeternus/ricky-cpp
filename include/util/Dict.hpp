@@ -167,7 +167,7 @@ public:
         auto hash_val = my_hash(key);
         auto* value = get_impl(hash_val);
         if (value == nullptr) {
-            throw not_found_exception("Key '{}' not found in dict", SRC_LOC, key);
+            throw not_found_exception("Key '{}' not found in dict", key);
         }
         return *value;
     }
@@ -182,7 +182,7 @@ public:
     const value_t& get(const _K& key) const {
         const auto* value = get_impl(my_hash(key));
         if (value == nullptr) {
-            throw not_found_exception("key '{}' not found in dict", SRC_LOC, key);
+            throw not_found_exception("key '{}' not found in dict", key);
         }
         return *value;
     }

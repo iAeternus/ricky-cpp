@@ -394,7 +394,7 @@ public:
      */
     value_t& at(usize index) {
         if (index > length_) {
-            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", SRC_LOC, index, length_);
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, length_);
         }
         return operator[](index);
     }
@@ -407,7 +407,7 @@ public:
      */
     const value_t& at(const usize index) const {
         if (index > length_) {
-            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", SRC_LOC, index, length_);
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, length_);
         }
         return operator[](index);
     }

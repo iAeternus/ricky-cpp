@@ -75,7 +75,7 @@ private:
         JsonType::JsonStr remain = jsonStr.slice(match.size()).trim();
         if (remain.size()) {
             if (remain[0] != stopSign) {
-                throw not_found_exception("Stop sign \'{}\' not found", SRC_LOC, stopSign);
+                throw not_found_exception("Stop sign \'{}\' not found", stopSign.data());
             }
             remain = remain.slice(1).trim();
         }
@@ -121,7 +121,7 @@ private:
                 if (c == util::CodePoint{'.'} && !isFloat) {
                     isFloat = true;
                 } else {
-                    throw runtime_exception("Invalid number parse: {}", SRC_LOC, jsonStr);
+                    throw runtime_exception("Invalid number parse: {}", jsonStr);
                 }
             }
         }
@@ -131,7 +131,7 @@ private:
 
     static fn parseNull(JsonType::JsonStr& jsonStr)->Json {
         if (jsonStr != JsonType::JsonStr{"null", 4}) {
-            throw runtime_exception("Invalid null parse: {}", SRC_LOC, jsonStr);
+            throw runtime_exception("Invalid null parse: {}", jsonStr);
         }
         return Json{JsonType::JsonNull{}};
     }
@@ -143,7 +143,7 @@ private:
         } else if (jsonStr == "false"_s) {
             return Json{false};
         } else {
-            throw runtime_exception("Invalid bool parse: {}", SRC_LOC, jsonStr);
+            throw runtime_exception("Invalid bool parse: {}", jsonStr);
         }
     }
 
@@ -155,7 +155,7 @@ private:
         } else if (jsonStr[0] == util::CodePoint{'t'} || jsonStr[0] == util::CodePoint{'f'}) {
             return parseBool(jsonStr); // bool
         } else {
-            throw runtime_exception("Invalid simple parse: {}", SRC_LOC, jsonStr);
+            throw runtime_exception("Invalid simple parse: {}", jsonStr);
         }
     }
 };

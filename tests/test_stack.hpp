@@ -13,7 +13,7 @@ fn it_works = []() {
     st.push(1), st.push(2), st.push(3);
     Assertions::assertFalse(st.empty());
     Assertions::assertEquals(3, st.size());
-    Assertions::assertTrue(3, st.peek());
+    Assertions::assertEquals(3, st.peek());
 
     st.pop();
     Assertions::assertEquals(2, st.size());

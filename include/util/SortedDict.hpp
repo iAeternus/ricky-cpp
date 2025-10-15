@@ -112,7 +112,7 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
         } else if constexpr (Subtractble<key_t>) {
             return this->key - other.key;
         } else {
-            throw type_exception("key type[{}] is not sortable", SRC_LOC, dtype(key_t));
+            throw type_exception("key type[{}] is not sortable", dtype(key_t));
         }
     }
 
@@ -319,7 +319,7 @@ public:
     value_t& get(const K& key) {
         Node* p = tree_search(key);
         if (p == nullptr) {
-            throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
+            throw not_found_exception("key '{}' not found in red-black-tree", key);
         }
         return p->val;
     }
@@ -334,7 +334,7 @@ public:
     const value_t& get(const K& key) const {
         Node* p = tree_search(key);
         if (p == nullptr) {
-            throw not_found_exception("key '{}' not found in red-black-tree", SRC_LOC, key);
+            throw not_found_exception("key '{}' not found in red-black-tree", key);
         }
         return p->val;
     }

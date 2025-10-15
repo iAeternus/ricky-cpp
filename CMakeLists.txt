@@ -121,3 +121,8 @@ enable_testing()
 if (EXISTS ${CMAKE_SOURCE_DIR}/examples)
     add_subdirectory(examples)
 endif ()
+
+# -------------------------------------------------------------------
+# 其他配置
+# -------------------------------------------------------------------
+option(STRICT_FORMAT_CHECK "Enable strict format string checking" OFF)

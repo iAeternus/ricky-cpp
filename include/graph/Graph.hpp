@@ -178,7 +178,7 @@ public:
      */
     bool add_edge(Idx from, Idx to, const E& weight = E{}) {
         if (!has_node(from) || !has_node(to)) {
-            throw not_found_exception("node from[{}] or to[{}] does not exist.", SRC_LOC, from, to);
+            throw not_found_exception("node from[{}] or to[{}] does not exist.", from, to);
         }
         auto tag = nodes_.get(from).connect(to, weight);
         ++edge_cnt_;
@@ -236,7 +236,7 @@ public:
         std::shared_lock lock(algo_mutex_);
 
         if (!algorithms_.contains(name)) {
-            throw not_found_exception("algorithm[{}] not found.", SRC_LOC, name);
+            throw not_found_exception("algorithm[{}] not found.", name);
         }
 
         const auto& algorithm = algorithms_.get(name);

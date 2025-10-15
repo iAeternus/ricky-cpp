@@ -184,16 +184,16 @@ private:
     CString formatted_message_; // 格式化后的异常消息
 };
 
-/**
- * @brief 使用异常信息字符串创建异常对象
- * @param type 异常类型
- * @param message 异常消息
- * @param loc 异常位置
- * @return 异常对象
- */
-fn exception(const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> Exception {
-    return Exception(type, std::move(message), loc, nullptr);
-}
+///**
+// * @brief 使用异常信息字符串创建异常对象
+// * @param type 异常类型
+// * @param message 异常消息
+// * @param loc 异常位置
+// * @return 异常对象
+// */
+// fn exception(const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> Exception {
+//    return Exception(type, std::move(message), loc, nullptr);
+//}
 
 /**
  * @brief 使用格式化字符串创建异常对象
@@ -204,23 +204,22 @@ fn exception(const ExceptionType type, CString&& message, const std::source_loca
  * @return 异常对象
  */
 template <typename... Args>
-fn exception(const ExceptionType type, const std::string_view fmt, const std::source_location loc, Args&&... args) -> Exception {
-    const std::string message = std::vformat(fmt, std::make_format_args(args...));
-    return Exception(type, message, loc);
+fn exception(const ExceptionType type, format_string_wrapper<Args...> fmt_w, Args&&... args) -> Exception {
+    return Exception(type, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc);
 }
 
-/**
- * @brief 如果条件不满足，则抛出指定类型的异常
- * @param condition 条件
- * @param type 异常类型
- * @param message 异常消息
- * @param loc 异常位置
- */
-fn check(const bool condition, const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> void {
-    if (!condition) {
-        throw exception(type, std::move(message), loc);
-    }
-}
+///**
+// * @brief 如果条件不满足，则抛出指定类型的异常
+// * @param condition 条件
+// * @param type 异常类型
+// * @param message 异常消息
+// * @param loc 异常位置
+// */
+// fn check(const bool condition, const ExceptionType type, CString&& message, const std::source_location loc = SRC_LOC) -> void {
+//    if (!condition) {
+//        throw exception(type, std::move(message), loc);
+//    }
+//}
 
 /**
  * @brief 如果条件不满足，则抛出指定类型的异常
@@ -231,10 +230,9 @@ fn check(const bool condition, const ExceptionType type, CString&& message, cons
  * @param args 格式化参数
  */
 template <typename... Args>
-fn check(const bool condition, const ExceptionType type, const std::string_view fmt, const std::source_location loc, Args&&... args) -> void {
+fn check(const bool condition, const ExceptionType type, format_string_wrapper<Args...> fmt_w, Args&&... args) -> void {
     if (!condition) {
-        const std::string message = std::vformat(fmt, std::make_format_args(args...));
-        throw exception(type, message, loc);
+        throw exception(type, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc);
     }
 }
 
@@ -245,15 +243,12 @@ fn check(const bool condition, const ExceptionType type, const std::string_view 
  *   auto e = runtime_exception("Something went wrong");
  *   throw e;
  */
-#define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                                     \
-    fn NAME##_exception(CString&& message, const std::source_location loc = SRC_LOC)->Exception {                \
-        return exception(TYPE, std::move(message), loc);                                                         \
-    }                                                                                                            \
-    template <typename... Args>                                                                                  \
-    fn NAME##_exception(const std::string_view fmt, const std::source_location loc, Args&&... args)->Exception { \
-        const std::string message = std::vformat(fmt, std::make_format_args(args...));                           \
-        return exception(TYPE, std::move(message), loc);                                                         \
-    }
+#define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                    \
+    template <typename... Args>                                                                 \
+    fn NAME##_exception(format_string_wrapper<Args...> fmt_w, Args&&... args)->Exception {      \
+        return Exception(TYPE, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc); \
+    }                                                                                           \
+                                                                                                \
 
 DEFINE_EXCEPTION_FACTORY(runtime, ExceptionType::RuntimeException)                      // 运行时异常
 DEFINE_EXCEPTION_FACTORY(logic, ExceptionType::LogicException)                          // 逻辑异常

@@ -9,7 +9,7 @@
 #include <winnls.h>
 
 void test_console_log() {
-    my::log::console.info("hello {} {:d}", "world", 37);
+    my::log::console.info("hello {} {}", "world", 37);
 }
 
 int main() {

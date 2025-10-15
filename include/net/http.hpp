@@ -375,7 +375,7 @@ private:
 
             // 检查HTTP版本
             if (req.http_version() > 1.1f) {
-                throw runtime_exception("Unsupported HTTP version: {}", SRC_LOC, req.version);
+                throw runtime_exception("Unsupported HTTP version: {}", req.version);
             }
 
             // 处理静态文件请求
@@ -439,7 +439,7 @@ private:
         // 解析请求行
         auto parts = line.split(" "_s);
         if (parts.size() < 3) {
-            throw runtime_exception("Invalid request line: {}", SRC_LOC, line);
+            throw runtime_exception("Invalid request line: {}", line);
         }
 
         req.method = parse_method(parts[0]);
@@ -458,7 +458,7 @@ private:
 
             auto colon_pos = header_line.find(util::CodePoint(':'));
             if (colon_pos == npos) {
-                throw runtime_exception("Invalid header: {}", SRC_LOC, header_line);
+                throw runtime_exception("Invalid header: {}", header_line);
             }
 
             auto key = header_line.slice(0, colon_pos).trim();

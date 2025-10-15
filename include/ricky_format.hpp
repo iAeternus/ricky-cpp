@@ -18,13 +18,14 @@ namespace my {
  */
 template <typename... Args>
 struct basic_format_string_wrapper {
+    std::format_string<Args...> fmt;
+    std::source_location loc;
+
     template <typename T>
         requires std::convertible_to<T, std::string_view>
     consteval basic_format_string_wrapper(const T& s, std::source_location loc = std::source_location::current()) :
-            fmt(s), loc(loc) {}
-
-    std::format_string<Args...> fmt;
-    std::source_location loc;
+            fmt(s), loc(loc) {
+    }
 };
 
 /**

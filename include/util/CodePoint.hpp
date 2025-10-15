@@ -227,4 +227,18 @@ Vec<CodePoint<Enc, Alloc>> get_code_points(const char* str, const usize length, 
 
 } // namespace my::util
 
+/**
+ * @brief 为CodePoint提供format支持
+ */
+template <my::util::EncodingType Enc, typename Alloc>
+struct std::formatter<my::util::CodePoint<Enc, Alloc>> {
+    constexpr auto parse(format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    auto format(const my::util::CodePoint<Enc, Alloc>& cp, format_context& ctx) const -> format_context::iterator {
+        return std::format_to(ctx.out(), "{}", cp.__str__());
+    }
+};
+
 #endif // CODE_POINT_HPP

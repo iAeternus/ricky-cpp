@@ -13,6 +13,7 @@
 #include "Color.hpp"
 #include "NoCopy.hpp"
 #include "Printer.hpp"
+#include "DateTime.hpp"
 
 #include <chrono>
 
@@ -110,47 +111,12 @@ fn reset_color() noexcept -> const char* {
  * @brief 日志记录
  */
 struct LogRecord {
-    const char* datetime;  // 日志记录时间
-    u32 pid;               // 进程ID
-    const char* file_name; // 文件名
-    usize line;            // 行号
-    std::string log;       // 日志内容
+    util::DateTime datetime; // 日志记录时间
+    u32 pid;                 // 进程ID
+    const char* file_name;   // 文件名
+    usize line;              // 行号
+    std::string log;         // 日志内容
 };
-
-/**
- * @brief 获取当前时间并转为string
- * @param is_repeat 是否重复获取
- */
-std::optional<std::string> get_current_time_tostring(bool is_repeat = true) {
-    static thread_local std::array<char, 64> buf{};
-    static thread_local std::chrono::seconds last_second{};
-
-    // 获取当前时间
-    const auto now = std::chrono::system_clock::now();
-    // 转换为time_t类型
-    const auto time_t_now = std::chrono::system_clock::to_time_t(now);
-    // 转换为秒
-    const auto current_second = std::chrono::seconds(time_t_now);
-
-    // 检查是否是新的秒
-    if ((current_second.count() != last_second.count()) || is_repeat) {
-        // 转换为本地时间
-        std::tm* local_tm = std::localtime(&time_t_now);
-
-        // 根据平台使用不同的时间格式
-#ifdef _WIN32
-        // Windows平台：使用连字符替代冒号，避免文件名非法字符
-        std::strftime(buf.data(), buf.size(), "%Y-%m-%d-%H-%M-%S", local_tm);
-#else
-        // Unix/Linux/macOS平台：可以使用冒号 TODO include linux头文件
-        std::strftime(buf.data(), buf.size(), "%Y-%m-%d-%H:%M:%S", local_tm);
-#endif
-
-        last_second = current_second;
-        return {buf.data()};
-    }
-    return std::nullopt;
-}
 
 /**
  * @brief 获取当前pid
@@ -215,18 +181,14 @@ private:
         if (LEVEL < level_) {
             return;
         }
-        std::string time_str;
-        auto res = get_current_time_tostring();
-        if (res.has_value()) {
-            time_str = res.value();
-        }
-        // 调用派生类的log方法记录日志
         static_cast<D*>(this)->template log<LEVEL>(
-            LogRecord{.datetime = time_str.c_str(),
-                      .pid = get_current_pid(),
-                      .file_name = fmt_w.loc.file_name(),
-                      .line = fmt_w.loc.line(),
-                      .log = std::format(fmt_w.fmt, std::forward<Args>(args)...)});
+            LogRecord{
+                .datetime = util::DateTime::now(),
+                .pid = get_current_pid(),
+                .file_name = fmt_w.loc.file_name(),
+                .line = fmt_w.loc.line(),
+                .log = std::format(fmt_w.fmt, std::forward<Args>(args)...),
+            });
     }
 
 private:

@@ -14,14 +14,37 @@ namespace my::test {
 class Assertions : public Object<Assertions> {
 public:
     /**
+     * @brief 断言表达式是否为true，否则抛出异常，不加用户消息
+     * @param expression 要断言的表达式
+     * @param loc 断言发生的位置
+     */
+    static void assertTrue(bool expression, std::source_location loc = SRC_LOC) {
+        if (!expression) {
+            fail("Expected true, but got false.", loc);
+        }
+    }
+
+    /**
      * @brief 断言表达式是否为true，否则抛出异常
      * @param expression 要断言的表达式
      * @param message 断言失败时的错误信息
      * @param loc 断言发生的位置
      */
-    static void assertTrue(bool expression, CString&& message = "", std::source_location loc = SRC_LOC) {
+    template <typename... Args>
+    static void assertTrue(bool expression, format_string_wrapper<Args...> fmt_w, Args... args) {
         if (!expression) {
-            fail(std::format("Expected true, but got false. {}", std::forward<CString>(message)), loc);
+            fail_with_prefix("Expected true, but got false. ", fmt_w, std::forward<Args>(args)...);
+        }
+    }
+
+    /**
+     * @brief 断言表达式是否为false，否则抛出异常，不加用户消息
+     * @param expression 要断言的表达式
+     * @param loc 断言发生的位置
+     */
+    static void assertFalse(bool expression, std::source_location loc = SRC_LOC) {
+        if (expression) {
+            fail("Expected false, but got true.", loc);
         }
     }
 
@@ -31,24 +54,62 @@ public:
      * @param message 断言失败时的错误信息
      * @param loc 断言发生的位置
      */
-    static void assertFalse(bool expression, CString&& message = "", std::source_location loc = SRC_LOC) {
+    template <typename... Args>
+    static void assertFalse(bool expression, format_string_wrapper<Args...> fmt_w, Args... args) {
         if (expression) {
-            fail(std::format("Expected false, but got true. {}", std::forward<CString>(message)), loc);
+            fail_with_prefix("Expected false, but got true. ", fmt_w, std::forward<Args>(args)...);
         }
     }
 
     /**
-     * @brief 断言两个值相等，否则抛出异常
+     * @brief 断言两个值相等，否则抛出异常，不加用户消息
      * @note 对于自定义类型，要求实现__cmp__和__str__方法
      * @param expected 期望的值
      * @param actual 实际的值
-     * @param message 断言失败时的错误信息
      * @param loc 断言发生的位置
      */
     template <Assertable T, Assertable U>
-    static void assertEquals(const T& expected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
+    static void assertEquals(const T& expected, const U& actual, std::source_location loc = SRC_LOC) {
         if (expected.__cmp__(actual) != 0) {
-            fail(std::format("Expected {}, but got {}. {}", expected.__str__(), actual.__str__(), std::forward<CString>(message)), loc);
+            fail(std::format("Expected {}, but got {}.", expected.__str__(), actual.__str__()), loc);
+        }
+    }
+
+
+    /**
+     * @brief 断言两个值相等，否则抛出异常
+     * @note 对于自定义类型，要求实现__cmp__和__str__方法
+     * @param expected 期望的值
+     * @param actual 实际的值
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
+     */
+    template <Assertable T, Assertable U, typename... Args>
+    static void assertEquals(const T& expected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
+        if (expected.__cmp__(actual) != 0) {
+            auto prefix = std::format("Expected {}, but got {}. ", expected.__str__(), actual.__str__());
+            fail_with_prefix(prefix, fmt_w, std::forward<Args>(args)...);
+        }
+    }
+
+    /**
+     * @brief 断言两个值相等，否则抛出异常，不加用户消息
+     * @note 对于浮点数，使用math::fcmp进行比较
+     * @param expected 期望的值
+     * @param actual 实际的值
+     * @param loc 断言发生的位置
+     */
+    template <StdPrintable T, StdPrintable U>
+    static void assertEquals(const T& expected, const U& actual, std::source_location loc = SRC_LOC) {
+        bool is_equal = false;
+        if constexpr (is_same<T, f32, f64, f128>) {
+            is_equal = math::fcmp(expected, actual) == 0;
+        } else {
+            is_equal = expected == actual;
+        }
+
+        if (!is_equal) {
+            fail(std::format("Expected {}, but got {}.", expected, actual), loc);
         }
     }
 
@@ -60,16 +121,33 @@ public:
      * @param message 断言失败时的错误信息
      * @param loc 断言发生的位置
      */
-    template <StdPrintable T, StdPrintable U>
-    static void assertEquals(const T& expected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
+    template <StdPrintable T, StdPrintable U, typename... Args>
+    static void assertEquals(const T& expected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
+        bool is_equal = false;
         if constexpr (is_same<T, f32, f64, f128>) {
-            if (math::fcmp(expected, actual) != 0) {
-                fail(std::format("Expected {}, but got {}. {}", expected, actual, std::forward<CString>(message)), loc);
-            }
+            is_equal = math::fcmp(expected, actual) == 0;
         } else {
-            if (expected != actual) {
-                fail(std::format("Expected {}, but got {}. {}", expected, actual, std::forward<CString>(message)), loc);
-            }
+            is_equal = expected == actual;
+        }
+
+        if (!is_equal) {
+            auto user_msg = std::format(fmt_w.fmt, std::forward<Args>(args)...);
+            auto full_msg = std::format("Expected {}, but got {}. {}", expected, actual, user_msg);
+            fail(std::move(full_msg), fmt_w.loc);
+        }
+    }
+
+    /**
+     * @brief 断言两个值不相等，否则抛出异常，不加用户消息
+     * @note 对于自定义类型，要求实现__cmp__和__str__方法
+     * @param unexpected 不期望的值
+     * @param actual 实际的值
+     * @param loc 断言发生的位置
+     */
+    template <Assertable T, Assertable U>
+    static void assertNotEquals(const T& unexpected, const U& actual, std::source_location loc = SRC_LOC) {
+        if (unexpected.__cmp__(actual) == 0) {
+            fail(std::format("Expected not {}, but got {}.", unexpected.__str__(), actual.__str__()), loc);
         }
     }
 
@@ -81,10 +159,33 @@ public:
      * @param message 断言失败时的错误信息
      * @param loc 断言发生的位置
      */
-    template <Assertable T, Assertable U>
-    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
+    template <Assertable T, Assertable U, typename... Args>
+    static void assertNotEquals(const T& unexpected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
         if (unexpected.__cmp__(actual) == 0) {
-            fail(std::format("Expected not {}, but got {}. {}", unexpected.__str__(), actual.__str__(), std::forward<CString>(message)), loc);
+            auto prefix = std::format("Expected not {}, but got {}. ", unexpected.__str__(), actual.__str__());
+            fail_with_prefix(prefix, fmt_w, std::forward<Args>(args)...);
+        }
+    }
+
+    /**
+     * @brief 断言两个值不相等，否则抛出异常，不加用户消息
+     * @note 对于浮点数，使用math::fcmp进行比较
+     * @param unexpected 不期望的值
+     * @param actual 实际的值
+     * @param message 断言失败时的错误信息
+     * @param loc 断言发生的位置
+     */
+    template <StdPrintable T, StdPrintable U>
+    static void assertNotEquals(const T& unexpected, const U& actual, std::source_location loc = SRC_LOC) {
+        bool is_equal = false;
+        if constexpr (is_same<T, f32, f64, f128>) {
+            is_equal = math::fcmp(unexpected, actual) == 0;
+        } else {
+            is_equal = unexpected == actual;
+        }
+
+        if (is_equal) {
+            fail(std::format("Expected not {}, but got {}.", unexpected, actual), loc);
         }
     }
 
@@ -96,16 +197,19 @@ public:
      * @param message 断言失败时的错误信息
      * @param loc 断言发生的位置
      */
-    template <StdPrintable T, StdPrintable U>
-    static void assertNotEquals(const T& unexpected, const U& actual, CString&& message = "", std::source_location loc = SRC_LOC) {
+    template <StdPrintable T, StdPrintable U, typename... Args>
+    static void assertNotEquals(const T& unexpected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
+        bool is_equal = false;
         if constexpr (is_same<T, f32, f64, f128>) {
-            if (math::fcmp(unexpected, actual) == 0) {
-                fail(std::format("Expected not {}, but got {}. {}", unexpected, actual, std::forward<CString>(message)), loc);
-            }
+            is_equal = math::fcmp(unexpected, actual) == 0;
         } else {
-            if (unexpected == actual) {
-                fail(std::format("Expected not {}, but got {}. {}", unexpected, actual, std::forward<CString>(message)), loc);
-            }
+            is_equal = unexpected == actual;
+        }
+
+        if (is_equal) {
+            auto user_msg = std::format(fmt_w.fmt, std::forward<Args>(args)...);
+            auto full_msg = std::format("Expected not {}, but got {}. {}", unexpected, actual, user_msg);
+            fail(std::move(full_msg), fmt_w.loc);
         }
     }
 
@@ -158,8 +262,23 @@ public:
     }
 
 private:
-    static void fail(const CString& failureMessage, std::source_location loc) {
-        throw assertion_failed_exception("{}", loc, failureMessage);
+    /**
+     * @brief 统一的失败处理函数
+     */
+    static void fail(CString&& message, std::source_location loc) {
+        throw Exception(ExceptionType::AssertionFailedException, std::move(message), loc);
+    }
+
+    /**
+     * @brief 带前缀的失败处理
+     */
+    template <typename... Args>
+    static void fail_with_prefix(const char* prefix,
+                                 format_string_wrapper<Args...> user_fmt_w,
+                                 Args&&... user_args) {
+        auto user_msg = std::format(user_fmt_w.fmt, std::forward<Args>(user_args)...);
+        auto full_msg = CString(prefix) + user_msg;
+        fail(std::move(full_msg), user_fmt_w.loc);
     }
 };
 
