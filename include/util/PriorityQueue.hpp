@@ -25,24 +25,32 @@ public:
     using Self = PriorityQueue<value_t, Comp, Alloc>;
 
     /**
-     * @brief 默认构造函数
-     */
-    PriorityQueue() = default;
-
-    /**
      * @brief 带比较器的构造函数
-     * @param comp 自定义比较函数对象
+     * @param comp 自定义比较器
      */
-    explicit PriorityQueue(Comp comp) :
+    explicit PriorityQueue(Comp comp = Comp{}) :
             heap_{}, comp_(comp) {}
 
     /**
      * @brief 带初始容量和比较器的构造函数
      * @param cap 初始容量
-     * @param comp 自定义比较函数对象
+     * @param comp 自定义比较器
      */
     explicit PriorityQueue(usize cap, Comp comp = Comp{}) :
             heap_(cap), comp_(std::move(comp)) {}
+
+    /**
+     * @brief 将一个可迭代对象堆化
+     * @note 时间复杂度 O(n)
+     * @tparam I 可迭代对象类型
+     * @param iter 可迭代对象
+     * @param comp 自定义比较器
+     */
+    template <Iterable I>
+    explicit PriorityQueue(I iter, Comp comp = Comp{}) :
+            heap_(iter), comp_(comp) {
+        heapify();
+    }
 
     /**
      * @brief 检查队列是否为空
@@ -129,6 +137,22 @@ public:
         heap_.reserve(new_cap);
     }
 
+    /**
+     * @brief 仅用于debug
+     */
+    CString __str__() const {
+        if (heap_.empty()) {
+            return "[]";
+        }
+        std::stringstream stream;
+        stream << '[' << heap_[0];
+        for (usize i = 1; i < heap_.size(); ++i) {
+            stream << ',' << heap_[i];
+        }
+        stream << ']';
+        return CString{stream.str()};
+    }
+
 private:
     /**
      * @brief 获取父节点索引
@@ -194,6 +218,18 @@ private:
 
             std::swap(heap_[idx], heap_[curr]);
             idx = curr;
+        }
+    }
+
+    /**
+     * @brief 将数组堆化
+     * @param vec 数组
+     */
+    void heapify() {
+        const auto n = heap_.size();
+        if (n <= 1) return;
+        for (i64 i = (n >> 1) - 1; i >= 0; --i) {
+            heapify_down(static_cast<usize>(i));
         }
     }
 

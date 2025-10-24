@@ -53,11 +53,23 @@ fn it_works2 = []() {
     Assertions::assertEquals(3, pq.top());
 };
 
+fn should_heapify = []() {
+    // Given
+    util::Vec<i32> v = {3, 4, 5, 6, 1, 7, 8};
+
+    // When
+    util::PriorityQueue<i32, std::greater<i32>> pq{v};
+
+    // Then
+    Assertions::assertEquals("[8,6,7,4,1,3,5]"_cs, pq.__str__());
+};
+
 fn test_priority_queue() {
     UnitTestGroup group{"test_priority_queue"};
 
     group.addTest("it_works", it_works);
     group.addTest("it_works2", it_works2);
+    group.addTest("should_heapify", should_heapify);
 
     group.startAll();
 }
