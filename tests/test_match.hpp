@@ -2,8 +2,7 @@
 #define TEST_MATCH_HPP
 
 #include "match.hpp"
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_match {
 

@@ -1,8 +1,7 @@
 #ifndef TEST_PRIORITY_QUEUE_HPP
 #define TEST_PRIORITY_QUEUE_HPP
 
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 #include "PriorityQueue.hpp"
 
 namespace my::test::test_priority_queue {

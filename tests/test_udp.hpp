@@ -1,8 +1,7 @@
 #ifndef TEST_UDP_HPP
 #define TEST_UDP_HPP
 
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 #include "udp.hpp"
 
 #include <thread>

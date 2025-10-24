@@ -1,8 +1,7 @@
 #ifndef TEST_TCP_HPP
 #define TEST_TCP_HPP
 
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 #include "tcp.hpp"
 
 #include <thread>

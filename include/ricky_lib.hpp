@@ -135,8 +135,7 @@
  */
 #if RICKY_CPP_TEST == 1
 
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 
 #endif // RICKY_CPP_TEST
 

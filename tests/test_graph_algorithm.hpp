@@ -1,8 +1,7 @@
 #ifndef TEST_GRAPH_ALGORITHM_HPP
 #define TEST_GRAPH_ALGORITHM_HPP
 
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 #include "graph_algorithm.hpp"
 
 namespace my::test::test_graph_algorithm {

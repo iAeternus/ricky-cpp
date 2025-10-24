@@ -4,8 +4,7 @@
 #include <utility>
 
 #include "JsonSerializer.hpp"
-#include "Assertions.hpp"
-#include "UnitTest.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_json_serializer {
 
