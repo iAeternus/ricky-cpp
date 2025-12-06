@@ -14,7 +14,7 @@
 
 namespace my::test::test_string_algorithm {
 
-fn test_kmp_find = []() {
+auto test_kmp_find = []() {
     // Given
     util::String s = "abcdef";
     util::String t = "bcd";
@@ -33,7 +33,7 @@ fn test_kmp_find = []() {
     Assertions::assertEquals(1, res2);
 };
 
-fn test_kmp_find_all = []() {
+auto test_kmp_find_all = []() {
     // Given
     util::String s = "abcdebcdf";
     util::String t = "bcd";
@@ -48,7 +48,7 @@ fn test_kmp_find_all = []() {
     Assertions::assertEquals("[1,5]"_cs, res2.__str__());
 };
 
-fn test_string_algorithm() {
+auto test_string_algorithm() {
     UnitTestGroup group{"test_string_algorithm"};
 
     group.addTest("should_find", test_kmp_find);

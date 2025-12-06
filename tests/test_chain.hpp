@@ -6,7 +6,7 @@
 
 namespace my::test::test_chain {
 
-fn should_append = []() {
+auto should_append = []() {
     // Given
     i32 N = 100;
     util::ChainList<CString> c;
@@ -24,7 +24,7 @@ fn should_append = []() {
     Assertions::assertEquals(cstr(N - 1), c[N - 1]);
 };
 
-fn should_iterable = []() {
+auto should_iterable = []() {
     // Given
     i32 N = 100;
     util::ChainList<i32> c;
@@ -42,7 +42,7 @@ fn should_iterable = []() {
     Assertions::assertEquals(5050, sum);
 };
 
-fn should_to_array = []() {
+auto should_to_array = []() {
     // Given
     util::ChainList<i32> c;
     c.append(1);
@@ -59,7 +59,7 @@ fn should_to_array = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
-fn should_clear = []() {
+auto should_clear = []() {
     // Given
     util::ChainList<i32> c;
     c.append(1);
@@ -82,7 +82,7 @@ fn should_clear = []() {
     Assertions::assertTrue(c.empty());
 };
 
-fn should_str = []() {
+auto should_str = []() {
     // Given
     util::ChainList<i32> c;
     c.append(1);
@@ -98,7 +98,7 @@ fn should_str = []() {
     Assertions::assertEquals("<Chain> [1->2->3->4->5]"_cs, s);
 };
 
-fn test_chain() {
+auto test_chain() {
     UnitTestGroup group{"test_chain"};
 
     group.addTest("should_append", should_append);

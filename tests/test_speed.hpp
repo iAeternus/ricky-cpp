@@ -12,7 +12,7 @@
 
 namespace my::test {
 
-fn test_speed() {
+auto test_speed() {
     test_dynarray::test_dynarray_speed();
     test_vec::test_vec_speed();
     test_dict::test_dict_speed();

@@ -6,7 +6,7 @@
 
 namespace my::test::test_string_builder {
 
-fn it_works = []() {
+auto it_works = []() {
     // Given
     util::StringBuilder sb;
 
@@ -18,7 +18,7 @@ fn it_works = []() {
     Assertions::assertEquals("aaabbbccc你好呀R"_s, sb.build_move());
 };
 
-fn should_append_format_string = []() {
+auto should_append_format_string = []() {
     // Given
     util::StringBuilder sb;
 
@@ -29,7 +29,7 @@ fn should_append_format_string = []() {
     Assertions::assertEquals("Case 1#: 1+1=2"_s, sb.build());
 };
 
-fn should_append_n = []() {
+auto should_append_n = []() {
     // Given
     util::StringBuilder sb;
 
@@ -40,7 +40,7 @@ fn should_append_n = []() {
     Assertions::assertEquals("我我我我我我我我我我"_s, sb.build());
 };
 
-fn should_append_array = []() {
+auto should_append_array = []() {
     // Given
     util::StringBuilder sb;
     const util::CodePoint<> cps[] = {'a', util::CodePoint{"我"}, 'b', 'c'};
@@ -52,7 +52,7 @@ fn should_append_array = []() {
     Assertions::assertEquals("a我bc"_s, sb.build());
 };
 
-fn should_find = []() {
+auto should_find = []() {
     // Given
     util::StringBuilder sb;
     sb.append("abcdef").append("\r\n\r\r").append("defghi");
@@ -64,7 +64,7 @@ fn should_find = []() {
     Assertions::assertEquals(6, pos);
 };
 
-fn test_string_builder() {
+auto test_string_builder() {
     UnitTestGroup group{"test_string_builder"};
 
     group.addTest("it_works", it_works);
@@ -78,7 +78,7 @@ fn test_string_builder() {
 
 constexpr i32 N = 1e5;
 
-fn speed_of_string_builder_append_string = []() {
+auto speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
     for (usize i = 0; i < N; ++i) {
         sb.append("abcdef");
@@ -87,7 +87,7 @@ fn speed_of_string_builder_append_string = []() {
     Assertions::assertEquals(N * 6, str.size());
 };
 
-fn speed_of_std_string_append_string = []() {
+auto speed_of_std_string_append_string = []() {
     std::string str;
     for (usize i = 0; i < N; ++i) {
         str += "abcdef";
@@ -95,7 +95,7 @@ fn speed_of_std_string_append_string = []() {
     Assertions::assertEquals(N * 6, str.length());
 };
 
-fn test_string_builder_speed() {
+auto test_string_builder_speed() {
     UnitTestGroup group{"test_string_builder_speed"};
 
     group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);

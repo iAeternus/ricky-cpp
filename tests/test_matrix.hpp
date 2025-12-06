@@ -6,7 +6,7 @@
 
 namespace my::test::test_matrix {
 
-fn should_construct = []() {
+auto should_construct = []() {
     math::Matrix<f64> m(3, 4, 1);
     math::Matrix<f64> m2 = {
         {1, 2, 3},
@@ -28,7 +28,7 @@ fn should_construct = []() {
     Assertions::assertEquals("[[0]]"_cs, m3.__str__());
 };
 
-fn should_at = []() {
+auto should_at = []() {
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     Assertions::assertEquals(0.0, m.at(0, 0));
     Assertions::assertEquals(m[0][0], m.at(0, 0));
@@ -36,7 +36,7 @@ fn should_at = []() {
     Assertions::assertEquals(m[2][2], m.at(2, 2));
 };
 
-fn should_fail_to_get_if_index_out_of_bounds = []() {
+auto should_fail_to_get_if_index_out_of_bounds = []() {
     // Given
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
@@ -50,7 +50,7 @@ fn should_fail_to_get_if_index_out_of_bounds = []() {
     });
 };
 
-fn should_get_sub_mat = []() {
+auto should_get_sub_mat = []() {
     // Given
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
@@ -62,7 +62,7 @@ fn should_get_sub_mat = []() {
     Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.to_matrix().__str__());
 };
 
-fn should_fail_to_get_sub_mat_if_index_invalid = []() {
+auto should_fail_to_get_sub_mat_if_index_invalid = []() {
     // Given
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
@@ -76,7 +76,7 @@ fn should_fail_to_get_sub_mat_if_index_invalid = []() {
     });
 };
 
-fn should_fill = []() {
+auto should_fill = []() {
     // Given
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
@@ -87,7 +87,7 @@ fn should_fill = []() {
     Assertions::assertEquals("[[1,1,1],[1,1,1],[1,1,1]]"_cs, m.__str__());
 };
 
-fn should_add = []() {
+auto should_add = []() {
     // Given
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     math::Matrix<f64> m2(3, 3, 1);
@@ -101,7 +101,7 @@ fn should_add = []() {
     Assertions::assertEquals(res, m);
 };
 
-fn should_fail_to_add_if_matrix_not_match = []() {
+auto should_fail_to_add_if_matrix_not_match = []() {
     // Given
     math::Matrix<f64> m(3, 3);
     math::Matrix<f64> m2(3, 2);
@@ -116,7 +116,7 @@ fn should_fail_to_add_if_matrix_not_match = []() {
     });
 };
 
-fn should_subtract = []() {
+auto should_subtract = []() {
     // Given
     math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
     math::Matrix<f64> m2(3, 3, 1);
@@ -130,7 +130,7 @@ fn should_subtract = []() {
     Assertions::assertEquals(res, m);
 };
 
-fn should_fail_to_subtract_if_matrix_not_match = []() {
+auto should_fail_to_subtract_if_matrix_not_match = []() {
     // Given
     math::Matrix<f64> m(3, 3);
     math::Matrix<f64> m2(3, 2);
@@ -145,7 +145,7 @@ fn should_fail_to_subtract_if_matrix_not_match = []() {
     });
 };
 
-fn should_multiply = []() {
+auto should_multiply = []() {
     // Given
     math::Matrix<f64> m = {{1, 2}, {3, 4}};
     math::Matrix<f64> m2 = {{5, 6}, {7, 8}};
@@ -159,7 +159,7 @@ fn should_multiply = []() {
     Assertions::assertEquals(res, m);
 };
 
-fn should_fail_to_multiply_if_matrix_not_match = []() {
+auto should_fail_to_multiply_if_matrix_not_match = []() {
     // Given
     math::Matrix<f64> m(3, 2);
     math::Matrix<f64> m2(3, 2);
@@ -174,7 +174,7 @@ fn should_fail_to_multiply_if_matrix_not_match = []() {
     });
 };
 
-fn should_dot = []() {
+auto should_dot = []() {
     // Given
     f64 n = 2;
     math::Matrix<f64> m = {{1, 2}, {3, 4}};
@@ -189,7 +189,7 @@ fn should_dot = []() {
     Assertions::assertEquals("[[2,4],[6,8]]"_cs, res2.__str__());
 };
 
-fn should_fail_to_dot_if_matrix_not_match = []() {
+auto should_fail_to_dot_if_matrix_not_match = []() {
     // Given
     math::Matrix<f64> m(3, 3);
     math::Matrix<f64> m2(3, 2);
@@ -200,7 +200,7 @@ fn should_fail_to_dot_if_matrix_not_match = []() {
     });
 };
 
-fn should_transpose = []() {
+auto should_transpose = []() {
     // Given
     math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}};
 
@@ -211,7 +211,7 @@ fn should_transpose = []() {
     Assertions::assertEquals("[[1,4],[2,5],[3,6]]"_cs, res.__str__());
 };
 
-fn should_calculate_inverse = []() {
+auto should_calculate_inverse = []() {
     // Given
     math::Matrix<f64> m = {{3, 0, 2}, {2, 0, -2}, {0, 1, 1}};
 
@@ -222,7 +222,7 @@ fn should_calculate_inverse = []() {
     Assertions::assertEquals("[[0.2,0.2,0],[-0.2,0.3,1],[0.2,-0.3,0]]"_cs, res.__str__());
 };
 
-fn should_fail_to_calc_inv_if_matrix_not_square = []() {
+auto should_fail_to_calc_inv_if_matrix_not_square = []() {
     // Given
     math::Matrix<f64> m(3, 2);
 
@@ -232,7 +232,7 @@ fn should_fail_to_calc_inv_if_matrix_not_square = []() {
     });
 };
 
-fn should_calculate_det = []() {
+auto should_calculate_det = []() {
     // Given
     math::Matrix<f64> m = {{1, 1, -1, 2}, {-1, -1, -4, 1}, {2, 4, -6, 1}, {1, 2, 4, 2}};
 
@@ -243,7 +243,7 @@ fn should_calculate_det = []() {
     Assertions::assertEquals(57.0, res);
 };
 
-fn should_fail_to_calc_det_if_matrix_not_square = []() {
+auto should_fail_to_calc_det_if_matrix_not_square = []() {
     // Given
     math::Matrix<f64> m(3, 2);
 
@@ -253,7 +253,7 @@ fn should_fail_to_calc_det_if_matrix_not_square = []() {
     });
 };
 
-fn should_calculate_rank = []() {
+auto should_calculate_rank = []() {
     // Given
     math::Matrix<f64> m = {{1, 2, 3}, {2, 4, 6}, {3, 6, 9}};
 
@@ -264,7 +264,7 @@ fn should_calculate_rank = []() {
     Assertions::assertEquals(1, res);
 };
 
-fn should_lu_decomposition = []() {
+auto should_lu_decomposition = []() {
     // Given
     math::Matrix<f64> m = {{1, 5, -3}, {-2, -7, 3}, {4, 9, 6}};
 
@@ -276,7 +276,7 @@ fn should_lu_decomposition = []() {
     Assertions::assertEquals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.__str__());
 };
 
-fn should_fail_to_lu_decomposition_if_matrix_not_square = []() {
+auto should_fail_to_lu_decomposition_if_matrix_not_square = []() {
     // Given
     math::Matrix<f64> m(3, 2);
 
@@ -286,7 +286,7 @@ fn should_fail_to_lu_decomposition_if_matrix_not_square = []() {
     });
 };
 
-fn should_cmp = []() {
+auto should_cmp = []() {
     // Given
     math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
     math::Matrix<f64> m2 = {{1, 2, 3}, {4, 5, 6}, {9, 8, 7}};
@@ -301,7 +301,7 @@ fn should_cmp = []() {
     Assertions::assertEquals(0, res2);
 };
 
-fn should_fail_to_cmp_if_matrix_not_match = []() {
+auto should_fail_to_cmp_if_matrix_not_match = []() {
     // Given
     math::Matrix<f64> m(3, 3);
     math::Matrix<f64> m2(3, 2);
@@ -312,7 +312,7 @@ fn should_fail_to_cmp_if_matrix_not_match = []() {
     });
 };
 
-fn test_matrix_view = []() {
+auto test_matrix_view = []() {
     // Given
     math::Matrix<f64> m = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
@@ -327,7 +327,7 @@ fn test_matrix_view = []() {
     Assertions::assertEquals(8, v.at_abs(2, 1));
 };
 
-fn test_matrix() {
+auto test_matrix() {
     UnitTestGroup group{"test_matrix"};
 
     group.addTest("should_construct", should_construct);

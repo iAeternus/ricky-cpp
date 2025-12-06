@@ -6,7 +6,7 @@
 
 namespace my::test::test_buffer {
 
-fn should_get_front_and_back = []() {
+auto should_get_front_and_back = []() {
     // Given
     util::Buffer<i32> buf{3};
     buf.append(1), buf.append(2), buf.append(3);
@@ -20,7 +20,7 @@ fn should_get_front_and_back = []() {
     Assertions::assertEquals(3, res2);
 };
 
-fn test_buffer() {
+auto test_buffer() {
     UnitTestGroup group{"test_buffer"};
 
     group.addTest("should_get_front_and_back", should_get_front_and_back);

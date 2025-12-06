@@ -6,7 +6,7 @@
 
 namespace my::test::test_vec {
 
-fn it_works = []() {
+auto it_works = []() {
     util::Vec<i32> d(10, 0);
     util::Vec<util::Vec<i32>> d2(3, util::Vec<i32>(3, 0));
     util::Vec<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -16,7 +16,7 @@ fn it_works = []() {
     Assertions::assertEquals(10, d3.back());
 };
 
-fn should_append = []() {
+auto should_append = []() {
     // Given
     i32 n = 100;
     util::Vec<CString> d;
@@ -36,7 +36,7 @@ fn should_append = []() {
     }
 };
 
-fn should_insert = []() {
+auto should_insert = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5};
 
@@ -49,7 +49,7 @@ fn should_insert = []() {
     Assertions::assertEquals(1, d.find(1));
 };
 
-fn should_pop = []() {
+auto should_pop = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5};
 
@@ -68,7 +68,7 @@ fn should_pop = []() {
     Assertions::assertEquals(2, d.at(0));
 };
 
-fn should_pop2 = []() {
+auto should_pop2 = []() {
     // Given
     util::Vec<i32> d;
 
@@ -81,7 +81,7 @@ fn should_pop2 = []() {
     Assertions::assertEquals(d.begin(), d.end());
 };
 
-fn should_clear = []() {
+auto should_clear = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5};
 
@@ -100,7 +100,7 @@ fn should_clear = []() {
     Assertions::assertEquals(d.begin(), d.end());
 };
 
-fn should_swap = []() {
+auto should_swap = []() {
     // Given
     util::Vec<CString> d = {"aaa", "bbb", "ccc"};
     util::Vec<CString> d2 = {"ccc", "bbb", "aaa"};
@@ -113,7 +113,7 @@ fn should_swap = []() {
     Assertions::assertEquals("[aaa,bbb,ccc]"_cs, d2.__str__());
 };
 
-fn should_to_array = []() {
+auto should_to_array = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5};
 
@@ -126,7 +126,7 @@ fn should_to_array = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
-fn should_slice = []() {
+auto should_slice = []() {
     // Given
     util::Vec<i32> v = {1, 2, 3, 4, 5, 6};
 
@@ -142,7 +142,7 @@ fn should_slice = []() {
     Assertions::assertEquals("[2,3,4,5]"_cs, res3.__str__());
 };
 
-fn should_extend = []() {
+auto should_extend = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5};
 
@@ -155,7 +155,7 @@ fn should_extend = []() {
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
-fn should_at = []() {
+auto should_at = []() {
     // Given
     util::Vec<char> d = {'a', 'b', 'c'};
 
@@ -170,7 +170,7 @@ fn should_at = []() {
     Assertions::assertEquals('c', res3);
 };
 
-fn should_find = []() {
+auto should_find = []() {
     // Given
     util::Vec<CString> d = {"aaa"_cs, "bbb"_cs, "ccc"_cs};
 
@@ -183,7 +183,7 @@ fn should_find = []() {
     Assertions::assertEquals(d.size(), res2);
 };
 
-fn should_sort = []() {
+auto should_sort = []() {
     // Given
     util::Vec<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
@@ -194,7 +194,7 @@ fn should_sort = []() {
     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 };
 
-fn test_opt = []() {
+auto test_opt = []() {
     // Given
     util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
@@ -205,7 +205,7 @@ fn test_opt = []() {
     Assertions::assertEquals(7, res);
 };
 
-fn should_fail_to_opt_if_index_out_of_bounds = []() {
+auto should_fail_to_opt_if_index_out_of_bounds = []() {
     // Given
     util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
@@ -215,7 +215,7 @@ fn should_fail_to_opt_if_index_out_of_bounds = []() {
     });
 };
 
-fn should_fail_to_opt_if_type_mismatch = []() {
+auto should_fail_to_opt_if_type_mismatch = []() {
     // Given
     util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
@@ -225,7 +225,7 @@ fn should_fail_to_opt_if_type_mismatch = []() {
     });
 };
 
-fn test_vec() {
+auto test_vec() {
     UnitTestGroup group{"test_vec"};
 
     group.addTest("it_works", it_works);
@@ -250,35 +250,35 @@ fn test_vec() {
 
 constexpr i32 N = 1e6;
 
-fn speed_of_util_vec_append_string = []() {
+auto speed_of_util_vec_append_string = []() {
     util::Vec<std::string> d;
     for (usize i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
-fn speed_of_std_vector_push_back_string = []() {
+auto speed_of_std_vector_push_back_string = []() {
     std::vector<std::string> v;
     for (usize i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
-fn speed_of_util_vec_append_i32 = []() {
+auto speed_of_util_vec_append_i32 = []() {
     util::Vec<i32> d;
     for (usize i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
-fn speed_of_std_vector_push_back_i32 = []() {
+auto speed_of_std_vector_push_back_i32 = []() {
     std::vector<i32> v;
     for (usize i = 0; i < N; ++i) {
         v.push_back(i);
     }
 };
 
-fn test_vec_speed() {
+auto test_vec_speed() {
     UnitTestGroup group{"test_vec_speed"};
 
     group.addTest("speed_of_util_vec_append_string", speed_of_util_vec_append_string);

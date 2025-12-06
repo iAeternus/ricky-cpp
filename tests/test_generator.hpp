@@ -7,13 +7,13 @@
 
 namespace my::test::test_generator {
 
-fn range(i32 start, i32 end) -> my::coro::Generator<i32> {
+auto range(i32 start, i32 end) -> my::coro::Generator<i32> {
     for (i32 i = start; i <= end; ++i) {
         co_yield i;
     }
 }
 
-fn should_generate = []() {
+auto should_generate = []() {
     // Given
     util::Vec<i32> res;
 
@@ -26,7 +26,7 @@ fn should_generate = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 };
 
-fn test_generator() {
+auto test_generator() {
     UnitTestGroup group{"test_generator"};
 
     group.addTest("should_generate", should_generate);

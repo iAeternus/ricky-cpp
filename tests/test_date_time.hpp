@@ -6,7 +6,7 @@
 
 namespace my::test::test_date_time {
 
-fn should_construct = []() {
+auto should_construct = []() {
     auto dt = util::DateTime::of(2025, 2, 5, 20, 20, 20, 20);
     auto dt2 = util::DateTime::of(util::Date::of(2025, 2, 5), util::Time::of(23, 59, 59));
 
@@ -21,7 +21,7 @@ fn should_construct = []() {
     Assertions::assertEquals("2025-02-05T23:59:59.000000000Z"_cs, dt2.__str__());
 };
 
-fn should_parse = []() {
+auto should_parse = []() {
     // Given
     CString str = "2025-02-05 20:20:20";
 
@@ -32,20 +32,20 @@ fn should_parse = []() {
     Assertions::assertEquals("2025-02-05T20:20:20.000000000Z"_cs, dt.__str__());
 };
 
-fn should_fail_to_parse_if_format_invalid = []() {
+auto should_fail_to_parse_if_format_invalid = []() {
     Assertions::assertThrows("invalid date time format", []() { util::Date::parse("2025-1-1-1 12:30:31"); });
     Assertions::assertThrows("invalid date time format", []() { util::Date::parse("2025-1 12:30:31"); });
     Assertions::assertThrows("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30:31:1000"); });
     Assertions::assertThrows("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30"); });
 };
 
-fn should_fetch_now = []() {
+auto should_fetch_now = []() {
     auto dt = util::DateTime::now();
 
     io::println(dt);
 };
 
-fn should_construct_by_epoch_second = []() {
+auto should_construct_by_epoch_second = []() {
     // Given
     i64 epochSecond = 1738752308;
 
@@ -56,7 +56,7 @@ fn should_construct_by_epoch_second = []() {
     Assertions::assertEquals("2025-02-05T10:45:08.000000000Z"_cs, dt.__str__());
 };
 
-fn should_plus = []() {
+auto should_plus = []() {
     // Given
     auto dt = util::DateTime::of(2025, 2, 5, 20);
 
@@ -74,7 +74,7 @@ fn should_plus = []() {
     Assertions::assertEquals("2026-03-13T21:01:01.000000001Z"_cs, dt9.__str__());
 };
 
-fn should_minus = []() {
+auto should_minus = []() {
     // Given
     auto dt = util::DateTime::of(2025, 2, 5, 20);
 
@@ -92,7 +92,7 @@ fn should_minus = []() {
     Assertions::assertEquals("2023-12-28T18:58:58.999999999Z"_cs, dt9.__str__());
 };
 
-fn should_subtract = []() {
+auto should_subtract = []() {
     // Given
     auto dt = util::DateTime::of(2025, 2, 5, 20);
     auto dt2 = util::DateTime::of(2025, 2, 5, 10);
@@ -107,7 +107,7 @@ fn should_subtract = []() {
     Assertions::assertEquals("PT-10H"_cs, res2.__str__());
 };
 
-fn test_date_time() {
+auto test_date_time() {
     UnitTestGroup group{"test_date_time"};
 
     group.addTest("should_construct", should_construct);

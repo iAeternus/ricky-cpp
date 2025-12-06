@@ -7,7 +7,7 @@
 
 namespace my::test::test_json_parser {
 
-fn should_parse = []() {
+auto should_parse = []() {
     // Given
     util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
 
@@ -28,7 +28,7 @@ fn should_parse = []() {
     io::println(jsonStr);
 };
 
-fn should_fail_to_parse_if_json_str_is_empty = []() {
+auto should_fail_to_parse_if_json_str_is_empty = []() {
     // Given
     util::String s = "   ";
 
@@ -37,7 +37,7 @@ fn should_fail_to_parse_if_json_str_is_empty = []() {
     });
 };
 
-fn should_dump = []() {
+auto should_dump = []() {
     // Given
     util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
 
@@ -51,7 +51,7 @@ fn should_dump = []() {
     io::println(res2);
 };
 
-fn test_json_parser() {
+auto test_json_parser() {
     UnitTestGroup group{"test_json_parser"};
 
     group.addTest("should_parse", should_parse);

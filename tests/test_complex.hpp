@@ -6,7 +6,7 @@
 
 namespace my::test::test_complex {
 
-fn should_construct = []() {
+auto should_construct = []() {
     math::Complex c{1, 2};
     math::Complex c2 = "2";
     math::Complex c3 = "2i";
@@ -27,13 +27,13 @@ fn should_construct = []() {
     Assertions::assertEquals("i"_cs, c9.__str__());
 };
 
-fn should_fail_to_parse_if_invalid_format = []() {
+auto should_fail_to_parse_if_invalid_format = []() {
     Assertions::assertThrows("Invalid complex number format", []() {
         math::Complex c = "-1a + 2i";
     });
 };
 
-fn should_calc_modulus = []() {
+auto should_calc_modulus = []() {
     // Given
     math::Complex a = "3 + 4i";
 
@@ -44,7 +44,7 @@ fn should_calc_modulus = []() {
     Assertions::assertEquals(5.0, res);
 };
 
-fn should_calc_arg = []() {
+auto should_calc_arg = []() {
     // Given
     math::Complex a = "3 + 4i";
 
@@ -55,7 +55,7 @@ fn should_calc_arg = []() {
     Assertions::assertEquals(0.9272952180016122, res);
 };
 
-fn should_add = []() {
+auto should_add = []() {
     // Given
     math::Complex a = "1 + 2i", b = "1 - 2i";
 
@@ -68,7 +68,7 @@ fn should_add = []() {
     Assertions::assertEquals(res.__str__(), a.__str__());
 };
 
-fn should_subtract = []() {
+auto should_subtract = []() {
     // Given
     math::Complex a = "1 + 2i", b = "1 - 2i";
 
@@ -81,7 +81,7 @@ fn should_subtract = []() {
     Assertions::assertEquals(res.__str__(), a.__str__());
 };
 
-fn should_multiply = []() {
+auto should_multiply = []() {
     // Given
     math::Complex a = "1 + 2i", b = "1 - 2i";
 
@@ -94,7 +94,7 @@ fn should_multiply = []() {
     Assertions::assertEquals(res.__str__(), a.__str__());
 };
 
-fn should_divide = []() {
+auto should_divide = []() {
     // Given
     math::Complex a = "1 + 2i", b = "1 - 2i";
 
@@ -107,7 +107,7 @@ fn should_divide = []() {
     Assertions::assertEquals(res.__str__(), a.__str__());
 };
 
-fn test_complex() {
+auto test_complex() {
     UnitTestGroup group{"test_complex"};
 
     group.addTest("should_construct", should_construct);

@@ -29,7 +29,7 @@ struct Person : Object<Person> {
 
 DEFINE_JSON_ADAPTER(Person);
 
-fn it_works = []() {
+auto it_works = []() {
     // Given
     Person p{"Ricky", 20, true, {100, 90, 80}, {{"city", "Beijing"}, {"street", "No.1"}}};
     util::String s = R"({"name":"Ricky","age":20,"is_student":true,"scores":[100,90,80],"address":{"city":"Beijing","street":"No.1"}})";
@@ -44,7 +44,7 @@ fn it_works = []() {
     Assertions::assertEquals(p, p2);
 };
 
-fn test_json_serializer() {
+auto test_json_serializer() {
     UnitTestGroup group{"test_json_serializer"};
 
     group.addTest("it_works", it_works);
@@ -58,7 +58,7 @@ namespace my::io {
 
 using test::test_json_serializer::Person;
 
-fn to_json(Json& j, const Person& p) {
+auto to_json(Json& j, const Person& p) {
     j = Json::object(
         "name", p.name,
         "age", p.age,
@@ -67,7 +67,7 @@ fn to_json(Json& j, const Person& p) {
         "address", p.address);
 }
 
-fn from_json(const Json& j, Person& p) {
+auto from_json(const Json& j, Person& p) {
     p.name = j["name"].into<util::String>();
     p.age = j["age"].into<i32>();
     p.is_student = j["is_student"].into<bool>();

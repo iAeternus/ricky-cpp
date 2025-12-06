@@ -6,7 +6,7 @@
 
 namespace my::test::test_polygon {
 
-fn should_calc_area = []() {
+auto should_calc_area = []() {
     // Given
     math::Polygon p{{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
 
@@ -17,7 +17,7 @@ fn should_calc_area = []() {
     Assertions::assertEquals(1, res);
 };
 
-fn should_judge_point_in_polygon = []() {
+auto should_judge_point_in_polygon = []() {
     // Given
     math::Polygon p{{{0, 0}, {1, 0}, {1, 1}, {0, 1}}};
     math::Point2 a{0.5, 0.5}, b{2, 2};
@@ -31,7 +31,7 @@ fn should_judge_point_in_polygon = []() {
     Assertions::assertFalse(res2);
 };
 
-fn test_polygon() {
+auto test_polygon() {
     UnitTestGroup group{"test_polygon"};
 
     group.addTest("should_calc_area", should_calc_area);

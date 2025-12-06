@@ -9,7 +9,7 @@ namespace my::test::test_win_file {
 
 static constexpr auto CLASS_PATH = R"(F:\Develop\cpp\ricky-cpp\tests\resources)";
 
-fn should_write_win_file = []() {
+auto should_write_win_file = []() {
     // Given
     auto path = fs::win::join(CLASS_PATH, "test1.txt");
     fs::win::File file{path, "w"};
@@ -28,7 +28,7 @@ fn should_write_win_file = []() {
     fs::win::remove(path);
 };
 
-fn should_fail_to_construct_if_mode_invalid = []() {
+auto should_fail_to_construct_if_mode_invalid = []() {
     // Given
     auto path = fs::win::join(CLASS_PATH, "test1.txt");
 
@@ -38,7 +38,7 @@ fn should_fail_to_construct_if_mode_invalid = []() {
     });
 };
 
-fn should_append_win_file = []() {
+auto should_append_win_file = []() {
     // Given
     auto path = fs::win::join(CLASS_PATH, "test2.txt");
     fs::win::File file{path, "a"};
@@ -57,7 +57,7 @@ fn should_append_win_file = []() {
     fs::win::remove(path);
 };
 
-fn test_win_file() {
+auto test_win_file() {
     UnitTestGroup group{"test_win_file"};
 
     group.addTest("should_write_win_file", should_write_win_file);

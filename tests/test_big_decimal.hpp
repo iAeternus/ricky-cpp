@@ -6,7 +6,7 @@
 
 namespace my::test::test_big_decimal {
 
-fn should_construct = []() {
+auto should_construct = []() {
     // Given
     math::BigDecimal bd("0.123456789012345678901234567890");
     math::BigDecimal bd2("-100.123456789012345678901234567890");
@@ -26,7 +26,7 @@ fn should_construct = []() {
     Assertions::assertEquals("-3"_cs, res4);
 };
 
-fn test_abs = []() {
+auto test_abs = []() {
     // Given
     math::BigDecimal bd("-3.14159265358979");
     math::BigDecimal bd2("0.0");
@@ -40,7 +40,7 @@ fn test_abs = []() {
     Assertions::assertEquals("0"_cs, res2.__str__());
 };
 
-fn test_add = []() {
+auto test_add = []() {
     // Given
     math::BigDecimal bd = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     math::BigDecimal bd2 = "100.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
@@ -54,7 +54,7 @@ fn test_add = []() {
     Assertions::assertEquals(res, bd);
 };
 
-fn test_sub = []() {
+auto test_sub = []() {
     // Given
     math::BigDecimal bd = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     math::BigDecimal bd2 = "100.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001";
@@ -68,7 +68,7 @@ fn test_sub = []() {
     Assertions::assertEquals(res, bd);
 };
 
-fn test_mul = []() {
+auto test_mul = []() {
     // Given
     math::BigDecimal bd = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     math::BigDecimal bd2 = "0.01";
@@ -85,7 +85,7 @@ fn test_mul = []() {
     Assertions::assertEquals(res, bd);
 };
 
-fn test_div = []() {
+auto test_div = []() {
     // Given
     math::BigDecimal bd = "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
     math::BigDecimal bd2 = "-3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679";
@@ -105,7 +105,7 @@ fn test_div = []() {
     Assertions::assertEquals("0.1666666666666667"_cs, res4.__str__());
 };
 
-fn test_scale = []() {
+auto test_scale = []() {
     // Given
     math::BigDecimal bd("123.456789");
 
@@ -117,7 +117,7 @@ fn test_scale = []() {
     Assertions::assertEquals("123"_cs, bd.scale(0, math::RoundingMode::DOWN).__str__());
 };
 
-fn test_round = []() {
+auto test_round = []() {
     math::BigDecimal bd("123.456789");
 
     // 测试有效数字舍入
@@ -137,12 +137,12 @@ fn test_round = []() {
     Assertions::assertEquals("1000.0"_cs, bd4.round(3, math::RoundingMode::HALF_UP).__str__()); // TODO 1.00E+3
 };
 
-fn test_rounding_mode = []() {
+auto test_rounding_mode = []() {
     // Given
     // math::BigDecimal bd = ""
 };
 
-fn test_move_point = []() {
+auto test_move_point = []() {
     // Given
     math::BigDecimal bd("123.456789");
 
@@ -158,7 +158,7 @@ fn test_move_point = []() {
     Assertions::assertEquals("-0.123456789"_cs, neg_bd.move_point_left(3).__str__());
 };
 
-fn test_strip_trailing_zeros = []() {
+auto test_strip_trailing_zeros = []() {
     // Given
     math::BigDecimal bd("123.456000");
     math::BigDecimal bd2("123.000000");
@@ -172,7 +172,7 @@ fn test_strip_trailing_zeros = []() {
     Assertions::assertEquals("0"_cs, bd4.strip_trailing_zeros().__str__());
 };
 
-fn test_sqrt = []() {
+auto test_sqrt = []() {
     // Given
     math::BigDecimal bd("2");
     math::BigDecimal bd2("0.25");
@@ -192,7 +192,7 @@ fn test_sqrt = []() {
     });
 };
 
-fn test_precision = []() {
+auto test_precision = []() {
     // Given
     math::BigDecimal bd("123.456789");
     math::BigDecimal bd2("0.000123456789");
@@ -204,7 +204,7 @@ fn test_precision = []() {
     Assertions::assertEquals(3u, bd3.precision());
 };
 
-fn test_big_decimal() {
+auto test_big_decimal() {
     UnitTestGroup group{"test_big_decimal"};
 
     group.addTest("should_construct", should_construct);

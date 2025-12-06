@@ -6,7 +6,7 @@
 
 namespace my::test::test_match {
 
-fn it_works = []() {
+auto it_works = []() {
     // Given
     std::variant<std::string, float> v = 0.1f;
 
@@ -32,7 +32,7 @@ fn it_works = []() {
     Assertions::assertEquals("abc", res2);
 };
 
-fn test_match() {
+auto test_match() {
     UnitTestGroup group{"test_match"};
 
     group.addTest("it_works", it_works);

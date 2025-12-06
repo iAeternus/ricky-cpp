@@ -14,28 +14,11 @@
 namespace my {
 
 /**
- * @brief rust-like `auto` 关键字
- * @note 规范：
- * 冠以`auto`的函数，应适合内联，且返回值应后置
- * 对于静态函数，`auto`应该放在static后
- * 对于constexpr函数，`auto`应该放在constexpr后
- */
-#define fn inline auto
-#define fr(R) inline R
-
-/**
  * @brief rust-like `loop` 关键字
  * @note 规范：
  * 仅可用于无限循环
  */
 #define loop while (true)
-
-// /**
-//  * @brief rust-like `let` 关键字
-//  * @note 规范：
-//  * 仅可用于局部变量创建
-//  */
-// #define let auto
 
 /**
  * @brief 标准库命名空间

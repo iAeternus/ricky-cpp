@@ -6,7 +6,7 @@
 
 namespace my::test::test_dynarray {
 
-fn it_works = []() {
+auto it_works = []() {
     util::DynArray<i32> d(10, 0);
     util::DynArray<util::DynArray<i32>> d2(3, util::DynArray<i32>(3, 0));
     util::DynArray<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -16,7 +16,7 @@ fn it_works = []() {
     Assertions::assertEquals(10, d3.back());
 };
 
-fn should_append = []() {
+auto should_append = []() {
     // Given
     i32 n = 100;
     util::DynArray<CString> d;
@@ -36,7 +36,7 @@ fn should_append = []() {
     }
 };
 
-fn should_insert = []() {
+auto should_insert = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -49,7 +49,7 @@ fn should_insert = []() {
     Assertions::assertEquals(1, d.find(1));
 };
 
-fn should_pop = []() {
+auto should_pop = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -68,7 +68,7 @@ fn should_pop = []() {
     Assertions::assertEquals(2, d.at(0));
 };
 
-fn should_pop2 = []() {
+auto should_pop2 = []() {
     // Given
     util::DynArray<i32> d;
 
@@ -81,7 +81,7 @@ fn should_pop2 = []() {
     Assertions::assertEquals(d.begin(), d.end());
 };
 
-fn should_clear = []() {
+auto should_clear = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -100,7 +100,7 @@ fn should_clear = []() {
     Assertions::assertEquals(d.begin(), d.end());
 };
 
-fn should_to_array = []() {
+auto should_to_array = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -113,7 +113,7 @@ fn should_to_array = []() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
-fn should_extend = []() {
+auto should_extend = []() {
     // Given
     util::DynArray<i32> d = {1, 2, 3, 4, 5};
 
@@ -126,7 +126,7 @@ fn should_extend = []() {
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
-fn should_at = []() {
+auto should_at = []() {
     // Given
     util::DynArray<char> d = {'a', 'b', 'c'};
 
@@ -141,7 +141,7 @@ fn should_at = []() {
     Assertions::assertEquals('c', res3);
 };
 
-fn should_find = []() {
+auto should_find = []() {
     // Given
     util::DynArray<CString> d = {"aaa", "bbb", "ccc"_cs};
 
@@ -154,7 +154,7 @@ fn should_find = []() {
     Assertions::assertEquals(d.size(), res2);
 };
 
-// fn should_sort = []() {
+// auto should_sort = []() {
 //     // Given
 //     util::DynArray<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
@@ -166,7 +166,7 @@ fn should_find = []() {
 //     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 // };
 
-fn test_dynarray() {
+auto test_dynarray() {
     UnitTestGroup group("test_dynarray");
 
     group.addTest("it_works", it_works);
@@ -186,35 +186,35 @@ fn test_dynarray() {
 
 constexpr i32 N = 1e6;
 
-fn speed_of_dny_array_append_string = []() {
+auto speed_of_dny_array_append_string = []() {
     util::DynArray<std::string> d;
     for (usize i = 0; i < N; ++i) {
         d.append("aaaaa");
     }
 };
 
-fn speed_of_std_vector_push_back_string = []() {
+auto speed_of_std_vector_push_back_string = []() {
     std::vector<std::string> v;
     for (usize i = 0; i < N; ++i) {
         v.push_back("aaaaa");
     }
 };
 
-fn speed_of_dny_array_append_i32 = []() {
+auto speed_of_dny_array_append_i32 = []() {
     util::DynArray<i32> d;
     for (usize i = 0; i < N; ++i) {
         d.append(i);
     }
 };
 
-fn speed_of_std_vector_push_back_i32 = []() {
+auto speed_of_std_vector_push_back_i32 = []() {
     std::vector<i32> v;
     for (usize i = 0; i < N; ++i) {
         v.push_back(i);
     }
 };
 
-fn test_dynarray_speed() {
+auto test_dynarray_speed() {
     UnitTestGroup group{"test_dynarray_speed"};
 
     group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);

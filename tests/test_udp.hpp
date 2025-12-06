@@ -8,7 +8,7 @@
 
 namespace my::test::test_udp {
 
-fn it_works = []() {
+auto it_works = []() {
     const char* ip = "127.0.0.1";
     u16 port = 12345;
     CString msg = "hello udp";
@@ -29,7 +29,7 @@ fn it_works = []() {
     server_thread.join(); // 等待服务器线程结束
 };
 
-fn test_udp() {
+auto test_udp() {
     UnitTestGroup group{"test_udp"};
 
     group.addTest("it_works", it_works);

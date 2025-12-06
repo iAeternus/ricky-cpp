@@ -6,7 +6,7 @@
 
 namespace my::test::test_pair {
 
-fn should_construct = []() {
+auto should_construct = []() {
     // Given
     i32 a = 10;
     f64 b = 3.14;
@@ -29,7 +29,7 @@ fn should_construct = []() {
     Assertions::assertEquals("(10, \"abc\")"_cs, p4.__str__());
 };
 
-fn should_structured_binding = []() {
+auto should_structured_binding = []() {
     // Given
     Pair<i32, i32> p = {1, 2};
 
@@ -41,7 +41,7 @@ fn should_structured_binding = []() {
     Assertions::assertEquals(2, y);
 };
 
-fn test_pair() {
+auto test_pair() {
     UnitTestGroup group{"test_pair"};
 
     group.addTest("should_construct", should_construct);

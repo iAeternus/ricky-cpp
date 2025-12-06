@@ -10,26 +10,26 @@
 
 namespace my::test::test_test_utils {
 
-fn should_success1 = []() {
+auto should_success1 = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 };
 
-fn should_success2 = []() {
+auto should_success2 = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 };
 
-fn should_failed = []() {
+auto should_failed = []() {
     throw runtime_exception("wa");
 };
 
-fn should_throws = []() {
+auto should_throws = []() {
     Assertions::assertThrows("wa"_cs, should_failed);
     Assertions::assertThrows("This is an IO exception message.", []() {
         throw io_exception("This is an {} message.", "IO exception");
     });
 };
 
-fn test_test_utils() {
+auto test_test_utils() {
     UnitTestGroup group("test_test_utils");
 
     group.addTest("should_success1", should_success1);

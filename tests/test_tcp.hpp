@@ -8,7 +8,7 @@
 
 namespace my::test::test_tcp {
 
-fn it_works = []() {
+auto it_works = []() {
     const char* ip = "127.0.0.1";
     u16 port = 23456;
     CString msg = "hello tcp";
@@ -33,7 +33,7 @@ fn it_works = []() {
     server_thread.join(); // 等待服务器线程结束
 };
 
-fn should_send_all = []() {
+auto should_send_all = []() {
     const char* ip = "127.0.0.1";
     u16 port = 23457;
     CString msg = "broadcast tcp";
@@ -60,7 +60,7 @@ fn should_send_all = []() {
     server_thread.join();
 };
 
-fn test_tcp() {
+auto test_tcp() {
     UnitTestGroup group{"test_tcp"};
 
     group.addTest("it_works", it_works);

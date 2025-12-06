@@ -9,7 +9,7 @@
 
 namespace my::test::test_queue {
 
-fn it_works = []() {
+auto it_works = []() {
     util::Queue<i32> q;
     Assertions::assertTrue(q.empty());
 
@@ -35,7 +35,7 @@ fn it_works = []() {
     Assertions::assertEquals(0, q.size());
 };
 
-fn should_fail_to_pop_if_queue_is_empty = []() {
+auto should_fail_to_pop_if_queue_is_empty = []() {
     // Given
     util::Queue<i32> q;
 
@@ -45,7 +45,7 @@ fn should_fail_to_pop_if_queue_is_empty = []() {
     });
 };
 
-fn should_fail_to_get_front_if_queue_is_empty = []() {
+auto should_fail_to_get_front_if_queue_is_empty = []() {
     // Given
     util::Queue<i32> q;
 
@@ -55,7 +55,7 @@ fn should_fail_to_get_front_if_queue_is_empty = []() {
     });
 };
 
-fn should_fail_to_get_tail_if_queue_is_empty = []() {
+auto should_fail_to_get_tail_if_queue_is_empty = []() {
     // Given
     util::Queue<i32> q;
 
@@ -65,7 +65,7 @@ fn should_fail_to_get_tail_if_queue_is_empty = []() {
     });
 };
 
-fn test_queue() {
+auto test_queue() {
     UnitTestGroup group{"test_queue"};
 
     group.addTest("it_works", it_works);
@@ -78,7 +78,7 @@ fn test_queue() {
 
 constexpr i32 N = 1e6;
 
-fn speed_of_util_queue_push_and_pop = []() {
+auto speed_of_util_queue_push_and_pop = []() {
     util::Queue<CString> q;
     for (usize i = 0; i < N; ++i) {
         q.push(util::Random::instance().next_str(3));
@@ -88,7 +88,7 @@ fn speed_of_util_queue_push_and_pop = []() {
     }
 };
 
-fn speed_of_std_queue_push_and_pop = []() {
+auto speed_of_std_queue_push_and_pop = []() {
     std::queue<CString> q;
     for (usize i = 0; i < N; ++i) {
         q.push(util::Random::instance().next_str(3));
@@ -98,7 +98,7 @@ fn speed_of_std_queue_push_and_pop = []() {
     }
 };
 
-fn test_queue_speed() {
+auto test_queue_speed() {
     UnitTestGroup group{"test_queue_speed"};
 
     group.addTest("speed_of_util_queue_push_and_pop", speed_of_util_queue_push_and_pop);

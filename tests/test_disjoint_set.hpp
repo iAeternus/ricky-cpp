@@ -6,7 +6,7 @@
 
 namespace my::test::test_disjoint_set {
 
-fn should_merge_and_find = []() {
+auto should_merge_and_find = []() {
     util::DisjointSet<i32> ds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     io::println(ds.__str__());
 
@@ -35,7 +35,7 @@ fn should_merge_and_find = []() {
     io::println();
 };
 
-fn test_disjoint_set() {
+auto test_disjoint_set() {
     UnitTestGroup group{"test_disjoint_set"};
 
     group.addTest("should_merge_and_find", should_merge_and_find);

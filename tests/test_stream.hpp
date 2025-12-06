@@ -7,7 +7,7 @@
 
 namespace my::test::test_stream {
 
-fn should_operates = []() {
+auto should_operates = []() {
     // Given
     util::Vec<i32> d = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 
@@ -21,7 +21,7 @@ fn should_operates = []() {
     Assertions::assertEquals("[4,8,12,16]"_cs, res.__str__());
 };
 
-fn should_map_objects = []() {
+auto should_map_objects = []() {
     // Given
     util::Vec<Pair<i32, i32>> pairs = {{1, 1}, {2, 2}, {3, 3}};
 
@@ -34,7 +34,7 @@ fn should_map_objects = []() {
     Assertions::assertEquals("[1,2,3]"_cs, res.__str__());
 };
 
-fn test_stream() {
+auto test_stream() {
     UnitTestGroup group{"test_stream"};
 
     group.addTest("should_operates", should_operates);

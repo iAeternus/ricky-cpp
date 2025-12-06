@@ -8,7 +8,7 @@ namespace my::test::test_graph_algorithm {
 
 #define INF TYPE_MAX(f64)
 
-fn test_adj2matrix = []() {
+auto test_adj2matrix = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -47,7 +47,7 @@ fn test_adj2matrix = []() {
                              res);
 };
 
-fn test_is_exist_el = []() {
+auto test_is_exist_el = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -97,7 +97,7 @@ fn test_is_exist_el = []() {
     Assertions::assertFalse(res2);
 };
 
-fn should_bfs = []() {
+auto should_bfs = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -132,7 +132,7 @@ fn should_bfs = []() {
     Assertions::assertEquals("[0,1,2,3,4,5,6]"_cs, vis_order.__str__());
 };
 
-fn should_dfs = []() {
+auto should_dfs = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -167,7 +167,7 @@ fn should_dfs = []() {
     Assertions::assertEquals("[0,1,4,6,2,5,3]"_cs, vis_order.__str__());
 };
 
-fn test_is_tree = []() {
+auto test_is_tree = []() {
     // Given
     graph::Graph g(false);
     g.add_node(0);
@@ -192,7 +192,7 @@ fn test_is_tree = []() {
     Assertions::assertTrue(res);
 };
 
-fn test_can_reach = []() {
+auto test_can_reach = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -227,7 +227,7 @@ fn test_can_reach = []() {
     Assertions::assertFalse(res_bfs2);
 };
 
-fn should_get_all_paths = []() {
+auto should_get_all_paths = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -253,7 +253,7 @@ fn should_get_all_paths = []() {
     Assertions::assertEquals("[[0,1,3,4,5],[0,1,3,5],[0,2,3,4,5],[0,2,3,5],[0,3,4,5],[0,3,5]]"_cs, paths.__str__());
 };
 
-fn test_prim = []() {
+auto test_prim = []() {
     // Given
     graph::Graph<char> g(false);
     g.add_node(0, '1');
@@ -307,7 +307,7 @@ fn test_prim = []() {
     // Assertions::assertTrue(t3.has_edge(3, 5));
 };
 
-fn test_dijkstra = []() {
+auto test_dijkstra = []() {
     // Given
     graph::Graph<char> g(false);
     g.add_node(0, 'A');
@@ -339,7 +339,7 @@ fn test_dijkstra = []() {
     Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.__str__());
 };
 
-fn test_floyd = []() {
+auto test_floyd = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -360,7 +360,7 @@ fn test_floyd = []() {
     Assertions::assertEquals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.__str__());
 };
 
-fn test_graph_algorithm() {
+auto test_graph_algorithm() {
     UnitTestGroup group{"test_graph_algorithm"};
 
     group.addTest("test_adj2matrix", test_adj2matrix);

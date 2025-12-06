@@ -5,7 +5,7 @@
 
 namespace my::test::test_cstring {
 
-fn should_construct = []() {
+auto should_construct = []() {
     // Given
     CString str = "abc";
 
@@ -17,7 +17,7 @@ fn should_construct = []() {
     Assertions::assertEquals('c', str[2]);
 };
 
-fn should_hash = []() {
+auto should_hash = []() {
     // Given
     CString str1 = "abc";
     CString str2 = "abd";
@@ -30,7 +30,7 @@ fn should_hash = []() {
     Assertions::assertNotEquals(hash1, hash2);
 };
 
-fn should_compare = []() {
+auto should_compare = []() {
     // Given
     CString str1 = "aaa";
     CString str2 = "aaaa";
@@ -46,7 +46,7 @@ fn should_compare = []() {
     Assertions::assertNotEquals(str2, str4);
 };
 
-fn should_slice = []() {
+auto should_slice = []() {
     // Given
     CString s = "abcdef";
 
@@ -62,7 +62,7 @@ fn should_slice = []() {
     Assertions::assertEquals("bcde"_cs, res3.to_string());
 };
 
-fn should_find = []() {
+auto should_find = []() {
     // Given
     CString s = "abcdeff";
     CString s2 = "caabaabaabaabaaaab";
@@ -82,7 +82,7 @@ fn should_find = []() {
     Assertions::assertEquals(npos, pos5);
 };
 
-fn should_find_all = []() {
+auto should_find_all = []() {
     // Given
     CString s = "abcdefabc";
 
@@ -95,7 +95,7 @@ fn should_find_all = []() {
     Assertions::assertEquals(6, poss[1]);
 };
 
-fn should_judge_starts_with = []() {
+auto should_judge_starts_with = []() {
     // Given
     CString s = "abcdef";
 
@@ -108,7 +108,7 @@ fn should_judge_starts_with = []() {
     Assertions::assertFalse(res2);
 };
 
-fn should_judge_ends_with = []() {
+auto should_judge_ends_with = []() {
     // Given
     CString s = "abcdef";
 
@@ -121,7 +121,7 @@ fn should_judge_ends_with = []() {
     Assertions::assertFalse(res2);
 };
 
-fn should_get_upper = []() {
+auto should_get_upper = []() {
     // Given
     CString s = "abcDef";
 
@@ -132,7 +132,7 @@ fn should_get_upper = []() {
     Assertions::assertEquals("ABCDEF"_cs, res);
 };
 
-fn should_get_lower = []() {
+auto should_get_lower = []() {
     // Given
     CString s = "ABCdEF";
 
@@ -143,7 +143,7 @@ fn should_get_lower = []() {
     Assertions::assertEquals("abcdef"_cs, res);
 };
 
-fn should_trim = []() {
+auto should_trim = []() {
     // Given
     CString s = "   abcdef   ";
 
@@ -154,7 +154,7 @@ fn should_trim = []() {
     Assertions::assertEquals("abcdef"_cs, res.to_string());
 };
 
-fn should_remove_all = []() {
+auto should_remove_all = []() {
     // Given
     CString s = "   a  bc "_cs;
 
@@ -169,7 +169,7 @@ fn should_remove_all = []() {
     Assertions::assertEquals("abc"_cs, res2);
 };
 
-fn should_add = []() {
+auto should_add = []() {
     // Given
     CString str = "aaa";
     CString str2 = "bbb";
@@ -181,7 +181,7 @@ fn should_add = []() {
     Assertions::assertEquals("aaabbb"_cs, res);
 };
 
-fn should_iterate = []() {
+auto should_iterate = []() {
     CString str = "abcdefg";
     util::Vec<char> chs;
 
@@ -199,7 +199,7 @@ fn should_iterate = []() {
     Assertions::assertEquals("[b,c,d,e,f,g,h]"_cs, chs.__str__());
 };
 
-fn test_cstring_view = []() {
+auto test_cstring_view = []() {
     // Given
     CString str = "abcdefg";
     util::Vec<char> chs;
@@ -217,7 +217,7 @@ fn test_cstring_view = []() {
     Assertions::assertEquals("[b,c,d,e,f]"_cs, chs.__str__());
 };
 
-fn test_cstring() {
+auto test_cstring() {
     UnitTestGroup group{"test_cstring"};
 
     group.addTest("should_construct", should_construct);

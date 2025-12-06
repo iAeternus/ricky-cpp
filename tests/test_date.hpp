@@ -6,7 +6,7 @@
 
 namespace my::test::test_date {
 
-fn should_construct = []() {
+auto should_construct = []() {
     auto d = util::Date::of(1970);
     auto d2 = util::Date::of(2025, 2, 3);
 
@@ -17,7 +17,7 @@ fn should_construct = []() {
     Assertions::assertEquals("2025-02-03"_cs, d2.__str__());
 };
 
-fn should_fail_to_construct_by_month_and_day_if_args_invalid = []() {
+auto should_fail_to_construct_by_month_and_day_if_args_invalid = []() {
     Assertions::assertThrows("invalid month", []() { util::Date::of(2025, 0); });
     Assertions::assertThrows("invalid month", []() { util::Date::of(2025, 13); });
     Assertions::assertThrows("invalid day", []() { util::Date::of(2025, 2, 0); });
@@ -25,13 +25,13 @@ fn should_fail_to_construct_by_month_and_day_if_args_invalid = []() {
     Assertions::assertThrows("year out of range", []() { util::Date::of(1000000000, 2); });
 };
 
-fn should_fail_to_construct_by_day_of_year_if_args_invalid = []() {
+auto should_fail_to_construct_by_day_of_year_if_args_invalid = []() {
     Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2025, 0); });
     Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2025, 366); });
     Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2024, 367); });
 };
 
-fn should_parse = []() {
+auto should_parse = []() {
     // Given
     CString str = "2025-02-04";
 
@@ -44,18 +44,18 @@ fn should_parse = []() {
     Assertions::assertEquals(4, d.day());
 };
 
-fn should_fail_to_parse_if_format_invalid = []() {
+auto should_fail_to_parse_if_format_invalid = []() {
     Assertions::assertThrows("invalid date format", []() { util::Date::parse("2025-1-1-1"); });
     Assertions::assertThrows("invalid date format", []() { util::Date::parse("2025-1"); });
 };
 
-fn should_fetch_now = []() {
+auto should_fetch_now = []() {
     auto d = util::Date::now();
 
     io::println(d);
 };
 
-fn should_calc_day_of_year = []() {
+auto should_calc_day_of_year = []() {
     // Given
     auto d = util::Date::of(2025, 2, 4);
     auto d2 = util::Date::of(1970);
@@ -75,7 +75,7 @@ fn should_calc_day_of_year = []() {
     Assertions::assertEquals(d4, res4);
 };
 
-fn should_calc_day_of_week = []() {
+auto should_calc_day_of_week = []() {
     // Given
     auto d = util::Date::of(2025, 2, 4);   // 周二
     auto d2 = util::Date::of(2025, 1, 27); // 周一
@@ -92,7 +92,7 @@ fn should_calc_day_of_week = []() {
     Assertions::assertEquals(4, res3);
 };
 
-fn should_plus = []() {
+auto should_plus = []() {
     // Given
     auto d = util::Date::of(1970);
 
@@ -105,7 +105,7 @@ fn should_plus = []() {
     Assertions::assertEquals("1974-02-02"_cs, d4.__str__());
 };
 
-fn should_minus = []() {
+auto should_minus = []() {
     // Given
     auto d = util::Date::of(1970);
 
@@ -118,7 +118,7 @@ fn should_minus = []() {
     Assertions::assertEquals("1965-11-30"_cs, d4.__str__());
 };
 
-fn should_subtract = []() {
+auto should_subtract = []() {
     // Given
     auto d = util::Date::of(2025, 2, 4);
     auto d2 = util::Date::of(2024, 1, 3);
@@ -133,7 +133,7 @@ fn should_subtract = []() {
     Assertions::assertEquals("PT-394D"_cs, res2.__str__());
 };
 
-fn should_calc_epoch_day = []() {
+auto should_calc_epoch_day = []() {
     // Given
     auto d = util::Date::of(2025, 2, 4);
     auto d2 = util::Date::of(1970);
@@ -153,7 +153,7 @@ fn should_calc_epoch_day = []() {
     Assertions::assertEquals(d4, res4);
 };
 
-fn test_date() {
+auto test_date() {
     UnitTestGroup group{"test_date"};
 
     group.addTest("should_construct", should_construct);

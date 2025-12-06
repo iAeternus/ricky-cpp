@@ -6,7 +6,7 @@
 
 namespace my::test::test_graph {
 
-fn should_create_graph = []() {
+auto should_create_graph = []() {
     // Given
     graph::Graph<char> g;
 
@@ -37,7 +37,7 @@ fn should_create_graph = []() {
     io::println(g);
 };
 
-fn should_fail_to_add_edge_if_node_not_found = []() {
+auto should_fail_to_add_edge_if_node_not_found = []() {
     // Given
     graph::Graph g;
     g.add_node(0);
@@ -49,7 +49,7 @@ fn should_fail_to_add_edge_if_node_not_found = []() {
     });
 };
 
-fn should_register = []() {
+auto should_register = []() {
     // Given
     graph::Graph<char> g;
     g.add_node(1, 'a');
@@ -92,7 +92,7 @@ fn should_register = []() {
     Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());
 };
 
-fn should_fail_to_call_algo_if_algorithm_is_not_found = []() {
+auto should_fail_to_call_algo_if_algorithm_is_not_found = []() {
     // Given
     graph::Graph g;
 
@@ -102,7 +102,7 @@ fn should_fail_to_call_algo_if_algorithm_is_not_found = []() {
     });
 };
 
-fn test_graph() {
+auto test_graph() {
     UnitTestGroup group{"test_graph"};
 
     group.addTest("should_create_graph", should_create_graph);

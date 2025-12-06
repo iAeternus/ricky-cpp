@@ -29,7 +29,7 @@ public:
     ThrowingConstructor() { throw std::runtime_error("Test Exception"); }
 };
 
-fn should_allocate_and_deallocate = []() {
+auto should_allocate_and_deallocate = []() {
     // Given
     Allocator<i32> alloc;
     constexpr usize n = 10;
@@ -44,7 +44,7 @@ fn should_allocate_and_deallocate = []() {
     alloc.deallocate(ptr, n); // 不应崩溃
 };
 
-fn should_zero_allocate = []() {
+auto should_zero_allocate = []() {
     // Given
     Allocator<i32> alloc;
 
@@ -56,7 +56,7 @@ fn should_zero_allocate = []() {
 };
 
 // TODO 需要改进这个测试点
-fn should_fail_to_allocate_if_exceeds_max_size = []() {
+auto should_fail_to_allocate_if_exceeds_max_size = []() {
     // Given
     Allocator<i32> alloc;
 
@@ -66,7 +66,7 @@ fn should_fail_to_allocate_if_exceeds_max_size = []() {
     });
 };
 
-fn should_allocate_object = []() {
+auto should_allocate_object = []() {
     // Given
     Allocator<TestObject> alloc;
     TestObject::count = 0;
@@ -89,7 +89,7 @@ fn should_allocate_object = []() {
     alloc.deallocate(obj, 1); // 不应崩溃
 };
 
-fn should_multi_object_destruction = []() {
+auto should_multi_object_destruction = []() {
     // Given
     Allocator<TestObject> alloc;
     constexpr usize n = 5;
@@ -114,7 +114,7 @@ fn should_multi_object_destruction = []() {
     alloc.deallocate(objs, n); // 不应崩溃
 };
 
-fn should_safe_create_object = []() {
+auto should_safe_create_object = []() {
     // Given
     Allocator<TestObject> alloc;
     TestObject::count = 0;
@@ -132,7 +132,7 @@ fn should_safe_create_object = []() {
     alloc.deallocate(obj, 1); // 不应崩溃
 };
 
-fn should_container_integration = []() {
+auto should_container_integration = []() {
     // Given
     Allocator<i32> alloc;
     std::vector<i32, Allocator<i32>> vec(alloc);
@@ -148,7 +148,7 @@ fn should_container_integration = []() {
     }
 };
 
-fn should_cmp = []() {
+auto should_cmp = []() {
     // Given
     Allocator<i32> alloc1;
     Allocator<f64> alloc2;
@@ -158,7 +158,7 @@ fn should_cmp = []() {
     Assertions::assertFalse(alloc1 != alloc2);
 };
 
-fn test_allocator() {
+auto test_allocator() {
     UnitTestGroup group("test_allocator");
 
     group.addTest("should_allocate_and_deallocate", should_allocate_and_deallocate);

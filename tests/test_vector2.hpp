@@ -6,7 +6,7 @@
 
 namespace my::test::test_vector2 {
 
-fn it_works = []() {
+auto it_works = []() {
     // Given
     math::Vector2 v{1, -1};
     math::Vector2 v2{1, 1};
@@ -30,7 +30,7 @@ fn it_works = []() {
     Assertions::assertEquals(v, res5);
 };
 
-fn should_calc_pa = []() {
+auto should_calc_pa = []() {
     // Given
     math::Vector2 v{1, 0};
     math::Vector2 v2{1, 1};
@@ -50,7 +50,7 @@ fn should_calc_pa = []() {
     Assertions::assertEquals(math::PI, res4);
 };
 
-fn should_calc_length = []() {
+auto should_calc_length = []() {
     // Given
     math::Vector2 v{1, 0};
     math::Vector2 v2{0, 0};
@@ -64,7 +64,7 @@ fn should_calc_length = []() {
     Assertions::assertEquals(0, res2);
 };
 
-fn should_rotate = []() {
+auto should_rotate = []() {
     // Given
     math::Vector2 v{1, 0};
     f64 rad = math::PI / 2;
@@ -76,7 +76,7 @@ fn should_rotate = []() {
     Assertions::assertEquals(math::Vector2{0, 1}, res);
 };
 
-fn should_calc_unit = []() {
+auto should_calc_unit = []() {
     // Given
     math::Vector2 v{1, 1};
 
@@ -87,7 +87,7 @@ fn should_calc_unit = []() {
     Assertions::assertEquals(math::Vector2{1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
 };
 
-fn should_calc_norm = []() {
+auto should_calc_norm = []() {
     // Given
     math::Vector2 v{1, 1};
 
@@ -98,7 +98,7 @@ fn should_calc_norm = []() {
     Assertions::assertEquals(math::Vector2{-1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
 };
 
-fn test_vector2() {
+auto test_vector2() {
     UnitTestGroup group{"test_vector2"};
 
     group.addTest("it_works", it_works);

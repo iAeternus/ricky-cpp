@@ -6,7 +6,7 @@
 
 namespace my::test::test_priority_queue {
 
-fn it_works = []() {
+auto it_works = []() {
     // Given
     util::PriorityQueue<i32> pq;
 
@@ -29,7 +29,7 @@ fn it_works = []() {
     Assertions::assertEquals(2, pq.top());
 };
 
-fn it_works2 = []() {
+auto it_works2 = []() {
     // Given
     util::PriorityQueue<i32, std::greater<>> pq;
 
@@ -52,7 +52,7 @@ fn it_works2 = []() {
     Assertions::assertEquals(3, pq.top());
 };
 
-fn should_heapify = []() {
+auto should_heapify = []() {
     // Given
     util::Vec<i32> v = {3, 4, 5, 6, 1, 7, 8};
 
@@ -63,7 +63,7 @@ fn should_heapify = []() {
     Assertions::assertEquals("[8,6,7,4,1,3,5]"_cs, pq.__str__());
 };
 
-fn test_priority_queue() {
+auto test_priority_queue() {
     UnitTestGroup group{"test_priority_queue"};
 
     group.addTest("it_works", it_works);

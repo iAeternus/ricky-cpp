@@ -6,7 +6,7 @@
 
 namespace my::test::test_bi_chain {
 
-fn should_append_and_prepend = []() {
+auto should_append_and_prepend = []() {
     // Given
     util::BiChainList<CString> bc;
 
@@ -22,7 +22,7 @@ fn should_append_and_prepend = []() {
     Assertions::assertEquals("<BiChain> [1<-->2<-->3<-->4<-->5]"_cs, bc.__str__());
 };
 
-fn should_iterable = []() {
+auto should_iterable = []() {
     // Given
     i32 N = 100;
     util::BiChainList<i32> bc;
@@ -50,7 +50,7 @@ fn should_iterable = []() {
     // Assertions::assertEquals(sum1, sum2);
 };
 
-fn test_bi_chain() {
+auto test_bi_chain() {
     UnitTestGroup group{"test_bi_chain"};
 
     group.addTest("should_append_and_prepend", should_append_and_prepend);

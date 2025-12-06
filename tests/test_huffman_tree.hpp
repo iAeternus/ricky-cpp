@@ -9,7 +9,7 @@ namespace my::test::test_huffman_tree {
 
 static constexpr auto CLASS_PATH = R"(F:\Develop\cpp\ricky-cpp\tests\resources)";
 
-fn it_works = []() {
+auto it_works = []() {
     // Given
     const char* path = fs::win::join(CLASS_PATH, "text.txt");
     fs::win::File file{path, "r"};
@@ -35,7 +35,7 @@ fn it_works = []() {
     Assertions::assertEquals(text, decode_res);
 };
 
-fn should_handle_empty_string = []() {
+auto should_handle_empty_string = []() {
     // Given
     util::String text = ""_s;
 
@@ -55,7 +55,7 @@ fn should_handle_empty_string = []() {
     Assertions::assertTrue(decode_res.empty());
 };
 
-fn should_handle_non_ascii_character = []() {
+auto should_handle_non_ascii_character = []() {
     // Given
     util::String text = "你好好";
 
@@ -68,7 +68,7 @@ fn should_handle_non_ascii_character = []() {
     Assertions::assertEquals(text, h.decode());
 };
 
-fn test_huffman_tree() {
+auto test_huffman_tree() {
     UnitTestGroup group{"test_huffman_tree"};
 
     group.addTest("it_works", it_works);

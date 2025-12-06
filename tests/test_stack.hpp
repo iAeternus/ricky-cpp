@@ -6,7 +6,7 @@
 
 namespace my::test::test_stack {
 
-fn it_works = []() {
+auto it_works = []() {
     util::Stack<i32> st;
     Assertions::assertTrue(st.empty());
 
@@ -24,7 +24,7 @@ fn it_works = []() {
     Assertions::assertEquals(0, st.size());
 };
 
-fn should_fail_to_peek_if_stack_is_empty = []() {
+auto should_fail_to_peek_if_stack_is_empty = []() {
     // Given
     util::Stack<i32> st;
 
@@ -34,7 +34,7 @@ fn should_fail_to_peek_if_stack_is_empty = []() {
     });
 };
 
-fn test_stack() {
+auto test_stack() {
     UnitTestGroup group{"test_stack"};
 
     group.addTest("it_works", it_works);

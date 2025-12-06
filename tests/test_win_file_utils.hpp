@@ -12,7 +12,7 @@ static constexpr auto CLASS_PATH = R"(F:\Develop\cpp\ricky-cpp\tests\resources)"
 inline auto filepath = R"(F:\Develop\cpp\ricky-cpp\tests\test_win_file_utils.hpp)";
 inline auto dir_path = R"(F:\Develop\cpp\ricky-cpp\tests)";
 
-fn should_judge_exists = []() {
+auto should_judge_exists = []() {
     // Given
     const auto path_not_exists = ".\\aaa.txt";
 
@@ -27,7 +27,7 @@ fn should_judge_exists = []() {
     Assertions::assertFalse(res3);
 };
 
-fn should_judge_is_file = []() {
+auto should_judge_is_file = []() {
     // When
     bool res = fs::win::isfile(filepath);
     bool res2 = fs::win::isfile(dir_path);
@@ -37,7 +37,7 @@ fn should_judge_is_file = []() {
     Assertions::assertFalse(res2);
 };
 
-fn should_judge_is_dir = []() {
+auto should_judge_is_dir = []() {
     // When
     bool res = fs::win::isdir(filepath);
     bool res2 = fs::win::isdir(dir_path);
@@ -47,7 +47,7 @@ fn should_judge_is_dir = []() {
     Assertions::assertTrue(res2);
 };
 
-fn should_mkdir_and_remove = []() {
+auto should_mkdir_and_remove = []() {
     // Given
     auto path = fs::win::join(CLASS_PATH, "test");
 
@@ -70,25 +70,25 @@ fn should_mkdir_and_remove = []() {
     Assertions::assertFalse(fs::win::exists(path));
 };
 
-fn should_fail_to_mkdir_if_dir_already_exists = []() {
+auto should_fail_to_mkdir_if_dir_already_exists = []() {
     Assertions::assertThrows(R"(directory already exists: F:\Develop\tmp\ricky-cpp\tests\resources)", []() {
         fs::win::mkdir(CLASS_PATH, false);
     });
 };
 
-fn should_fail_to_mkdir_if_path_not_found = []() {
+auto should_fail_to_mkdir_if_path_not_found = []() {
     Assertions::assertThrows(R"(path not found: F:\Develop\tmp\ricky-cpp\tests\resources\tmp1\tmp2)", []() {
         fs::win::mkdir(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
     });
 };
 
-fn should_fail_to_remove_if_file_or_dir_not_found = []() {
+auto should_fail_to_remove_if_file_or_dir_not_found = []() {
     Assertions::assertThrows(R"(File or directory not found in F:\Develop\cpp\ricky-cpp\tests\resources\tmp1\tmp2)", []() {
         fs::win::remove(fs::win::join(CLASS_PATH, "tmp1\\tmp2"));
     });
 };
 
-fn should_join = []() {
+auto should_join = []() {
     // Given
     const char* path = "C:";
     const char* path2 = "C:\\";
@@ -103,7 +103,7 @@ fn should_join = []() {
     Assertions::assertEquals("C:\\test\\"_cs, res2);
 };
 
-fn should_list_dir = []() {
+auto should_list_dir = []() {
     // When
     auto filenames = fs::win::listdir(dir_path);
 
@@ -113,7 +113,7 @@ fn should_list_dir = []() {
     }
 };
 
-fn test_win_file_utils() {
+auto test_win_file_utils() {
     UnitTestGroup group{"test_win_file_utils"};
 
     group.addTest("should_judge_exists", should_judge_exists);

@@ -6,7 +6,7 @@
 
 namespace my::test::test_time {
 
-fn should_construct = []() {
+auto should_construct = []() {
     auto t = util::Time::of(20);
     auto t2 = util::Time::of(12, 34, 56, 789);
 
@@ -14,7 +14,7 @@ fn should_construct = []() {
     Assertions::assertEquals("12:34:56.000000789"_cs, t2.__str__());
 };
 
-fn should_fail_to_construct_by_hour_minute_and_second_if_args_invalid = []() {
+auto should_fail_to_construct_by_hour_minute_and_second_if_args_invalid = []() {
     Assertions::assertThrows("hour out of range", []() { util::Time::of(-1); });
     Assertions::assertThrows("hour out of range", []() { util::Time::of(25); });
     Assertions::assertThrows("minute out of range", []() { util::Time::of(12, -1); });
@@ -25,12 +25,12 @@ fn should_fail_to_construct_by_hour_minute_and_second_if_args_invalid = []() {
     Assertions::assertThrows("nano out of range", []() { util::Time::of(12, 30, 30, 1000000000); });
 };
 
-fn should_fail_to_construct_by_second_of_day_if_args_invalid = []() {
+auto should_fail_to_construct_by_second_of_day_if_args_invalid = []() {
     Assertions::assertThrows("second of day out of range", []() { util::Time::ofSecondOfDay(-1); });
     Assertions::assertThrows("second of day out of range", []() { util::Time::ofSecondOfDay(86401); });
 };
 
-fn should_parse = []() {
+auto should_parse = []() {
     // Given
     CString str = "20:32:06";
 
@@ -43,18 +43,18 @@ fn should_parse = []() {
     Assertions::assertEquals(6, t.second());
 };
 
-fn should_fail_to_parse_if_format_invalid = []() {
+auto should_fail_to_parse_if_format_invalid = []() {
     Assertions::assertThrows("invalid date time format", []() { util::Time::parse("12:30:31:1000"); });
     Assertions::assertThrows("invalid date time format", []() { util::Time::parse("12:30"); });
 };
 
-fn should_fetch_now = []() {
+auto should_fetch_now = []() {
     auto t = util::Time::now();
 
     io::println(t);
 };
 
-fn should_calc_second_of_day = []() {
+auto should_calc_second_of_day = []() {
     // Given
     auto t = util::Time::of(0, 0, 0);
     auto t2 = util::Time::of(20, 20, 20);
@@ -71,7 +71,7 @@ fn should_calc_second_of_day = []() {
     Assertions::assertEquals(t3, res3);
 };
 
-fn should_calc_nanos_of_day = []() {
+auto should_calc_nanos_of_day = []() {
     // Given
     auto t = util::Time::MIN;
     auto t2 = util::Time::of(20, 20, 20, 20);
@@ -88,7 +88,7 @@ fn should_calc_nanos_of_day = []() {
     Assertions::assertEquals(t3, res3);
 };
 
-fn should_plus = []() {
+auto should_plus = []() {
     // Given
     auto t = util::Time::of(6);
 
@@ -101,7 +101,7 @@ fn should_plus = []() {
     Assertions::assertEquals("08:02:01.000000000"_cs, t4.__str__());
 };
 
-fn should_minus = []() {
+auto should_minus = []() {
     // Given
     auto t = util::Time::of(18);
 
@@ -114,7 +114,7 @@ fn should_minus = []() {
     Assertions::assertEquals("15:57:59.000000000"_cs, t4.__str__());
 };
 
-fn should_subtract = []() {
+auto should_subtract = []() {
     // Given
     auto t = util::Time::of(20, 20, 20, 20);
     auto t2 = util::Time::of(18);
@@ -129,7 +129,7 @@ fn should_subtract = []() {
     Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.__str__());
 };
 
-fn test_time() {
+auto test_time() {
     UnitTestGroup group{"test_time"};
 
     group.addTest("should_construct", should_construct);
