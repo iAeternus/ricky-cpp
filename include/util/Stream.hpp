@@ -150,7 +150,7 @@ private:
  * @return 迭代器流
  */
 template <Iterable I>
-fn stream(I&& iter) {
+auto stream(I&& iter) {
     return IterStream(iter.begin(), iter.end());
 }
 

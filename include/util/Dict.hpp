@@ -144,7 +144,7 @@ public:
      * @brief 获取键的视图（可迭代范围）
      * @return 返回键的视图
      */
-    fn keys() const {
+    auto keys() const {
         return std::ranges::subrange(keys_.begin(), keys_.end());
     }
 
@@ -152,7 +152,7 @@ public:
      * @brief 获取值的视图（可迭代范围）
      * @return 返回值的视图
      */
-    fn values() const {
+    auto values() const {
         return std::ranges::subrange(bucket_.begin(), bucket_.end());
     }
 

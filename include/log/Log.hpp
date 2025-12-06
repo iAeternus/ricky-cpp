@@ -79,7 +79,7 @@ private:
 /**
  * @brief 重置控制台颜色
  */
-fn reset_color() noexcept -> const char* {
+auto reset_color() noexcept -> const char* {
     return color::Color::CLOSE;
 }
 
@@ -190,7 +190,7 @@ inline auto& console = Singleton<ConsoleLogger>::instance();
 /**
  * @brief 设置控制台日志级别
  */
-static fn set_consolelog_level(LogLevel level) {
+static auto set_consolelog_level(LogLevel level) {
     console.set_level(level);
 }
 

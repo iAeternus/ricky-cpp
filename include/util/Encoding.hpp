@@ -392,7 +392,7 @@ struct EncodingTraits<EncodingType::ASCII> {
 // /**
 //  * @brief 编码类型-编码方式 映射 TODO 可能存在内存泄漏
 //  */
-// fn encoding_map(const EncodingType enc) -> Encoding* {
+// auto encoding_map(const EncodingType enc) -> Encoding* {
 //     static const Dict<EncodingType, Encoding*> encoding_map_ = {
 //         {EncodingType::ASCII, new ASCIIEncoding{}},
 //         {EncodingType::UTF8, new UTF8Encoding{}},

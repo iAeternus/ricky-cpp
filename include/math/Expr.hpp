@@ -351,7 +351,7 @@ namespace my {
  * @param len 字符串长度
  * @return 转换后的 `math::Expr` 对象
  */
-fn operator""_expr(const char* str, size_t len)->math::Expr {
+auto operator""_expr(const char* str, size_t len)->math::Expr {
     return math::Expr(CString(str, len));
 }
 

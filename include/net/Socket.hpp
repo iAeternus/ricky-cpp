@@ -21,7 +21,7 @@ namespace my::net {
  * @brief Windows套接字初始化
  * @throws runtime_exception 如果WSAStartup失败
  */
-fn win_startup() {
+auto win_startup() {
     static bool initialized = false;
     static std::mutex init_mutex;
 
@@ -52,7 +52,7 @@ fn win_startup() {
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 
-fn closesocket(i32 socket) {
+auto closesocket(i32 socket) {
     ::close(socket);
 }
 
@@ -62,7 +62,7 @@ fn closesocket(i32 socket) {
  * @brief 获取套接字错误信息
  * @return 错误信息字符串
  */
-fn error_msg() -> CString {
+auto error_msg() -> CString {
     CString error_msg{256};
 #if _WIN32 || _WIN64
     int errorno = WSAGetLastError();

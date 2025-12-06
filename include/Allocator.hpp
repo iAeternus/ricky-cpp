@@ -71,7 +71,7 @@ public:
      * @param n 要分配的对象数量
      * @return 指向分配内存的指针，若分配失败则抛出 std::bad_alloc 异常
      */
-    fn allocate(size_type n) -> pointer {
+    auto allocate(size_type n) -> pointer {
         if (n == 0) return nullptr;
         if (n > max_size()) throw std::bad_alloc();
         return static_cast<pointer>(::operator new(sizeof(value_type) * n));
@@ -85,7 +85,7 @@ public:
      * @param p 指向要释放内存的指针
      * @param n 要释放的对象数量
      */
-    fn deallocate(pointer p, const size_type n) noexcept {
+    auto deallocate(pointer p, const size_type n) noexcept {
         if (p != nullptr) {
             ::operator delete(p, n * sizeof(value_type));
         }
@@ -101,7 +101,7 @@ public:
      * @param args 构造函数的参数
      */
     template <typename U, typename... Args>
-    fn construct(U* p, Args&&... args) -> void {
+    auto construct(U* p, Args&&... args) -> void {
         ::new (static_cast<void*>(p)) U(std::forward<Args>(args)...);
     }
 
@@ -115,7 +115,7 @@ public:
      * @param n 要析构的对象数量
      */
     template <typename U>
-    fn destroy(U* p, const size_type n = 1) noexcept -> void {
+    auto destroy(U* p, const size_type n = 1) noexcept -> void {
         if (p == nullptr) return;
         for (size_type i = 0; i < n; ++i, ++p) {
             p->~U();
@@ -132,7 +132,7 @@ public:
      *
      */
     template <typename... Args>
-    fn create(Args&&... args) noexcept -> pointer {
+    auto create(Args&&... args) noexcept -> pointer {
         auto* ptr = allocate(1);
         if (!ptr) return nullptr;
 
@@ -150,7 +150,7 @@ public:
      * @brief 安全析构对象并释放内存
      * @param ptr 指向对象的指针
      */
-    fn destruct(T* ptr) noexcept {
+    auto destruct(T* ptr) noexcept {
         if (ptr != nullptr) {
             destroy(ptr, 1);
             deallocate(ptr, 1);
@@ -164,7 +164,7 @@ private:
      *          2. 计算方式为 static_cast<size_type>(-1) / sizeof(value_type)
      * @return 最大可分配对象数量
      */
-    static fn max_size() noexcept {
+    static auto max_size() noexcept {
         return static_cast<size_type>(-1) / sizeof(value_type);
     }
 };

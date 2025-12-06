@@ -489,7 +489,7 @@ public:
     }
 
 private:
-    fn try_expand() {
+    auto try_expand() {
         if (size_ == capacity_) {
             resize(capacity_ << 1);
         }
@@ -514,7 +514,7 @@ private:
  * @exception Exception 若类型不匹配，则抛出 type_exception
  */
 template <typename T>
-fn opt(const Vec<std::any>& args, usize idx) -> T {
+auto opt(const Vec<std::any>& args, usize idx) -> T {
     if (idx >= args.size()) {
         throw index_out_of_bounds_exception("Index {} out of bounds [0..{}] in opt function.", idx, args.size());
     }

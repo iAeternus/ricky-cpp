@@ -85,7 +85,7 @@ constexpr i64 exp2[] = {
  * @brief 计算x的二进制表示中由最低位的1及其后面的所有的0的二进制构成的数值
  */
 template <typename B>
-constexpr fn lowbit(const B& x) -> B {
+constexpr auto lowbit(const B& x) -> B {
     return x & -x;
 }
 
@@ -93,7 +93,7 @@ constexpr fn lowbit(const B& x) -> B {
  * @brief 计算x的二进制表示中最低位的1的索引，索引从0开始
  */
 template <typename B>
-constexpr fn lowbit_idx(const B& x) -> B {
+constexpr auto lowbit_idx(const B& x) -> B {
     B l{};
     while ((x >> l & 1) == 0) {
         ++l;
@@ -105,7 +105,7 @@ constexpr fn lowbit_idx(const B& x) -> B {
  * @brief 计算x的二进制表示中最高位的1的索引，索引从0开始
  */
 template <typename B>
-constexpr fn highbit_idx(const B& x) -> B {
+constexpr auto highbit_idx(const B& x) -> B {
     B l{};
     while (x >> l) {
         ++l;
@@ -116,7 +116,7 @@ constexpr fn highbit_idx(const B& x) -> B {
 /**
  * @brief 计算x的二进制表示中由最高位的1及其后面的所有的位的二进制构成的数值
  */
-constexpr fn highbit(u64 x) -> u64 {
+constexpr auto highbit(u64 x) -> u64 {
     x |= (x >> 1ULL);
     x |= (x >> 2ULL);
     x |= (x >> 4ULL);
@@ -126,7 +126,7 @@ constexpr fn highbit(u64 x) -> u64 {
     return x - (x >> 1ULL);
 }
 
-constexpr fn highbit(u32 x) -> u32 {
+constexpr auto highbit(u32 x) -> u32 {
     x |= (x >> 1U);
     x |= (x >> 2U);
     x |= (x >> 4U);
@@ -140,7 +140,7 @@ constexpr fn highbit(u32 x) -> u32 {
  * @return true=是 false=否
  */
 template <typename B>
-constexpr fn all_one(const B& x) -> bool {
+constexpr auto all_one(const B& x) -> bool {
     return (x & (x + 1)) == 0;
 }
 
@@ -149,14 +149,14 @@ constexpr fn all_one(const B& x) -> bool {
  * @return true=是 false=否
  */
 template <typename B>
-constexpr fn only_one(const B& x) -> bool {
+constexpr auto only_one(const B& x) -> bool {
     return (x & (x - 1)) == 0;
 }
 
 /**
  * @brief 向上取整到2的幂
  */
-constexpr fn roundup2(usize x) -> usize {
+constexpr auto roundup2(usize x) -> usize {
     if (x <= 1) return 0LL;
 
     --x;

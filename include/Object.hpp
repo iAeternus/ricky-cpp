@@ -23,12 +23,12 @@ namespace my {
 template <typename D>
 class Object {
 public:
-    using derived_obj = D;
+    using derived_obj = D; // TODO 这里改成Self，但是现阶段由于内存分配器的bug改不了
 
     /**
      * @brief 获取对象的哈希值
      */
-    [[nodiscard]] hash_t __hash__() const {
+    [[nodiscard]] auto __hash__() const -> hash_t {
         static_assert(false, "NotImplementedException: not implemented __hash__()");
         std::unreachable();
     }
@@ -38,7 +38,7 @@ public:
      * @param other 另一个对象
      * @return 返回值大于0为大于，小于0为小于，等于0为等于
      */
-    [[nodiscard]] cmp_t __cmp__(const D& other) const {
+    [[nodiscard]] auto __cmp__(const D& other) const -> cmp_t {
         return static_cast<cmp_t>(this) - static_cast<cmp_t>(&other);
     }
 
@@ -47,7 +47,7 @@ public:
      * @param other 另一个对象
      * @return true=相等 false=不相等
      */
-    [[nodiscard]] bool __equals__(const D& other) const {
+    [[nodiscard]] auto __equals__(const D& other) const -> bool {
         return static_cast<const D*>(this)->__cmp__(other) == 0;
     }
 
@@ -55,7 +55,7 @@ public:
      * @brief 获取对象的字符串表示
      * @return 对象的字符串表示
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] auto __str__() const -> CString {
         std::string type_name = dtype(D);
         i32 len = type_name.size() + 22; // TODO ??
         CString s(len);
@@ -86,7 +86,7 @@ concept MyObject = requires(T& t) {
  * @return 输出流
  */
 template <MyObject T>
-std::ostream& operator<<(std::ostream& out, const T& obj) {
+auto operator<<(std::ostream& out, const T& obj) -> std::ostream& {
     out << obj.__str__().data();
     return out;
 }
@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
  */
 template <typename T>
     requires(Not<Printable<T>>)
-std::ostream& operator<<(std::ostream& out, const T& obj) {
+auto operator<<(std::ostream& out, const T& obj) -> std::ostream& {
     out << '<' << dtype(T) << " 0x" << std::hex << &obj << '>';
     return out;
 }
@@ -115,22 +115,34 @@ std::ostream& operator<<(std::ostream& out, const T& obj) {
  * @return 比较结果
  */
 template <MyObject T>
-bool operator==(const T& a, const T& b) { return a.__equals__(b); }
+auto operator==(const T& a, const T& b) -> bool {
+    return a.__equals__(b);
+}
 
 template <MyObject T>
-bool operator!=(const T& a, const T& b) { return !a.__equals__(b); }
+auto operator!=(const T& a, const T& b) -> bool {
+    return !a.__equals__(b);
+}
 
 template <MyObject T>
-bool operator>(const T& a, const T& b) { return a.__cmp__(b) > 0; }
+auto operator>(const T& a, const T& b) -> bool {
+    return a.__cmp__(b) > 0;
+}
 
 template <MyObject T>
-bool operator<(const T& a, const T& b) { return a.__cmp__(b) < 0; }
+auto operator<(const T& a, const T& b) -> bool {
+    return a.__cmp__(b) < 0;
+}
 
 template <MyObject T>
-bool operator>=(const T& a, const T& b) { return a.__cmp__(b) >= 0; }
+auto operator>=(const T& a, const T& b) -> bool {
+    return a.__cmp__(b) >= 0;
+}
 
 template <MyObject T>
-bool operator<=(const T& a, const T& b) { return a.__cmp__(b) <= 0; }
+auto operator<=(const T& a, const T& b) -> bool {
+    return a.__cmp__(b) <= 0;
+}
 
 } // namespace my
 

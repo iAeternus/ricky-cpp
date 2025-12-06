@@ -18,9 +18,9 @@ public:
     Line2(const Point2& p, const Vector2& s) :
             p_(p), s_(s), ang_(std::atan2(s.y(), s.x())) {}
 
-    fn p() const { return p_; }
-    fn s() const { return s_; }
-    fn ang() const { return ang_; }
+    auto p() const { return p_; }
+    auto s() const { return s_; }
+    auto ang() const { return ang_; }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
         return fcmp(ang_, other.ang_);

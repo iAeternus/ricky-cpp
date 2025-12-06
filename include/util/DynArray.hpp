@@ -773,7 +773,7 @@ private:
             // 计算新块的大小：
             // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            const usize new_capacity = ifelse(bbi == BLOCK_NOT_EXISTS, BASE_CAP, blocks_.at(bbi).size() << 1);
+            const usize new_capacity = bbi == BLOCK_NOT_EXISTS ? BASE_CAP : blocks_.at(bbi).size() << 1;
             ++back_block_index_;                   // 将最后一个块的索引递增，指向新块
             get_back_block().resize(new_capacity); // 调整新块的大小
         }

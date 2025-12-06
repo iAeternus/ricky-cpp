@@ -75,7 +75,7 @@ public:
     //     }
     // }
     BasicString(const char* str, usize length = npos) {
-        length = ifelse(length != npos, length, std::strlen(str));
+        length = length != npos ? length : std::strlen(str);
         auto cps_vec = get_code_points<Enc, CharAlloc>(str, length);
         length_ = cps_vec.size();
         is_sso_ = length_ <= SSO_CAPACITY;
@@ -1031,27 +1031,27 @@ namespace my {
  * @param length 字符串长度
  * @return 转换后的 `String` 对象
  */
-fn operator""_s(const char* str, size_t length)->util::String {
+auto operator""_s(const char* str, size_t length) -> util::String {
     return util::String{str, length};
 }
 
-fn operator""_s16(const char* str, size_t length)->util::Utf16String {
+auto operator""_s16(const char* str, size_t length) -> util::Utf16String {
     return util::Utf16String{str, length};
 }
 
-fn operator""_s32(const char* str, size_t length)->util::Utf32String {
+auto operator""_s32(const char* str, size_t length) -> util::Utf32String {
     return util::Utf32String{str, length};
 }
 
-fn operator""_sgb(const char* str, size_t length)->util::Gb2312String {
+auto operator""_sgb(const char* str, size_t length) -> util::Gb2312String {
     return util::Gb2312String{str, length};
 }
 
-fn operator""_slat(const char* str, size_t length)->util::Latin1String {
+auto operator""_slat(const char* str, size_t length) -> util::Latin1String {
     return util::Latin1String{str, length};
 }
 
-fn operator""_sasc(const char* str, size_t length)->util::AsciiString {
+auto operator""_sasc(const char* str, size_t length) -> util::AsciiString {
     return util::AsciiString{str, length};
 }
 

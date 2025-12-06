@@ -106,14 +106,14 @@ public:
     /**
      * @brief 获取密钥
      */
-    fn get_key() const {
+    auto get_key() const {
         return key_;
     }
 
     /**
      * @brief 获取字符频率
      */
-    fn get_freqs() const {
+    auto get_freqs() const {
         return freqs_;
     }
 

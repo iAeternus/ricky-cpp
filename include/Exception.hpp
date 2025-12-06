@@ -189,7 +189,7 @@ private:
  * @return 异常对象
  */
 template <typename... Args>
-fn exception(const ExceptionType type, format_string_wrapper<Args...> fmt_w, Args&&... args) -> Exception {
+auto exception(const ExceptionType type, format_string_wrapper<Args...> fmt_w, Args&&... args) -> Exception {
     return Exception(type, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc);
 }
 
@@ -202,7 +202,7 @@ fn exception(const ExceptionType type, format_string_wrapper<Args...> fmt_w, Arg
  * @param args 格式化参数
  */
 template <typename... Args>
-fn check(const bool condition, const ExceptionType type, format_string_wrapper<Args...> fmt_w, Args&&... args) -> void {
+auto check(const bool condition, const ExceptionType type, format_string_wrapper<Args...> fmt_w, Args&&... args) -> void {
     if (!condition) {
         throw exception(type, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc);
     }
@@ -217,7 +217,7 @@ fn check(const bool condition, const ExceptionType type, format_string_wrapper<A
  */
 #define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                    \
     template <typename... Args>                                                                 \
-    fn NAME##_exception(format_string_wrapper<Args...> fmt_w, Args&&... args)->Exception {      \
+    auto NAME##_exception(format_string_wrapper<Args...> fmt_w, Args&&... args)->Exception {      \
         return Exception(TYPE, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc); \
     }
 

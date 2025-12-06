@@ -63,7 +63,7 @@ public:
      * @param arg 谓词入参
      * @return 谓词结果
      */
-    fn operator()(const T& arg) const {
+    auto operator()(const T& arg) const {
         return func_(arg);
     }
 
@@ -74,7 +74,7 @@ public:
      * @return 谓词结果
      */
     template <typename... Args>
-    fn operator()(Args&&... args) const {
+    auto operator()(Args&&... args) const {
         return func_(std::forward<Args>(args)...);
     }
 
@@ -83,7 +83,7 @@ public:
      * @param other 另一个谓词
      * @return 新谓词
      */
-    fn operator&&(const Self& other) const {
+    auto operator&&(const Self& other) const {
         return Self([*this, other](const T& arg) {
             return (*this)(arg) && other(arg);
         });
@@ -94,7 +94,7 @@ public:
      * @param other 另一个谓词
      * @return 新谓词
      */
-    fn operator||(const Self& other) const {
+    auto operator||(const Self& other) const {
         return Self([*this, other](const T& arg) {
             return (*this)(arg) || other(arg);
         });
@@ -104,7 +104,7 @@ public:
      * @brief 谓词取非
      * @return 新谓词
      */
-    fn operator!() const {
+    auto operator!() const {
         return Self([*this](const T& arg) {
             return !(*this)(arg);
         });

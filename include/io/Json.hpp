@@ -579,7 +579,7 @@ private:
 };
 
 template <typename T>
-fn constexpr make_int(T&& value)->JsonType::JsonInt {
+auto constexpr make_int(T&& value)->JsonType::JsonInt {
     using RT = std::remove_cvref_t<T>;
 
     if constexpr (std::is_arithmetic_v<RT>) {
@@ -590,7 +590,7 @@ fn constexpr make_int(T&& value)->JsonType::JsonInt {
 }
 
 template <typename T>
-fn constexpr make_float(T&& value)->JsonType::JsonFloat {
+auto constexpr make_float(T&& value)->JsonType::JsonFloat {
     using RT = std::remove_cvref_t<T>;
 
     if constexpr (std::is_arithmetic_v<RT>) {
@@ -601,7 +601,7 @@ fn constexpr make_float(T&& value)->JsonType::JsonFloat {
 }
 
 template <typename T>
-fn constexpr make_bool(T&& value)->JsonType::JsonBool {
+auto constexpr make_bool(T&& value)->JsonType::JsonBool {
     return static_cast<JsonType::JsonBool>(value);
 }
 

@@ -385,7 +385,7 @@ private:
  * @return 返回总和
  */
 template <Iterable I, typename Init>
-fn sum(I&& obj, Init init = Init{}) -> Init {
+auto sum(I&& obj, Init init = Init{}) -> Init {
     for (auto&& elem : obj) {
         init += elem;
     }

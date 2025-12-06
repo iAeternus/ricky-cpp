@@ -14,11 +14,11 @@
 namespace my {
 
 /**
- * @brief rust-like `fn` 关键字
+ * @brief rust-like `auto` 关键字
  * @note 规范：
- * 冠以`fn`的函数，应适合内联，且返回值应后置
- * 对于静态函数，`fn`应该放在static后
- * 对于constexpr函数，`fn`应该放在constexpr后
+ * 冠以`auto`的函数，应适合内联，且返回值应后置
+ * 对于静态函数，`auto`应该放在static后
+ * 对于constexpr函数，`auto`应该放在constexpr后
  */
 #define fn inline auto
 #define fr(R) inline R
@@ -52,18 +52,18 @@ namespace my {
  * @details 取模运算, 运算结果为 [0, size]
  */
 template <typename Index, typename Size>
-[[nodiscard]] constexpr fn neg_index(Index index, Size size) noexcept {
+[[nodiscard]] constexpr auto neg_index(Index index, Size size) noexcept {
     return index == size ? index : (index + size) % size;
 }
 
-/**
- * @breif 分支支持
- */
-template <typename T, typename F>
-[[nodiscard]] constexpr fr(decltype(auto)) ifelse(bool expr, T&& t, F&& f) noexcept(
-    noexcept(expr ? std::forward<T>(t) : std::forward<F>(f))) {
-    return expr ? std::forward<T>(t) : std::forward<F>(f);
-}
+///**
+// * @breif 分支支持
+// */
+//template <typename T, typename F>
+//[[nodiscard]] constexpr fr(decltype(auto)) ifelse(bool expr, T&& t, F&& f) noexcept(
+//    noexcept(expr ? std::forward<T>(t) : std::forward<F>(f))) {
+//    return expr ? std::forward<T>(t) : std::forward<F>(f);
+//}
 
 #define hastype(T, type)  \
     requires(T t) {       \

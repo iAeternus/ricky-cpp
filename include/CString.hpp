@@ -949,7 +949,7 @@ using CString = BasicCString<Allocator<char>>;
  * @return 转换后的 CString 对象
  */
 template <MyPrintable T>
-fn cstr_impl(const T& value) -> CString {
+auto cstr_impl(const T& value) -> CString {
     return value.__str__();
 }
 
@@ -960,7 +960,7 @@ fn cstr_impl(const T& value) -> CString {
  * @return 转换后的 CString 对象
  */
 template <StdPrintable T>
-fn cstr_impl(const T& value) -> CString {
+auto cstr_impl(const T& value) -> CString {
     std::stringstream stream;
     stream << value;
     return stream.str();
@@ -973,7 +973,7 @@ fn cstr_impl(const T& value) -> CString {
  * @return 转换后的 CString 对象
  */
 template <Printable T>
-fn cstr(const T& value) -> CString {
+auto cstr(const T& value) -> CString {
     return cstr_impl(value);
 }
 
@@ -982,7 +982,7 @@ fn cstr(const T& value) -> CString {
  * @param value CString 对象
  * @return 标准 C 风格字符串
  */
-constexpr fn stdstr(const CString& value) noexcept -> const char* {
+constexpr auto stdstr(const CString& value) noexcept -> const char* {
     return value.data();
 }
 
@@ -991,7 +991,7 @@ constexpr fn stdstr(const CString& value) noexcept -> const char* {
  * @param ch 字符
  * @return 对应的整数值
  */
-constexpr fn c2i(const char ch) noexcept -> i32 {
+constexpr auto c2i(const char ch) noexcept -> i32 {
     return ch - '0';
 }
 
@@ -1000,7 +1000,7 @@ constexpr fn c2i(const char ch) noexcept -> i32 {
  * @param ch 整数
  * @return 对应的字符
  */
-constexpr fn i2c(const i32 ch) noexcept -> char {
+constexpr auto i2c(const i32 ch) noexcept -> char {
     return ch + '0';
 }
 
@@ -1010,7 +1010,7 @@ constexpr fn i2c(const i32 ch) noexcept -> char {
  * @param len 字符串长度
  * @return 转换后的 CString 对象
  */
-fn operator""_cs(const char* str, const size_t len)->CString {
+auto operator""_cs(const char* str, const size_t len)->CString {
     return CString{str, len};
 }
 
@@ -1021,7 +1021,7 @@ fn operator""_cs(const char* str, const size_t len)->CString {
  */
 template <typename Alloc>
 struct std::formatter<my::BasicCString<Alloc>> : std::formatter<const char*> {
-    fn format(const my::BasicCString<Alloc>& value, auto& ctx) const {
+    auto format(const my::BasicCString<Alloc>& value, auto& ctx) const {
         return std::formatter<const char*>::format(value.data(), ctx);
     }
 };

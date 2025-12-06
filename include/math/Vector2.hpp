@@ -28,20 +28,20 @@ public:
         return *this;
     }
 
-    fn x() const {
+    auto x() const {
         return x_;
     }
 
-    fn y() const {
+    auto y() const {
         return y_;
     }
 
-    fn x(f64 x) -> Self& {
+    auto x(f64 x) -> Self& {
         this->x_ = x;
         return *this;
     }
 
-    fn y(f64 y) -> Self& {
+    auto y(f64 y) -> Self& {
         this->y_ = y;
         return *this;
     }

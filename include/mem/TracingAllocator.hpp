@@ -23,7 +23,7 @@
 
 namespace my::mem {
 
-fn time_conv(time_t t) -> std::tm {
+auto time_conv(time_t t) -> std::tm {
     std::tm tm;
 #ifdef _WIN32
     localtime_s(&tm, &t);
@@ -33,7 +33,7 @@ fn time_conv(time_t t) -> std::tm {
     return tm;
 }
 
-fn format_time(const std::tm& tm, const char* fmt) -> std::string {
+auto format_time(const std::tm& tm, const char* fmt) -> std::string {
     char buffer[80];
     if (std::strftime(buffer, sizeof(buffer), fmt, &tm)) {
         return buffer;
@@ -290,7 +290,7 @@ public:
         return ptr;
     }
 
-    fn destruct(T* ptr) noexcept {
+    auto destruct(T* ptr) noexcept {
         if (ptr != nullptr) {
             destroy(ptr);
             deallocate(ptr, 1);
