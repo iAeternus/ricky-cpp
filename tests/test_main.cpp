@@ -10,6 +10,7 @@
  * 测试模式设置
  * - 0 基准测试（运行时间较长）
  * - 1 功能测试
+ * - 2 Others
  */
 #define TEST_MODE 1
 
@@ -65,6 +66,9 @@
 #include "test_tcp.hpp"
 #include "test_json_serializer.hpp"
 #include "test_string_algorithm.hpp"
+#elif TEST_MODE == 2
+#include "banner.hpp"
+#include "ricky_test.hpp"
 #endif
 
 #include <winnls.h>
@@ -126,5 +130,7 @@ auto main() -> int {
     test_tcp::test_tcp();
     test_json_serializer::test_json_serializer();
     test_string_algorithm::test_string_algorithm();
+#elif TEST_MODE == 2
+    my::print_banner();
 #endif
 }

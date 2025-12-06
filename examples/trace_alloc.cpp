@@ -35,7 +35,7 @@ using namespace my;
  * 9 = util::Array
  * 10 = util::Queue
  */
-#define TRACE_OBJECT 1
+#define TRACE_OBJECT 6
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;

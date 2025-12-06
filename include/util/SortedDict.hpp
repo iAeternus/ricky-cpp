@@ -135,7 +135,6 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
  * @tparam Node 红黑树节点类型，须满足BiTreeNodeType约束
  * @tparam Comp 比较二元函数，定义第一个参数位于左子树
  * @tparam Alloc 内存分配器类型
- *
  */
 template <RBTreeNodeType Node, typename Comp = std::less<typename Node::key_t>, typename Alloc = Allocator<Node>>
 class RBTree : public Object<RBTree<Node, Comp, Alloc>> {
