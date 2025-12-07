@@ -18,7 +18,7 @@ namespace my::mem {
  * @tparam T 值类型
  */
 template <typename T>
-class Box : public NoCopyable {
+class Box : public NoCopyMove {
 public:
     using value_t = T;
     using Self = Box<value_t>;

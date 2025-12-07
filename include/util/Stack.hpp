@@ -17,7 +17,7 @@ namespace my::util {
  * @tparam T 元素类型
  * @tparam Alloc 内存分配器
  */
-template <typename T, typename Alloc = Allocator<T>>
+template <typename T, typename Alloc = mem::Allocator<T>>
 class Stack : public Object<Stack<T>> {
 public:
     using value_t = T;

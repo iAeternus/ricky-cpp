@@ -18,7 +18,7 @@ namespace my::util {
  * @tparam Node 指定链表节点类型
  * @tparam Alloc 内存分配器类型
  */
-template <ChainNodeType Node, typename Alloc = Allocator<Node>>
+template <ChainNodeType Node, typename Alloc = mem::Allocator<Node>>
 class ChainQueue : public Object<ChainQueue<Node, Alloc>> {
 public:
     using Self = ChainQueue<Node, Alloc>;
@@ -37,7 +37,9 @@ public:
      */
     ~ChainQueue() {
         clear();
-        alloc_.destruct(tail_);
+//        alloc_.destruct(tail_);
+        alloc_.destroy(tail_);
+        alloc_.deallocate(tail_, 1);
     }
 
     /**
@@ -64,7 +66,9 @@ public:
         while (p != tail_) {
             auto* d = p;
             p = p->next_;
-            alloc_.destruct(d);
+//            alloc_.destruct(d);
+            alloc_.destroy(d);
+            alloc_.deallocate(d, 1);
         }
         tail_->next_ = tail_;
         size_ = 0;
@@ -100,7 +104,9 @@ public:
             tail_ = p;      // 更新尾节点为起始节点
         }
         p->next_ = d->next_;
-        alloc_.destruct(d);
+//        alloc_.destruct(d);
+        alloc_.destroy(d);
+        alloc_.deallocate(d, 1);
         --size_;
     }
 
@@ -166,7 +172,7 @@ private:
  * @brief 队列类型，节点类型为 `ChainNode<T>`
  * @tparam T 节点存储的值类型
  */
-template <typename T, typename Alloc = Allocator<ChainNode<T>>>
+template <typename T, typename Alloc = mem::Allocator<ChainNode<T>>>
 using Queue = ChainQueue<ChainNode<T>, Alloc>;
 
 } // namespace my::util

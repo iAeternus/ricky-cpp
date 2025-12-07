@@ -18,7 +18,7 @@ namespace my::util {
  * @tparam C 容器类行
  * @tparam V 元素类型
  */
-template <bool IsConst, typename C, typename V, typename Alloc = Allocator<V>>
+template <bool IsConst, typename C, typename V, typename Alloc = mem::Allocator<V>>
 class IndexIterator : public Object<IndexIterator<IsConst, C, V, Alloc>> {
     template <bool, typename, typename, typename>
     friend class IndexIterator;
@@ -147,10 +147,10 @@ private:
 /**
  * @brief 推导指南 TODO Alloc
  */
-template <typename C, typename V, typename Alloc = Allocator<V>>
+template <typename C, typename V, typename Alloc = mem::Allocator<V>>
 IndexIterator(C*, usize) -> IndexIterator<false, C, V, Alloc>;
 
-template <typename C, typename V, typename Alloc = Allocator<V>>
+template <typename C, typename V, typename Alloc = mem::Allocator<V>>
 IndexIterator(const C*, usize) -> IndexIterator<true, C, V, Alloc>;
 
 } // namespace my::util

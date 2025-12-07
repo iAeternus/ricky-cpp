@@ -18,7 +18,7 @@ namespace my::util {
  * @details 静态数组是指数组的大小在创建时确定，并且不能动态改变，除非调用 `resize` 方法重新分配内存
  * @tparam T 数组元素的类型
  */
-template <typename T, typename Alloc = Allocator<T>>
+template <typename T, typename Alloc = mem::Allocator<T>>
 class Array : public Sequence<Array<T>, T> {
 public:
     using value_t = T;
@@ -80,7 +80,7 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        alloc_.destroy(arr_, size_);
+        alloc_.destroy_n(arr_, size_);
         alloc_.deallocate(arr_, size_);
         alloc_.construct(this, other);
         return *this;
@@ -94,7 +94,7 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        alloc_.destroy(arr_, size_);
+        alloc_.destroy_n(arr_, size_);
         alloc_.deallocate(arr_, size_);
 
         this->size_ = other.size_;
@@ -109,7 +109,7 @@ public:
      * 销毁数组中的所有元素并释放内存
      */
     ~Array() {
-        alloc_.destroy(arr_, size_);
+        alloc_.destroy_n(arr_, size_);
         alloc_.deallocate(arr_, size_);
         size_ = 0;
     }

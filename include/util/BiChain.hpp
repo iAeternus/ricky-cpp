@@ -17,7 +17,7 @@ class BiChainIterator;
 /**
  * @brief 双向链
  */
-template <BiChainNodeType BiNode, typename Alloc = Allocator<BiNode>>
+template <BiChainNodeType BiNode, typename Alloc = mem::Allocator<BiNode>>
 class BiChain final : public Chain<BiNode, Alloc> {
 public:
     using Self = BiChain<BiNode, Alloc>;
@@ -160,7 +160,7 @@ public:
  * @tparam T 节点值类型
  * @tparam Alloc 内存分配器类型
  */
-template <typename T, typename Alloc = Allocator<BiChainNode<T>>>
+template <typename T, typename Alloc = mem::Allocator<BiChainNode<T>>>
 using BiChainList = BiChain<BiChainNode<T>, Alloc>;
 
 } // namespace my::util

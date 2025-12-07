@@ -136,7 +136,7 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
  * @tparam Comp 比较二元函数，定义第一个参数位于左子树
  * @tparam Alloc 内存分配器类型
  */
-template <RBTreeNodeType Node, typename Comp = std::less<typename Node::key_t>, typename Alloc = Allocator<Node>>
+template <RBTreeNodeType Node, typename Comp = std::less<typename Node::key_t>, typename Alloc = mem::Allocator<Node>>
 class RBTree : public Object<RBTree<Node, Comp, Alloc>> {
 public:
     using Self = RBTree<Node, Comp, Alloc>;
@@ -1251,7 +1251,7 @@ private:
 /**
  * @brief 有序字典
  */
-template <Sortable K, typename V, typename Comp = std::less<K>, typename Alloc = Allocator<RBTreeNode<K, V>>>
+template <Sortable K, typename V, typename Comp = std::less<K>, typename Alloc = mem::Allocator<RBTreeNode<K, V>>>
 using SortedDict = RBTree<RBTreeNode<K, V>, Comp, Alloc>;
 
 } // namespace my::util

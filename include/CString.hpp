@@ -8,7 +8,7 @@
 #define CSTRING_HPP
 
 #include "hash.hpp"
-#include "Allocator.hpp"
+#include "alloc.hpp"
 #include "Function.hpp"
 
 #include <cctype>
@@ -59,7 +59,7 @@ public:
      * @tparam Alloc 内存分配器
      * @param cstr C风格字符串
      */
-    template <typename Alloc = Allocator<char>>
+    template <typename Alloc = mem::Allocator<char>>
     CStringView(const BasicCString<Alloc>& cstr) noexcept :
             begin_(cstr.data()), end_(cstr.data() + cstr.size()) {}
 
@@ -101,7 +101,7 @@ public:
      * @brief 转化为CString，会拷贝
      * @return 新字符串
      */
-    template <typename Alloc = Allocator<char>>
+    template <typename Alloc = mem::Allocator<char>>
     [[nodiscard]] constexpr BasicCString<Alloc> to_string() const {
         return BasicCString<Alloc>{begin_, length()};
     }
@@ -139,7 +139,7 @@ private:
  * @details 自定义字符串类，提供安全的字符串操作和内存管理
  * @tparam Alloc 内存分配器
  */
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 class BasicCString {
 public:
     using Self = BasicCString<Alloc>;
@@ -919,28 +919,28 @@ private:
 /**
  * @brief 推导指南
  */
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 BasicCString(usize) -> BasicCString<Alloc>;
 
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 BasicCString(const char*) -> BasicCString<Alloc>;
 
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 BasicCString(const char*, usize) -> BasicCString<Alloc>;
 
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 BasicCString(const CStringView&) -> BasicCString<Alloc>;
 
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 BasicCString(const std::basic_string<char>&) -> BasicCString<Alloc>;
 
-template <typename Alloc = Allocator<char>>
+template <typename Alloc = mem::Allocator<char>>
 BasicCString(usize, char) -> BasicCString<Alloc>;
 
 /**
  * @brief CString 类，使用默认分配器
  */
-using CString = BasicCString<Allocator<char>>;
+using CString = BasicCString<mem::Allocator<char>>;
 
 /**
  * @brief 根据不同类型转换为 CString 对象（适用于自定义可打印类型）

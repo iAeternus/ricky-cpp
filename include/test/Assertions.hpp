@@ -11,6 +11,7 @@
 
 namespace my::test {
 
+// TODO: 优化测试套件
 class Assertions : public Object<Assertions> {
 public:
     /**
@@ -58,6 +59,20 @@ public:
     static void assertFalse(bool expression, format_string_wrapper<Args...> fmt_w, Args... args) {
         if (expression) {
             fail_with_prefix("Expected false, but got true. ", fmt_w, std::forward<Args>(args)...);
+        }
+    }
+
+    template <typename T>
+    static void assertNull(T* ptr, std::source_location loc = SRC_LOC) {
+        if (ptr != nullptr) {
+            fail("Expected nullptr, but got !nullptr.", loc);
+        }
+    }
+
+    template <typename T>
+    static void assertNotNull(T* ptr, std::source_location loc = SRC_LOC) {
+        if (ptr == nullptr) {
+            fail("Expected !nullptr, but got nullptr.", loc);
         }
     }
 
@@ -260,7 +275,6 @@ public:
         }
     }
 
-private:
     /**
      * @brief 统一的失败处理函数
      */
@@ -268,6 +282,7 @@ private:
         throw Exception(ExceptionType::AssertionFailedException, std::move(message), loc);
     }
 
+private:
     /**
      * @brief 带前缀的失败处理
      */

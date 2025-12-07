@@ -15,7 +15,7 @@ namespace my::util {
  * @class String
  * @brief 字符串，支持 Unicode 编码和多种操作  TODO Alloc
  */
-template <EncodingType Enc, typename Alloc = Allocator<char>>
+template <EncodingType Enc, typename Alloc = mem::Allocator<char>>
 class BasicString : public Sequence<BasicString<Enc, Alloc>, CodePoint<Enc, Alloc>, Alloc> {
 public:
     using Self = BasicString<Enc, Alloc>;
@@ -189,7 +189,7 @@ public:
      */
     ~BasicString() {
         if (!is_sso_ && heap_storage != nullptr) {
-            alloc_.destroy(heap_storage, length_);
+            alloc_.destroy_n(heap_storage, length_);
             alloc_.deallocate(heap_storage, length_);
             heap_storage = nullptr;
         }
@@ -205,7 +205,7 @@ public:
     Self& operator=(const Self& other) {
         if (this != &other) {
             if (!is_sso_ && heap_storage != nullptr) {
-                alloc_.destroy(heap_storage, length_);
+                alloc_.destroy_n(heap_storage, length_);
                 alloc_.deallocate(heap_storage, length_);
                 heap_storage = nullptr;
             }
@@ -233,7 +233,7 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this != &other) {
             if (!is_sso_ && heap_storage != nullptr) {
-                alloc_.destroy(heap_storage, length_);
+                alloc_.destroy_n(heap_storage, length_);
                 alloc_.deallocate(heap_storage, length_);
                 heap_storage = nullptr;
             }
@@ -484,7 +484,7 @@ public:
      */
     void clear() {
         if (!is_sso_ && heap_storage != nullptr) {
-            alloc_.destroy(heap_storage, length_);
+            alloc_.destroy_n(heap_storage, length_);
             alloc_.deallocate(heap_storage, length_);
             heap_storage = nullptr;
         }
@@ -841,7 +841,7 @@ public:
                     for (usize i = 0; i < other.length_; ++i) {
                         sso_data[i] = std::move(other.heap_storage[i]);
                     }
-                    alloc_.destroy(other.heap_storage, other.length_);
+                    alloc_.destroy_n(other.heap_storage, other.length_);
                     alloc_.deallocate(other.heap_storage, other.length_);
                     other.heap_storage = nullptr;
                 } else {
@@ -859,7 +859,7 @@ public:
                     for (usize i = 0; i < length_; ++i) {
                         other.sso_data[i] = std::move(heap_storage[i]);
                     }
-                    alloc_.destroy(heap_storage, length_);
+                    alloc_.destroy_n(heap_storage, length_);
                     alloc_.deallocate(heap_storage, length_);
                     heap_storage = nullptr;
                 } else {

@@ -18,7 +18,7 @@ namespace my::util {
  * @tparam Comp 比较二元函数，定义第一个参数优先级高
  * @tparam Alloc 内存分配器类型
  */
-template <typename T, typename Comp = std::less<T>, typename Alloc = Allocator<T>>
+template <typename T, typename Comp = std::less<T>, typename Alloc = mem::Allocator<T>>
 class PriorityQueue : public Object<PriorityQueue<T, Comp, Alloc>> {
 public:
     using value_t = T;

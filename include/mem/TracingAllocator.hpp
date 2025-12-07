@@ -243,58 +243,119 @@ public:
     template <typename U>
     explicit TracingAllocator(const TracingAllocator<U>&) noexcept {}
 
-    pointer allocate(size_type n) {
+    [[nodiscard]] auto allocate(std::size_t n) -> pointer {
         if (n == 0) return nullptr;
-        if (n > max_size()) throw std::bad_alloc();
+        if (n > max_size()) [[unlikely]] {
+            throw std::bad_alloc();
+        }
 
-        const usize size_bytes = sizeof(value_type) * n;
-        pointer p = static_cast<pointer>(::operator new(size_bytes));
-
+        std::size_t bytes = n * sizeof(T);
+        pointer p = nullptr;
+        if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+            p = static_cast<pointer>(::operator new(bytes, std::align_val_t(alignof(T))));
+        } else {
+            p = static_cast<pointer>(::operator new(bytes));
+        }
         const std::string stack = capture_stack();
-        MemoryTracer::instance().trace_alloc(p, size_bytes, stack);
+        MemoryTracer::instance().trace_alloc(p, bytes, stack);
         return p;
     }
 
-    void deallocate(pointer p, const size_type n) noexcept {
-        if (p != nullptr) {
+    auto deallocate(T* p, std::size_t n) noexcept -> void {
+        if (!p) return;
+
+        std::size_t bytes = n * sizeof(T);
+        if constexpr (alignof(T) > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
             MemoryTracer::instance().trace_dealloc(p);
-            ::operator delete(p, n * sizeof(value_type));
+            ::operator delete(p, bytes, std::align_val_t(alignof(T)));
+        } else {
+            MemoryTracer::instance().trace_dealloc(p);
+            ::operator delete(p, bytes);
         }
+    }
+
+    [[nodiscard]] auto allocate_at_least(std::size_t n) -> AllocationResult<T*> {
+        if (n == 0) return {nullptr, 0};
+        // 向上取 2 的幂
+        std::size_t count = std::bit_ceil(n);
+        return {allocate(count), count};
+    }
+
+    // TODO allocate_aligned
+
+    template <typename U, typename... Args>
+    auto construct(U* p, Args&&... args) -> void {
+        std::construct_at(p, std::forward<Args>(args)...);
     }
 
     template <typename U, typename... Args>
-    void construct(U* p, Args&&... args) {
-        ::new (static_cast<void*>(p)) U(std::forward<Args>(args)...);
+    auto construct_n(U* p, std::size_t n, Args&&... args) -> void {
+        std::size_t constructed = 0;
+        try {
+            for (; constructed < n; ++constructed) {
+                std::construct_at(p + constructed, std::forward<Args>(args)...);
+            }
+        } catch (...) {
+            // 销毁已成功构造的部分
+            if constexpr (!std::is_trivially_destructible_v<U>) {
+                for (std::size_t i = 0; i < constructed; ++i) {
+                    std::destroy_at(p + i);
+                }
+            }
+            throw; // 重新抛出，让调用方决定后续，例如释放内存
+        }
     }
 
     template <typename U>
-    void destroy(U* p, const size_type n = 1) {
-        if (p == nullptr) return;
-        for (size_type i = 0; i < n; ++i, ++p) {
-            p->~U();
+    auto destroy(U* p) noexcept -> void {
+        if constexpr (!std::is_trivially_destructible_v<U>) {
+            std::destroy_at(p);
         }
     }
 
-    template <typename... Args>
-    pointer create(Args&&... args) {
-        auto* ptr = allocate(1);
-        if (!ptr) return nullptr;
+    template <class U>
+    auto destroy_n(U* p, std::size_t n) noexcept -> void {
+        if constexpr (!std::is_trivially_destructible_v<U>) {
+            std::destroy_n(p, n);
+        }
+    }
 
+    template <class... Args>
+    [[nodiscard]] auto create(Args&&... args) noexcept -> T* {
+        T* p = nullptr;
         try {
-            construct(ptr, std::forward<Args>(args)...);
+            p = allocate(1);
+            construct(p, std::forward<Args>(args)...);
         } catch (...) {
-            deallocate(ptr, 1);
-            throw;
+            if (p) deallocate(p, 1);
+            return nullptr;
         }
-
-        return ptr;
+        return p;
     }
 
-    auto destruct(T* ptr) noexcept {
-        if (ptr != nullptr) {
-            destroy(ptr);
-            deallocate(ptr, 1);
+    template <class... Args>
+    [[nodiscard]] auto create_array(std::size_t n, Args&&... args) noexcept -> T* {
+        if (n == 0) return nullptr;
+
+        T* p = nullptr;
+        try {
+            p = allocate(n);
+            // construct_n 内部保证：如果抛出，它已清理已构造元素，然后 rethrow
+            construct_n(p, n, std::forward<Args>(args)...);
+        } catch (...) {
+            if (p) {
+                // 只有当 construct_n 已成功构造全部元素（没抛）时，才需要 destroy_n
+                // 但若 construct_n 抛出，则它已经清理了已构造的元素
+                // 所以这里直接 deallocate 即可
+                deallocate(p, n);
+            }
+            return nullptr;
         }
+        return p;
+    }
+
+    static constexpr auto max_size() noexcept -> std::size_t {
+        return static_cast<std::size_t>(-1) / sizeof(T);
     }
 
     /**
@@ -315,14 +376,6 @@ public:
 private:
     static std::string capture_stack() {
         return "Stack capture not implemented";
-    }
-
-    /**
-     * @brief 获取最大可分配内存大小
-     * @return 最大可分配内存大小
-     */
-    static size_type max_size() noexcept {
-        return static_cast<size_type>(-1) / sizeof(value_type);
     }
 };
 

@@ -75,6 +75,13 @@ void example_http_server() {
     server.start();
 }
 
+/*
+TODO
+F:/Software/Develop/mingw/mingw64/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/format:4315:38: error: no matching function for call to 'std::basic_format_arg<std::basic_format_context<std::__format::_Sink_iter<char>, char> >::basic_format_arg(std::source_location&)'
+ 4315 |           basic_format_arg<_Context> __arg(__v);
+      |                                      ^~~~~
+*/
+
 int main() {
     system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
     example_http_server();

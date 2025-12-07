@@ -16,7 +16,7 @@ namespace my::util {
  * @tparam T 元素类型
  * @tparam Alloc 内存分配器类型，默认为Allocator<T>
  */
-template <typename T, typename Alloc = Allocator<T>>
+template <typename T, typename Alloc = mem::Allocator<T>>
 class Buffer : public Sequence<Buffer<T>, T> {
 public:
     using value_t = T;
@@ -89,7 +89,7 @@ public:
      * @brief 析构函数，释放内存
      */
     ~Buffer() {
-        alloc_.destroy(buf_, size_);
+        alloc_.destroy_n(buf_, size_);
         alloc_.deallocate(buf_, size_);
         size_ = capacity_ = 0;
     }

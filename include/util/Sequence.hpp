@@ -18,7 +18,7 @@ namespace my::util {
  * @tparam D 实现类类型
  * @tparam T 元素类型
  */
-template <typename D, typename T, typename Alloc = Allocator<T>>
+template <typename D, typename T, typename Alloc = mem::Allocator<T>>
 class Sequence : public Object<Sequence<D, T, Alloc>> {
 public:
     using value_t = T;

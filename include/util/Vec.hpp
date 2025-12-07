@@ -18,7 +18,7 @@ namespace my::util {
  * @brief 动态数组容器
  * @tparam T 元素类型
  */
-template <typename T, typename Alloc = Allocator<T>>
+template <typename T, typename Alloc = mem::Allocator<T>>
 class Vec : public Sequence<Vec<T>, T> {
 public:
     using value_t = T;
@@ -308,7 +308,7 @@ public:
      * @brief 清空所有元素，容量不变
      */
     void clear() {
-        alloc_.destroy(data_, size_);
+        alloc_.destroy_n(data_, size_);
         size_ = 0;
     }
 

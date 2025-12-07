@@ -114,7 +114,7 @@ private:
  * @class TreeImpl
  * @brief 树，用来表示层次结构
  */
-template <TreeNodeType Node, typename Alloc = Allocator<Node>>
+template <TreeNodeType Node, typename Alloc = mem::Allocator<Node>>
 class TreeImpl : public Object<TreeImpl<Node, Alloc>> {
 public:
     using Self = TreeImpl<Node, Alloc>;
@@ -219,7 +219,7 @@ private:
 /**
  * @brief 对外别名
  */
-template <typename T, typename Alloc = Allocator<TreeNode<T>>>
+template <typename T, typename Alloc = mem::Allocator<TreeNode<T>>>
 using Tree = TreeImpl<TreeNode<T>, Alloc>;
 
 } // namespace my::util

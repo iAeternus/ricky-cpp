@@ -23,7 +23,7 @@ class BasicString;
  * @note 不推荐直接使用 BasicStringView，建议使用 StringView
  * @tparam Iter 迭代器类型
  */
-template <typename Iter, EncodingType Enc = EncodingType::UTF8, typename Alloc = Allocator<char>>
+template <typename Iter, EncodingType Enc = EncodingType::UTF8, typename Alloc = mem::Allocator<char>>
 class BasicStringView : public Object<BasicStringView<Iter>> {
 public:
     using Self = BasicStringView<Iter, Enc, Alloc>;

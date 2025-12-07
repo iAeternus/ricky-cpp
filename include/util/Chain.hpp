@@ -18,7 +18,7 @@ class ChainIterator;
 /**
  * @brief 单向链
  */
-template <ChainNodeType Node, typename Alloc = Allocator<Node>>
+template <ChainNodeType Node, typename Alloc = mem::Allocator<Node>>
 class Chain : public Object<Chain<Node, Alloc>> {
 public:
     using Self = Chain<Node, Alloc>;
@@ -93,7 +93,9 @@ public:
         Node* next = nullptr;
         while (cur) {
             next = cur->next_;
-            alloc_.destruct(cur);
+//            alloc_.destruct(cur);
+            alloc_.destroy(cur);
+            alloc_.deallocate(cur, 1);
             cur = next;
         }
         head_ = tail_ = nullptr;
@@ -258,7 +260,7 @@ protected:
  * @tparam T 节点值类型
  * @tparam Alloc 内存分配器类型
  */
-template <typename T, typename Alloc = Allocator<ChainNode<T>>>
+template <typename T, typename Alloc = mem::Allocator<ChainNode<T>>>
 using ChainList = Chain<ChainNode<T>, Alloc>;
 
 } // namespace my::util

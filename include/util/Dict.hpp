@@ -26,7 +26,7 @@ namespace my::util {
  */
 template <Hashable K,
           typename V,
-          typename Alloc = Allocator<K>,
+          typename Alloc = mem::Allocator<K>,
           typename Bucket = RobinHashBucket<V, typename Alloc::template rebind<RobinManager<V>>::other>>
 class Dict : Object<Dict<K, V, Alloc, Bucket>> {
 public:

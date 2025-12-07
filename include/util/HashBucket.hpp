@@ -268,7 +268,7 @@ private:
  *
  * @tparam T 存储的值类型
  */
-template <typename T, typename Alloc = Allocator<RobinManager<T>>>
+template <typename T, typename Alloc = mem::Allocator<RobinManager<T>>>
 class RobinHashBucket final : public HashBucket<T> {
 public:
     using value_t = T;

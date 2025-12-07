@@ -29,7 +29,7 @@ struct basic_format_string_wrapper {
 };
 
 /**
- * @brief 重命名格式化字符串包装器，使用std::type_identity_t避免自动类型推导
+ * @brief 重命名格式化字符串包装器，使用std::type_identity_t避免自动类型推导 TODO 问题似乎出在 std::type_identity_t 上
  */
 template <typename... Args>
 using format_string_wrapper = basic_format_string_wrapper<std::type_identity_t<Args>...>;
@@ -37,12 +37,22 @@ using format_string_wrapper = basic_format_string_wrapper<std::type_identity_t<A
 } // namespace my
 
 /**
- * @brief 为std::source_location提供格式化支持
+ * @brief 为std::source_location提供格式化支持 TODO 这里需要重新思考
  */
-template <>
-struct std::formatter<std::source_location> : std::formatter<std::string_view> {
+template <typename CharT>
+struct std::formatter<std::source_location, CharT> : std::formatter<std::basic_string_view<CharT>, CharT> {
+    using format_context = std::basic_format_context<typename std::basic_format_context<std::back_insert_iterator<std::basic_string<CharT>>, CharT>::iterator, CharT>;
+
     auto format(const std::source_location& loc, format_context& ctx) const {
-        return std::formatter<std::string_view>::format(std::format("{}:{}", loc.file_name(), loc.line()), ctx);
+        auto filename = loc.file_name();
+        auto line = loc.line();
+
+        std::basic_string<CharT> str;
+        if constexpr (std::is_same_v<CharT, char>) {
+            str = std::format("{}:{}", filename, line);
+        }
+
+        return std::formatter<std::basic_string_view<CharT>, CharT>::format(str, ctx);
     }
 };
 

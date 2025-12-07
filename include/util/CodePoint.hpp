@@ -17,7 +17,7 @@ namespace my::util {
  * @class CodePoint
  * @brief 码点抽象
  */
-template <EncodingType Enc = EncodingType::UTF8, typename Alloc = Allocator<char>>
+template <EncodingType Enc = EncodingType::UTF8, typename Alloc = mem::Allocator<char>>
 class CodePoint : public Object<CodePoint<Enc>> {
 public:
     using Self = CodePoint<Enc>;
@@ -208,7 +208,7 @@ inline const Array<CodePoint<Enc>> CodePoint<Enc, Alloc>::UPPER_CASE_LETTER = {'
  * @brief 获取字符串的所有码点
  * @exception Exception 若码点越界，说明存在非法编码的码点，则抛出 runtime_exception
  */
-template <EncodingType Enc, typename Alloc = Allocator<char>>
+template <EncodingType Enc, typename Alloc = mem::Allocator<char>>
 Vec<CodePoint<Enc, Alloc>> get_code_points(const char* str, const usize length, const Alloc& alloc = Alloc()) {
     Vec<CodePoint<Enc, Alloc>> cps;
     usize i = 0;

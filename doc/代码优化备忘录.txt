@@ -1,2 +1,20 @@
 允许隐式类型转换的对象：CString、String
 为所有抛出异常的函数增加@exception注释，异常名为Exception，注释内容中再指明是哪种类型的异常变体
+
+后续优化清单
+1. 优化测试套件
+2. 优化命名：头文件名称、类型、变量
+3. 统一接口：内存分配器、迭代器、Object。实现rust-like迭代器适配器。利用迭代器重构StringAlgorithm
+4. 重构基础类型：CString/String等，Chain与BiChain合并
+5. 重命名数据结构：
+	SortedDict -> RBTreeMap
+	PriorityQueue -> BinaryHeap
+	Dict -> HashMap
+	Chain/BiChain -> LinkedList
+6. 弃用Queue，新增Deque数据结构
+7. 弃用Stack，Vec适配stack方法
+8. 解决format的bug
+9. 完成长子兄弟表示法多叉树的实现，弃用Tree
+10. 修改win库调用，优先适配linux系统库
+11. 完成BTreeMap的实现
+12. 新增 HashSet/RBTreeSet/BTreeSet
