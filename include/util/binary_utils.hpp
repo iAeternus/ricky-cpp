@@ -7,7 +7,7 @@
 #ifndef BINARY_UTILS_HPP
 #define BINARY_UTILS_HPP
 
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 namespace my::util {
 

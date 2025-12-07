@@ -1,7 +1,7 @@
 #ifndef MATCH_HPP
 #define MATCH_HPP
 
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 #include <variant>
 

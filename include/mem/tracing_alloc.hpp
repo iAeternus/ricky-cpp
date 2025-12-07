@@ -8,7 +8,7 @@
 #ifndef TRACKING_ALLOCATOR_HPP
 #define TRACKING_ALLOCATOR_HPP
 
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 #include <atomic>
 #include <chrono>

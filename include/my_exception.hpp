@@ -4,11 +4,11 @@
  * @date 2025/6/20
  * @version 1.0
  */
-#ifndef EXCEPTION_HPP
-#define EXCEPTION_HPP
+#ifndef MY_EXCEPTION_HPP
+#define MY_EXCEPTION_HPP
 
 #include "object.hpp"
-#include "ricky_format.hpp"
+#include "my_format.hpp"
 
 #include <exception>
 #include <unordered_map>
@@ -245,4 +245,4 @@ DEFINE_EXCEPTION_FACTORY(custom, ExceptionType::CustomException)                
 
 } // namespace my
 
-#endif // EXCEPTION_HPP
+#endif // MY_EXCEPTION_HPP

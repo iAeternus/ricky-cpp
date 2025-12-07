@@ -4,10 +4,10 @@
  * @date 2024/11/24
  * @version 1.0
  */
-#ifndef RICKY_TRAITS_HPP
-#define RICKY_TRAITS_HPP
+#ifndef MY_TRAITS_HPP
+#define MY_TRAITS_HPP
 
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 #include <type_traits>
 
@@ -117,4 +117,4 @@ constexpr bool is_valid_dtype_v = is_valid_dtype<dtype>::value;
 
 }; // namespace my
 
-#endif // RICKY_TRAITS_HPP
+#endif // MY_TRAITS_HPP

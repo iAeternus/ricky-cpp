@@ -8,7 +8,7 @@
 
 #include "ricky_test.hpp"
 #include "alloc.hpp"
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 namespace my::test::test_allocator {
 

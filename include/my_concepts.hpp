@@ -4,11 +4,11 @@
  * @date 2024/11/27
  * @version 1.0
  */
-#ifndef RICKY_CONCEPTS_HPP
-#define RICKY_CONCEPTS_HPP
+#ifndef MY_CONCEPTS_HPP
+#define MY_CONCEPTS_HPP
 
-#include "ricky.hpp"
-#include "ricky_traits.hpp"
+#include "my_config.hpp"
+#include "my_traits.hpp"
 
 #include <concepts>
 #include <string>
@@ -123,4 +123,4 @@ concept DType = is_valid_dtype_v<T>;
 
 } // namespace my
 
-#endif // RICKY_CONCEPTS_HPP
+#endif // MY_CONCEPTS_HPP

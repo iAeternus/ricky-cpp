@@ -4,8 +4,8 @@
  * @date 2025/1/11
  * @version 1.0
  */
-#ifndef PAIR_HPP
-#define PAIR_HPP
+#ifndef MY_PAIR_HPP
+#define MY_PAIR_HPP
 
 #include "my_exception.hpp"
 
@@ -181,4 +181,4 @@ auto&& get(Pair<S, T>&& p) {
 
 } // namespace my
 
-#endif // PAIR_HPP
+#endif // MY_PAIR_HPP

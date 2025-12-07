@@ -1,5 +1,5 @@
 /**
- * @brief 栈，动态数组实现
+ * @brief 栈，动态数组实现 TODO 将弃用
  * @author Ricky
  * @date 2025/1/13
  * @version 1.0

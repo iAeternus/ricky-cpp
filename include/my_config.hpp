@@ -4,8 +4,8 @@
  * @date 2024/11/24
  * @version 1.0
  */
-#ifndef RICKY_HPP
-#define RICKY_HPP
+#ifndef MY_CONFIG_HPP
+#define MY_CONFIG_HPP
 
 #include <cfloat>
 #include <cstdint>
@@ -148,4 +148,4 @@ inline constexpr usize npos = static_cast<usize>(-1);
 
 } // namespace my
 
-#endif // RICKY_HPP
+#endif // MY_CONFIG_HPP

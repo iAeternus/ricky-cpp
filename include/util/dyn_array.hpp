@@ -1,5 +1,5 @@
 /**
- * @brief 动态数组
+ * @brief 动态数组 TODO 将弃用
  * @author Ricky
  * @date 2024/12/12
  * @version 1.0

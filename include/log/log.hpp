@@ -119,32 +119,32 @@ public:
     }
 
     template <typename... Args>
-    void trace(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void trace(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         format<LogLevel::Trace>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void debug(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void debug(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         format<LogLevel::Debug, Args...>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void info(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void info(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         format<LogLevel::Info>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void warn(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void warn(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         format<LogLevel::Warn, Args...>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void error(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void error(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         format<LogLevel::Error, Args...>(fmt_w, std::forward<Args>(args)...);
     }
 
     template <typename... Args>
-    void fatal(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void fatal(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         format<LogLevel::Fatal>(fmt_w, std::forward<Args>(args)...);
     }
 
@@ -153,17 +153,27 @@ private:
      * @brief 格式化日志记录
      */
     template <LogLevel LEVEL, typename... Args>
-    void format(format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void format(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
         if (LEVEL < level_) {
             return;
         }
+
+        // TODO .log = std::format(fmt_w.fmt, std::forward<Args>(args)...),
+        std::string log_str;
+        try {
+            log_str = std::vformat(fmt_w.fmt.get(),
+                                   std::make_format_args(std::forward<Args>(args)...));
+        } catch (const std::format_error& e) {
+            log_str = fmt_w.fmt.get();
+        }
+
         static_cast<D*>(this)->template log<LEVEL>(
             LogRecord{
                 .datetime = util::DateTime::now(),
                 .pid = get_current_pid(),
                 .file_name = fmt_w.loc.file_name(),
                 .line = fmt_w.loc.line(),
-                .log = std::format(fmt_w.fmt, std::forward<Args>(args)...),
+                .log = log_str,
             });
     }
 

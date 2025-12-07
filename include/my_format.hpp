@@ -5,8 +5,8 @@
  * @version 1.0
  */
 
-#ifndef RICKY_FORMAT_HPP
-#define RICKY_FORMAT_HPP
+#ifndef MY_FORMAT_HPP
+#define MY_FORMAT_HPP
 
 #include <format>
 #include <source_location>
@@ -56,4 +56,4 @@ struct std::formatter<std::source_location, CharT> : std::formatter<std::basic_s
     }
 };
 
-#endif // RICKY_CPP_RICKY_FORMAT_HPP
+#endif // MY_FORMAT_HPP

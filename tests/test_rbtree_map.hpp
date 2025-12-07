@@ -6,7 +6,7 @@
 #include "random.hpp"
 #include "str.hpp"
 #include "rbtree_map.hpp"
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 #include <map>
 

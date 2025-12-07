@@ -4,8 +4,8 @@
  * @date 2025/7/7
  * @version 1.0
  */
-#ifndef PRIORITY_QUEUE_HPP
-#define PRIORITY_QUEUE_HPP
+#ifndef BINARY_HEAP_HPP
+#define BINARY_HEAP_HPP
 
 #include "vec.hpp"
 
@@ -240,4 +240,4 @@ private:
 
 } // namespace my::util
 
-#endif // PRIORITY_QUEUE_HPP
+#endif // BINARY_HEAP_HPP

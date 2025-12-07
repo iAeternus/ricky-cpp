@@ -4,10 +4,10 @@
  * @date 2025/5/9
  * @version 1.0
  */
-#ifndef FUNCTION_HPP
-#define FUNCTION_HPP
+#ifndef MY_FUNC_HPP
+#define MY_FUNC_HPP
 
-#include "ricky.hpp"
+#include "my_config.hpp"
 
 #include <functional>
 
@@ -116,4 +116,4 @@ private:
 
 } // namespace my
 
-#endif // FUNCTION_HPP
+#endif // MY_FUNC_HPP

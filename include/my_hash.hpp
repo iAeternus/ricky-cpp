@@ -4,10 +4,10 @@
  * @date 2024/11/27
  * @version 1.0
  */
-#ifndef HASH_HPP
-#define HASH_HPP
+#ifndef MY_HASH_HPP
+#define MY_HASH_HPP
 
-#include "ricky_concepts.hpp"
+#include "my_concepts.hpp"
 
 namespace my {
 
@@ -92,4 +92,4 @@ auto bytes_hash(const char* data, const size_t n, const u32 seed = 0xbc9f1d34) -
 
 } // namespace my
 
-#endif // HASH_HPP
+#endif // MY_HASH_HPP
