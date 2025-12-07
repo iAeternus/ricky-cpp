@@ -7,9 +7,9 @@
 #ifndef JSON_TRAIT_HPP
 #define JSON_TRAIT_HPP
 
-#include "String.hpp"
-#include "Vec.hpp"
-#include "Dict.hpp"
+#include "str.hpp"
+#include "vec.hpp"
+#include "hash_map.hpp"
 
 namespace my::io {
 
@@ -26,7 +26,7 @@ struct JsonType {
     using JsonBool = bool;
     using JsonStr = util::String;
     using JsonArray = util::Vec<Json>;
-    using JsonDict = util::Dict<JsonStr, Json>;
+    using JsonMap = util::HashMap<JsonStr, Json>;
     using JsonNull = Null;
 };
 
@@ -35,7 +35,7 @@ struct JsonType {
  */
 template <typename T>
 concept JsonTypeStrictConcept =
-    std::is_same_v<T, typename JsonType::JsonInt> || std::is_same_v<T, typename JsonType::JsonFloat> || std::is_same_v<T, typename JsonType::JsonBool> || std::is_same_v<T, typename JsonType::JsonStr> || std::is_same_v<T, typename JsonType::JsonArray> || std::is_same_v<T, typename JsonType::JsonDict> || std::is_same_v<T, typename JsonType::JsonNull> || std::is_same_v<T, Json>;
+    std::is_same_v<T, typename JsonType::JsonInt> || std::is_same_v<T, typename JsonType::JsonFloat> || std::is_same_v<T, typename JsonType::JsonBool> || std::is_same_v<T, typename JsonType::JsonStr> || std::is_same_v<T, typename JsonType::JsonArray> || std::is_same_v<T, typename JsonType::JsonMap> || std::is_same_v<T, typename JsonType::JsonNull> || std::is_same_v<T, Json>;
 
 /**
  * @brief 可接受const reference volatile 修饰符的概念
@@ -77,7 +77,7 @@ struct GetJsonTypeIDStrict<JsonType::JsonArray> {
 };
 
 template <>
-struct GetJsonTypeIDStrict<JsonType::JsonDict> {
+struct GetJsonTypeIDStrict<JsonType::JsonMap> {
     constexpr static i8 ID = 5;
 };
 
@@ -136,9 +136,9 @@ struct JsonTypeTrait<JsonType::JsonArray> {
 };
 
 template <>
-struct JsonTypeTrait<JsonType::JsonDict> {
-    using Type = JsonType::JsonDict;
-    static constexpr auto name = "JsonDict";
+struct JsonTypeTrait<JsonType::JsonMap> {
+    using Type = JsonType::JsonMap;
+    static constexpr auto name = "JsonMap";
 };
 
 template <>
@@ -191,16 +191,16 @@ struct JsonValueType<util::Vec<T>> {
     using Type = JsonType::JsonArray;
 };
 
-// Dict类型映射
+// 哈希表类型映射
 template <typename K, typename V>
-struct JsonValueType<util::Dict<K, V>> {
+struct JsonValueType<util::HashMap<K, V>> {
     using Type = std::conditional_t<
         std::is_convertible_v<K, util::String>,
-        JsonType::JsonDict,
+        JsonType::JsonMap,
         void>;
     static_assert(
         !std::is_same_v<Type, void>,
-        "JsonDict key must be convertible to util::String");
+        "JsonMap key must be convertible to util::String");
 };
 
 // Json类型映射

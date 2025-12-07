@@ -7,11 +7,11 @@
 #ifndef HTTP_HPP
 #define HTTP_HPP
 
-#include "Dict.hpp"
-#include "StringBuilder.hpp"
-#include "ThreadPool.hpp"
+#include "hash_map.hpp"
+#include "str_builder.hpp"
+#include "thread_pool.hpp"
 #include "tcp.hpp"
-#include "Log.hpp"
+#include "log.hpp"
 
 namespace my::net {
 
@@ -86,7 +86,7 @@ enum class HttpStatusCode {
 /**
  * @brief HTTP状态码与文本的映射
  */
-static const util::Dict<HttpStatusCode, util::String> status_text_map = {
+static const util::HashMap<HttpStatusCode, util::String> status_text_map = {
     {HttpStatusCode::OK, "OK"},
     {HttpStatusCode::CREATED, "Created"},
     {HttpStatusCode::ACCEPTED, "Accepted"},
@@ -117,9 +117,9 @@ struct HttpRequest : public Object<HttpRequest> {
     HttpMethod method = HttpMethod::UNKNOWN;             // 请求方法
     util::String path;                                   // 请求路径
     util::String version;                                // HTTP版本
-    util::Dict<util::String, util::String> headers;      // 请求头
+    util::HashMap<util::String, util::String> headers;      // 请求头
     util::String body;                                   // 请求体
-    util::Dict<util::String, util::String> query_params; // 查询参数
+    util::HashMap<util::String, util::String> query_params; // 查询参数
 
     /**
      * @brief 从请求头获取 Content-Length
@@ -147,7 +147,7 @@ struct HttpResponse : public Object<HttpResponse> {
     using Self = HttpResponse;
 
     HttpStatusCode status = HttpStatusCode::OK;     // 响应状态
-    util::Dict<util::String, util::String> headers; // 响应头
+    util::HashMap<util::String, util::String> headers; // 响应头
     util::String body;                              // 响应体
 
     /**
@@ -533,7 +533,7 @@ private:
      * @return HttpMethod枚举值
      */
     static HttpMethod parse_method(const util::String& method_str) {
-        static const util::Dict<util::String, HttpMethod> method_map = {
+        static const util::HashMap<util::String, HttpMethod> method_map = {
             {"GET", HttpMethod::GET},
             {"POST", HttpMethod::POST},
             {"PUT", HttpMethod::PUT},
@@ -686,9 +686,9 @@ private:
 private:
     TcpServer server_;                                                       // TCP服务器
     async::ThreadPool pool_;                                                 // 线程池
-    util::Dict<HttpMethod, util::Dict<util::String, RouterHandler>> routes_; // 路由表
-    util::Dict<util::String, StaticDirConfig> static_dirs_;                  // 静态文件配置
-    util::Dict<util::String, util::String> mime_types_;                      // MIME类型映射
+    util::HashMap<HttpMethod, util::HashMap<util::String, RouterHandler>> routes_; // 路由表
+    util::HashMap<util::String, StaticDirConfig> static_dirs_;                  // 静态文件配置
+    util::HashMap<util::String, util::String> mime_types_;                      // MIME类型映射
     std::atomic<u32> active_connections_{0};                                 // 当前活跃连接数
     u32 max_connections_{0};                                                 // 最大连接数
     u32 timeout_{30};                                                        // 超时时间（秒）

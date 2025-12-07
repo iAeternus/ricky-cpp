@@ -2,7 +2,7 @@
 #define TEST_UNIT_TEST_HPP
 
 #include "ricky_test.hpp"
-#include "Exception.hpp"
+#include "my_exception.hpp"
 
 #include <source_location>
 #include <thread>

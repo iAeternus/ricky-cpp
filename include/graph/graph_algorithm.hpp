@@ -7,11 +7,11 @@
 #ifndef GRAPH_ALGORITHM_HPP
 #define GRAPH_ALGORITHM_HPP
 
-#include "DisjointSet.hpp"
-#include "Matrix.hpp"
-#include "Graph.hpp"
-#include "Queue.hpp"
-#include "PriorityQueue.hpp"
+#include "disjoint_set.hpp"
+#include "matrix.hpp"
+#include "graph.hpp"
+#include "link_list_queue.hpp"
+#include "binary_heap.hpp"
 
 namespace my::graph {
 
@@ -319,14 +319,14 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
     auto cmp = [](const Elem& a, const Elem& b) {
         return a.first() < b.first(); // 最小堆
     };
-    util::PriorityQueue<Elem, decltype(cmp)> pq;
+    util::BinaryHeap<Elem, decltype(cmp)> bh;
 
     dis[0] = 0; // TODO 任选一个节点开始
-    pq.push(0, 0);
-    while (!pq.empty()) {
+    bh.push(0, 0);
+    while (!bh.empty()) {
         // 1. 取出距离最小的未访问节点
-        auto [min_dis, u] = pq.top();
-        pq.pop();
+        auto [min_dis, u] = bh.top();
+        bh.pop();
 
         // 跳过已访问节点
         if (vis[u]) continue;
@@ -344,7 +344,7 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
             if (!vis[v] && w < dis[v]) {
                 dis[v] = w;
                 fa[v] = u;
-                pq.push(w, v); // 将更新后的节点加入队列
+                bh.push(w, v); // 将更新后的节点加入队列
             }
         });
     }
@@ -386,23 +386,23 @@ auto kruskal = [](const auto& g, auto&& _) -> Tree<N, E, Idx> { // TODO 段错�
         return a.w < b.w; // 最小堆：权重小的优先级高
     };
 
-    util::PriorityQueue<Edge, decltype(cmp)> pq;
+    util::BinaryHeap<Edge, decltype(cmp)> bh;
 
     // 3. 遍历所有边并加入优先队列（无向图每条边只添加一次）
     g.for_each([&](const auto& node) {
         node.for_each([&](Idx v, E w) {
             // 只添加 u < v 的边，避免重复处理无向边
             if (node.id < v) {
-                pq.push(node.id, v, w);
+                bh.push(node.id, v, w);
             }
         });
     });
 
     // 4. 处理优先队列中的边
     usize edge_count = 0;
-    while (!pq.empty() && edge_count < n - 1) {
-        auto edge = pq.top();
-        pq.pop();
+    while (!bh.empty() && edge_count < n - 1) {
+        auto edge = bh.top();
+        bh.pop();
 
         // 检查是否形成环路
         if (!ds.same_group(edge.u, edge.v)) {
@@ -432,12 +432,12 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
     dis[s] = E{};
 
     using Node = Pair<E, Idx>;
-    util::PriorityQueue<Node, std::greater<>> pq;
-    pq.push(E{}, s);
+    util::BinaryHeap<Node, std::greater<>> bh;
+    bh.push(E{}, s);
 
-    while (!pq.empty()) {
-        auto [d, u] = pq.top();
-        pq.pop();
+    while (!bh.empty()) {
+        auto [d, u] = bh.top();
+        bh.pop();
 
         // 若当前距离大于已记录距离，跳过无效节点
         if (d != dis[u]) continue;
@@ -447,7 +447,7 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
             // 松弛操作：发现更短路径时更新
             if (new_dis < dis[v]) {
                 dis[v] = new_dis;
-                pq.push(new_dis, v);
+                bh.push(new_dis, v);
             }
         });
     }

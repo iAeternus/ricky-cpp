@@ -2,7 +2,7 @@
 #define TEST_DATE_HPP
 
 #include "ricky_test.hpp"
-#include "DateTime.hpp"
+#include "date_time.hpp"
 
 namespace my::test::test_date {
 

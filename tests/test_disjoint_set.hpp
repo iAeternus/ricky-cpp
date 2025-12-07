@@ -2,7 +2,7 @@
 #define TEST_DISJOINT_SET_HPP
 
 #include "ricky_test.hpp"
-#include "DisjointSet.hpp"
+#include "disjoint_set.hpp"
 
 namespace my::test::test_disjoint_set {
 

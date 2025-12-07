@@ -5,7 +5,7 @@
 #define RICKY_WIN
 #include "win/winlib.hpp"
 #include "win/file_utils.hpp"
-#include "win/File.hpp"
+#include "win/file.hpp"
 
 #elif defined(__linux__) || defined(__unix__)
 #define RICKY_LINUX

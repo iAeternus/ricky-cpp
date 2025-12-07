@@ -2,7 +2,7 @@
 #define TEST_BIG_INTEGER_HPP
 
 #include "ricky_test.hpp"
-#include "BigInteger.hpp"
+#include "big_integer.hpp"
 
 namespace my::test::test_big_integer {
 

@@ -2,7 +2,7 @@
 #define TEST_GRAPH_HPP
 
 #include "ricky_test.hpp"
-#include "Graph.hpp"
+#include "graph.hpp"
 
 namespace my::test::test_graph {
 

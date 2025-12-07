@@ -3,13 +3,10 @@
 
 后续优化清单
 1. 优化测试套件
-2. 优化命名：头文件名称、类型、变量
+2. 优化命名：类型、变量
 3. 统一接口：内存分配器、迭代器、Object。实现rust-like迭代器适配器。利用迭代器重构StringAlgorithm
 4. 重构基础类型：CString/String等，Chain与BiChain合并
 5. 重命名数据结构：
-	SortedDict -> RBTreeMap
-	PriorityQueue -> BinaryHeap
-	Dict -> HashMap
 	Chain/BiChain -> LinkedList
 6. 弃用Queue，新增Deque数据结构
 7. 弃用Stack，Vec适配stack方法

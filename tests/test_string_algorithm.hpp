@@ -9,8 +9,8 @@
 #define TEST_STRING_ALGORITHM_HPP
 
 #include "ricky_test.hpp"
-#include "String.hpp"
-#include "StringAlgorithm.hpp"
+#include "str.hpp"
+#include "str_algorithm.hpp"
 
 namespace my::test::test_string_algorithm {
 

@@ -2,7 +2,7 @@
 #define TEST_BUFFER_HPP
 
 #include "ricky_test.hpp"
-#include "Buffer.hpp"
+#include "buffer.hpp"
 
 namespace my::test::test_buffer {
 

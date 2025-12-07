@@ -2,7 +2,7 @@
 #define TEST_MATRIX_HPP
 
 #include "ricky_test.hpp"
-#include "Matrix.hpp"
+#include "matrix.hpp"
 
 namespace my::test::test_matrix {
 

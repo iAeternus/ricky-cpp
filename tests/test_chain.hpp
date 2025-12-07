@@ -2,7 +2,7 @@
 #define TEST_CHAIN_HPP
 
 #include "ricky_test.hpp"
-#include "Chain.hpp"
+#include "chain.hpp"
 
 namespace my::test::test_chain {
 

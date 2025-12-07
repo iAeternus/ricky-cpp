@@ -2,7 +2,7 @@
 #define TEST_BI_CHAIN_HPP
 
 #include "ricky_test.hpp"
-#include "BiChain.hpp"
+#include "bi_chain.hpp"
 
 namespace my::test::test_bi_chain {
 

@@ -5,7 +5,7 @@
  * @version 1.0
  */
 #include "banner.hpp"
-#include "Printer.hpp"
+#include "printer.hpp"
 
 namespace my {
 

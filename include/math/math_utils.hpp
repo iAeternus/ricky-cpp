@@ -8,7 +8,7 @@
 #define MATH_UTILS_HPP
 
 #include "math_concepts.hpp"
-#include "Exception.hpp"
+#include "my_exception.hpp"
 
 #include <cmath>
 

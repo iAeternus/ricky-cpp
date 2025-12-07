@@ -3,7 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "filesystem.hpp"
-#include "win/File.hpp"
+#include "win/file.hpp"
 
 namespace my::test::test_win_file {
 

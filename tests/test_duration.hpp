@@ -2,7 +2,7 @@
 #define TEST_DURATION_HPP
 
 #include "ricky_test.hpp"
-#include "Duration.hpp"
+#include "duration.hpp"
 
 namespace my::test::test_duration {
 

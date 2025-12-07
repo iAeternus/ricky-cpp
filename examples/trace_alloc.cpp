@@ -4,14 +4,14 @@
  * @date 2025/8/14
  * @version 1.0
  */
-#include "BiChain.hpp"
-#include "Chain.hpp"
-#include "DynArray.hpp"
-#include "Queue.hpp"
-#include "SortedDict.hpp"
-#include "String.hpp"
-#include "TracingAllocator.hpp"
-#include "Vec.hpp"
+#include "bi_chain.hpp"
+#include "chain.hpp"
+#include "dyn_array.hpp"
+#include "link_list_queue.hpp"
+#include "rbtree_map.hpp"
+#include "str.hpp"
+#include "tracing_alloc.hpp"
+#include "vec.hpp"
 
 using namespace my;
 
@@ -29,13 +29,13 @@ using namespace my;
  * 3 = util::Vec
  * 4 = util::Chain
  * 5 = util::BiChain
- * 6 = util::Dict
- * 7 = util::SortedDict
+ * 6 = util::HashMap
+ * 7 = util::RBTreeMap
  * 8 = util::DynArray
  * 9 = util::Array
  * 10 = util::Queue
  */
-#define TRACE_OBJECT 10
+#define TRACE_OBJECT 6
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
@@ -177,72 +177,72 @@ void trace_bi_chain() {
 //     }
 // };
 
-void trace_dict() {
+void trace_hash_map() {
     // using TraceCString = BasicCString<mem::TracingAllocator<char>>;
-    using TraceDict = util::Dict<std::string, i32, mem::TracingAllocator<std::string>>; // TODO 用TraceCString会段错误
+    using TraceHashMap = util::HashMap<std::string, i32, mem::TracingAllocator<std::string>>; // TODO 用TraceCString会段错误
 #if VERBOSE == 1
     mem::TracingAllocator<std::string>::set_verbose(true);
 #endif
 
     // 构造
-    TraceDict d1;
-    TraceDict d2 = {{"aaa", 1}, {"bbb", 2}, {"ccc", 3}};
+    TraceHashMap m1;
+    TraceHashMap m2 = {{"aaa", 1}, {"bbb", 2}, {"ccc", 3}};
 
     // 拷贝
-    TraceDict d3(d1);
-    TraceDict d4 = d2;
+    TraceHashMap d3(m1);
+    TraceHashMap d4 = m2;
 
     // 移动
-    TraceDict d5(std::move(d3));
-    TraceDict d6 = std::move(d4);
+    TraceHashMap d5(std::move(d3));
+    TraceHashMap d6 = std::move(d4);
 
     // insert
     for (i32 i = 0; i < 1024; ++i) {
-        d1.insert(std::to_string(i), i);
+        m1.insert(std::to_string(i), i);
     }
 
     // update
-    TraceDict d7, d8;
-    d7.update(d2);
+    TraceHashMap d7, d8;
+    d7.update(m2);
     d8.update(std::move(d7));
 
     // remove
-    d2.remove("aaa");
+    m2.remove("aaa");
 
     // clear
-    d2.clear();
+    m1.clear();
 }
 
 void trace_sorted_dict() {
-    using TraceSortedDict = util::SortedDict<i32, i32, std::less<i32>, mem::TracingAllocator<util::RBTreeNode<i32, i32>>>;
+    using TraceRBTreeMap = util::RBTreeMap<i32, i32, std::less<i32>, mem::TracingAllocator<util::RBTreeNode<i32, i32>>>;
 #if VERBOSE == 1
     mem::TracingAllocator<util::RBTreeNode<i32, i32>>::set_verbose(true);
 #endif
 
     // 构造
-    TraceSortedDict sd1;
-    TraceSortedDict sd2 = {{1, 1}, {2, 2}, {3, 3}};
+    TraceRBTreeMap t1;
+    TraceRBTreeMap t2 = {{1, 1}, {2, 2}, {3, 3}};
 
     // 拷贝
-    TraceSortedDict sd3(sd1);
-    TraceSortedDict sd4 = sd2;
+    TraceRBTreeMap t3(t1);
+    TraceRBTreeMap t4 = t2;
 
     // 移动
-    TraceSortedDict sd5(std::move(sd3));
-    TraceSortedDict sd6 = std::move(sd4);
+    TraceRBTreeMap t5(std::move(t3));
+    TraceRBTreeMap t6 = std::move(t4);
 
     // insert
     for (i32 i = 0; i < 1024; ++i) {
-        sd1.insert(i, i);
+        t1.insert(i, i);
     }
 
     // remove
     for (i32 i = 0; i < 512; ++i) {
-        sd1.remove(i);
+        t1.remove(i);
     }
 
     // clear
-    sd1.clear();
+    t1.clear();
 }
 
 void trace_dyn_array() {
@@ -315,7 +315,7 @@ int main() {
 #elif TRACE_OBJECT == 5
     trace_bi_chain();
 #elif TRACE_OBJECT == 6
-    trace_dict();
+    trace_hash_map();
 #elif TRACE_OBJECT == 7
     trace_sorted_dict();
 #elif TRACE_OBJECT == 8

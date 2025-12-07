@@ -2,7 +2,7 @@
 #define TEST_POLYGON_HPP
 
 #include "ricky_test.hpp"
-#include "Polygon.hpp"
+#include "polygon.hpp"
 
 namespace my::test::test_polygon {
 

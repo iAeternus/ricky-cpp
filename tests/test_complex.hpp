@@ -2,7 +2,7 @@
 #define TEST_COMPLEX_HPP
 
 #include "ricky_test.hpp"
-#include "Complex.hpp"
+#include "complex.hpp"
 
 namespace my::test::test_complex {
 

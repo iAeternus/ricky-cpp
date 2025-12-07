@@ -8,7 +8,7 @@
 #define GRAPH_HELPER_HPP
 
 #include "math_utils.hpp"
-#include "Vec.hpp"
+#include "vec.hpp"
 
 namespace my::graph {
 

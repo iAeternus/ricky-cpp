@@ -3,7 +3,7 @@
 
 #include "ricky_test.hpp"
 #include "filesystem.hpp"
-#include "HuffmanTree.hpp"
+#include "huffman_tree.hpp"
 
 namespace my::test::test_huffman_tree {
 

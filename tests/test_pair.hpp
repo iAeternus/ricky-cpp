@@ -2,7 +2,7 @@
 #define TEST_PAIR_HPP
 
 #include "ricky_test.hpp"
-#include "Pair.hpp"
+#include "my_pair.hpp"
 
 namespace my::test::test_pair {
 

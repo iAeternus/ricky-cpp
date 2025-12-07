@@ -2,7 +2,7 @@
 #define TEST_VECTOR2_HPP
 
 #include "ricky_test.hpp"
-#include "Vector2.hpp"
+#include "vector2.hpp"
 
 namespace my::test::test_vector2 {
 

@@ -2,7 +2,7 @@
 #define TEST_EXPRESSION_HPP
 
 #include "ricky_test.hpp"
-#include "Expr.hpp"
+#include "expr.hpp"
 
 namespace my::test::test_expr {
 

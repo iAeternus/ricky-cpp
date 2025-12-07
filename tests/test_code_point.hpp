@@ -1,10 +1,10 @@
 #ifndef TEST_CODE_POINT_HPP
 #define TEST_CODE_POINT_HPP
 
-#include "Encoding.hpp"
+#include "encoding.hpp"
 #include "ricky_test.hpp"
-#include "CodePoint.hpp"
-#include "Random.hpp"
+#include "code_point.hpp"
+#include "random.hpp"
 
 namespace my::test::test_code_point {
 

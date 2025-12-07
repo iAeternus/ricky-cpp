@@ -7,7 +7,7 @@
 #ifndef WIN_FILE_UTILS_HPP
 #define WIN_FILE_UTILS_HPP
 
-#include "Vec.hpp"
+#include "vec.hpp"
 
 #include <fileapi.h>
 #include <handleapi.h>

@@ -7,8 +7,8 @@
 #ifndef GEOMETRY_2D_HPP
 #define GEOMETRY_2D_HPP
 
-#include "Vector2.hpp"
-#include "Line2.hpp"
+#include "vector2.hpp"
+#include "line2.hpp"
 
 namespace my::math {
 

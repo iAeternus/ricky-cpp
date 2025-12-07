@@ -24,7 +24,7 @@
 #include "test_chain.hpp"
 #include "test_bi_chain.hpp"
 #include "test_binary_utils.hpp"
-#include "test_dict.hpp"
+#include "test_hash_map.hpp"
 #include "test_random.hpp"
 #include "test_code_point.hpp"
 #include "test_string.hpp"
@@ -51,7 +51,7 @@
 #include "test_stack.hpp"
 #include "test_queue.hpp"
 #include "test_tree.hpp"
-#include "test_sorted_dict.hpp"
+#include "test_rbtree_map.hpp"
 #include "test_vec.hpp"
 #include "test_expr.hpp"
 #include "test_vector2.hpp"
@@ -59,7 +59,7 @@
 #include "test_polygon.hpp"
 #include "test_huffman_tree.hpp"
 #include "test_big_decimal.hpp"
-#include "test_priority_queue.hpp"
+#include "test_binary_heap.hpp"
 #include "test_allocator.hpp"
 #include "test_match.hpp"
 #include "test_udp.hpp"
@@ -88,7 +88,7 @@ auto main() -> int {
     test_chain::test_chain();
     test_bi_chain::test_bi_chain();
     test_binary_utils::test_binary_utils();
-    test_dict::test_dict();
+    test_hash_map::test_hash_map();
     test_random::test_random();
     test_code_point::test_code_point();
     test_string::test_string();
@@ -115,7 +115,7 @@ auto main() -> int {
     test_stack::test_stack();
     test_queue::test_queue();
     test_tree::test_tree();
-    test_sorted_dict::test_sorted_dict();
+    test_rbtree_map::test_rbtree_map();
     test_vec::test_vec();
     test_expr::test_expr();
     test_vector2::test_vector2();
@@ -123,7 +123,7 @@ auto main() -> int {
     test_polygon::test_polygon();
     test_huffman_tree::test_huffman_tree();
     test_big_decimal::test_big_decimal();
-    test_priority_queue::test_priority_queue();
+    test_binary_heap::test_binary_heap();
     test_allocator::test_allocator();
     test_match::test_match();
     test_udp::test_udp();

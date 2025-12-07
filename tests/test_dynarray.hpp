@@ -2,7 +2,7 @@
 #define TEST_DYNARRAY_HPP
 
 #include "ricky_test.hpp"
-#include "DynArray.hpp"
+#include "dyn_array.hpp"
 
 namespace my::test::test_dynarray {
 

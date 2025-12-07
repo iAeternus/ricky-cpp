@@ -2,9 +2,9 @@
 #define TEST_STRING_HPP
 
 #include "ricky_test.hpp"
-#include "String.hpp"
-#include "Array.hpp"
-#include "Vec.hpp"
+#include "str.hpp"
+#include "array.hpp"
+#include "vec.hpp"
 
 namespace my::test::test_string {
 

@@ -194,7 +194,7 @@ SpacesInAngles: false
 # 在C风格类型转换的括号中添加空格
 SpacesInCStyleCastParentheses: false
 
-# 在容器(ObjC和JavaScript的数组和字典等)字面量中添加空格
+# 在容器(ObjC和JavaScript的数组和哈希表等)字面量中添加空格
 SpacesInContainerLiterals: true
 
 # 在圆括号的(后和)前添加空格

@@ -4,8 +4,8 @@
  * @date 2025/10/31
  * @version 1.0
  */
-#include "Matrix.hpp"
-#include "Printer.hpp"
+#include "matrix.hpp"
+#include "printer.hpp"
 
 int main() {
     my::math::Matrix<double> P1 = {

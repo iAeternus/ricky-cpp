@@ -7,8 +7,8 @@
 #ifndef PRINTER_HPP
 #define PRINTER_HPP
 
-#include "Object.hpp"
-#include "../Color.hpp"
+#include "object.hpp"
+#include "../color.hpp"
 
 namespace my::io {
 

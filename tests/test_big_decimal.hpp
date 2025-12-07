@@ -2,7 +2,7 @@
 #define TEST_BIG_DECIMAL_HPP
 
 #include "ricky_test.hpp"
-#include "BigDecimal.hpp"
+#include "big_decimal.hpp"
 
 namespace my::test::test_big_decimal {
 

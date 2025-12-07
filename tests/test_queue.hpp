@@ -2,8 +2,8 @@
 #define TEST_QUEUE_HPP
 
 #include "ricky_test.hpp"
-#include "Queue.hpp"
-#include "Random.hpp"
+#include "link_list_queue.hpp"
+#include "random.hpp"
 
 #include <queue>
 

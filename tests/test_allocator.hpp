@@ -12,6 +12,9 @@
 
 namespace my::test::test_allocator {
 
+template<typename T>
+using Alloc = mem::Allocator<T>;
+
 /**
  * @brief 带资源的测试对象
  */
@@ -92,7 +95,7 @@ inline i32 ThrowingConstructor::constructed_count = 0;
  * @brief 基本分配和释放测试
  */
 auto test_basic_allocation() -> void {
-    mem::Allocator<i32> alloc;
+    Alloc<i32> alloc;
 
     // 正常分配
     i32* ptr = alloc.allocate(10);
@@ -117,7 +120,7 @@ auto test_basic_allocation() -> void {
  * @brief 对象构造和析构测试
  */
 auto test_object_construction() -> void {
-    mem::Allocator<ResourceObject> alloc;
+    Alloc<ResourceObject> alloc;
     ResourceObject::count = 0;
 
     // 单个对象构造
@@ -138,7 +141,7 @@ auto test_object_construction() -> void {
  * @brief 批量构造和析构测试
  */
 auto test_batch_operations() -> void {
-    mem::Allocator<ResourceObject> alloc;
+    Alloc<ResourceObject> alloc;
     ResourceObject::count = 0;
     constexpr std::size_t N = 10;
 
@@ -171,7 +174,7 @@ auto test_batch_operations() -> void {
  * @brief 安全创建对象测试
  */
 auto test_safe_creation() -> void {
-    mem::Allocator<ResourceObject> alloc;
+    Alloc<ResourceObject> alloc;
     ResourceObject::count = 0;
 
     // 成功创建
@@ -189,7 +192,7 @@ auto test_safe_creation() -> void {
     // 注意：create 在异常时会返回 nullptr
     ThrowingConstructor::constructed_count = 0;
 
-    mem::Allocator<ThrowingConstructor> throwing_alloc;
+    Alloc<ThrowingConstructor> throwing_alloc;
     ThrowingConstructor* bad_obj = throwing_alloc.create();
     Assertions::assertNull(bad_obj); // 构造失败应返回 nullptr
 }
@@ -200,7 +203,7 @@ auto test_safe_creation() -> void {
  * @brief 对齐分配测试
  */
 auto test_aligned_allocation() -> void {
-    mem::Allocator<AlignedType> alloc;
+    Alloc<AlignedType> alloc;
 
     // 测试不同对齐要求
 //    AlignedType* ptr16 = alloc.allocate_aligned<16>(5);
@@ -225,7 +228,7 @@ auto test_aligned_allocation() -> void {
  * @brief 超额分配测试
  */
 auto test_over_allocation() -> void {
-    mem::Allocator<i32> alloc;
+    Alloc<i32> alloc;
 
     // 测试 allocate_at_least
     auto result = alloc.allocate_at_least(7);
@@ -258,7 +261,7 @@ auto test_over_allocation() -> void {
  * @brief 异常安全测试
  */
 auto test_exception_safety() -> void {
-    mem::Allocator<ThrowingConstructor> alloc;
+    Alloc<ThrowingConstructor> alloc;
     ThrowingConstructor::constructed_count = 0;
 
     // 测试 construct_n 的异常安全
@@ -290,8 +293,8 @@ auto test_exception_safety() -> void {
  * @brief 与 std::vector 集成测试
  */
 auto test_vector_integration() -> void {
-    mem::Allocator<i32> alloc;
-    std::vector<i32, mem::Allocator<i32>> vec(alloc);
+    Alloc<i32> alloc;
+    std::vector<i32, Alloc<i32>> vec(alloc);
 
     // 基本操作
     for (i32 i = 0; i < 100; ++i) {
@@ -318,8 +321,8 @@ auto test_vector_integration() -> void {
  * @brief 与 std::list 集成测试
  */
 auto test_list_integration() -> void {
-    mem::Allocator<double> alloc;
-    std::list<double, mem::Allocator<double>> lst(alloc);
+    Alloc<double> alloc;
+    std::list<double, Alloc<double>> lst(alloc);
 
     // 添加元素
     for (i32 i = 0; i < 50; ++i) {
@@ -340,8 +343,8 @@ auto test_list_integration() -> void {
  * @brief 容器拷贝测试（分配器传播）
  */
 auto test_container_copy() -> void {
-    mem::Allocator<std::string> alloc1;
-    std::vector<std::string, mem::Allocator<std::string>> vec1(alloc1);
+    Alloc<std::string> alloc1;
+    std::vector<std::string, Alloc<std::string>> vec1(alloc1);
 
     vec1.push_back("Hello");
     vec1.push_back("World");
@@ -362,7 +365,7 @@ auto test_container_copy() -> void {
  * @brief 批量分配性能测试
  */
 auto test_batch_allocation_performance() -> void {
-    mem::Allocator<i32> alloc;
+    Alloc<i32> alloc;
     constexpr std::size_t BATCH_SIZE = 1000;
     constexpr std::size_t NUM_BATCHES = 100;
 
@@ -402,7 +405,7 @@ auto test_batch_allocation_performance() -> void {
  * @brief 最大分配测试
  */
 auto test_max_allocation() -> void {
-    mem::Allocator<char> alloc;
+    Alloc<char> alloc;
 
     // 分配接近最大值
     std::size_t max = alloc.max_size();
@@ -418,7 +421,7 @@ auto test_max_allocation() -> void {
  * @brief 混合操作测试
  */
 auto test_mixed_operations() -> void {
-    mem::Allocator<i32> alloc;
+    Alloc<i32> alloc;
 
     // 混合不同大小的分配
     i32* small = alloc.allocate(1);

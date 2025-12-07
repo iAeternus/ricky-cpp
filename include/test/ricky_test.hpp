@@ -7,7 +7,7 @@
 #ifndef RICKY_TEST_HPP
 #define RICKY_TEST_HPP
 
-#include "UnitTest.hpp"
-#include "Assertions.hpp"
+#include "unit_test.hpp"
+#include "assertions.hpp"
 
 #endif // RICKY_TEST_HPP

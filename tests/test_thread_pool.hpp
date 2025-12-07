@@ -1,10 +1,10 @@
 #ifndef TEST_THREAD_POOL_HPP
 #define TEST_THREAD_POOL_HPP
 
-#include "Exception.hpp"
+#include "my_exception.hpp"
 #include "ricky_test.hpp"
-#include "ThreadPool.hpp"
-#include "Dict.hpp"
+#include "thread_pool.hpp"
+#include "hash_map.hpp"
 
 namespace my::test::test_thread_pool {
 
@@ -64,7 +64,7 @@ auto should_wait = []() {
     // Given
     i32 n = 100;
     async::ThreadPool tp{4};
-    util::Dict<i32, i32> futures;
+    util::HashMap<i32, i32> futures;
 
     // When
     for (usize i = 0; i < n; ++i) {

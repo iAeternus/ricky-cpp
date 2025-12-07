@@ -1,9 +1,9 @@
 #ifndef TEST_RANDOM_HPP
 #define TEST_RANDOM_HPP
 
-#include "UnitTest.hpp"
-#include "Random.hpp"
-#include "Printer.hpp"
+#include "unit_test.hpp"
+#include "random.hpp"
+#include "printer.hpp"
 
 namespace my::test::test_random {
 

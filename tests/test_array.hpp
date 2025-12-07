@@ -2,7 +2,7 @@
 #define TEST_ARRAY_HPP
 
 #include "ricky_test.hpp"
-#include "Array.hpp"
+#include "array.hpp"
 
 namespace my::test::test_array {
 

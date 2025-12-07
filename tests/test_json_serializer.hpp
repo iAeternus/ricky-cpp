@@ -3,7 +3,7 @@
 
 #include <utility>
 
-#include "JsonSerializer.hpp"
+#include "json_serializer.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_json_serializer {
@@ -15,11 +15,11 @@ struct Person : Object<Person> {
     i32 age;
     bool is_student;
     util::Vec<i32> scores;
-    util::Dict<util::String, util::String> address;
+    util::HashMap<util::String, util::String> address;
 
     Person() = default;
 
-    Person(util::String name, i32 age, bool is_student, const util::Vec<i32>& scores, const util::Dict<util::String, util::String>& address) :
+    Person(util::String name, i32 age, bool is_student, const util::Vec<i32>& scores, const util::HashMap<util::String, util::String>& address) :
             name(std::move(name)), age(age), is_student(is_student), scores(scores), address(address) {}
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
@@ -72,7 +72,7 @@ auto from_json(const Json& j, Person& p) {
     p.age = j["age"].into<i32>();
     p.is_student = j["is_student"].into<bool>();
     p.scores = j["scores"].into<util::Vec<i32>>();
-    p.address = j["address"].into<util::Dict<util::String, util::String>>();
+    p.address = j["address"].into<util::HashMap<util::String, util::String>>();
 }
 
 } // namespace my::io

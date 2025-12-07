@@ -1,7 +1,7 @@
 #ifndef TEST_WIN_FILE_UTILS_HPP
 #define TEST_WIN_FILE_UTILS_HPP
 
-#include "Printer.hpp"
+#include "printer.hpp"
 #include "ricky_test.hpp"
 #include "filesystem.hpp"
 #include "win/file_utils.hpp"

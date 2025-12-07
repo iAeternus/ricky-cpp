@@ -2,8 +2,8 @@
 #define TEST_STREAM_HPP
 
 #include "ricky_test.hpp"
-#include "Stream.hpp"
-#include "Pair.hpp"
+#include "stream.hpp"
+#include "my_pair.hpp"
 
 namespace my::test::test_stream {
 

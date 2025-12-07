@@ -2,7 +2,7 @@
 #define TEST_TREE_HPP
 
 #include "ricky_test.hpp"
-#include "Tree.hpp"
+#include "tree.hpp"
 
 namespace my::test::test_tree {
 

@@ -2,8 +2,8 @@
 #define TEST_GENERATOR_HPP
 
 #include "ricky_test.hpp"
-#include "Generator.hpp"
-#include "Vec.hpp"
+#include "generator.hpp"
+#include "vec.hpp"
 
 namespace my::test::test_generator {
 

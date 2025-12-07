@@ -2,7 +2,7 @@
 #define TEST_STRING_BUILDER_HPP
 
 #include "ricky_test.hpp"
-#include "StringBuilder.hpp"
+#include "str_builder.hpp"
 
 namespace my::test::test_string_builder {
 

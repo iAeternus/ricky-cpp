@@ -1,9 +1,9 @@
 #ifndef TEST_JSON_PARSER_HPP
 #define TEST_JSON_PARSER_HPP
 
-#include "Printer.hpp"
+#include "printer.hpp"
 #include "ricky_test.hpp"
-#include "JsonParser.hpp"
+#include "json_parser.hpp"
 
 namespace my::test::test_json_parser {
 

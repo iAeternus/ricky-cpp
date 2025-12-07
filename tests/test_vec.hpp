@@ -2,7 +2,7 @@
 #define TEST_VEC_HPP
 
 #include "ricky_test.hpp"
-#include "Vec.hpp"
+#include "vec.hpp"
 
 namespace my::test::test_vec {
 

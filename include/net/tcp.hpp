@@ -7,8 +7,8 @@
 #ifndef TCP_HPP
 #define TCP_HPP
 
-#include "Socket.hpp"
-#include "Vec.hpp"
+#include "socket.hpp"
+#include "vec.hpp"
 
 namespace my::net {
 
