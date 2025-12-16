@@ -13,6 +13,76 @@
 namespace my::util {
 
 /**
+ * @brief 链节点类型约束
+ */
+template <typename T>
+concept ChainNodeType = requires(T a, const T& b, T&& c) {
+    { T() } -> std::same_as<T>;
+    { a = b } -> std::same_as<T&>;
+    { T(b) } -> std::same_as<T>;
+    { a = std::move(c) } -> std::same_as<T&>;
+    { T(std::move(c)) } -> std::same_as<T>;
+    { a.next_ };
+    { a.value_ };
+};
+
+/**
+ * @brief 链节点，只能前向移动
+ */
+template <typename T>
+class ChainNode : public Object<ChainNode<T>> {
+public:
+    using value_t = T;
+    using Self = ChainNode<value_t>;
+    using Super = Object<Self>;
+
+    ChainNode(const value_t& value = {}, Self* next = nullptr) :
+            value_(value), next_(next) {}
+
+    ChainNode(const Self& other) :
+            value_(other.value_), next_(other.next_) {}
+
+    ChainNode(Self&& other) noexcept :
+            value_(std::move(other.value_)), next_(other.next_) {
+        other.next_ = nullptr;
+    }
+
+    Self& operator=(const Self& other) {
+        this->value_ = other.value_;
+        this->next_ = nullptr;
+        return *this;
+    }
+
+    Self& operator=(Self&& other) noexcept {
+        this->value_ = std::move(other.value_);
+        this->next_ = other.next_;
+        other.next_ = nullptr;
+        return *this;
+    }
+
+    [[nodiscard]] CString __str__() const {
+        std::stringstream stream;
+        stream << "<Node  " << value_ << '>';
+        return CString(stream.str());
+    }
+
+    [[nodiscard]] bool __equals__(const Self& other) const {
+        return this->value_ == other.value_;
+    }
+
+    bool operator==(const Self& other) const {
+        return this->__equals__(other);
+    }
+
+    bool operator!=(const Self& other) const {
+        return !this->__equals__(other);
+    }
+
+    value_t value_;
+    Self* next_;
+};
+
+/**
  * @class ChainQueue
  * @brief 基于带尾指针的循环单链表实现的队列
  * @tparam Node 指定链表节点类型
@@ -37,7 +107,6 @@ public:
      */
     ~ChainQueue() {
         clear();
-//        alloc_.destruct(tail_);
         alloc_.destroy(tail_);
         alloc_.deallocate(tail_, 1);
     }
@@ -66,7 +135,6 @@ public:
         while (p != tail_) {
             auto* d = p;
             p = p->next_;
-//            alloc_.destruct(d);
             alloc_.destroy(d);
             alloc_.deallocate(d, 1);
         }
@@ -104,7 +172,6 @@ public:
             tail_ = p;      // 更新尾节点为起始节点
         }
         p->next_ = d->next_;
-//        alloc_.destruct(d);
         alloc_.destroy(d);
         alloc_.deallocate(d, 1);
         --size_;
@@ -163,9 +230,9 @@ public:
     }
 
 private:
-    Alloc alloc_{};            // 内存分配器
-    usize size_;               // 队列中元素的个数
-    ChainNode<value_t>* tail_; // 指向虚拟尾节点的指针
+    Alloc alloc_{}; // 内存分配器
+    usize size_;    // 队列中元素的个数
+    Node* tail_;    // 指向虚拟尾节点的指针
 };
 
 /**

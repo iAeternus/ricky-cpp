@@ -21,8 +21,6 @@
 #include "test_cstring.hpp"
 #include "test_buffer.hpp"
 #include "test_dynarray.hpp"
-#include "test_chain.hpp"
-#include "test_bi_chain.hpp"
 #include "test_binary_utils.hpp"
 #include "test_hash_map.hpp"
 #include "test_random.hpp"
@@ -66,6 +64,7 @@
 #include "test_tcp.hpp"
 #include "test_json_serializer.hpp"
 #include "test_string_algorithm.hpp"
+#include "test_linked_list.hpp"
 #elif TEST_MODE == 2
 #include "banner.hpp"
 #include "ricky_test.hpp"
@@ -85,8 +84,6 @@ auto main() -> int {
     test_cstring::test_cstring();
     test_buffer::test_buffer();
     test_dynarray::test_dynarray();
-    test_chain::test_chain();
-    test_bi_chain::test_bi_chain();
     test_binary_utils::test_binary_utils();
     test_hash_map::test_hash_map();
     test_random::test_random();
@@ -130,6 +127,7 @@ auto main() -> int {
     test_tcp::test_tcp();
     test_json_serializer::test_json_serializer();
     test_string_algorithm::test_string_algorithm();
+    test_linked_list::test_linked_list();
 #elif TEST_MODE == 2
     my::print_banner();
 #endif
