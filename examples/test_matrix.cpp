@@ -22,4 +22,5 @@ int main() {
 
     my::io::println(P2.inv());
     my::io::println(P1 * P2.inv());
+    return 0;
 }

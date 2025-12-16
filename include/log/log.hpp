@@ -153,18 +153,23 @@ private:
      * @brief 格式化日志记录
      */
     template <LogLevel LEVEL, typename... Args>
-    void format(my::format_string_wrapper<Args...> fmt_w, Args&&... args) {
+    void format(format_string_wrapper<Args...> fmt_w, Args&&... args) {
         if (LEVEL < level_) {
             return;
         }
 
-        // TODO .log = std::format(fmt_w.fmt, std::forward<Args>(args)...),
-        std::string log_str;
+        std::string message;
         try {
-            log_str = std::vformat(fmt_w.fmt.get(),
-                                   std::make_format_args(std::forward<Args>(args)...));
+            message = std::format(fmt_w.fmt, std::forward<Args>(args)...);
         } catch (const std::format_error& e) {
-            log_str = fmt_w.fmt.get();
+#ifndef NDEBUG
+            message = std::format(
+                "[FORMAT ERROR] {} | fmt=\"{}\"",
+                e.what(),
+                fmt_w.fmt.get());
+#else
+            message = fmt_w.fmt.get();
+#endif
         }
 
         static_cast<D*>(this)->template log<LEVEL>(
@@ -173,7 +178,7 @@ private:
                 .pid = get_current_pid(),
                 .file_name = fmt_w.loc.file_name(),
                 .line = fmt_w.loc.line(),
-                .log = log_str,
+                .log = std::move(message),
             });
     }
 
@@ -184,11 +189,19 @@ private:
 class ConsoleLogger : public BasicLogger<ConsoleLogger> {
 public:
     template <LogLevel level>
-    void log(const LogRecord& record) {
-        LogLevelWrapper level_wrapper(level);
-        io::println(std::format("{} [{}{}{}] {} {}:{} {}", record.datetime, level_wrapper.color(),
-                                level_wrapper.__str__(), reset_color(), record.pid, record.file_name, record.line,
-                                record.log));
+    void log(const LogRecord& r) {
+        LogLevelWrapper lvl(level);
+
+        io::println(std::format(
+            "{} [{}{}{}] [pid={}] {}:{} {}",
+            r.datetime,
+            lvl.color(),
+            lvl.__str__(),
+            reset_color(),
+            r.pid,
+            r.file_name,
+            r.line,
+            r.log));
     }
 };
 

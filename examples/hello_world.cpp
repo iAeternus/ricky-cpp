@@ -13,4 +13,6 @@ int main() {
 
     my::io::println("Hello, World!");
     my::io::print("C++ standard: ", __cplusplus);
+
+    return 0;
 }

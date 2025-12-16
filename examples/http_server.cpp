@@ -85,4 +85,5 @@ F:/Software/Develop/mingw/mingw64/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/
 int main() {
     system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
     example_http_server();
+    return 0;
 }

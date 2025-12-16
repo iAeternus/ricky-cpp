@@ -325,4 +325,5 @@ int main() {
 #elif TRACE_OBJECT == 10
     trace_queue();
 #endif
+    return 0;
 }

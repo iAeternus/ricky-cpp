@@ -12,7 +12,7 @@
 
 namespace my::test::test_allocator {
 
-template<typename T>
+template <typename T>
 using Alloc = mem::Allocator<T>;
 
 /**
@@ -99,20 +99,20 @@ auto test_basic_allocation() -> void {
 
     // 正常分配
     i32* ptr = alloc.allocate(10);
-    Assertions::assertNotNull(ptr);
+    Assertions::assert_not_null(ptr);
     alloc.deallocate(ptr, 10);
 
     // 零分配
     ptr = alloc.allocate(0);
-    Assertions::assertNull(ptr);
+    Assertions::assert_null(ptr);
 
     // 最大分配测试
     std::size_t max = alloc.max_size();
-    Assertions::assertTrue(max > 0);
+    Assertions::assert_true(max > 0);
 
     // 边界测试
     ptr = alloc.allocate(1);
-    Assertions::assertNotNull(ptr);
+    Assertions::assert_not_null(ptr);
     alloc.deallocate(ptr, 1);
 }
 
@@ -127,14 +127,14 @@ auto test_object_construction() -> void {
     ResourceObject* obj = alloc.allocate(1);
     alloc.construct(obj, 42, "test");
 
-    Assertions::assertEquals(42, obj->value);
-    Assertions::assertEquals("test"_s, obj->name);
-    Assertions::assertEquals(1, ResourceObject::count);
+    Assertions::assert_equals(42, obj->value);
+    Assertions::assert_equals("test"_s, obj->name);
+    Assertions::assert_equals(1, ResourceObject::count);
 
     alloc.destroy(obj);
     alloc.deallocate(obj, 1);
 
-    Assertions::assertEquals(0, ResourceObject::count);
+    Assertions::assert_equals(0, ResourceObject::count);
 }
 
 /**
@@ -153,19 +153,19 @@ auto test_batch_operations() -> void {
                         util::String("obj_") + util::String::from_i32(i));
     }
 
-    Assertions::assertEquals(N, ResourceObject::count);
+    Assertions::assert_equals(N, ResourceObject::count);
 
     // 验证构造正确性
     for (std::size_t i = 0; i < N; ++i) {
-        Assertions::assertEquals(static_cast<i32>(i), array[i].value);
-        Assertions::assertEquals(
+        Assertions::assert_equals(static_cast<i32>(i), array[i].value);
+        Assertions::assert_equals(
             util::String("obj_") + util::String::from_i32(i),
             array[i].name);
     }
 
     // 批量销毁
     alloc.destroy_n(array, N);
-    Assertions::assertEquals(0, ResourceObject::count);
+    Assertions::assert_equals(0, ResourceObject::count);
 
     alloc.deallocate(array, N);
 }
@@ -179,14 +179,14 @@ auto test_safe_creation() -> void {
 
     // 成功创建
     ResourceObject* obj = alloc.create(100, "safe_object");
-    Assertions::assertNotNull(obj);
-    Assertions::assertEquals(100, obj->value);
-    Assertions::assertEquals(1, ResourceObject::count);
+    Assertions::assert_not_null(obj);
+    Assertions::assert_equals(100, obj->value);
+    Assertions::assert_equals(1, ResourceObject::count);
 
     // 安全销毁
     alloc.destroy(obj);
     alloc.deallocate(obj, 1);
-    Assertions::assertEquals(0, ResourceObject::count);
+    Assertions::assert_equals(0, ResourceObject::count);
 
     // 测试异常安全 - 这里需要测试构造失败的情况
     // 注意：create 在异常时会返回 nullptr
@@ -194,7 +194,7 @@ auto test_safe_creation() -> void {
 
     Alloc<ThrowingConstructor> throwing_alloc;
     ThrowingConstructor* bad_obj = throwing_alloc.create();
-    Assertions::assertNull(bad_obj); // 构造失败应返回 nullptr
+    Assertions::assert_null(bad_obj); // 构造失败应返回 nullptr
 }
 
 // ==================== 高级功能测试 ====================
@@ -206,21 +206,21 @@ auto test_aligned_allocation() -> void {
     Alloc<AlignedType> alloc;
 
     // 测试不同对齐要求
-//    AlignedType* ptr16 = alloc.allocate_aligned<16>(5);
-//    Assertions::assertNotNull(ptr16);
-//    Assertions::assertTrue(reinterpret_cast<uintptr_t>(ptr16) % 16 == 0);
-//    alloc.deallocate(ptr16, 5);
+    //    AlignedType* ptr16 = alloc.allocate_aligned<16>(5);
+    //    Assertions::assertNotNull(ptr16);
+    //    Assertions::assertTrue(reinterpret_cast<uintptr_t>(ptr16) % 16 == 0);
+    //    alloc.deallocate(ptr16, 5);
 
     AlignedType* ptr64 = alloc.allocate_aligned<64>(3);
-    Assertions::assertNotNull(ptr64);
-    Assertions::assertTrue(reinterpret_cast<uintptr_t>(ptr64) % 64 == 0);
+    Assertions::assert_not_null(ptr64);
+    Assertions::assert_true(reinterpret_cast<uintptr_t>(ptr64) % 64 == 0);
     alloc.deallocate(ptr64, 3);
 
     // 测试默认对齐分配
     AlignedType* default_ptr = alloc.allocate(2);
-    Assertions::assertNotNull(default_ptr);
+    Assertions::assert_not_null(default_ptr);
     // 默认应满足 alignof(AlignedType) 对齐
-    Assertions::assertTrue(reinterpret_cast<uintptr_t>(default_ptr) % alignof(AlignedType) == 0);
+    Assertions::assert_true(reinterpret_cast<uintptr_t>(default_ptr) % alignof(AlignedType) == 0);
     alloc.deallocate(default_ptr, 2);
 }
 
@@ -232,11 +232,11 @@ auto test_over_allocation() -> void {
 
     // 测试 allocate_at_least
     auto result = alloc.allocate_at_least(7);
-    Assertions::assertNotNull(result.ptr);
+    Assertions::assert_not_null(result.ptr);
 
     // 结果应该是2的幂，至少为请求的数量
-    Assertions::assertTrue(result.count >= 7);
-    Assertions::assertTrue((result.count & (result.count - 1)) == 0); // 是2的幂
+    Assertions::assert_true(result.count >= 7);
+    Assertions::assert_true((result.count & (result.count - 1)) == 0); // 是2的幂
 
     // 可以安全使用整个分配的区域
     for (std::size_t i = 0; i < result.count; ++i) {
@@ -245,7 +245,7 @@ auto test_over_allocation() -> void {
 
     // 验证构造
     for (std::size_t i = 0; i < 7; ++i) {
-        Assertions::assertEquals(static_cast<i32>(i), result.ptr[i]);
+        Assertions::assert_equals(static_cast<i32>(i), result.ptr[i]);
     }
 
     alloc.destroy_n(result.ptr, result.count);
@@ -253,8 +253,8 @@ auto test_over_allocation() -> void {
 
     // 边界情况：请求0
     result = alloc.allocate_at_least(0);
-    Assertions::assertNull(result.ptr);
-    Assertions::assertEquals(0, result.count);
+    Assertions::assert_null(result.ptr);
+    Assertions::assert_equals(0ULL, result.count);
 }
 
 /**
@@ -275,7 +275,7 @@ auto test_exception_safety() -> void {
         }
     } catch (const std::runtime_error&) {
         // 应该只有前两个对象被构造
-        Assertions::assertEquals(2, ThrowingConstructor::constructed_count);
+        Assertions::assert_equals(2, ThrowingConstructor::constructed_count);
 
         // 清理：construct_n 已经清理了前两个对象
         // 但需要释放内存
@@ -284,7 +284,7 @@ auto test_exception_safety() -> void {
     }
 
     // 不应该执行到这里
-    Assertions::fail("Expected exception not thrown", SRC_LOC);
+    Assertions::fail2("Expected exception not thrown");
 }
 
 // ==================== STL 容器集成测试 ====================
@@ -301,19 +301,19 @@ auto test_vector_integration() -> void {
         vec.push_back(i * 2);
     }
 
-    Assertions::assertEquals(100, vec.size());
+    Assertions::assert_equals(100ULL, vec.size());
 
     for (i32 i = 0; i < 100; ++i) {
-        Assertions::assertEquals(i * 2, vec[i]);
+        Assertions::assert_equals(i * 2, vec[i]);
     }
 
     // 测试重新分配内存（应该使用我们的分配器）
     vec.reserve(200);
-    Assertions::assertTrue(vec.capacity() >= 200);
+    Assertions::assert_true(vec.capacity() >= 200);
 
     // 验证元素仍然正确
     for (i32 i = 0; i < 100; ++i) {
-        Assertions::assertEquals(i * 2, vec[i]);
+        Assertions::assert_equals(i * 2, vec[i]);
     }
 }
 
@@ -329,12 +329,12 @@ auto test_list_integration() -> void {
         lst.push_back(i * 1.5);
     }
 
-    Assertions::assertEquals(50, lst.size());
+    Assertions::assert_equals(50ULL, lst.size());
 
     // 验证元素
     i32 i = 0;
     for (const auto& val : lst) {
-        Assertions::assertEquals(i * 1.5, val);
+        Assertions::assertEquals(i * 1.5, val); // TODO 为 assert_equals 增加浮点支持
         ++i;
     }
 }
@@ -353,9 +353,9 @@ auto test_container_copy() -> void {
     // 拷贝构造函数应该传播分配器
     auto vec2 = vec1; // 应该使用相同的分配器
 
-    Assertions::assertEquals(vec1.size(), vec2.size());
+    Assertions::assert_equals(vec1.size(), vec2.size());
     for (std::size_t i = 0; i < vec1.size(); ++i) {
-        Assertions::assertEquals(vec1[i], vec2[i]);
+        Assertions::assert_equals(vec1[i], vec2[i]);
     }
 }
 
@@ -375,7 +375,7 @@ auto test_batch_allocation_performance() -> void {
     // 批量分配
     for (std::size_t i = 0; i < NUM_BATCHES; ++i) {
         i32* ptr = alloc.allocate(BATCH_SIZE);
-        Assertions::assertNotNull(ptr);
+        Assertions::assert_not_null(ptr);
 
         // 批量构造
         for (std::size_t j = 0; j < BATCH_SIZE; ++j) {
@@ -389,9 +389,7 @@ auto test_batch_allocation_performance() -> void {
     for (std::size_t i = 0; i < NUM_BATCHES; ++i) {
         // 验证
         for (std::size_t j = 0; j < BATCH_SIZE; ++j) {
-            Assertions::assertEquals(
-                static_cast<i32>(i * BATCH_SIZE + j),
-                pointers[i][j]);
+            Assertions::assert_equals(static_cast<i32>(i * BATCH_SIZE + j), pointers[i][j]);
         }
 
         alloc.destroy_n(pointers[i], BATCH_SIZE);
@@ -409,11 +407,11 @@ auto test_max_allocation() -> void {
 
     // 分配接近最大值
     std::size_t max = alloc.max_size();
-    Assertions::assertTrue(max > 0);
+    Assertions::assert_true(max > 0);
 
-    // 测试分配失败
-    Assertions::assertThrows("", [&]() {
-        auto _ = alloc.allocate(max + 1); // 应该抛出 bad_alloc
+    // 测试分配失败 TODO
+    Assertions::assert_throws<std::bad_alloc>([&]() {
+        auto _ = alloc.allocate(max + 10000); // 应该抛出 bad_alloc
     });
 }
 
@@ -428,9 +426,9 @@ auto test_mixed_operations() -> void {
     i32* medium = alloc.allocate(100);
     i32* large = alloc.allocate(1000);
 
-    Assertions::assertNotNull(small);
-    Assertions::assertNotNull(medium);
-    Assertions::assertNotNull(large);
+    Assertions::assert_not_null(small);
+    Assertions::assert_not_null(medium);
+    Assertions::assert_not_null(large);
 
     // 交错构造
     alloc.construct(small, 42);

@@ -21,4 +21,5 @@ void test_console_log() {
 int main() {
     system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
     test_console_log();
+    return 0;
 }

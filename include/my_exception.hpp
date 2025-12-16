@@ -94,7 +94,7 @@ public:
      * @brief 获取异常类型名称
      */
     [[nodiscard]] CString type_name() const {
-        return type_to_string(type_);
+        return type_to_cstr(type_);
     }
 
     /**
@@ -114,30 +114,29 @@ public:
     /**
      * @brief 异常类型转字符串
      */
-    static CString type_to_string(const ExceptionType type) {
-        static const std::unordered_map<ExceptionType, CString> type_names = {
-            {ExceptionType::RuntimeException, "RuntimeException"},
-            {ExceptionType::LogicException, "LogicException"},
-            {ExceptionType::ValueException, "ValueException"},
-            {ExceptionType::TypeException, "TypeException"},
-            {ExceptionType::ArgumentException, "ArgumentException"},
-            {ExceptionType::NullPointerException, "NullPointerException"},
-            {ExceptionType::NotFoundException, "NotFoundException"},
-            {ExceptionType::IndexOutOfBoundsException, "IndexOutOfBoundsException"},
-            {ExceptionType::ResourceException, "ResourceException"},
-            {ExceptionType::IOException, "IOException"},
-            {ExceptionType::MemoryException, "MemoryException"},
-            {ExceptionType::ArithmeticException, "ArithmeticException"},
-            {ExceptionType::OverflowException, "OverflowException"},
-            {ExceptionType::StateException, "StateException"},
-            {ExceptionType::UninitializedException, "UninitializedException"},
-            {ExceptionType::AssertionFailedException, "AssertionFailedException"},
-            {ExceptionType::SystemException, "SystemException"},
-            {ExceptionType::NetworkException, "NetworkException"},
-            {ExceptionType::CustomException, "CustomException"},
-        };
-
-        return type_names.contains(type) ? type_names.at(type) : "UnknownException";
+    static constexpr const char* type_to_cstr(ExceptionType type) noexcept {
+        switch (type) {
+        case ExceptionType::RuntimeException: return "RuntimeException";
+        case ExceptionType::LogicException: return "LogicException";
+        case ExceptionType::ValueException: return "ValueException";
+        case ExceptionType::TypeException: return "TypeException";
+        case ExceptionType::ArgumentException: return "ArgumentException";
+        case ExceptionType::NullPointerException: return "NullPointerException";
+        case ExceptionType::NotFoundException: return "NotFoundException";
+        case ExceptionType::IndexOutOfBoundsException: return "IndexOutOfBoundsException";
+        case ExceptionType::ResourceException: return "ResourceException";
+        case ExceptionType::IOException: return "IOException";
+        case ExceptionType::MemoryException: return "MemoryException";
+        case ExceptionType::ArithmeticException: return "ArithmeticException";
+        case ExceptionType::OverflowException: return "OverflowException";
+        case ExceptionType::StateException: return "StateException";
+        case ExceptionType::UninitializedException: return "UninitializedException";
+        case ExceptionType::AssertionFailedException: return "AssertionFailedException";
+        case ExceptionType::SystemException: return "SystemException";
+        case ExceptionType::NetworkException: return "NetworkException";
+        case ExceptionType::CustomException: return "CustomException";
+        default: return "UnknownException";
+        }
     }
 
     [[nodiscard]] CString __str__() const {
@@ -148,7 +147,7 @@ private:
     [[nodiscard]] CString format_message() const noexcept {
         try {
             auto msg = std::format("{} [{}:{} in {}]: {}",
-                                   type_to_string(type_),
+                                   type_to_cstr(type_),
                                    loc_.file_name(),
                                    loc_.line(),
                                    loc_.function_name(),
@@ -217,7 +216,7 @@ auto check(const bool condition, const ExceptionType type, format_string_wrapper
  */
 #define DEFINE_EXCEPTION_FACTORY(NAME, TYPE)                                                    \
     template <typename... Args>                                                                 \
-    auto NAME##_exception(format_string_wrapper<Args...> fmt_w, Args&&... args)->Exception {      \
+    auto NAME##_exception(format_string_wrapper<Args...> fmt_w, Args&&... args)->Exception {    \
         return Exception(TYPE, std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc); \
     }
 

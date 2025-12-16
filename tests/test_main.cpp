@@ -133,4 +133,5 @@ auto main() -> int {
 #elif TEST_MODE == 2
     my::print_banner();
 #endif
+    return 0;
 }

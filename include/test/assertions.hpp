@@ -11,8 +11,121 @@
 
 namespace my::test {
 
-// TODO: 优化测试套件
-class Assertions : public Object<Assertions> {
+class Assertions {
+public:
+    static auto fail2(std::string_view message, std::source_location loc = SRC_LOC) -> void {
+        throw assertion_failed_exception("{}\n  at {}:{}:{}\n  function: {}",
+                                         message,
+                                         loc.file_name(),
+                                         loc.line(),
+                                         loc.column(),
+                                         loc.function_name());
+    }
+
+    template <typename... Args>
+    static auto fail_fmt(format_string_wrapper<Args...> fmt_w, Args&&... args) -> void {
+        fail2(std::format(fmt_w.fmt, std::forward<Args>(args)...), fmt_w.loc);
+    }
+
+    static void assert_true(bool value, std::source_location loc = std::source_location::current()) {
+        if (!value) {
+            fail2("Assertion failed: expected true but got false", loc);
+        }
+    }
+
+    static void assert_false(bool value, std::source_location loc = std::source_location::current()) {
+        if (value) {
+            fail2("Assertion failed: expected false but got true", loc);
+        }
+    }
+
+    template <typename T>
+        requires std::is_pointer_v<T>
+    static void assert_null(T ptr, std::source_location loc = std::source_location::current()) {
+        if (ptr != nullptr) {
+            fail2("Assertion failed: expected nullptr but got non-null pointer", loc);
+        }
+    }
+
+    template <typename T>
+        requires std::is_pointer_v<T>
+    static void assert_not_null(T ptr, std::source_location loc = std::source_location::current()) {
+        if (ptr == nullptr) {
+            fail2("Assertion failed: expected non-null pointer but got nullptr", loc);
+        }
+    }
+
+    template <typename T, typename U>
+        requires requires(T a, U b) { a == b; }
+    static void assert_equals(const T& expected, const U& actual, std::source_location loc = std::source_location::current()) {
+        if (!(expected == actual)) {
+            fail2(std::format("Assertion failed: expected {} but got {}", expected, actual), loc);
+        }
+    }
+
+    template <typename T, typename U>
+        requires requires(T a, U b) { a != b; }
+    static void assert_not_equals(const T& unexpected, const U& actual, std::source_location loc = std::source_location::current()) {
+        if (unexpected == actual) {
+            fail2(std::format("Assertion failed: expected value != {}", unexpected), loc);
+        }
+    }
+
+    template <typename Ex, typename F>
+        requires std::invocable<F>
+    static void assert_throws(F&& func, std::source_location loc = std::source_location::current()) {
+        try {
+            func();
+        } catch (const Ex&) {
+            return;
+        } catch (...) {
+            fail2(std::format("Assertion failed: expected exception {} but got other exception", typeid(Ex).name()), loc);
+        }
+        fail2(std::format("Assertion failed: expected exception {} but no exception thrown", typeid(Ex).name()), loc);
+    }
+
+    template <typename Ex, typename F>
+        requires std::invocable<F> // TODO CStringView需要重新思考
+    static void assert_throws(CStringView expected_msg, F&& func, std::source_location loc = std::source_location::current()) {
+        try {
+            func();
+        } /*catch (const Ex& ex) {
+            if (expected_msg != ex.what()) {
+                fail2(std::format("Assertion failed: expected exception message \"{}\" but got \"{}\"", expected_msg, ex.what()), loc);
+            }
+            return;
+        }*/ catch (const Exception& ex) {
+            if (expected_msg != ex.message().data()) {
+                fail2(std::format("Assertion failed: expected exception message \"{}\" but got \"{}\"", expected_msg, ex.what()), loc);
+            }
+            return;
+        }  catch (...) {
+            fail2(std::format("Assertion failed: expected {}(\"{}\") but got other exception", typeid(Ex).name(), expected_msg), loc);
+        }
+
+        fail2(std::format("Assertion failed: expected {}(\"{}\") but no exception thrown", typeid(Ex).name(), expected_msg), loc);
+    }
+
+    template <typename Ex, typename F>
+        requires std::invocable<F>
+    static void assert_not_throws(F&& func, std::source_location loc = std::source_location::current()) {
+        try {
+            func();
+        } catch (const Ex& ex) {
+            fail2(std::format("Assertion failed: expected NO exception {}, but caught: {}", typeid(Ex).name(), ex.what()), loc);
+        }
+    }
+
+    template <typename Ex, typename F>
+        requires std::invocable<F>
+    static void assert_not_throws(CStringView msg, F&& func, std::source_location loc = std::source_location::current()) {
+        try {
+            func();
+        } catch (const Ex& ex) {
+            fail2(std::format("Assertion failed: expected NO exception {} ({}), but got: {}", typeid(Ex).name(), msg, ex.what()), loc);
+        }
+    }
+
 public:
     /**
      * @brief 断言表达式是否为true，否则抛出异常，不加用户消息

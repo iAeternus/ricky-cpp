@@ -27,7 +27,7 @@
 
 namespace my {
 
-void print_banner();
+//void print_banner();
 
 } // namespace my
 

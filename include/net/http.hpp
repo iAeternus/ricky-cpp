@@ -459,7 +459,7 @@ private:
         if (line.empty()) {
             throw runtime_exception("Empty request");
         }
-        log::console.debug("Request line: {}", SRC_LOC, line);
+        log::console.debug("Request line: {}", line);
 
         // 解析请求行
         auto parts = line.split(" "_s);
