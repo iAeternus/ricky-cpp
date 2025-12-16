@@ -8,7 +8,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
-#include "chain_node.hpp"
+#include "object.hpp"
 
 namespace my::util {
 

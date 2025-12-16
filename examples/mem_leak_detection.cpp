@@ -4,8 +4,9 @@
  * @date 2025/8/14
  * @version 1.0
  */
-#include "bi_chain.hpp"
-#include "chain.hpp"
+//#include "bi_chain.hpp"
+//#include "chain.hpp"
+#include "linked_list.hpp"
 #include "dyn_array.hpp"
 #include "link_list_queue.hpp"
 #include "rbtree_map.hpp"
@@ -27,15 +28,14 @@ using namespace my;
  * 1 = CString
  * 2 = util::String
  * 3 = util::Vec
- * 4 = util::Chain
- * 5 = util::BiChain
- * 6 = util::HashMap
- * 7 = util::RBTreeMap
- * 8 = util::DynArray
- * 9 = util::Array
- * 10 = util::Queue
+ * 4 = util::LinkedList
+ * 5 = util::HashMap
+ * 6 = util::RBTreeMap
+ * 7 = util::DynArray
+ * 8 = util::Array
+ * 9 = util::Queue
  */
-#define TRACE_OBJECT 6
+#define TRACE_OBJECT 4
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
@@ -129,45 +129,22 @@ void trace_vec() {
     v2.swap(v);
 }
 
-void trace_chain() {
-    using TraceChainList = util::ChainList<i32, mem::TracingAllocator<util::ChainNode<i32>>>;
+void trace_linked_list() {
+    using TraceLinkedList = util::LinkedListImpl<util::LinkedListNode<i32>, mem::TracingAllocator<util::LinkedListNode<i32>>>;
 #if VERBOSE == 1
     mem::TracingAllocator<util::ChainNode<i32>>::set_verbose(true);
 #endif
 
     // 构造
-    TraceChainList c1;
+    TraceLinkedList l1;
 
     // append
     for (i32 i = 0; i < 1024; ++i) {
-        c1.append(i);
+        l1.push_back(i);
     }
 
     // clear
-    c1.clear();
-}
-
-void trace_bi_chain() {
-    using TraceBiChainList = util::BiChainList<i32, mem::TracingAllocator<util::BiChainNode<i32>>>;
-#if VERBOSE == 1
-    mem::TracingAllocator<util::BiChainNode<i32>>::set_verbose(true);
-#endif
-
-    // 构造
-    TraceBiChainList bc1;
-
-    // append
-    for (i32 i = 0; i < 1024; ++i) {
-        bc1.append(i);
-    }
-
-    // clear
-    bc1.clear();
-
-    // prepend
-    for (i32 i = 0; i < 1024; ++i) {
-        bc1.prepend(i);
-    }
+    l1.clear();
 }
 
 // template <>
@@ -311,18 +288,16 @@ int main() {
 #elif TRACE_OBJECT == 3
     trace_vec();
 #elif TRACE_OBJECT == 4
-    trace_chain();
+    trace_linked_list();
 #elif TRACE_OBJECT == 5
-    trace_bi_chain();
-#elif TRACE_OBJECT == 6
     trace_hash_map();
-#elif TRACE_OBJECT == 7
+#elif TRACE_OBJECT == 6
     trace_sorted_dict();
-#elif TRACE_OBJECT == 8
+#elif TRACE_OBJECT == 7
     trace_dyn_array();
-#elif TRACE_OBJECT == 9
+#elif TRACE_OBJECT == 8
     trace_array();
-#elif TRACE_OBJECT == 10
+#elif TRACE_OBJECT == 9
     trace_queue();
 #endif
     return 0;
