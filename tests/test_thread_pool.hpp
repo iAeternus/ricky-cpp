@@ -62,7 +62,7 @@ auto should_push_tasks_with_exception = []() {
 
 auto should_wait = []() {
     // Given
-    i32 n = 100;
+    usize n = 100;
     async::ThreadPool tp{4};
     util::HashMap<i32, i32> futures;
 
@@ -74,7 +74,7 @@ auto should_wait = []() {
 
     // Then
     for (usize i = 0; i < n; ++i) {
-        Assertions::assertEquals(i * 2, futures[i]);
+        Assertions::assertEquals(i * 2, static_cast<usize>(futures[i]));
     }
 };
 
@@ -89,7 +89,7 @@ auto test_thread_pool() {
     group.startAll();
 }
 
-i32 n; // count of tasks
+usize n; // count of tasks
 auto task = []() {
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
 };

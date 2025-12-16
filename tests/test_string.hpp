@@ -24,7 +24,7 @@ auto should_add = []() {
     s += cs;
 
     // Then
-    Assertions::assertEquals(9, s.size());
+    Assertions::assertEquals(9ULL, s.size());
     Assertions::assertEquals(util::CodePoint{'b'}, s[3]);
     Assertions::assertEquals("abcbcdcde"_s, s);
 };
@@ -37,7 +37,7 @@ auto should_mul = []() {
     s = s * 2;
 
     // Then
-    Assertions::assertEquals(6, s.size());
+    Assertions::assertEquals(6ULL, s.size());
     Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
 };
 
@@ -51,7 +51,7 @@ auto should_slice = []() {
     auto res3 = s.slice(1, -1);
 
     // Then
-    Assertions::assertEquals(1, res.size());
+    Assertions::assertEquals(1ULL, res.size());
     Assertions::assertEquals("b"_s, res);
     Assertions::assertEquals("def"_s, res2);
     Assertions::assertEquals("bcde"_s, res3);
@@ -70,10 +70,10 @@ auto should_find = []() {
     auto pos5 = s2.find(""_s);
 
     // Then
-    Assertions::assertEquals(3, pos);
-    Assertions::assertEquals(5, pos2);
+    Assertions::assertEquals(3ULL, pos);
+    Assertions::assertEquals(5ULL, pos2);
     Assertions::assertEquals(npos, pos3);
-    Assertions::assertEquals(7, pos4);
+    Assertions::assertEquals(7ULL, pos4);
     Assertions::assertEquals(npos, pos5);
 };
 
@@ -85,7 +85,7 @@ auto should_find_all = []() {
     auto poss = s.find_all("abc"_s);
 
     // Then
-    Assertions::assertEquals(2, poss.size());
+    Assertions::assertEquals(2ULL, poss.size());
     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
 };
 
@@ -275,10 +275,10 @@ auto test_string_view = []() {
     util::String s = "abc我def";
 
     // When
-    util::StringView sv(s, 1, 5);
+    util::StringView sv(s, 1ULL, 5ULL);
 
     // Then
-    Assertions::assertEquals(5, sv.length());
+    Assertions::assertEquals(5ULL, sv.length());
     Assertions::assertEquals(util::CodePoint{'b'}, sv[0]);
     Assertions::assertEquals(util::CodePoint{'e'}, sv[4]);
     Assertions::assertEquals(util::CodePoint{"我"}, sv[2]);

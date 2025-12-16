@@ -18,7 +18,7 @@ auto it_works = []() {
 
 auto should_append = []() {
     // Given
-    i32 n = 100;
+    usize n = 100;
     util::Vec<CString> d;
 
     // When
@@ -131,12 +131,12 @@ auto should_slice = []() {
     util::Vec<i32> v = {1, 2, 3, 4, 5, 6};
 
     // When
-    auto res = v.slice(1, 2);
-    auto res2 = v.slice(3);
-    auto res3 = v.slice(1, -1);
+    auto res = v.slice(1ULL, 2LL);
+    auto res2 = v.slice(3ULL);
+    auto res3 = v.slice(1ULL, -1LL);
 
     // Then
-    Assertions::assertEquals(1, res.size());
+    Assertions::assertEquals(1ULL, res.size());
     Assertions::assertEquals("[2]"_cs, res.__str__());
     Assertions::assertEquals("[4,5,6]"_cs, res2.__str__());
     Assertions::assertEquals("[2,3,4,5]"_cs, res3.__str__());

@@ -24,7 +24,7 @@ auto should_append_and_prepend = []() {
 
 auto should_iterable = []() {
     // Given
-    i32 N = 100;
+    usize N = 100;
     util::BiChainList<i32> bc;
     for (usize i = 0; i < N; ++i) {
         bc.append(i + 1);

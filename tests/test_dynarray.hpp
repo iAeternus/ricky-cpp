@@ -18,11 +18,11 @@ auto it_works = []() {
 
 auto should_append = []() {
     // Given
-    i32 n = 100;
+    usize n = 100;
     util::DynArray<CString> d;
 
     // When
-    for (i32 i = 0; i < n; ++i) {
+    for (usize i = 0; i < n; ++i) {
         d.append(cstr(i));
     }
 
@@ -44,9 +44,9 @@ auto should_insert = []() {
     d.insert(0, 100);
 
     // Then
-    Assertions::assertEquals(6, d.size());
+    Assertions::assertEquals(6ULL, d.size());
     Assertions::assertEquals(100, *d.begin());
-    Assertions::assertEquals(1, d.find(1));
+    Assertions::assertEquals(1ULL, d.find(1));
 };
 
 auto should_pop = []() {
@@ -57,14 +57,14 @@ auto should_pop = []() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(4, d.size());
+    Assertions::assertEquals(4ULL, d.size());
     Assertions::assertEquals(4, d.at(d.size() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    Assertions::assertEquals(3, d.size());
+    Assertions::assertEquals(3ULL, d.size());
     Assertions::assertEquals(2, d.at(0));
 };
 
@@ -76,7 +76,7 @@ auto should_pop2 = []() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(0, d.size());
+    Assertions::assertEquals(0ULL, d.size());
     Assertions::assertTrue(d.empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
@@ -95,7 +95,7 @@ auto should_clear = []() {
     d.clear();
 
     // Then
-    Assertions::assertEquals(0, d.size());
+    Assertions::assertEquals(0ULL, d.size());
     Assertions::assertTrue(d.empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
@@ -108,7 +108,7 @@ auto should_to_array = []() {
     auto arr = d.to_array();
 
     // Then
-    Assertions::assertEquals(5, i32(arr.size()));
+    Assertions::assertEquals(5ULL, arr.size());
     Assertions::assertEquals(5, arr.at(arr.size() - 1));
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
@@ -122,7 +122,7 @@ auto should_extend = []() {
     d = d + util::DynArray<i32>{8, 9, 10};
 
     // Then
-    Assertions::assertEquals(10, d.size());
+    Assertions::assertEquals(10ULL, d.size());
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
@@ -150,7 +150,7 @@ auto should_find = []() {
     auto res2 = d.find("ddd"_cs);
 
     // Then
-    Assertions::assertEquals(0, res);
+    Assertions::assertEquals(0ULL, res);
     Assertions::assertEquals(d.size(), res2);
 };
 

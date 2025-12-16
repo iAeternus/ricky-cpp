@@ -8,7 +8,7 @@ namespace my::test::test_chain {
 
 auto should_append = []() {
     // Given
-    i32 N = 100;
+    usize N = 100;
     util::ChainList<CString> c;
 
     // When
@@ -17,7 +17,7 @@ auto should_append = []() {
     }
 
     // Then
-    Assertions::assertEquals(N, i32(c.size()));
+    Assertions::assertEquals(N, c.size());
     Assertions::assertFalse(c.empty());
     Assertions::assertTrue(c.contains(cstr(N - 1)));
     Assertions::assertFalse(c.contains(cstr(N)));
@@ -26,7 +26,7 @@ auto should_append = []() {
 
 auto should_iterable = []() {
     // Given
-    i32 N = 100;
+    usize N = 100;
     util::ChainList<i32> c;
     for (usize i = 0; i < N; ++i) {
         c.append(i + 1);

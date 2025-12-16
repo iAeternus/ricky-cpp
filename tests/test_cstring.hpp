@@ -56,7 +56,7 @@ auto should_slice = []() {
     auto res3 = s.slice(1, -1);
 
     // Then
-    Assertions::assertEquals(1, res.length());
+    Assertions::assertEquals(1ULL, res.length());
     Assertions::assertEquals("b"_cs, res.to_string());
     Assertions::assertEquals("def"_cs, res2.to_string());
     Assertions::assertEquals("bcde"_cs, res3.to_string());
@@ -75,10 +75,10 @@ auto should_find = []() {
     auto pos5 = s2.find("");
 
     // Then
-    Assertions::assertEquals(3, pos);
-    Assertions::assertEquals(5, pos2);
+    Assertions::assertEquals(3ULL, pos);
+    Assertions::assertEquals(5ULL, pos2);
     Assertions::assertEquals(npos, pos3);
-    Assertions::assertEquals(7, pos4);
+    Assertions::assertEquals(7ULL, pos4);
     Assertions::assertEquals(npos, pos5);
 };
 
@@ -90,9 +90,9 @@ auto should_find_all = []() {
     auto poss = s.find_all("abc");
 
     // Then
-    Assertions::assertEquals(2, poss.size());
-    Assertions::assertEquals(0, poss[0]);
-    Assertions::assertEquals(6, poss[1]);
+    Assertions::assertEquals(2ULL, poss.size());
+    Assertions::assertEquals(0ULL, poss[0]);
+    Assertions::assertEquals(6ULL, poss[1]);
 };
 
 auto should_judge_starts_with = []() {

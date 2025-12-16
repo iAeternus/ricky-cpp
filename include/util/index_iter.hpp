@@ -25,7 +25,7 @@ class IndexIterator : public Object<IndexIterator<IsConst, C, V, Alloc>> {
 
 public:
     using Super = Object<IndexIterator>;
-    using Self = IndexIterator;
+    using Self = IndexIterator<IsConst, C, V, Alloc>;
     using allocator_type = Alloc;
 
     using container_t = std::conditional_t<IsConst, const C, C>;
@@ -40,17 +40,10 @@ public:
     IndexIterator(container_t* container = nullptr, const usize index = 0) :
             container_(container), index_(index) {}
 
-    template <bool OtherConst>
-        requires(IsConst && !OtherConst)
-    IndexIterator(const IndexIterator<OtherConst, C, V>& other) :
+    IndexIterator(const Self& other) :
             container_(other.container_), index_(other.index_) {}
 
-    IndexIterator(const Self& other) :
-            IndexIterator(other.container_, other.index_) {}
-
-    template <bool OtherConst>
-        requires(IsConst && !OtherConst)
-    Self& operator=(const IndexIterator<OtherConst, C, V>& other) {
+    Self& operator=(const Self& other) {
         this->container_ = other.container_;
         this->index_ = other.index_;
         return *this;
@@ -143,15 +136,6 @@ private:
     container_t* container_; // 容器
     usize index_;            // 索引
 };
-
-/**
- * @brief 推导指南 TODO Alloc
- */
-template <typename C, typename V, typename Alloc = mem::Allocator<V>>
-IndexIterator(C*, usize) -> IndexIterator<false, C, V, Alloc>;
-
-template <typename C, typename V, typename Alloc = mem::Allocator<V>>
-IndexIterator(const C*, usize) -> IndexIterator<true, C, V, Alloc>;
 
 } // namespace my::util
 

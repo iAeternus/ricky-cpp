@@ -358,10 +358,10 @@ public:
     Self slice(usize start, isize end) const {
         const auto m_size = size();
         start = neg_index(start, m_size);
-        end = neg_index(end, static_cast<isize>(m_size));
-        Self ans(end - start);
+        usize u_end = static_cast<usize>(neg_index(end, static_cast<isize>(m_size)));
+        Self ans(u_end - start);
         usize pos = 0;
-        for (usize i = start; i < end; ++i) {
+        for (usize i = start; i < u_end; ++i) {
             ans.at(pos++) = at(i);
         }
         return ans;

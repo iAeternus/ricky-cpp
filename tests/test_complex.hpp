@@ -29,7 +29,7 @@ auto should_construct = []() {
 
 auto should_fail_to_parse_if_invalid_format = []() {
     Assertions::assertThrows("Invalid complex number format", []() {
-        math::Complex c = "-1a + 2i";
+        math::Complex _ = "-1a + 2i";
     });
 };
 

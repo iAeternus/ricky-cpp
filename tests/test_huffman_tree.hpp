@@ -24,9 +24,9 @@ auto it_works = []() {
     fs::win::File file2{path2, "r"};
 
     Assertions::assertEquals(util::String(file2.read().data()), encode_res);
-    Assertions::assertEquals(2359, h.wpl());
+    Assertions::assertEquals(2359U, h.wpl());
     Assertions::assertEquals(4.510516252390057, h.acl());
-    Assertions::assertEquals(10, h.height());
+    Assertions::assertEquals(10ULL, h.height());
 
     // When
     auto decode_res = h.decode();
@@ -45,7 +45,7 @@ auto should_handle_empty_string = []() {
 
     // Then
     Assertions::assertTrue(encode_res.empty());
-    Assertions::assertEquals(0, h.wpl());
+    Assertions::assertEquals(0ULL, h.wpl());
     Assertions::assertEquals(0.0, h.acl());
 
     // When

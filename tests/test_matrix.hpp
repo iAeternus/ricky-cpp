@@ -308,7 +308,7 @@ auto should_fail_to_cmp_if_matrix_not_match = []() {
 
     // When & Then
     Assertions::assertThrows("only matrices of the same dimension are comparable", [&]() {
-        auto res = m.__cmp__(m2);
+        auto _ = m.__cmp__(m2);
     });
 };
 

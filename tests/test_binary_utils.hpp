@@ -90,9 +90,9 @@ auto should_roundup2 = []() {
     auto res3 = util::roundup2(x3);
 
     // Then
-    Assertions::assertEquals(0, res);
-    Assertions::assertEquals(4, res2);
-    Assertions::assertEquals(4, res3);
+    Assertions::assertEquals(0ULL, res);
+    Assertions::assertEquals(4ULL, res2);
+    Assertions::assertEquals(4ULL, res3);
 };
 
 auto test_binary_utils() {

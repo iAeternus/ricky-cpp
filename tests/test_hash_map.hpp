@@ -17,7 +17,7 @@ auto should_insert = []() {
     d.insert("ccc"_cs, 2);
 
     // Then
-    Assertions::assertEquals(3, i32(d.size()));
+    Assertions::assertEquals(3ULL, d.size());
     Assertions::assertTrue(d.contains("aaa"_cs));
     Assertions::assertFalse(d.contains("ddd"_cs));
 
@@ -25,7 +25,7 @@ auto should_insert = []() {
     d.insert("ccc"_cs, 0);
 
     // Then
-    Assertions::assertEquals(3, i32(d.size()));
+    Assertions::assertEquals(3ULL, d.size());
     Assertions::assertEquals(0, d.get("ccc"_cs));
 };
 
@@ -79,7 +79,7 @@ auto should_update = []() {
     d.update({{4, 1}, {5, 1}});
 
     // Then
-    Assertions::assertEquals(5, i32(d.size()));
+    Assertions::assertEquals(5ULL, d.size());
 };
 
 auto should_remove = []() {
@@ -90,7 +90,7 @@ auto should_remove = []() {
     d.remove(1);
 
     // Then
-    Assertions::assertEquals(2, d.size());
+    Assertions::assertEquals(2ULL, d.size());
     Assertions::assertFalse(d.contains(1));
 };
 
@@ -144,7 +144,8 @@ auto test_hash_map() {
     group.startAll();
 }
 
-inline i32 n, k;
+inline usize n;
+inline i32 k;
 inline std::vector<i32> nums;
 inline std::vector<std::string> strs;
 
@@ -173,15 +174,15 @@ auto speed_of_unordered_map_count = []() {
 
 auto speed_of_hash_map_insert = []() {
     util::HashMap<std::string, i32> d;
-    for (i32 i = 0; i < n; ++i) {
-        d.insert(strs[i], i);
+    for (usize i = 0; i < n; ++i) {
+        d.insert(strs[i], 1);
     }
 };
 
 auto speed_of_unordered_map_insert = []() {
     std::unordered_map<std::string, i32> mp;
-    for (i32 i = 0; i < n; ++i) {
-        mp.insert(std::make_pair(strs[i], i));
+    for (usize i = 0; i < n; ++i) {
+        mp.insert(std::make_pair(strs[i], 1));
     }
 };
 

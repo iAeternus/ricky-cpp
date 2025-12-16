@@ -153,7 +153,7 @@ auto test_batch_operations() -> void {
                         util::String("obj_") + util::String::from_i32(i));
     }
 
-    Assertions::assert_equals(N, ResourceObject::count);
+    Assertions::assert_equals(N, static_cast<usize>(ResourceObject::count));
 
     // 验证构造正确性
     for (std::size_t i = 0; i < N; ++i) {
