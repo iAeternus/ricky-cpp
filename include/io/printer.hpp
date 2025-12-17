@@ -8,7 +8,7 @@
 #define PRINTER_HPP
 
 #include "object.hpp"
-#include "../color.hpp"
+#include "color.hpp"
 
 namespace my::io {
 

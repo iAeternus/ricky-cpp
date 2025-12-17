@@ -16,6 +16,7 @@ namespace my::util {
  */
 template <typename T>
 concept LinkedListNodeType = requires(T a, const T& b, T&& c) {
+    typename T::value_t;
     { T(b) } -> std::same_as<T>;
     { T(std::move(c)) } -> std::same_as<T>;
     { a = b } -> std::same_as<T&>;

@@ -8,7 +8,7 @@
 #define RBTREE_MAP_HPP
 
 #include "key_value.hpp"
-#include "../color.hpp"
+#include "color.hpp"
 #include "my_pair.hpp"
 
 namespace my::util {
