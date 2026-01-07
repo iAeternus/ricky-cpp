@@ -166,6 +166,11 @@ constexpr auto roundup2(usize x) -> usize {
     return x + 1LL;
 }
 
+template <typename T>
+constexpr auto pow_of_2(T t) -> bool {
+    return (t & (t - 1)) == 0;
+}
+
 } // namespace my::util
 
 #endif // BINARY_UTILS_HPP

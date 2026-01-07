@@ -121,28 +121,7 @@ concept NonClassType = !std::is_class_v<T>;
 template <typename T>
 concept DType = is_valid_dtype_v<T>;
 
-/// 迭代器
-template <typename I>
-concept Iterator = requires(I iter) {
-    typename I::Item;
 
-    /// 返回 &Item 表示有效元素，返回 nullptr 表示结束
-    { iter.next() } -> std::same_as<typename I::Item*>;
-};
-
-template <typename T>
-concept IntoIterator = requires(T value) {
-    typename T::Iter;
-    requires Iterator<typename T::Iter>;
-    { value.into_iter() } -> std::same_as<typename T::Iter>;
-};
-
-/// 容器类型
-template <typename C>
-concept Container = Iterable<C> && requires(C c) {
-    typename C::value_t;
-    { c.size() } -> std::convertible_to<usize>;
-};
 
 /// 分配器感知
 template <typename C>

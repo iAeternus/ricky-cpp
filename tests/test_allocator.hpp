@@ -9,6 +9,7 @@
 #include "ricky_test.hpp"
 #include "alloc.hpp"
 #include "my_config.hpp"
+#include "str.hpp"
 
 namespace my::test::test_allocator {
 
@@ -73,27 +74,41 @@ public:
 /**
  * @brief 构造时抛异常的类型
  */
-class ThrowingConstructor {
-public:
-    explicit ThrowingConstructor(bool should_throw = true) {
-        if (should_throw) {
-            throw std::runtime_error("Constructor failed");
+struct ThrowingConstructor {
+    static inline int constructed = 0;
+    static inline int alive = 0;
+    static inline int call_index = 0;
+
+    bool ok;
+
+    explicit ThrowingConstructor(bool ok_) :
+            ok(ok_) {
+        if (!ok) {
+            throw std::runtime_error("boom");
         }
-        ++constructed_count;
+        ++constructed;
+        ++alive;
     }
 
-    ~ThrowingConstructor() { --constructed_count; }
+    ThrowingConstructor() {
+        if (call_index++ == 2) {
+            throw std::runtime_error("boom");
+        }
+        ++constructed;
+        ++alive;
+    }
 
-    static i32 constructed_count;
+    ~ThrowingConstructor() {
+        --alive;
+    }
+
+    static void reset() {
+        constructed = 0;
+        alive = 0;
+        call_index = 0;
+    }
 };
 
-inline i32 ThrowingConstructor::constructed_count = 0;
-
-// ==================== 基础功能测试 ====================
-
-/**
- * @brief 基本分配和释放测试
- */
 auto test_basic_allocation() -> void {
     Alloc<i32> alloc;
 
@@ -116,9 +131,6 @@ auto test_basic_allocation() -> void {
     alloc.deallocate(ptr, 1);
 }
 
-/**
- * @brief 对象构造和析构测试
- */
 auto test_object_construction() -> void {
     Alloc<ResourceObject> alloc;
     ResourceObject::count = 0;
@@ -137,9 +149,6 @@ auto test_object_construction() -> void {
     Assertions::assert_equals(0, ResourceObject::count);
 }
 
-/**
- * @brief 批量构造和析构测试
- */
 auto test_batch_operations() -> void {
     Alloc<ResourceObject> alloc;
     ResourceObject::count = 0;
@@ -149,8 +158,7 @@ auto test_batch_operations() -> void {
 
     // 批量构造
     for (std::size_t i = 0; i < N; ++i) {
-        alloc.construct(array + i, static_cast<i32>(i),
-                        util::String("obj_") + util::String::from_i32(i));
+        alloc.construct(array + i, static_cast<i32>(i), util::String("obj_") + util::String::from_i32(i));
     }
 
     Assertions::assert_equals(N, static_cast<usize>(ResourceObject::count));
@@ -158,9 +166,7 @@ auto test_batch_operations() -> void {
     // 验证构造正确性
     for (std::size_t i = 0; i < N; ++i) {
         Assertions::assert_equals(static_cast<i32>(i), array[i].value);
-        Assertions::assert_equals(
-            util::String("obj_") + util::String::from_i32(i),
-            array[i].name);
+        Assertions::assert_equals(util::String("obj_") + util::String::from_i32(i), array[i].name);
     }
 
     // 批量销毁
@@ -170,9 +176,6 @@ auto test_batch_operations() -> void {
     alloc.deallocate(array, N);
 }
 
-/**
- * @brief 安全创建对象测试
- */
 auto test_safe_creation() -> void {
     Alloc<ResourceObject> alloc;
     ResourceObject::count = 0;
@@ -190,25 +193,20 @@ auto test_safe_creation() -> void {
 
     // 测试异常安全 - 这里需要测试构造失败的情况
     // 注意：create 在异常时会返回 nullptr
-    ThrowingConstructor::constructed_count = 0;
+    ThrowingConstructor::constructed = 0;
 
     Alloc<ThrowingConstructor> throwing_alloc;
-    ThrowingConstructor* bad_obj = throwing_alloc.create();
+    ThrowingConstructor* bad_obj = throwing_alloc.create(false);
     Assertions::assert_null(bad_obj); // 构造失败应返回 nullptr
 }
 
-// ==================== 高级功能测试 ====================
-
-/**
- * @brief 对齐分配测试
- */
 auto test_aligned_allocation() -> void {
     Alloc<AlignedType> alloc;
 
     // 测试不同对齐要求
     //    AlignedType* ptr16 = alloc.allocate_aligned<16>(5);
-    //    Assertions::assertNotNull(ptr16);
-    //    Assertions::assertTrue(reinterpret_cast<uintptr_t>(ptr16) % 16 == 0);
+    //    Assertions::assert_not_null(ptr16);
+    //    Assertions::assert_true(reinterpret_cast<uintptr_t>(ptr16) % 16 == 0);
     //    alloc.deallocate(ptr16, 5);
 
     AlignedType* ptr64 = alloc.allocate_aligned<64>(3);
@@ -224,19 +222,15 @@ auto test_aligned_allocation() -> void {
     alloc.deallocate(default_ptr, 2);
 }
 
-/**
- * @brief 超额分配测试
- */
 auto test_over_allocation() -> void {
     Alloc<i32> alloc;
 
-    // 测试 allocate_at_least
     auto result = alloc.allocate_at_least(7);
     Assertions::assert_not_null(result.ptr);
 
     // 结果应该是2的幂，至少为请求的数量
     Assertions::assert_true(result.count >= 7);
-    Assertions::assert_true((result.count & (result.count - 1)) == 0); // 是2的幂
+    Assertions::assert_true(util::pow_of_2(result.count)); // 是2的幂
 
     // 可以安全使用整个分配的区域
     for (std::size_t i = 0; i < result.count; ++i) {
@@ -262,29 +256,20 @@ auto test_over_allocation() -> void {
  */
 auto test_exception_safety() -> void {
     Alloc<ThrowingConstructor> alloc;
-    ThrowingConstructor::constructed_count = 0;
 
-    // 测试 construct_n 的异常安全
+    ThrowingConstructor::reset();
+
     constexpr std::size_t N = 5;
-    ThrowingConstructor* array = alloc.allocate(N);
+    auto* p = alloc.allocate(N);
 
     try {
-        // 第三个对象会抛出异常
-        for (std::size_t i = 0; i < N; ++i) {
-            alloc.construct(array + i, i != 2); // 第三个对象抛出
-        }
+        alloc.construct_n(p, N);
+        Assertions::fail2("Expected exception not thrown");
     } catch (const std::runtime_error&) {
-        // 应该只有前两个对象被构造
-        Assertions::assert_equals(2, ThrowingConstructor::constructed_count);
-
-        // 清理：construct_n 已经清理了前两个对象
-        // 但需要释放内存
-        alloc.deallocate(array, N);
-        return;
+        Assertions::assert_equals(2, ThrowingConstructor::constructed);
+        Assertions::assert_equals(0, ThrowingConstructor::alive);
+        alloc.deallocate(p, N);
     }
-
-    // 不应该执行到这里
-    Assertions::fail2("Expected exception not thrown");
 }
 
 // ==================== STL 容器集成测试 ====================
@@ -405,13 +390,8 @@ auto test_batch_allocation_performance() -> void {
 auto test_max_allocation() -> void {
     Alloc<char> alloc;
 
-    // 分配接近最大值
-    std::size_t max = alloc.max_size();
-    Assertions::assert_true(max > 0);
-
-    // 测试分配失败 TODO
     Assertions::assert_throws<std::bad_alloc>([&]() {
-        auto _ = alloc.allocate(max + 10000); // 应该抛出 bad_alloc
+        alloc.allocate(std::numeric_limits<std::size_t>::max());
     });
 }
 
