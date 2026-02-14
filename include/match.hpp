@@ -1,8 +1,6 @@
 #ifndef MATCH_HPP
 #define MATCH_HPP
 
-#include "my_config.hpp"
-
 #include <variant>
 
 namespace my {

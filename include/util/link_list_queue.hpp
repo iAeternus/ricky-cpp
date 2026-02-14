@@ -8,6 +8,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
+#include "my_exception.hpp"
 #include "object.hpp"
 
 namespace my::util {

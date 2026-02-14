@@ -133,7 +133,7 @@ private:
     static Random* instance_;
 };
 
-Random* Random::instance_ = nullptr;
+inline Random* Random::instance_ = nullptr;
 
 } // namespace my::util
 

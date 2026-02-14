@@ -6,6 +6,7 @@
  */
 //#include "bi_chain.hpp"
 //#include "chain.hpp"
+#include "hash_map.hpp"
 #include "linked_list.hpp"
 #include "dyn_array.hpp"
 #include "link_list_queue.hpp"

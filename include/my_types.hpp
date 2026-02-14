@@ -4,7 +4,6 @@
  * @date 2025/12/16
  * @version 1.0
  */
-
 #ifndef MY_TYPES_HPP
 #define MY_TYPES_HPP
 

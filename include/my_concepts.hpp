@@ -7,7 +7,6 @@
 #ifndef MY_CONCEPTS_HPP
 #define MY_CONCEPTS_HPP
 
-#include "my_config.hpp"
 #include "my_traits.hpp"
 
 #include <concepts>

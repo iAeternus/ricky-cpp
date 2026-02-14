@@ -76,7 +76,7 @@ struct BiTreeNode : Object<BiTreeNode<T>> {
  * @tparam Node 节点类型
  * @tparam Alloc 内存分配器类型
  */
-template <BiTreeNodeType Node, typename Alloc = Allocator<Node>>
+template <BiTreeNodeType Node, typename Alloc = mem::Allocator<Node>>
 class TreeImpl : public Object<TreeImpl<Node, Alloc>> {
 public:
     using Self = TreeImpl<Node, Alloc>;

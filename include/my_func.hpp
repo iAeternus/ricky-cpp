@@ -7,8 +7,6 @@
 #ifndef MY_FUNC_HPP
 #define MY_FUNC_HPP
 
-#include "my_config.hpp"
-
 #include <functional>
 
 namespace my {

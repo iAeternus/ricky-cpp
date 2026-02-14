@@ -1010,7 +1010,7 @@ constexpr auto i2c(const i32 ch) noexcept -> char {
  * @param len 字符串长度
  * @return 转换后的 CString 对象
  */
-auto operator""_cs(const char* str, const size_t len)->CString {
+inline auto operator""_cs(const char* str, const size_t len)->CString {
     return CString{str, len};
 }
 

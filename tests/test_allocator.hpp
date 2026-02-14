@@ -4,6 +4,7 @@
 #include <vector>
 #include <list>
 
+#include "binary_utils.hpp"
 #include "ricky_test.hpp"
 #include "alloc.hpp"
 #include "str.hpp"
@@ -388,7 +389,7 @@ inline auto test_max_allocation() -> void {
     Alloc<char> alloc;
 
     Assertions::assert_throws<std::bad_alloc>([&]() {
-        alloc.allocate(std::numeric_limits<std::size_t>::max());
+        auto ptr = alloc.allocate(std::numeric_limits<std::size_t>::max());
     });
 }
 

@@ -11,7 +11,6 @@
 #include "my_format.hpp"
 
 #include <exception>
-#include <unordered_map>
 
 namespace my {
 

@@ -1036,27 +1036,27 @@ namespace my {
  * @param length 字符串长度
  * @return 转换后的 `String` 对象
  */
-auto operator""_s(const char* str, size_t length) -> util::String {
+inline auto operator""_s(const char* str, size_t length) -> util::String {
     return util::String{str, length};
 }
 
-auto operator""_s16(const char* str, size_t length) -> util::Utf16String {
+inline auto operator""_s16(const char* str, size_t length) -> util::Utf16String {
     return util::Utf16String{str, length};
 }
 
-auto operator""_s32(const char* str, size_t length) -> util::Utf32String {
+inline auto operator""_s32(const char* str, size_t length) -> util::Utf32String {
     return util::Utf32String{str, length};
 }
 
-auto operator""_sgb(const char* str, size_t length) -> util::Gb2312String {
+inline auto operator""_sgb(const char* str, size_t length) -> util::Gb2312String {
     return util::Gb2312String{str, length};
 }
 
-auto operator""_slat(const char* str, size_t length) -> util::Latin1String {
+inline auto operator""_slat(const char* str, size_t length) -> util::Latin1String {
     return util::Latin1String{str, length};
 }
 
-auto operator""_sasc(const char* str, size_t length) -> util::AsciiString {
+inline auto operator""_sasc(const char* str, size_t length) -> util::AsciiString {
     return util::AsciiString{str, length};
 }
 

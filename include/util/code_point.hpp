@@ -7,9 +7,9 @@
 #ifndef CODE_POINT_HPP
 #define CODE_POINT_HPP
 
+#include "array.hpp"
 #include "encoding.hpp"
-
-#include <shared_mutex>
+#include "vec.hpp"
 
 namespace my::util {
 

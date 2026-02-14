@@ -61,7 +61,7 @@ auto should_find = []() {
     auto pos = sb.find("\r\n\r\r"_s);
 
     // Then
-    Assertions::assertEquals(6, pos);
+    Assertions::assertEquals(6ull, pos);
 };
 
 auto test_string_builder() {
@@ -76,7 +76,7 @@ auto test_string_builder() {
     group.startAll();
 }
 
-constexpr i32 N = 1e5;
+constexpr usize N = 1e5;
 
 auto speed_of_string_builder_append_string = []() {
     util::StringBuilder sb;
