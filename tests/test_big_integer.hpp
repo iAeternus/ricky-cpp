@@ -6,7 +6,7 @@
 
 namespace my::test::test_big_integer {
 
-auto should_construct_with_i64 = []() {
+inline auto should_construct_with_i64 = []() {
     // Given
     i64 num = 123456789;
     i64 num2 = 0;
@@ -26,7 +26,7 @@ auto should_construct_with_i64 = []() {
     Assertions::assertEquals(9, bi3.size());
 };
 
-auto should_construct_with_c_string = []() {
+inline auto should_construct_with_c_string = []() {
     // Given
     CString num = "123456789012345678901234567890";
     CString num2 = "0";
@@ -50,19 +50,19 @@ auto should_construct_with_c_string = []() {
     Assertions::assertEquals(30, bi4.size());
 };
 
-auto should_fail_to_construct_if_str_invalid = []() {
+inline auto should_fail_to_construct_if_str_invalid = []() {
     Assertions::assertThrows("Invalid string", []() {
         math::BigInteger bi = nullptr;
     });
 };
 
-auto should_fail_to_construct_if_invalid_char_in_str = []() {
+inline auto should_fail_to_construct_if_invalid_char_in_str = []() {
     Assertions::assertThrows("Invalid character in string", []() {
         math::BigInteger bi = "123a456";
     });
 };
 
-auto should_judge_odd = []() {
+inline auto should_judge_odd = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "123456789012345678901234567891";
@@ -79,7 +79,7 @@ auto should_judge_odd = []() {
     Assertions::assertFalse(res3);
 };
 
-auto should_left_shift = []() {
+inline auto should_left_shift = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890"_cs;
 
@@ -92,7 +92,7 @@ auto should_left_shift = []() {
     Assertions::assertEquals("123456789012345678901234567890"_cs, res2.__str__());
 };
 
-auto should_right_shift = []() {
+inline auto should_right_shift = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "-123456789012345678901234567890";
@@ -110,7 +110,7 @@ auto should_right_shift = []() {
     Assertions::assertEquals(math::BigInteger::ZERO, res4);
 };
 
-auto should_add = []() {
+inline auto should_add = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -142,7 +142,7 @@ auto should_add = []() {
     Assertions::assertEquals("123456789012345678901234567892"_cs, res4.__str__());
 };
 
-auto should_subtract = []() {
+inline auto should_subtract = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -174,7 +174,7 @@ auto should_subtract = []() {
     Assertions::assertEquals("123456789012345678901234567888"_cs, res4.__str__());
 };
 
-auto should_multiply = []() {
+inline auto should_multiply = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -188,7 +188,7 @@ auto should_multiply = []() {
     Assertions::assertEquals(res, bi);
 };
 
-auto should_divide = []() {
+inline auto should_divide = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -206,13 +206,13 @@ auto should_divide = []() {
     Assertions::assertEquals("493827160549382716054938271605"_cs, bi2.__str__());
 };
 
-auto should_fail_to_divide_if_divide_by_zero = []() {
+inline auto should_fail_to_divide_if_divide_by_zero = []() {
     Assertions::assertThrows("/ by zero", []() {
         math::BigInteger(123) / math::BigInteger::ZERO;
     });
 };
 
-auto should_modulus = []() {
+inline auto should_modulus = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -226,7 +226,7 @@ auto should_modulus = []() {
     Assertions::assertEquals("9000000000900000000090"_cs, bi2.__str__());
 };
 
-auto should_power = []() {
+inline auto should_power = []() {
     // Given
     math::BigInteger base = "123456789012345678901234567890";
 
@@ -243,7 +243,7 @@ auto should_power = []() {
     Assertions::assertEquals(math::BigInteger::ONE, res4);
 };
 
-auto should_slice = []() {
+inline auto should_slice = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "-123456789012345678901234567890";
@@ -270,7 +270,7 @@ auto should_slice = []() {
     Assertions::assertEquals("-12345678901234567890"_cs, res8.__str__());
 };
 
-auto should_logical = []() {
+inline auto should_logical = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -292,7 +292,7 @@ auto should_logical = []() {
     Assertions::assertTrue(res6);
 };
 
-auto should_compare = []() {
+inline auto should_compare = []() {
     // Given
     math::BigInteger bi = "123456789012345678901234567890";
     math::BigInteger bi2 = "987654321098765432109876543210";
@@ -314,7 +314,7 @@ auto should_compare = []() {
     Assertions::assertTrue(res6);
 };
 
-auto test_big_integer() {
+inline auto test_big_integer() {
     UnitTestGroup group{"test_big_integer"};
 
     group.addTest("should_construct_with_i64", should_construct_with_i64);

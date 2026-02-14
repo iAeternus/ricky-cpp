@@ -6,7 +6,7 @@
 
 namespace my::test::test_array {
 
-auto it_works = []() {
+inline auto it_works = []() {
     util::Array<CString> arr(5);
     Assertions::assertFalse(arr.empty());
 
@@ -23,7 +23,7 @@ auto it_works = []() {
     Assertions::assertEquals("[]"_cs, arr.__str__());
 };
 
-auto should_at = []() {
+inline auto should_at = []() {
     // Given
     util::Array<char> arr = {'a', 'b', 'c'};
 
@@ -40,7 +40,7 @@ auto should_at = []() {
     Assertions::assertEquals("[b,b,c]"_cs, arr.__str__());
 };
 
-auto test_array() {
+inline auto test_array() {
     UnitTestGroup group{"test_array"};
 
     group.addTest("it_works", it_works);
