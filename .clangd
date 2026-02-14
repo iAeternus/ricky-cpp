@@ -1,41 +1,34 @@
 CompileFlags:
-  Add: 
+  Add:
     - "-xc++"
     - "-std=c++23"
-    - "-Wall"
-    - "-I${workspaceFolder}/include"
-    - "-I${workspaceFolder}/src"
-    - "-ID:F:\\Software\\Develop\\mingw\\mingw64\\include"
+    - "-isystemF:\\Software\\Develop\\mingw\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\15.1.0\\include\\c++"
+    - "-isystemF:\\Software\\Develop\\mingw\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\15.1.0\\include\\c++\\x86_64-w64-mingw32"
+    - "-isystemF:\\Software\\Develop\\mingw\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\15.1.0\\include\\c++\\backward"
+    - "-Wno-ignored-command-line-option"  # 抑制可能的警告
   Compiler: g++
 
 Diagnostics:
-  ClangTidy:
-    # Checks: >
-    #   *,
-    #   -abseil*,
-    #   -fuchsia*,
-    #   -llvmlib*,
-    #   -zircon*,
-    #   -altera*,
-    #   -google-readability-*,
-    #   -readability-*,
-    #   -modernize-*,
-    #   -cppcoreguidelines-*,
-    #   -hicpp-*,
-    #   -llvm-*,
-    #   -misc-*,
-    #   -cert-*
-    CheckOptions:
-      readability-identifier-naming: off
-      
+  StrictHeaderChecks: false
+  HeaderIncludeStyle: NoDiagnostics
+  IgnoredHeaders: # 抑制标准库诊断
+    - "**/c++/**"
+    - "**/mingw64/**"
+  Suppress: attributes_not_allowed
+
 Index:
   Background: Build
-  # Threads: 4
-  
-InlayHints:
-  Enabled: false
-
-If:
-  PathMatch: .*/ricky-cpp/.*
-
-AsyncThreadsCount: 8
+  Symbols: true
+Completion:
+  Resolve: false
+  Duplicates: true
+  FilterSymbol: false
+  CaseSensitivity: false
+  Snippets: true
+  DetailedLabel: true
+  DetailedTooltip: true
+  DisplayContext: true
+  EnableAutoImport: true
+FuzzySymbolSearch: true
+Log:
+  Verbosity: 2

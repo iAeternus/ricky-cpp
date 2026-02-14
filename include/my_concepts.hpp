@@ -25,7 +25,7 @@ concept ConvertibleToCstr = std::convertible_to<S, const char*>;
  * @brief 可使用标准库打印的类型
  */
 template <typename T>
-concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, float, double, long double, nullptr_t, const char*, std::string>;
+concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, float, double, long double, std::nullptr_t, const char*, std::string>;
 
 /**
  * @brief 可使用__str__打印的类型

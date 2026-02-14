@@ -1,0 +1,63 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "Build C++ (with debug)",
+      "command": "g++",
+      "args": [
+        "-g",
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-O0",
+        "${file}",
+        "-o",
+        "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "编译为调试版本（包含调试信息）",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "type": "shell",
+      "label": "Build C++ (release)",
+      "command": "g++",
+      "args": [
+        "-std=c++17",
+        "-Wall",
+        "-Wextra",
+        "-O2",
+        "${file}",
+        "-o",
+        "${workspaceFolder}/build/${fileBasenameNoExtension}.exe"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "detail": "编译为发布版本（优化）",
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "type": "shell",
+      "label": "Clean Build",
+      "command": "rm",
+      "args": [
+        "-rf",
+        "${workspaceFolder}/build/*"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "none",
+      "detail": "清理 build 目录"
+    }
+  ]
+}

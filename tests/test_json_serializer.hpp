@@ -3,7 +3,8 @@
 
 #include <utility>
 
-#include "json_serializer.hpp"
+//#include "serializer.hpp"
+#include "json/json_serializer.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_json_serializer {
@@ -27,13 +28,13 @@ struct Person : Object<Person> {
     }
 };
 
-DEFINE_JSON_ADAPTER(Person);
+//DEFINE_JSON_ADAPTER(Person);
 
 auto it_works = []() {
     // Given
     Person p{"Ricky", 20, true, {100, 90, 80}, {{"city", "Beijing"}, {"street", "No.1"}}};
     util::String s = R"({"name":"Ricky","age":20,"is_student":true,"scores":[100,90,80],"address":{"city":"Beijing","street":"No.1"}})";
-    io::JsonSerializer js;
+    json::JsonSerializer js;
 
     // When
     auto res = js.serialize(p); // TODO \u
@@ -54,7 +55,7 @@ auto test_json_serializer() {
 
 } // namespace my::test::test_json_serializer
 
-namespace my::io {
+namespace my::json {
 
 using test::test_json_serializer::Person;
 

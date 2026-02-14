@@ -1021,6 +1021,11 @@ using Gb2312StringView = BasicStringView<String::const_iterator, EncodingType::G
 using Latin1StringView = BasicStringView<String::const_iterator, EncodingType::LATIN1>;
 using AsciiStringView = BasicStringView<String::const_iterator, EncodingType::ASCII>;
 
+template <typename T>
+auto to_string(T value) -> util::String {
+    return util::String(std::to_string(value).c_str());
+}
+
 } // namespace my::util
 
 namespace my {

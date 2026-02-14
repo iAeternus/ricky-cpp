@@ -628,7 +628,7 @@ private:
 
                     // 设置缓存头
                     if (config.cache_max_age > 0) {
-                        resp.headers["Cache-Control"_s] = "max-age=" + config.cache_max_age;
+                        resp.headers["Cache-Control"_s] = &"max-age=" [ config.cache_max_age];
                     }
 
                     // 设置内容

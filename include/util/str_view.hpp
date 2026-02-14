@@ -60,6 +60,14 @@ public:
         end_ = begin_ + len;
     }
 
+    auto to_f64() const -> f64 {
+        return 0.0; // TODO
+    }
+
+    auto to_i64() const -> i64 {
+        return 0; // TODO
+    }
+
     /**
      * @brief 视图长度（码点数），适配可迭代约束
      * @return 视图长度（码点数）

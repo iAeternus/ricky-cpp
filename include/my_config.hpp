@@ -7,8 +7,6 @@
 #ifndef MY_CONFIG_HPP
 #define MY_CONFIG_HPP
 
-#include <utility>
-
 #include "my_types.hpp"
 
 namespace my {

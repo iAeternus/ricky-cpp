@@ -9,7 +9,7 @@
 
 #include "str.hpp"
 
-namespace my::io {
+namespace my::json {
 
 /**
  * @brief 序列化CRTP接口
@@ -27,7 +27,7 @@ public:
      * @return 序列化后的字符串
      */
     template <typename T>
-    util::String serialize(const T& obj) const {
+    auto serialize(const T& obj) const -> util::String {
         return static_cast<const D*>(this)->do_serialize(obj);
     }
 
@@ -38,7 +38,7 @@ public:
      * @return 反序列化后的对象
      */
     template <typename T>
-    T deserialize(const util::String& str) const {
+    auto deserialize(const util::String& str) const -> T {
         T res;
         static_cast<const D*>(this)->do_deserialize(str, res);
         return res;
@@ -50,11 +50,11 @@ public:
      * @param res 反序列化后的对象
      */
     template <typename T>
-    void deserialize(const util::String& str, T& res) const {
+    auto deserialize(const util::String& str, T& res) const -> void {
         static_cast<const D*>(this)->do_deserialize(str, res);
     }
 };
 
-} // namespace my::io
+} // namespace my::json
 
 #endif // SERIALIZER_HPP
