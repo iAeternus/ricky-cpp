@@ -8,13 +8,12 @@
 #ifndef TRACKING_ALLOCATOR_HPP
 #define TRACKING_ALLOCATOR_HPP
 
-#include "my_config.hpp"
+#include "alloc.hpp"
+#include "my_types.hpp"
 
 #include <atomic>
 #include <chrono>
 #include <ctime>
-#include <iomanip>
-#include <mutex>
 #include <new>
 #include <string>
 #include <unordered_map>
@@ -23,7 +22,7 @@
 
 namespace my::mem {
 
-auto time_conv(time_t t) -> std::tm {
+inline auto time_conv(time_t t) -> std::tm {
     std::tm tm;
 #ifdef _WIN32
     localtime_s(&tm, &t);
@@ -33,7 +32,7 @@ auto time_conv(time_t t) -> std::tm {
     return tm;
 }
 
-auto format_time(const std::tm& tm, const char* fmt) -> std::string {
+inline auto format_time(const std::tm& tm, const char* fmt) -> std::string {
     char buffer[80];
     if (std::strftime(buffer, sizeof(buffer), fmt, &tm)) {
         return buffer;

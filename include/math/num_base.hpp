@@ -4,7 +4,6 @@
  * @date 2026/1/18
  * @version 1.0
  */
-
 #ifndef NUM_BASE_HPP
 #define NUM_BASE_HPP
 
@@ -16,7 +15,7 @@
 namespace my::math {
 
 /// 字符转数值，成功返回0，非法字符返回-1
-i32 char_to_val(char c, i32& val) {
+inline i32 char_to_val(char c, i32& val) {
     i32 res = -1;
     if (c >= '0' && c <= '9') {
         val = c - '0';
@@ -32,7 +31,7 @@ i32 char_to_val(char c, i32& val) {
 }
 
 /// 数值转字符，成功返回0，数值超出范围返回-1
-i32 val_to_char(i32 val, char& c) {
+inline i32 val_to_char(i32 val, char& c) {
     i32 res = -1;
     if (val >= 0 && val <= 9) {
         c = '0' + val;
@@ -45,7 +44,7 @@ i32 val_to_char(i32 val, char& c) {
 }
 
 /// 检查溢出的乘法
-i32 checked_mul(i64 a, i64 b, i64& res) {
+inline i32 checked_mul(i64 a, i64 b, i64& res) {
     if (b != 0 && a > LLONG_MAX / b) {
         return -1;
     }
@@ -54,7 +53,7 @@ i32 checked_mul(i64 a, i64 b, i64& res) {
 }
 
 /// 检查溢出的加法
-i32 checked_add(i64 a, i64 b, i64& res) {
+inline i32 checked_add(i64 a, i64 b, i64& res) {
     if (a > LLONG_MAX - b) {
         return -1;
     }
@@ -70,7 +69,7 @@ i32 checked_add(i64 a, i64 b, i64& res) {
  * @param is_negative 是否为负数
  * @return 成功返回0，失败返回-1
  */
-i32 convert_to_decimal(const std::string& num, i32 from_base, i64& decimal_val, bool& is_neg) {
+inline i32 convert_to_decimal(const std::string& num, i32 from_base, i64& decimal_val, bool& is_neg) {
     decimal_val = 0;
     is_neg = false;
 
@@ -164,7 +163,7 @@ static i32 convert_from_positive_decimal(u64 pos_decimal, i32 to_base, std::stri
  * @param is_negative 是否为负数
  * @return 成功返回0，失败返回-1
  */
-i32 convert_from_decimal(i64 decimal_val, i32 to_base, std::string& result, bool is_neg) {
+inline i32 convert_from_decimal(i64 decimal_val, i32 to_base, std::string& result, bool is_neg) {
     result.clear();
 
     if (decimal_val == 0) {
@@ -225,7 +224,7 @@ static void format_result(const std::string& num_str, bool is_neg, i32 width, st
  * @param result 转换后的数字字符串
  * @return 成功返回0，错误返回-1
  */
-i32 convert_base(const std::string& num, i32 from_base, i32 to_base, i32 width, std::string& result) {
+inline i32 convert_base(const std::string& num, i32 from_base, i32 to_base, i32 width, std::string& result) {
     if (from_base < 2 || from_base > 36 || to_base < 2 || to_base > 36) {
         return -1;
     }
@@ -257,7 +256,7 @@ i32 convert_base(const std::string& num, i32 from_base, i32 to_base, i32 width, 
 /**
  * 任意进制转换，默认位宽
  */
-i32 convert_base(const std::string& num, i32 from_base, i32 to_base, std::string& result) {
+inline i32 convert_base(const std::string& num, i32 from_base, i32 to_base, std::string& result) {
     return convert_base(num, from_base, to_base, 0, result);
 }
 

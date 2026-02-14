@@ -170,7 +170,7 @@ auto is_one(const T& num, T eps = EPS) -> bool {
 /**
  * @brief 倒数
  */
-auto reciprocal(f64 num) -> f64 {
+inline auto reciprocal(f64 num) -> f64 {
     if (is_zero(num)) {
         throw arithmetic_exception("/ by zero");
     }
@@ -191,7 +191,7 @@ auto correct_float(const T& num) -> T {
 /**
  * @brief 相加并校验是否溢出，若溢出抛出RuntimeError
  */
-auto add_exact(i64 x, i64 y) -> i64 {
+inline auto add_exact(i64 x, i64 y) -> i64 {
     i64 r = x + y;
     // HD 2-12 Overflow iff both arguments have the opposite sign of the result
     if (((x ^ r) & (y ^ r)) < 0) {
@@ -203,7 +203,7 @@ auto add_exact(i64 x, i64 y) -> i64 {
 /**
  * @brief 相减并校验是否溢出，若溢出抛出RuntimeError
  */
-auto sub_exact(i64 x, i64 y) -> i64 {
+inline auto sub_exact(i64 x, i64 y) -> i64 {
     i64 r = x - y;
     // HD 2-12 Overflow iff the arguments have different signs and
     // the sign of the result is different from the sign of x
@@ -216,7 +216,7 @@ auto sub_exact(i64 x, i64 y) -> i64 {
 /**
  * @brief 相乘并校验是否溢出，若溢出抛出RuntimeError
  */
-auto mul_exact(i32 x, i32 y) -> i32 {
+inline auto mul_exact(i32 x, i32 y) -> i32 {
     i64 r = i64(x) * i64(y);
     if (i32(r) != r) {
         throw overflow_exception("i32 overflow");
@@ -224,7 +224,7 @@ auto mul_exact(i32 x, i32 y) -> i32 {
     return i32(r);
 }
 
-auto mul_exact(i64 x, i64 y) -> i64 {
+inline auto mul_exact(i64 x, i64 y) -> i64 {
     i64 r = x * y;
     i64 ax = std::abs(x);
     i64 ay = std::abs(y);

@@ -3,6 +3,7 @@ setlocal enabledelayedexpansion
 
 set TEST_ARTIFACTS=build/bin/tests
 set TEST_BINARY=RICKY_CPP_TESTS
+set TEST_LOG=test.log
 
 if not exist "%TEST_ARTIFACTS%" (
     echo Error: The directory "%TEST_ARTIFACTS%" does not exist.
@@ -17,6 +18,7 @@ if not exist "%TEST_ARTIFACTS%\%TEST_BINARY%.exe" (
 echo Running tests...
 cd "%TEST_ARTIFACTS%"
 "%TEST_BINARY%.exe"
+"%TEST_BINARY%.exe" > "%TEST_LOG%"
 if %ERRORLEVEL% NEQ 0 (
     echo Error: Tests failed.
     exit /b %ERRORLEVEL%

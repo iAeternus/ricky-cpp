@@ -8,14 +8,11 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
-// #include "String.hpp"
 #include "my_exception.hpp"
 #include "color.hpp"
 #include "marker.hpp"
 #include "printer.hpp"
 #include "date_time.hpp"
-
-#include <chrono>
 
 #ifdef _WIN32
 #include "processthreadsapi.h"
@@ -79,7 +76,7 @@ private:
 /**
  * @brief 重置控制台颜色
  */
-auto reset_color() noexcept -> const char* {
+inline auto reset_color() noexcept -> const char* {
     return color::Color::CLOSE;
 }
 
