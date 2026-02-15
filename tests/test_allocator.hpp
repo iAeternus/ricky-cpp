@@ -4,8 +4,8 @@
 #include <vector>
 #include <list>
 
-#include "binary_utils.hpp"
 #include "ricky_test.hpp"
+#include "binary_utils.hpp"
 #include "alloc.hpp"
 #include "str.hpp"
 
@@ -431,30 +431,30 @@ inline auto test_mixed_operations() -> void {
 // ==================== 运行所有测试 ====================
 
 inline auto test_allocator() -> void {
-    UnitTestGroup group("Allocator Tests");
+    UnitTestGroup group("test_allocator");
 
     // 基础功能测试
-    group.addTest("Basic Allocation", test_basic_allocation);
-    group.addTest("Object Construction", test_object_construction);
-    group.addTest("Batch Operations", test_batch_operations);
-    group.addTest("Safe Creation", test_safe_creation);
+    group.addTest("test_basic_allocation", test_basic_allocation);
+    group.addTest("test_object_construction", test_object_construction);
+    group.addTest("test_batch_operations", test_batch_operations);
+    group.addTest("test_safe_creation", test_safe_creation);
 
     // 高级功能测试
-    group.addTest("Aligned Allocation", test_aligned_allocation);
-    group.addTest("Over Allocation", test_over_allocation);
-    group.addTest("Exception Safety", test_exception_safety);
+    group.addTest("test_aligned_allocation", test_aligned_allocation);
+    group.addTest("test_over_allocation", test_over_allocation);
+    group.addTest("test_exception_safety", test_exception_safety);
 
     // STL集成测试
-    group.addTest("Vector Integration", test_vector_integration);
-    group.addTest("List Integration", test_list_integration);
-    group.addTest("Container Copy", test_container_copy);
+    group.addTest("test_vector_integration", test_vector_integration);
+    group.addTest("test_list_integration", test_list_integration);
+    group.addTest("test_container_copy", test_container_copy);
 
     // 性能测试
-    group.addTest("Batch Allocation Performance", test_batch_allocation_performance);
+    group.addTest("test_batch_allocation_performance", test_batch_allocation_performance);
 
     // 边界情况测试
-    group.addTest("Max Allocation", test_max_allocation);
-    group.addTest("Mixed Operations", test_mixed_operations);
+    group.addTest("test_max_allocation", test_max_allocation);
+    group.addTest("test_mixed_operations", test_mixed_operations);
 
     group.startAll();
 }
