@@ -1,4 +1,4 @@
-#include "test_registry.hpp"
+#include "test_suite.hpp"
 #include "printer.hpp"
 #include "color.hpp"
 #include "timer.hpp"

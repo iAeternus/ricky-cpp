@@ -1,7 +1,7 @@
 #include "bench_code_point.hpp"
 
 #include "code_point.hpp"
-#include "test/test_registry.hpp"
+#include "test_suite.hpp"
 
 namespace my::bench::bench_code_point {
 

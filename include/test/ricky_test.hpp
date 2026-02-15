@@ -8,7 +8,7 @@
 #define RICKY_TEST_HPP
 
 #include "assertions.hpp"
-#include "test_registry.hpp"
+#include "test_suite.hpp"
 #include "printer.hpp"
 
 #endif // RICKY_TEST_HPP

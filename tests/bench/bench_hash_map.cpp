@@ -2,7 +2,7 @@
 
 #include "hash_map.hpp"
 #include "random.hpp"
-#include "test/test_registry.hpp"
+#include "test_suite.hpp"
 
 #include <string>
 #include <unordered_map>

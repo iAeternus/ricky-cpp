@@ -1,6 +1,6 @@
 #include "bench_dynarray.hpp"
 #include "dyn_array.hpp"
-#include "test/test_registry.hpp"
+#include "test_suite.hpp"
 
 namespace my::bench::bench_dynarray {
 
