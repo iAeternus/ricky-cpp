@@ -132,28 +132,28 @@ public:
     /**
      * @brief 获取首元
      */
-    value_t& front() {
+    value_t& first() {
         return buf_[0];
     }
 
     /**
      * @brief 获取首元（常量版本）
      */
-    const value_t& front() const {
+    const value_t& first() const {
         return buf_[0];
     }
 
     /**
      * @brief 获取尾元
      */
-    value_t& back() {
+    value_t& last() {
         return buf_[size_ - 1];
     }
 
     /**
      * @brief 获取尾元（常量版本）
      */
-    const value_t& back() const {
+    const value_t& last() const {
         return buf_[size_ - 1];
     }
 
@@ -179,7 +179,7 @@ public:
      * @return 被追加元素的引用
      */
     template <typename U>
-    value_t& append(U&& item) {
+    value_t& push(U&& item) {
         alloc_.construct(buf_ + size_, std::forward<U>(item));
         return buf_[size_++];
     }
@@ -189,7 +189,7 @@ public:
      * @return 返回追加的元素
      */
     template <typename... Args>
-    value_t& append(Args&&... args) {
+    value_t& push(Args&&... args) {
         alloc_.construct(buf_ + size_, std::forward<Args>(args)...);
         return buf_[size_++];
     }
@@ -199,7 +199,7 @@ public:
      * @param ptr 指向要追加的内存块的指针
      * @param size 要追加的内存块大小
      */
-    void append_bytes(const void* ptr, usize size) {
+    void push_bytes(const void* ptr, usize size) {
         std::memcpy(buf_ + size_, ptr, size);
         size_ += size;
     }

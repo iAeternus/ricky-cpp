@@ -170,7 +170,7 @@ struct HttpResponse : public Object<HttpResponse> {
     void set_body(const util::String& content, const util::String& type = "text/plain") {
         body = content;
         set_content_type(type);
-        headers["Content-Length"_s] = util::String::from_u64(body.length());
+        headers["Content-Length"_s] = util::String::from_u64(body.len());
     }
 
     /**
@@ -385,7 +385,7 @@ private:
         // 发送响应
         auto response_str = response_builder.build();
         log::console.debug("Sending response: {}", response_str);
-        client.send_bytes(response_str.__str__().data(), response_str.length());
+        client.send_bytes(response_str.__str__().data(), response_str.len());
     }
 
     /**
@@ -587,7 +587,7 @@ private:
         for (const auto& [url_prefix, config] : static_dirs_) {
             if (req.path.starts_with(url_prefix)) {
                 // 构建文件系统路径
-                util::String fs_path = config.fspath + req.path.slice(url_prefix.length());
+                util::String fs_path = config.fspath + req.path.slice(url_prefix.len());
 
                 // 防止路径遍历攻击
                 if (fs_path.find(".."_s) != npos) {

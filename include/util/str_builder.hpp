@@ -196,7 +196,7 @@ public:
      * @brief 获取当前码点数量
      * @return 当前存储的码点数量
      */
-    usize size() const noexcept {
+    usize len() const noexcept {
         return buf_.len();
     }
 
@@ -204,7 +204,7 @@ public:
      * @brief 判断构建器是否为空
      * @return 是否为空
      */
-    bool empty() const noexcept {
+    bool is_empty() const noexcept {
         return buf_.is_empty();
     }
 

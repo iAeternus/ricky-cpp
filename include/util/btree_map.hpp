@@ -69,7 +69,7 @@ public:
     using Callback = std::function<void(const key_t&, const value_t&)>;
 
     explicit BTree(Comp comp = Comp{}) :
-            comp_(comp), size_(0) {
+            comp_(comp), len_(0) {
         this->root_ = alloc_.create(true);
     }
 
@@ -80,15 +80,15 @@ public:
     /**
      * @brief 获取元素数量
      */
-    usize size() const noexcept {
-        return size_;
+    usize len() const noexcept {
+        return len_;
     }
 
     /**
      * @brief 判断是否为空
      */
     bool empty() const noexcept {
-        return size_ == 0;
+        return len_ == 0;
     }
 
     // TODO
@@ -96,7 +96,7 @@ public:
 private:
     Alloc alloc_{}; // 内存分配器
     Comp comp_;     // 比较函数
-    usize size_;    // 节点个数
+    usize len_;     // 节点个数
     Node* root_;    // 指向根节点的指针
 };
 

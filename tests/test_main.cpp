@@ -66,6 +66,7 @@
 #include "test_string_algorithm.hpp"
 #include "test_linked_list.hpp"
 #include "test_num_base.hpp"
+#include "test_option_and_result.hpp"
 #elif TEST_MODE == 2
 #include "banner.hpp"
 #include "ricky_test.hpp"
@@ -130,6 +131,7 @@ auto main() -> int {
     test_string_algorithm::test_string_algorithm();
     test_linked_list::test_linked_list();
     test_num_base::test_num_base();
+    test_option_and_result::test_option_and_result();
 #elif TEST_MODE == 2
     my::print_banner();
 #endif

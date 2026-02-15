@@ -35,7 +35,7 @@ public:
      * @brief 默认构造函数，创建一个空字符串
      */
     BasicString(const Alloc alloc = Alloc{}) :
-            alloc_(alloc), length_(0), is_sso_(true) {}
+            alloc_(alloc), len_(0), is_sso_(true) {}
 
     /**
      * @brief 构造函数，使用码点数组和编码创建字符串
@@ -43,15 +43,15 @@ public:
      * @param length 码点数量
      */
     BasicString(const value_t* code_points, const usize length) :
-            length_(length), is_sso_(length <= SSO_CAPACITY) {
+            len_(length), is_sso_(length <= SSO_CAPACITY) {
         if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, code_points[i]);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, code_points[i]);
             }
         } else {
-            heap_storage = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_storage + i, code_points[i]);
+            heap = alloc_.allocate(len_);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(heap + i, code_points[i]);
             }
         }
     }
@@ -64,16 +64,16 @@ public:
     BasicString(const char* str, usize length = npos) {
         length = length != npos ? length : std::strlen(str);
         auto cps_vec = get_code_points<Enc, CharAlloc>(str, length);
-        length_ = cps_vec.len();
-        is_sso_ = length_ <= SSO_CAPACITY;
+        len_ = cps_vec.len();
+        is_sso_ = len_ <= SSO_CAPACITY;
         if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, std::move(cps_vec[i]));
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, std::move(cps_vec[i]));
             }
         } else {
-            heap_storage = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_storage + i, std::move(cps_vec[i]));
+            heap = alloc_.allocate(len_);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(heap + i, std::move(cps_vec[i]));
             }
         }
     }
@@ -98,30 +98,30 @@ public:
      * @param cp 码点，用于填充整个字符串
      */
     BasicString(const usize length, const value_t& cp = ' ') :
-            length_(length), is_sso_(length <= SSO_CAPACITY) {
+            len_(length), is_sso_(length <= SSO_CAPACITY) {
         if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, cp);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, cp);
             }
         } else {
-            heap_storage = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_storage + i, cp);
+            heap = alloc_.allocate(len_);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(heap + i, cp);
             }
         }
     }
 
     template <std::input_iterator Iter>
     BasicString(Iter first, Iter last) :
-            length_(static_cast<usize>(std::distance(first, last))), is_sso_(length_ <= SSO_CAPACITY) {
+            len_(static_cast<usize>(std::distance(first, last))), is_sso_(len_ <= SSO_CAPACITY) {
         if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, *first++);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, *first++);
             }
         } else {
-            heap_storage = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_storage + i, *first++);
+            heap = alloc_.allocate(len_);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(heap + i, *first++);
             }
         }
     }
@@ -138,15 +138,15 @@ public:
      * @param other 要拷贝的字符串对象
      */
     BasicString(const Self& other) :
-            alloc_(other.alloc_), length_(other.length_), is_sso_(other.is_sso_) {
+            alloc_(other.alloc_), len_(other.len_), is_sso_(other.is_sso_) {
         if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, other[i]);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, other[i]);
             }
         } else {
-            heap_storage = alloc_.allocate(length_);
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(heap_storage + i, other[i]);
+            heap = alloc_.allocate(len_);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(heap + i, other[i]);
             }
         }
     }
@@ -157,17 +157,17 @@ public:
      */
     BasicString(Self&& other) noexcept :
             alloc_(std::move(other.alloc_)),
-            length_(other.length_),
+            len_(other.len_),
             is_sso_(other.is_sso_) {
         if (is_sso_) {
-            for (usize i = 0; i < length_; ++i) {
-                alloc_.construct(sso_data + i, std::move(other.sso_data[i]));
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, std::move(other.sso[i]));
             }
         } else {
-            heap_storage = other.heap_storage;
-            other.heap_storage = nullptr;
+            heap = other.heap;
+            other.heap = nullptr;
         }
-        other.length_ = 0;
+        other.len_ = 0;
         other.is_sso_ = true;
     }
 
@@ -175,12 +175,12 @@ public:
      * @brief 析构函数，自动释放堆分配内存
      */
     ~BasicString() {
-        if (!is_sso_ && heap_storage != nullptr) {
-            alloc_.destroy_n(heap_storage, length_);
-            alloc_.deallocate(heap_storage, length_);
-            heap_storage = nullptr;
+        if (!is_sso_ && heap != nullptr) {
+            alloc_.destroy_n(heap, len_);
+            alloc_.deallocate(heap, len_);
+            heap = nullptr;
         }
-        length_ = 0;
+        len_ = 0;
         is_sso_ = true;
     }
 
@@ -191,21 +191,21 @@ public:
      */
     Self& operator=(const Self& other) {
         if (this != &other) {
-            if (!is_sso_ && heap_storage != nullptr) {
-                alloc_.destroy_n(heap_storage, length_);
-                alloc_.deallocate(heap_storage, length_);
-                heap_storage = nullptr;
+            if (!is_sso_ && heap != nullptr) {
+                alloc_.destroy_n(heap, len_);
+                alloc_.deallocate(heap, len_);
+                heap = nullptr;
             }
-            length_ = other.length_;
+            len_ = other.len_;
             is_sso_ = other.is_sso_;
             if (is_sso_) {
-                for (usize i = 0; i < length_; ++i) {
-                    alloc_.construct(sso_data + i, other.sso_data[i]);
+                for (usize i = 0; i < len_; ++i) {
+                    alloc_.construct(sso + i, other.sso[i]);
                 }
             } else {
-                heap_storage = alloc_.allocate(length_);
-                for (usize i = 0; i < length_; ++i) {
-                    alloc_.construct(heap_storage + i, other.heap_storage[i]);
+                heap = alloc_.allocate(len_);
+                for (usize i = 0; i < len_; ++i) {
+                    alloc_.construct(heap + i, other.heap[i]);
                 }
             }
         }
@@ -219,23 +219,23 @@ public:
      */
     Self& operator=(Self&& other) noexcept {
         if (this != &other) {
-            if (!is_sso_ && heap_storage != nullptr) {
-                alloc_.destroy_n(heap_storage, length_);
-                alloc_.deallocate(heap_storage, length_);
-                heap_storage = nullptr;
+            if (!is_sso_ && heap != nullptr) {
+                alloc_.destroy_n(heap, len_);
+                alloc_.deallocate(heap, len_);
+                heap = nullptr;
             }
             alloc_ = std::move(other.alloc_);
-            length_ = other.length_;
+            len_ = other.len_;
             is_sso_ = other.is_sso_;
             if (is_sso_) {
-                for (usize i = 0; i < length_; ++i) {
-                    alloc_.construct(sso_data + i, std::move(other.sso_data[i]));
+                for (usize i = 0; i < len_; ++i) {
+                    alloc_.construct(sso + i, std::move(other.sso[i]));
                 }
             } else {
-                heap_storage = other.heap_storage;
-                other.heap_storage = nullptr;
+                heap = other.heap;
+                other.heap = nullptr;
             }
-            other.length_ = 0;
+            other.len_ = 0;
             other.is_sso_ = true;
         }
         return *this;
@@ -291,8 +291,8 @@ public:
      */
     std::string into_string() const {
         std::string result;
-        result.reserve(byte_length());
-        for (usize i = 0; i < length_; ++i) {
+        result.reserve(byte_len());
+        for (usize i = 0; i < len_; ++i) {
             const value_t& cp = operator[](i);
             result.append(cp.data(), cp.len());
         }
@@ -305,7 +305,7 @@ public:
      * @return 拼接后的新字符串
      */
     Self operator+(const View& other) const {
-        const usize m_size = this->length(), o_size = other.length();
+        const usize m_size = this->len(), o_size = other.length();
         Self res{m_size + o_size, ' '};
         for (usize i = 0; i < m_size; ++i) {
             res[i] = this->operator[](i);
@@ -322,7 +322,7 @@ public:
      * @return 拼接后的新字符串
      */
     Self operator+(const CStringView& other) const {
-        const usize m_size = this->length(), o_size = other.length();
+        const usize m_size = this->len(), o_size = other.length();
         Self res{m_size + o_size, ' '};
         for (usize i = 0; i < m_size; ++i) {
             res[i] = this->operator[](i);
@@ -363,7 +363,7 @@ public:
      */
     Self operator*(usize n) {
         usize pos = 0;
-        const auto m_size = length();
+        const auto m_size = len();
         Self res{m_size * n, ' '};
         while (n--) {
             for (usize i = 0; i < m_size; ++i) {
@@ -380,8 +380,8 @@ public:
      * @exception Exception 若下标越界，则抛出 index_out_of_bounds_exception
      */
     value_t& at(usize index) {
-        if (index > length_) {
-            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, length_);
+        if (index > len_) {
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, len_);
         }
         return operator[](index);
     }
@@ -393,8 +393,8 @@ public:
      * @exception Exception 若下标越界，则抛出 index_out_of_bounds_exception
      */
     const value_t& at(const usize index) const {
-        if (index > length_) {
-            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, length_);
+        if (index > len_) {
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, len_);
         }
         return operator[](index);
     }
@@ -406,9 +406,9 @@ public:
      */
     value_t& operator[](const usize index) {
         if (is_sso_) {
-            return sso_data[index];
+            return sso[index];
         }
-        return heap_storage[index];
+        return heap[index];
     }
 
     /**
@@ -418,33 +418,33 @@ public:
      */
     const value_t& operator[](const usize index) const {
         if (is_sso_) {
-            return sso_data[index];
+            return sso[index];
         }
-        return heap_storage[index];
-    }
-
-    /**
-     * @brief 获取字符串的长度，适配可迭代约束
-     * @return 字符串的长度
-     */
-    usize len() const noexcept {
-        return length_;
+        return heap[index];
     }
 
     /**
      * @brief 获取字符串的长度
      * @return 字符串的长度
      */
-    usize length() const {
-        return length_;
+    usize len() const noexcept {
+        return len_;
     }
+
+//    /**
+//     * @brief 获取字符串的长度
+//     * @return 字符串的长度
+//     */
+//    usize length() const {
+//        return len_;
+//    }
 
     /**
      * @brief 判断字符串是否为空
      * @return true=是 false=否
      */
     bool is_empty() const {
-        return length_ == 0;
+        return len_ == 0;
     }
 
     /**
@@ -458,7 +458,7 @@ public:
      * @brief 获取字符串的字节长度
      * @return 字符串的字节长度
      */
-    usize byte_length() const {
+    usize byte_len() const {
         usize length = 0;
         for (auto&& ch : *this) {
             length += ch.len();
@@ -470,12 +470,12 @@ public:
      * @brief 清空字符串
      */
     void clear() {
-        if (!is_sso_ && heap_storage != nullptr) {
-            alloc_.destroy_n(heap_storage, length_);
-            alloc_.deallocate(heap_storage, length_);
-            heap_storage = nullptr;
+        if (!is_sso_ && heap != nullptr) {
+            alloc_.destroy_n(heap, len_);
+            alloc_.deallocate(heap, len_);
+            heap = nullptr;
         }
-        length_ = 0;
+        len_ = 0;
         is_sso_ = true;
     }
 
@@ -486,7 +486,7 @@ public:
      * @return 子字符串
      */
     View slice(const usize start, isize end) const {
-        end = neg_index(end, static_cast<isize>(length()));
+        end = neg_index(end, static_cast<isize>(len()));
         return View(Super::begin() + start, Super::begin() + static_cast<usize>(end));
     }
 
@@ -535,7 +535,7 @@ public:
      * @return 是否以指定子字符串开头
      */
     bool starts_with(const View& prefix) const {
-        if (length() < prefix.len()) {
+        if (len() < prefix.len()) {
             return false;
         }
         return slice(0, prefix.len()) == prefix;
@@ -547,10 +547,10 @@ public:
      * @return 是否以指定子字符串结尾
      */
     bool ends_with(const View& suffix) const {
-        if (length() < suffix.len()) {
+        if (len() < suffix.len()) {
             return false;
         }
-        return slice(length() - suffix.len()) == suffix;
+        return slice(len() - suffix.len()) == suffix;
     }
 
     /**
@@ -559,7 +559,7 @@ public:
      */
     Self upper() const {
         Self res{*this};
-        const auto m_size = length();
+        const auto m_size = len();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = res[i].upper();
         }
@@ -572,7 +572,7 @@ public:
      */
     Self lower() const {
         Self res{*this};
-        const auto m_size = length();
+        const auto m_size = len();
         for (usize i = 0; i < m_size; ++i) {
             res[i] = res[i].lower();
         }
@@ -647,10 +647,10 @@ public:
         usize total_len = 0;
         for (auto&& elem : iter) {
             elem_strs.push(cstr(elem));
-            total_len += elem_strs.last().length() + length_;
+            total_len += elem_strs.last().length() + len_;
         }
         if (!elem_strs.is_empty()) {
-            total_len -= length_;
+            total_len -= len_;
         }
 
         Self result{std::max(0ULL, total_len), ' '};
@@ -667,7 +667,7 @@ public:
         }
 
         for (; elem_it != elem_end; ++elem_it) {
-            for (usize i = 0; i < length_; ++i) {
+            for (usize i = 0; i < len_; ++i) {
                 result[pos++] = this->operator[](i);
             }
             const auto& elem_str = *elem_it;
@@ -687,7 +687,7 @@ public:
      */
     Self replace(const View& old_, const View& new_) const {
         const auto indices = find_all(old_);
-        const auto m_size = length();
+        const auto m_size = len();
         Self result{m_size + indices.len() * (new_.length() - old_.length()), ' '};
         for (usize i = 0, j = 0, k = 0; i < m_size; ++i) {
             if (j < indices.len() && i == indices[j]) {
@@ -717,7 +717,7 @@ public:
         }
 
         usize match_cnt = 1;
-        for (usize r = l + 1, m_size = length(); r < m_size; ++r) {
+        for (usize r = l + 1, m_size = len(); r < m_size; ++r) {
             if ((*this)[r] == right) {
                 --match_cnt;
             } else if ((*this)[r] == left) {
@@ -742,7 +742,7 @@ public:
         Vec<Self> res;
         usize start = 0;
         usize split_cnt = 0;
-        const auto m_size = length(), p_size = pattern.length();
+        const auto m_size = len(), p_size = pattern.length();
         const auto actual_splits = (max_split < 0) ? m_size : std::min(static_cast<usize>(max_split), m_size);
 
         // 空模式处理：按每个字符分割
@@ -791,7 +791,7 @@ public:
      * @return 删除后的字符串
      */
     Self remove_all(Pred<const value_t&>&& pred) const {
-        const auto m_size = length();
+        const auto m_size = len();
         Vec<CodePoint<Enc>> buf;
         for (usize i = 0; i < m_size; ++i) {
             if (!pred(operator[](i))) {
@@ -808,53 +808,53 @@ public:
      */
     void swap(Self& other) noexcept {
         std::swap(alloc_, other.alloc_);
-        std::swap(length_, other.length_);
+        std::swap(len_, other.len_);
         std::swap(is_sso_, other.is_sso_);
 
         if (is_sso_ && other.is_sso_) {
             for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                std::swap(sso_data[i], other.sso_data[i]);
+                std::swap(sso[i], other.sso[i]);
             }
         } else if (!is_sso_ && !other.is_sso_) {
-            std::swap(heap_storage, other.heap_storage);
+            std::swap(heap, other.heap);
         } else {
             value_t temp_buffer[SSO_CAPACITY];
 
             if (is_sso_) {
                 for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    temp_buffer[i] = std::move(sso_data[i]);
+                    temp_buffer[i] = std::move(sso[i]);
                 }
-                if (other.length_ <= SSO_CAPACITY) {
-                    for (usize i = 0; i < other.length_; ++i) {
-                        sso_data[i] = std::move(other.heap_storage[i]);
+                if (other.len_ <= SSO_CAPACITY) {
+                    for (usize i = 0; i < other.len_; ++i) {
+                        sso[i] = std::move(other.heap[i]);
                     }
-                    alloc_.destroy_n(other.heap_storage, other.length_);
-                    alloc_.deallocate(other.heap_storage, other.length_);
-                    other.heap_storage = nullptr;
+                    alloc_.destroy_n(other.heap, other.len_);
+                    alloc_.deallocate(other.heap, other.len_);
+                    other.heap = nullptr;
                 } else {
-                    heap_storage = other.heap_storage;
-                    other.heap_storage = nullptr;
+                    heap = other.heap;
+                    other.heap = nullptr;
                 }
                 for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    other.sso_data[i] = std::move(temp_buffer[i]);
+                    other.sso[i] = std::move(temp_buffer[i]);
                 }
             } else {
                 for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    temp_buffer[i] = std::move(other.sso_data[i]);
+                    temp_buffer[i] = std::move(other.sso[i]);
                 }
-                if (length_ <= SSO_CAPACITY) {
-                    for (usize i = 0; i < length_; ++i) {
-                        other.sso_data[i] = std::move(heap_storage[i]);
+                if (len_ <= SSO_CAPACITY) {
+                    for (usize i = 0; i < len_; ++i) {
+                        other.sso[i] = std::move(heap[i]);
                     }
-                    alloc_.destroy_n(heap_storage, length_);
-                    alloc_.deallocate(heap_storage, length_);
-                    heap_storage = nullptr;
+                    alloc_.destroy_n(heap, len_);
+                    alloc_.deallocate(heap, len_);
+                    heap = nullptr;
                 } else {
-                    other.heap_storage = heap_storage;
-                    heap_storage = nullptr;
+                    other.heap = heap;
+                    heap = nullptr;
                 }
                 for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    sso_data[i] = std::move(temp_buffer[i]);
+                    sso[i] = std::move(temp_buffer[i]);
                 }
             }
         }
@@ -865,7 +865,7 @@ public:
      * @return C 风格字符串
      */
     [[nodiscard]] CString __str__() const {
-        CString res{byte_length()};
+        CString res{byte_len()};
         usize pos = 0;
         for (auto&& ch : *this) {
             usize ch_size = ch.len();
@@ -884,14 +884,14 @@ public:
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        auto min_size = std::min(this->length(), other.length());
+        auto min_size = std::min(this->len(), other.len());
         for (usize i = 0; i < min_size; ++i) {
             auto cmp = this->operator[](i).__cmp__(other[i]);
             if (cmp != 0) {
                 return cmp;
             }
         }
-        return static_cast<usize>(this->length() - other.length());
+        return static_cast<usize>(this->len() - other.len());
     }
 
 private:
@@ -902,10 +902,10 @@ private:
      * @param length 字符串的长度
      */
     BasicString(const usize length) :
-            length_(length), is_sso_(length_ <= SSO_CAPACITY) {
+            len_(length), is_sso_(len_ <= SSO_CAPACITY) {
         if (is_sso_) {
         } else {
-            heap_storage = alloc_.allocate(length_);
+            heap = alloc_.allocate(len_);
         }
     }
 
@@ -914,7 +914,7 @@ private:
      * @return 首尾空白后的索引范围
      */
     Pair<usize, usize> get_trim_index() const {
-        usize l = 0, r = length();
+        usize l = 0, r = len();
         while (l < r && (*this)[l].is_blank()) ++l;
         while (l < r && (*this)[r - 1].is_blank()) --r;
         return {l, r};
@@ -926,7 +926,7 @@ private:
      * @return 首尾模式后的索引范围
      */
     Pair<usize, usize> get_trim_index(const View& pattern) const {
-        usize l = 0, r = length(), p_size = pattern.length();
+        usize l = 0, r = len(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return {l, r};
@@ -938,7 +938,7 @@ private:
      */
     usize get_ltrim_index() const {
         usize l = 0;
-        const auto r = length();
+        const auto r = len();
         while (l < r && (*this)[l].is_blank()) ++l;
         return l;
     }
@@ -950,7 +950,7 @@ private:
      */
     usize get_ltrim_index(const View& pattern) const {
         usize l = 0;
-        const auto r = length(), p_size = pattern.length();
+        const auto r = len(), p_size = pattern.length();
         while (l + p_size <= r && slice(l, l + p_size) == pattern) l += p_size;
         return l;
     }
@@ -961,7 +961,7 @@ private:
      */
     usize get_rtrim_index() const {
         constexpr usize l = 0;
-        auto r = length();
+        auto r = len();
         while (l < r && (*this)[r - 1].is_blank()) --r;
         return r;
     }
@@ -973,18 +973,18 @@ private:
      */
     usize get_rtrim_index(const View& pattern) const {
         const usize l = 0, p_size = pattern.length();
-        auto r = length();
+        auto r = len();
         while (l + p_size <= r && slice(r - p_size, r) == pattern) r -= p_size;
         return r;
     }
 
 private:
     CodePointAlloc alloc_{}; // 内存分配器
-    usize length_;           // 字符数量
+    usize len_;              // 字符数量
     bool is_sso_;            // 是否是SSO
     union {
-        value_t sso_data[SSO_CAPACITY]; // SSO缓冲区
-        value_t* heap_storage{};        // 堆存储区
+        value_t sso[SSO_CAPACITY]; // SSO缓冲区
+        value_t* heap{};           // 堆存储区
     };
 };
 

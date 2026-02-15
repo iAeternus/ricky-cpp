@@ -137,7 +137,7 @@ public:
      */
     f64 acl() const {
         if (freqs_.empty()) return 0.0;
-        return wpl() / static_cast<f64>(text_.length());
+        return wpl() / static_cast<f64>(text_.len());
     }
 
     /**

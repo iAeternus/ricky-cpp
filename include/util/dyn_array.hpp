@@ -176,7 +176,7 @@ public:
      * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     value_t& back() {
-        return blocks_.at(back_block_index_).back();
+        return blocks_.at(back_block_index_).last();
     }
 
     /**
@@ -185,7 +185,7 @@ public:
      * @note 时间复杂度O(1)。如果数组为空，行为未定义
      */
     const value_t& back() const {
-        return blocks_.at(back_block_index_).back();
+        return blocks_.at(back_block_index_).last();
     }
 
     /**
@@ -235,7 +235,7 @@ public:
     template <typename U>
     value_t& append(U&& item) {
         try_wakeup();
-        auto& res = get_back_block().append(std::forward<U>(item));
+        auto& res = get_back_block().push(std::forward<U>(item));
         ++size_;
         return res;
     }
@@ -247,7 +247,7 @@ public:
     template <typename... Args>
     value_t& append(Args&&... args) {
         try_wakeup();
-        auto& res = get_back_block().append(std::forward<Args>(args)...);
+        auto& res = get_back_block().push(std::forward<Args>(args)...);
         ++size_;
         return res;
     }

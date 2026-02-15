@@ -9,11 +9,11 @@ namespace my::test::test_buffer {
 auto should_get_front_and_back = []() {
     // Given
     util::Buffer<i32> buf{3};
-    buf.append(1), buf.append(2), buf.append(3);
+    buf.push(1), buf.push(2), buf.push(3);
 
     // When
-    auto res = buf.front();
-    auto res2 = buf.back();
+    auto res = buf.first();
+    auto res2 = buf.last();
 
     // Then
     Assertions::assertEquals(1, res);

@@ -355,7 +355,7 @@ public:
     //     CString str(aa.len() + 1);
     //     std::memset(str.data(), 0, str.len());
     //     Self tmp;
-    //     auto lenDiff = aa.length_ - bb.length_;
+    //     auto lenDiff = aa.len_ - bb.len_;
     //     for (usize i = 0; i <= lenDiff; ++i) {
     //         tmp = bb.left_shift(lenDiff - i);
     //         while (aa >= tmp) {

@@ -429,8 +429,8 @@ public:
     void send(const char* data, usize size, i32 flags = 0) const {
         util::Buffer<char> head_data{size + 4};
         auto head_size = htonl(size);
-        head_data.append_bytes(&head_size, 4);
-        head_data.append_bytes(data, size);
+        head_data.push_bytes(&head_size, 4);
+        head_data.push_bytes(data, size);
 
         send_bytes(head_data.data(), size + 4, flags);
     }

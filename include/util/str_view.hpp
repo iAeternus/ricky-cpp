@@ -51,7 +51,7 @@ public:
      * @brief 通过绝对首索引和视图长度构造
      */
     BasicStringView(const String& str, usize pos, usize len) noexcept {
-        const auto size = str.length();
+        const auto size = str.len();
         pos = std::min(pos, size);
         len = std::min(len, size - pos);
 
