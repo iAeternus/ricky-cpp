@@ -10,6 +10,7 @@
 #include "vec.hpp"
 #include "timer.hpp"
 #include "printer.hpp"
+#include "my_exception.hpp"
 
 namespace my::test {
 
@@ -99,6 +100,9 @@ public:
         }
         if (teardown_) teardown_();
         io::println(std::format("Total tests run: {}, Failures: {}", group_.len(), failed_));
+        if (failed_ > 0) {
+            throw assertion_failed_exception("UnitTestGroup {} failed: {}", groupName_, failed_);
+        }
     }
 
 private:

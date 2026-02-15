@@ -266,8 +266,8 @@ public:
     }
 
 private:
-    usize edge_cnt_ = 0;                // 边数，无向图为双倍边
-    bool is_directed_;                  // 是否为有向图 true=是 false=否
+    usize edge_cnt_ = 0;                   // 边数，无向图为双倍边
+    bool is_directed_;                     // 是否为有向图 true=是 false=否
     util::HashMap<Idx, Node<N, E>> nodes_; // 邻接表
 
     // 算法插件系统

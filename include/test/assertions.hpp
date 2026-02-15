@@ -94,12 +94,13 @@ public:
                 fail2(std::format("Assertion failed: expected exception message \"{}\" but got \"{}\"", expected_msg, ex.what()), loc);
             }
             return;
-        }*/ catch (const Exception& ex) {
+        }*/
+        catch (const Exception& ex) {
             if (expected_msg != ex.message().data()) {
                 fail2(std::format("Assertion failed: expected exception message \"{}\" but got \"{}\"", expected_msg, ex.what()), loc);
             }
             return;
-        }  catch (...) {
+        } catch (...) {
             fail2(std::format("Assertion failed: expected {}(\"{}\") but got other exception", typeid(Ex).name(), expected_msg), loc);
         }
 

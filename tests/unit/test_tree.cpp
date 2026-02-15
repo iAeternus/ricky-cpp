@@ -1,0 +1,75 @@
+#include "unit/test_tree.hpp"
+
+#include "ricky_test.hpp"
+#include "tree.hpp"
+
+#include "test/test_registry.hpp"
+
+namespace my::test::test_tree {
+
+void it_works() {
+    util::Tree<i32> t;
+    auto* root = t.set_root(1);
+
+    t.add_child(root, 2);
+    t.add_child(root, 3);
+    t.add_child(t.root(), 4);
+    t.add_child(root->subs_[0], 5);
+
+    io::println(t);
+}
+
+void should_dfs() {
+    // Given
+    util::Tree<i32> t;
+    t.set_root(1);
+    t.add_child(t.root(), 2);
+    t.add_child(t.root(), 3);
+    t.add_child(t.root(), 4);
+    t.add_child(t.root()->subs_[0], 5);
+    util::Vec<i32> res;
+
+    // When
+    t.dfs([&res](const auto& v) {
+        res.push(v);
+    });
+
+    // Then
+    Assertions::assertEquals("[1,2,5,3,4]"_cs, res.__str__());
+}
+
+void should_bfs() {
+    // Given
+    util::Tree<i32> t;
+    t.set_root(1);
+    t.add_child(t.root(), 2);
+    t.add_child(t.root(), 3);
+    t.add_child(t.root(), 4);
+    t.add_child(t.root()->subs_[0], 5);
+    util::Vec<i32> res;
+
+    // When
+    t.bfs([&res](const auto& v) {
+        res.push(v);
+    });
+
+    // Then
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
+}
+
+void test_tree() {
+    UnitTestGroup group{"test_tree"};
+
+    group.addTest("it_works", it_works);
+    group.addTest("should_dfs", should_dfs);
+    group.addTest("should_bfs", should_bfs);
+
+    group.startAll();
+}
+
+GROUP_NAME("test_tree")
+REGISTER_UNIT_TESTS(
+    UNIT_TEST_ITEM(it_works),
+    UNIT_TEST_ITEM(should_dfs),
+    UNIT_TEST_ITEM(should_bfs))
+} // namespace my::test::test_tree

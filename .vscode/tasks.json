@@ -23,7 +23,9 @@
         "isDefault": true
       },
       "detail": "编译为调试版本（包含调试信息）",
-      "problemMatcher": ["$gcc"]
+      "problemMatcher": [
+        "$gcc"
+      ]
     },
     {
       "type": "shell",
@@ -43,7 +45,9 @@
       },
       "group": "build",
       "detail": "编译为发布版本（优化）",
-      "problemMatcher": ["$gcc"]
+      "problemMatcher": [
+        "$gcc"
+      ]
     },
     {
       "type": "shell",

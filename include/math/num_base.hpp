@@ -125,7 +125,7 @@ inline i32 convert_to_decimal(const std::string& num, i32 from_base, i64& decima
             // 这里需要特殊逻辑，因为 -LLONG_MIN 会溢出
             // TODO
         } else {
-            decimal_val = -decimal_val;  // 取绝对值
+            decimal_val = -decimal_val; // 取绝对值
         }
     }
 

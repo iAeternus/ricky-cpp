@@ -21,7 +21,7 @@ static constexpr char PATH_SEP = '\\';
  * @brief 判断文件或文件夹是否存在
  * @return true=存在 false=不存在
  */
-auto exists(const char* path) -> bool {
+inline auto exists(const char* path) -> bool {
     auto attributes = GetFileAttributesA(path);
     return (attributes != INVALID_FILE_ATTRIBUTES);
 }
@@ -30,7 +30,7 @@ auto exists(const char* path) -> bool {
  * @brief 判断是否为文件
  * @return true=是 false=否
  */
-auto isfile(const char* path) -> bool {
+inline auto isfile(const char* path) -> bool {
     auto attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
@@ -39,7 +39,7 @@ auto isfile(const char* path) -> bool {
  * @brief 判断是否为文件夹
  * @return true=是 false=否
  */
-auto isdir(const char* path) -> bool {
+inline auto isdir(const char* path) -> bool {
     auto attr = GetFileAttributesA(path);
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0);
 }
@@ -48,7 +48,7 @@ auto isdir(const char* path) -> bool {
  * @brief 创建一个文件夹
  * @return void
  */
-auto mkdir(const char* path, bool exist_ok = false) {
+inline auto mkdir(const char* path, bool exist_ok = false) {
     auto state = CreateDirectoryA(path, nullptr); // TODO 由于win api的问题，这里返回值只有0或1，不知道为什么
 
     switch (state) {
@@ -67,7 +67,7 @@ auto mkdir(const char* path, bool exist_ok = false) {
  * @brief 删除一个文件或文件夹
  * @return void
  */
-auto remove(const char* path) {
+inline auto remove(const char* path) {
     if (!exists(path)) {
         throw not_found_exception("File or directory not found in {}", path);
     }
@@ -83,7 +83,7 @@ auto remove(const char* path) {
  * @brief 拼接两个路径，若第一个路径结尾没有分隔符，会添加一个分隔符
  * @return 拼接后的路径
  */
-auto join(const char* path1, const char* path2) -> CString {
+inline auto join(const char* path1, const char* path2) -> CString {
     auto len1 = std::strlen(path1);
     auto len2 = std::strlen(path2);
     if (len1 == 0) return CString(path2);
@@ -118,7 +118,7 @@ auto join(const char* path1, const char* path2) -> CString {
  * @brief 列出文件夹中的文件名
  * @return 文件名集合
  */
-auto listdir(const char* path) -> util::Vec<CString> {
+inline auto listdir(const char* path) -> util::Vec<CString> {
     WIN32_FIND_DATAA find_data;
     auto handle = FindFirstFileA(join(path, "*"), &find_data);
 

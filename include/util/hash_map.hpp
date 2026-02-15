@@ -710,8 +710,8 @@ public:
 
     private:
         const HashMap* hash_map_; // 指向哈希表的指针
-        usize index_;      // 当前迭代器所在索引
-        value_type kv_;    // 当前键值对
+        usize index_;             // 当前迭代器所在索引
+        value_type kv_;           // 当前键值对
     };
 
     using iterator = HashMapIterator;       // 哈希表迭代器类型

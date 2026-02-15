@@ -208,12 +208,12 @@ private:
     }
 
 private:
-    String text_;                    // 原始文本
-    String encoded_text_;            // 编码后的文本
-    Vec<Node> nodes_;                // 树结构
+    String text_;                       // 原始文本
+    String encoded_text_;               // 编码后的文本
+    Vec<Node> nodes_;                   // 树结构
     HashMap<CodePoint<>, CString> key_; // 密钥
     HashMap<CodePoint<>, u32> freqs_;   // 字符出现频率
-    usize root_idx_ = NIL;           // 根索引
+    usize root_idx_ = NIL;              // 根索引
 };
 
 } // namespace my::util

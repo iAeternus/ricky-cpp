@@ -423,13 +423,13 @@ public:
         return len_;
     }
 
-//    /**
-//     * @brief 获取字符串的长度
-//     * @return 字符串的长度
-//     */
-//    usize length() const {
-//        return len_;
-//    }
+    //    /**
+    //     * @brief 获取字符串的长度
+    //     * @return 字符串的长度
+    //     */
+    //    usize length() const {
+    //        return len_;
+    //    }
 
     /**
      * @brief 判断字符串是否为空

@@ -513,7 +513,7 @@ private:
 
 private:
     Alloc alloc_{};  // 内存分配器
-    usize len_;     // 元素个数
+    usize len_;      // 元素个数
     usize capacity_; // 总容量
     value_t* data_;  // 指向数据首地址的指针
 

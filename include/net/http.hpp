@@ -114,11 +114,11 @@ static const util::HashMap<HttpStatusCode, util::String> status_text_map = {
 struct HttpRequest : public Object<HttpRequest> {
     using Self = HttpRequest;
 
-    HttpMethod method = HttpMethod::UNKNOWN;             // 请求方法
-    util::String path;                                   // 请求路径
-    util::String version;                                // HTTP版本
+    HttpMethod method = HttpMethod::UNKNOWN;                // 请求方法
+    util::String path;                                      // 请求路径
+    util::String version;                                   // HTTP版本
     util::HashMap<util::String, util::String> headers;      // 请求头
-    util::String body;                                   // 请求体
+    util::String body;                                      // 请求体
     util::HashMap<util::String, util::String> query_params; // 查询参数
 
     /**
@@ -146,9 +146,9 @@ struct HttpRequest : public Object<HttpRequest> {
 struct HttpResponse : public Object<HttpResponse> {
     using Self = HttpResponse;
 
-    HttpStatusCode status = HttpStatusCode::OK;     // 响应状态
+    HttpStatusCode status = HttpStatusCode::OK;        // 响应状态
     util::HashMap<util::String, util::String> headers; // 响应头
-    util::String body;                              // 响应体
+    util::String body;                                 // 响应体
 
     /**
      * @brief 获取状态文本
@@ -628,7 +628,7 @@ private:
 
                     // 设置缓存头
                     if (config.cache_max_age > 0) {
-                        resp.headers["Cache-Control"_s] = &"max-age=" [ config.cache_max_age];
+                        resp.headers["Cache-Control"_s] = &"max-age="[config.cache_max_age];
                     }
 
                     // 设置内容
@@ -684,14 +684,14 @@ private:
     }
 
 private:
-    TcpServer server_;                                                       // TCP服务器
-    async::ThreadPool pool_;                                                 // 线程池
+    TcpServer server_;                                                             // TCP服务器
+    async::ThreadPool pool_;                                                       // 线程池
     util::HashMap<HttpMethod, util::HashMap<util::String, RouterHandler>> routes_; // 路由表
-    util::HashMap<util::String, StaticDirConfig> static_dirs_;                  // 静态文件配置
-    util::HashMap<util::String, util::String> mime_types_;                      // MIME类型映射
-    std::atomic<u32> active_connections_{0};                                 // 当前活跃连接数
-    u32 max_connections_{0};                                                 // 最大连接数
-    u32 timeout_{30};                                                        // 超时时间（秒）
+    util::HashMap<util::String, StaticDirConfig> static_dirs_;                     // 静态文件配置
+    util::HashMap<util::String, util::String> mime_types_;                         // MIME类型映射
+    std::atomic<u32> active_connections_{0};                                       // 当前活跃连接数
+    u32 max_connections_{0};                                                       // 最大连接数
+    u32 timeout_{30};                                                              // 超时时间（秒）
 
     mutable std::mutex routes_mutex_;              // 路由表互斥锁
     static constexpr usize MAX_HEADER_SIZE = 8192; // 最大请求头

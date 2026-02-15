@@ -38,7 +38,7 @@ public:
 
     constexpr Allocator() noexcept = default;
 
-    template<typename U>
+    template <typename U>
     constexpr Allocator(const Allocator<U>&) noexcept {}
 
     template <typename U>
@@ -114,7 +114,7 @@ public:
      * @return 对齐分配的内存指针
      * @throw std::bad_alloc 当内存分配失败时抛出
      */
-    template <std::size_t Alignment/* = alignof(T)*/>
+    template <std::size_t Alignment /* = alignof(T)*/>
     [[nodiscard]] auto allocate_aligned(std::size_t n) -> T* {
         static_assert((Alignment & (Alignment - 1)) == 0, "Alignment must be power of two");
         static_assert(Alignment >= alignof(T), "Alignment must be at least alignof(T)");

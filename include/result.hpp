@@ -1,7 +1,6 @@
 #ifndef RESULT_HPP
 #define RESULT_HPP
 
-#include <new>
 #include <utility>
 #include <concepts>
 #include <type_traits>

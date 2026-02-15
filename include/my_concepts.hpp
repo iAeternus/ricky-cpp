@@ -120,8 +120,6 @@ concept NonClassType = !std::is_class_v<T>;
 template <typename T>
 concept DType = is_valid_dtype_v<T>;
 
-
-
 /// 分配器感知
 template <typename C>
 concept AllocatorAware = requires {

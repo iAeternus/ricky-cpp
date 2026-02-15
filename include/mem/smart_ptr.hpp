@@ -75,7 +75,6 @@ private:
     value_t* ptr_; // 指向分配的值
 };
 
-
 } // namespace my::mem
 
 #endif // SMART_PTR_HPP

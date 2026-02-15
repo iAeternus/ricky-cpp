@@ -13,6 +13,9 @@ add_executable(RICKY_CPP_TESTS ${TEST_SOURCES})
 # 继承主库配置
 target_link_libraries(RICKY_CPP_TESTS PRIVATE ricky_cpp::ricky_cpp)
 
+# 让测试可直接包含 tests/unit 和 tests/bench 头文件
+target_include_directories(RICKY_CPP_TESTS PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
 # 测试专用配置
 target_compile_definitions(RICKY_CPP_TESTS PRIVATE UNIT_TESTING=1)
 
