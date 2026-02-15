@@ -1,10 +1,7 @@
-#include "unit/test_win_file.hpp"
-
-#include "ricky_test.hpp"
+#include "test_win_file.hpp"
 #include "filesystem.hpp"
 #include "win/file.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_win_file {
 
@@ -58,19 +55,10 @@ void should_append_win_file() {
     fs::win::remove(path);
 }
 
-void test_win_file() {
-    UnitTestGroup group{"test_win_file"};
-
-    group.addTest("should_write_win_file", should_write_win_file);
-    group.addTest("should_fail_to_construct_if_mode_invalid", should_fail_to_construct_if_mode_invalid);
-    group.addTest("should_append_win_file", should_append_win_file);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_win_file")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_write_win_file),
     UNIT_TEST_ITEM(should_fail_to_construct_if_mode_invalid),
     UNIT_TEST_ITEM(should_append_win_file))
+
 } // namespace my::test::test_win_file

@@ -1,9 +1,6 @@
-#include "unit/test_expr.hpp"
-
-#include "ricky_test.hpp"
+#include "test_expr.hpp"
 #include "expr.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_expr {
 
@@ -29,15 +26,8 @@ void it_works() {
     Assertions::assertEquals(3.5 + 4.2 * (2 - 5.1) / 2, expr4.eval());
 }
 
-void test_expr() {
-    UnitTestGroup group{"test_expr"};
-
-    group.addTest("it_works", it_works);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_expr")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works))
+
 } // namespace my::test::test_expr

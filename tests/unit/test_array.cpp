@@ -1,9 +1,6 @@
-#include "unit/test_array.hpp"
-
-#include "ricky_test.hpp"
+#include "test_array.hpp"
 #include "array.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_array {
 
@@ -41,17 +38,9 @@ void should_at() {
     Assertions::assertEquals("[b,b,c]"_cs, arr.__str__());
 }
 
-void test_array() {
-    UnitTestGroup group{"test_array"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_at", should_at);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_array")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
     UNIT_TEST_ITEM(should_at))
+
 } // namespace my::test::test_array

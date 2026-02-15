@@ -1,15 +1,12 @@
-#include "unit/test_linked_list.hpp"
 /**
- * @brief
- * @author Ricky
- * @date 2025/12/16
- * @version 1.0
- */
-
-#include "ricky_test.hpp"
+* @brief 链表测试
+* @author Ricky
+* @date 2025/12/16
+* @version 1.0
+*/
+#include "test_linked_list.hpp"
 #include "linked_list.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_linked_list {
 
@@ -127,18 +124,6 @@ void test_contains() {
     Assertions::assert_false(res2);
 }
 
-void test_linked_list() {
-    UnitTestGroup group{"test_linked_list"};
-
-    group.addTest("should_push_back", should_push_back);
-    group.addTest("should_push_front", should_push_front);
-    group.addTest("should_pop_front", should_pop_front);
-    group.addTest("should_pop_back", should_pop_back);
-    group.addTest("test_contains", test_contains);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_linked_list")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_push_back),
@@ -146,4 +131,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_pop_front),
     UNIT_TEST_ITEM(should_pop_back),
     UNIT_TEST_ITEM(test_contains))
+
 } // namespace my::test::test_linked_list

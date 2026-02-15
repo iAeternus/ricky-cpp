@@ -1,10 +1,7 @@
-#include "unit/test_json_parser.hpp"
-
-#include "ricky_test.hpp"
+#include "test_json_parser.hpp"
 #include "printer.hpp"
 #include "json_parser.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_json_parser {
 
@@ -107,21 +104,6 @@ void should_fail_invalid_json() {
     });
 }
 
-void test_json_parser() {
-    UnitTestGroup group{"test_json_parser"};
-
-    group.addTest("should_parse", should_parse);
-    group.addTest("should_fail_to_parse_if_json_str_is_empty", should_fail_to_parse_if_json_str_is_empty);
-    group.addTest("should_dump", should_dump);
-    group.addTest("should_parse_numbers", should_parse_numbers);
-    group.addTest("should_parse_string_escapes", should_parse_string_escapes);
-    group.addTest("should_parse_unicode_escape", should_parse_unicode_escape);
-    group.addTest("should_parse_nested", should_parse_nested);
-    group.addTest("should_fail_invalid_json", should_fail_invalid_json);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_json_parser")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_parse),
@@ -132,4 +114,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_parse_unicode_escape),
     UNIT_TEST_ITEM(should_parse_nested),
     UNIT_TEST_ITEM(should_fail_invalid_json))
+
 } // namespace my::test::test_json_parser

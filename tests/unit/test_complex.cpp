@@ -1,9 +1,6 @@
-#include "unit/test_complex.hpp"
-
-#include "ricky_test.hpp"
+#include "test_complex.hpp"
 #include "complex.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_complex {
 
@@ -108,21 +105,6 @@ void should_divide() {
     Assertions::assertEquals(res.__str__(), a.__str__());
 }
 
-void test_complex() {
-    UnitTestGroup group{"test_complex"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_fail_to_parse_if_invalid_format", should_fail_to_parse_if_invalid_format);
-    group.addTest("should_calc_modulus", should_calc_modulus);
-    group.addTest("should_calc_arg", should_calc_arg);
-    group.addTest("should_add", should_add);
-    group.addTest("should_subtract", should_subtract);
-    group.addTest("should_multiply", should_multiply);
-    group.addTest("should_divide", should_divide);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_complex")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -133,4 +115,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_subtract),
     UNIT_TEST_ITEM(should_multiply),
     UNIT_TEST_ITEM(should_divide))
+
 } // namespace my::test::test_complex

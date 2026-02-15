@@ -7,7 +7,8 @@
 #ifndef RICKY_TEST_HPP
 #define RICKY_TEST_HPP
 
-#include "unit_test.hpp"
 #include "assertions.hpp"
+#include "test_registry.hpp"
+#include "printer.hpp"
 
 #endif // RICKY_TEST_HPP

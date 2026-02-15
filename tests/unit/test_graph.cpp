@@ -1,9 +1,6 @@
-#include "unit/test_graph.hpp"
-
-#include "ricky_test.hpp"
+#include "test_graph.hpp"
 #include "graph.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_graph {
 
@@ -101,17 +98,6 @@ void should_fail_to_call_algo_if_algorithm_is_not_found() {
     Assertions::assertThrows("algorithm[dij] not found.", [g]() {
         g.call_algo("dij", 1, 100);
     });
-}
-
-void test_graph() {
-    UnitTestGroup group{"test_graph"};
-
-    group.addTest("should_create_graph", should_create_graph);
-    group.addTest("should_fail_to_add_edge_if_node_not_found", should_fail_to_add_edge_if_node_not_found);
-    group.addTest("should_register", should_register);
-    group.addTest("should_fail_to_call_algo_if_algorithm_is_not_found", should_fail_to_call_algo_if_algorithm_is_not_found);
-
-    group.startAll();
 }
 
 GROUP_NAME("test_graph")

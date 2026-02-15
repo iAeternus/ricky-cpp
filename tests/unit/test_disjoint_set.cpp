@@ -1,9 +1,6 @@
-#include "unit/test_disjoint_set.hpp"
-
-#include "ricky_test.hpp"
+#include "test_disjoint_set.hpp"
 #include "disjoint_set.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_disjoint_set {
 
@@ -36,15 +33,8 @@ void should_merge_and_find() {
     io::println();
 }
 
-void test_disjoint_set() {
-    UnitTestGroup group{"test_disjoint_set"};
-
-    group.addTest("should_merge_and_find", should_merge_and_find);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_disjoint_set")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_merge_and_find))
+
 } // namespace my::test::test_disjoint_set

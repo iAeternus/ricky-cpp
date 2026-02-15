@@ -1,9 +1,6 @@
-#include "unit/test_math_utils.hpp"
-
-#include "ricky_test.hpp"
+#include "test_math_utils.hpp"
 #include "math_utils.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_math_utils {
 
@@ -94,18 +91,6 @@ void should_compare() {
     Assertions::assertEquals(0, res5);
 }
 
-void test_math_utils() {
-    UnitTestGroup group{"test_math_utils"};
-
-    group.addTest("should_cal_gcd", should_cal_gcd);
-    group.addTest("should_cal_lcm", should_cal_lcm);
-    group.addTest("should_judge_is_prime", should_judge_is_prime);
-    group.addTest("should_cal_pow", should_cal_pow);
-    group.addTest("should_compare", should_compare);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_math_utils")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_cal_gcd),
@@ -113,4 +98,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_judge_is_prime),
     UNIT_TEST_ITEM(should_cal_pow),
     UNIT_TEST_ITEM(should_compare))
+
 } // namespace my::test::test_math_utils

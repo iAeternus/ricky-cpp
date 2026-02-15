@@ -1,10 +1,7 @@
-#include "unit/test_huffman_tree.hpp"
-
-#include "ricky_test.hpp"
+#include "test_huffman_tree.hpp"
 #include "filesystem.hpp"
 #include "huffman_tree.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_huffman_tree {
 
@@ -63,19 +60,10 @@ void should_handle_non_ascii_character() {
     Assertions::assertEquals(text, h.decode());
 }
 
-void test_huffman_tree() {
-    UnitTestGroup group{"test_huffman_tree"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_handle_empty_string", should_handle_empty_string);
-    group.addTest("should_handle_non_ascii_character", should_handle_non_ascii_character);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_huffman_tree")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
     UNIT_TEST_ITEM(should_handle_empty_string),
     UNIT_TEST_ITEM(should_handle_non_ascii_character))
+
 } // namespace my::test::test_huffman_tree

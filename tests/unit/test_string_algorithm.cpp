@@ -1,16 +1,13 @@
-#include "unit/test_string_algorithm.hpp"
 /**
- * @brief
+ * @brief 测试字符串算法
  * @author Ricky
  * @date 2025/8/19
  * @version 1.0
  */
-
-#include "ricky_test.hpp"
+#include "test_string_algorithm.hpp"
 #include "str.hpp"
 #include "str_algorithm.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_string_algorithm {
 
@@ -48,17 +45,9 @@ void test_kmp_find_all() {
     Assertions::assertEquals("[1,5]"_cs, res2.__str__());
 }
 
-void test_string_algorithm() {
-    UnitTestGroup group{"test_string_algorithm"};
-
-    group.addTest("should_find", test_kmp_find);
-    group.addTest("test_kmp_find_all", test_kmp_find_all);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_string_algorithm")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_kmp_find),
     UNIT_TEST_ITEM(test_kmp_find_all))
+    
 } // namespace my::test::test_string_algorithm

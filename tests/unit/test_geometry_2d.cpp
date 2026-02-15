@@ -1,9 +1,6 @@
-#include "unit/test_geometry_2d.hpp"
-
-#include "ricky_test.hpp"
+#include "test_geometry_2d.hpp"
 #include "geometry_2d.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_geometry_2d {
 
@@ -117,22 +114,6 @@ void should_calc_projection() {
     Assertions::assertEquals(math::Point2{1, -1}, res2);
 }
 
-void test_geometry_2d() {
-    UnitTestGroup group{"test_geometry_2d"};
-
-    group.addTest("should_calc_dot", should_calc_dot);
-    group.addTest("should_calc_the_cos_of_vec", should_calc_the_cos_of_vec);
-    group.addTest("should_calc_the_angle_between_two_vectors", should_calc_the_angle_between_two_vectors);
-    group.addTest("should_calc_cross", should_calc_cross);
-    group.addTest("should_calc_area_of_triangle", should_calc_area_of_triangle);
-    group.addTest("should_calc_line_intersection", should_calc_line_intersection);
-    group.addTest("should_calc_distance", should_calc_distance);
-    group.addTest("should_calc_distance_to_seg", should_calc_distance_to_seg);
-    group.addTest("should_calc_projection", should_calc_projection);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_geometry_2d")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_calc_dot),
@@ -144,4 +125,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_calc_distance),
     UNIT_TEST_ITEM(should_calc_distance_to_seg),
     UNIT_TEST_ITEM(should_calc_projection))
+
 } // namespace my::test::test_geometry_2d

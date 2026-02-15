@@ -1,9 +1,6 @@
-#include "unit/test_binary_utils.hpp"
-
-#include "ricky_test.hpp"
+#include "test_binary_utils.hpp"
 #include "binary_utils.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_binary_utils {
 
@@ -96,20 +93,6 @@ void should_roundup2() {
     Assertions::assertEquals(4ULL, res3);
 }
 
-void test_binary_utils() {
-    UnitTestGroup group{"test_binary_utils"};
-
-    group.addTest("should_cal_lowbit", should_cal_lowbit);
-    group.addTest("should_cal_lowbit_index", should_cal_lowbit_index);
-    group.addTest("should_cal_highbit_index", should_cal_highbit_index);
-    group.addTest("should_cal_highbit", should_cal_highbit);
-    group.addTest("should_judge_all_one", should_judge_all_one);
-    group.addTest("should_judge_only_one", should_judge_only_one);
-    group.addTest("should_roundup2", should_roundup2);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_binary_utils")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_cal_lowbit),
@@ -119,4 +102,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_judge_all_one),
     UNIT_TEST_ITEM(should_judge_only_one),
     UNIT_TEST_ITEM(should_roundup2))
+
 } // namespace my::test::test_binary_utils

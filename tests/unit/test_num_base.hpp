@@ -1,9 +1,8 @@
 #ifndef TEST_NUM_BASE_HPP
 #define TEST_NUM_BASE_HPP
 
-#include "my_types.hpp"
-
 namespace my::test::test_num_base {
+
 void basic_binary_to_decimal();
 void conversion_with_width();
 void hex_to_decimal();
@@ -24,7 +23,7 @@ void hex_with_width();
 void overflow_test();
 void only_minus_sign();
 void mixed_case();
-void test_num_base();
+
 } // namespace my::test::test_num_base
 
 #endif // TEST_NUM_BASE_HPP

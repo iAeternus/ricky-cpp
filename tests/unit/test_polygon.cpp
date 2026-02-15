@@ -1,9 +1,6 @@
-#include "unit/test_polygon.hpp"
-
-#include "ricky_test.hpp"
+#include "test_polygon.hpp"
 #include "polygon.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_polygon {
 
@@ -32,15 +29,8 @@ void should_judge_point_in_polygon() {
     Assertions::assertFalse(res2);
 }
 
-void test_polygon() {
-    UnitTestGroup group{"test_polygon"};
-
-    group.addTest("should_calc_area", should_calc_area);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_polygon")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_calc_area))
+
 } // namespace my::test::test_polygon

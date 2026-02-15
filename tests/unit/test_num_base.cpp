@@ -1,9 +1,6 @@
-#include "unit/test_num_base.hpp"
-
+#include "test_num_base.hpp"
 #include "num_base.hpp"
 #include "ricky_test.hpp"
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_num_base {
 
@@ -262,34 +259,6 @@ void mixed_case() {
     Assertions::assert_equals("65450", res); // 0xFFAA = 65450
 }
 
-void test_num_base() {
-    UnitTestGroup group{"test_num_base"};
-
-    // 添加所有测试用例
-    group.addTest("basic_binary_to_decimal", basic_binary_to_decimal);
-    group.addTest("conversion_with_width", conversion_with_width);
-    group.addTest("hex_to_decimal", hex_to_decimal);
-    group.addTest("decimal_to_hex", decimal_to_hex);
-    group.addTest("negative_conversion", negative_conversion);
-    group.addTest("negative_with_width", negative_with_width);
-    group.addTest("zero_conversion", zero_conversion);
-    group.addTest("empty_string", empty_string);
-    group.addTest("large_number", large_number);
-    //    group.addTest("llmin_conversion", llmin_conversion); // TODO
-    group.addTest("invalid_base", invalid_base);
-    group.addTest("invalid_characters", invalid_characters);
-    group.addTest("digit_exceeds_base", digit_exceeds_base);
-    group.addTest("binary_to_octal", binary_to_octal);
-    group.addTest("decimal_to_base36", decimal_to_base36);
-    group.addTest("base8_to_base16", base8_to_base16);
-    group.addTest("hex_with_width", hex_with_width);
-    group.addTest("overflow_test", overflow_test);
-    group.addTest("only_minus_sign", only_minus_sign);
-    group.addTest("mixed_case", mixed_case);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_num_base")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(basic_binary_to_decimal),
@@ -311,4 +280,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(overflow_test),
     UNIT_TEST_ITEM(only_minus_sign),
     UNIT_TEST_ITEM(mixed_case))
+
 } // namespace my::test::test_num_base

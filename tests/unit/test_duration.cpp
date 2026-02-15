@@ -1,9 +1,6 @@
-#include "unit/test_duration.hpp"
-
-#include "ricky_test.hpp"
+#include "test_duration.hpp"
 #include "duration.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_duration {
 
@@ -69,21 +66,11 @@ void should_multiply() {
     Assertions::assertEquals(30, res.toMinutes());
 }
 
-void test_duration() {
-    UnitTestGroup group{"test_duration"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_add", should_add);
-    group.addTest("should_subtract", should_subtract);
-    group.addTest("should_multiply", should_multiply);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_duration")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
     UNIT_TEST_ITEM(should_add),
     UNIT_TEST_ITEM(should_subtract),
     UNIT_TEST_ITEM(should_multiply))
+
 } // namespace my::test::test_duration

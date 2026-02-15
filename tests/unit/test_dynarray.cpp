@@ -1,9 +1,6 @@
-#include "unit/test_dynarray.hpp"
-
-#include "ricky_test.hpp"
+#include "test_dynarray.hpp"
 #include "dyn_array.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_dynarray {
 
@@ -167,24 +164,6 @@ void should_find() {
 //     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
 // };
 
-void test_dynarray() {
-    UnitTestGroup group("test_dynarray");
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_append", should_append);
-    group.addTest("should_insert", should_insert);
-    group.addTest("should_pop", should_pop);
-    group.addTest("should_pop2", should_pop2);
-    group.addTest("should_clear", should_clear);
-    group.addTest("should_to_array", should_to_array);
-    group.addTest("should_extend", should_extend);
-    group.addTest("should_at", should_at);
-    group.addTest("should_find", should_find);
-    // group.addTest("should_sort", should_sort);
-
-    group.startAll();
-};
-
 constexpr i32 N = 1e6;
 
 void speed_of_dny_array_append_string() {
@@ -216,14 +195,10 @@ void speed_of_std_vector_push_back_i32() {
 }
 
 void test_dynarray_speed() {
-    UnitTestGroup group{"test_dynarray_speed"};
-
-    group.addTest("speed_of_dny_array_append_string", speed_of_dny_array_append_string);
-    group.addTest("speed_of_std_vector_push_back_string", speed_of_std_vector_push_back_string);
-    group.addTest("speed_of_dny_array_append_i32", speed_of_dny_array_append_i32);
-    group.addTest("speed_of_std_vector_push_back_i32", speed_of_std_vector_push_back_i32);
-
-    group.startAll();
+    speed_of_dny_array_append_string();
+    speed_of_std_vector_push_back_string();
+    speed_of_dny_array_append_i32();
+    speed_of_std_vector_push_back_i32();
 }
 
 GROUP_NAME("test_dynarray")
@@ -238,4 +213,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_extend),
     UNIT_TEST_ITEM(should_at),
     UNIT_TEST_ITEM(should_find))
+
 } // namespace my::test::test_dynarray

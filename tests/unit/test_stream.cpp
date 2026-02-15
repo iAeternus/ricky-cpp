@@ -1,10 +1,7 @@
-#include "unit/test_stream.hpp"
-
-#include "ricky_test.hpp"
+#include "test_stream.hpp"
 #include "stream.hpp"
 #include "my_pair.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_stream {
 
@@ -35,17 +32,9 @@ void should_map_objects() {
     Assertions::assertEquals("[1,2,3]"_cs, res.__str__());
 }
 
-void test_stream() {
-    UnitTestGroup group{"test_stream"};
-
-    group.addTest("should_operates", should_operates);
-    group.addTest("should_map_objects", should_map_objects);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_stream")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_operates),
     UNIT_TEST_ITEM(should_map_objects))
+
 } // namespace my::test::test_stream

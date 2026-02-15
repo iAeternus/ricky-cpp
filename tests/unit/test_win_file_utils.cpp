@@ -1,11 +1,8 @@
-#include "unit/test_win_file_utils.hpp"
-
+#include "test_win_file_utils.hpp"
 #include "printer.hpp"
-#include "ricky_test.hpp"
 #include "filesystem.hpp"
 #include "win/file_utils.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_win_file_utils {
 
@@ -114,22 +111,6 @@ void should_list_dir() {
     }
 }
 
-void test_win_file_utils() {
-    UnitTestGroup group{"test_win_file_utils"};
-
-    group.addTest("should_judge_exists", should_judge_exists);
-    group.addTest("should_judge_is_file", should_judge_is_file);
-    group.addTest("should_judge_is_dir", should_judge_is_dir);
-    group.addTest("should_mkdir_and_remove", should_mkdir_and_remove);
-    // group.addTest("should_fail_to_mkdir_if_dir_already_exists", should_fail_to_mkdir_if_dir_already_exists);
-    // group.addTest("should_fail_to_mkdir_if_path_not_found", should_fail_to_mkdir_if_path_not_found);
-    group.addTest("should_fail_to_remove_if_file_or_dir_not_found", should_fail_to_remove_if_file_or_dir_not_found);
-    group.addTest("should_join", should_join);
-    group.addTest("should_list_dir", should_list_dir);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_win_file_utils")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_judge_exists),
@@ -139,4 +120,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_fail_to_remove_if_file_or_dir_not_found),
     UNIT_TEST_ITEM(should_join),
     UNIT_TEST_ITEM(should_list_dir))
+
 } // namespace my::test::test_win_file_utils

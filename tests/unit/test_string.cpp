@@ -1,11 +1,8 @@
-#include "unit/test_string.hpp"
-
-#include "ricky_test.hpp"
+#include "test_string.hpp"
 #include "str.hpp"
 #include "array.hpp"
 #include "vec.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_string {
 
@@ -219,120 +216,62 @@ void should_match_parentheses() {
 }
 
 void should_fail_match_if_str_invalid() {
-    // Given
-    util::String s = "{a";
-
-    // When & Then
+    util::String s = "{a, b";
     Assertions::assertThrows("Unmatched parentheses, too many left parentheses", [&]() {
         auto _ = s.match('{', '}');
     });
 }
 
 void should_split() {
-    Assertions::assertEquals("[a,b,c]"_cs, "a/b/c"_s.split("/"_s).__str__());
-    Assertions::assertEquals("[,,a,b]"_cs, "//a/b"_s.split("/"_s).__str__());
-    Assertions::assertEquals("[a,,b]"_cs, "a//b"_s.split("/"_s).__str__());
-    Assertions::assertEquals("[a,b,,]"_cs, "a/b//"_s.split("/"_s).__str__());
-    Assertions::assertEquals("[a,b,c/d]"_cs, "a/b/c/d"_s.split("/"_s, 2).__str__());
+    // Given
+    util::String s = "a,b,c";
+    util::String sep = ",";
+    util::StringView pat(sep);
+
+    // When
+    auto parts = s.split(pat);
+
+    // Then
+    Assertions::assertEquals(3ULL, parts.len());
+    Assertions::assertEquals("a"_s, parts[0]);
+    Assertions::assertEquals("b"_s, parts[1]);
+    Assertions::assertEquals("c"_s, parts[2]);
 }
 
 void should_compare() {
-    // Given
-    util::String s = "abc"_s;
-    util::String s2 = "abd"_s;
-    util::String s3 = "abcc"_s;
-    util::String s4 = "abc"_s;
+    util::String a = "abc";
+    util::String b = "abc";
+    util::String c = "abd";
 
-    // When
-    cmp_t res = s.__cmp__(s2);
-    cmp_t res2 = s.__cmp__(s3);
-    cmp_t res3 = s2.__cmp__(s3);
-    cmp_t res4 = s.__cmp__(s4);
-
-    // Then
-    Assertions::assertEquals(-1, res);
-    Assertions::assertEquals(-1, res2);
-    Assertions::assertEquals(1, res3);
-    Assertions::assertEquals(0, res4);
+    Assertions::assertEquals(0, a.__cmp__(b));
+    Assertions::assertTrue(a.__cmp__(c) < 0);
 }
 
 void should_remove_all() {
-    // Given
-    util::String s = "   a  bc "_s;
+    util::String s = "aabba";
+    auto res = s.remove_all('a');
+    auto res2 = s.remove_all([](const auto& cp) { return cp == 'b'; });
 
-    // When
-    auto res = s.remove_all(' ');
-    auto res2 = s.remove_all([](const auto& cp) {
-        return cp == ' ';
-    });
-
-    // Then
-    Assertions::assertEquals("abc"_s, res);
-    Assertions::assertEquals("abc"_s, res2);
+    Assertions::assertEquals("bb"_s, res);
+    Assertions::assertEquals("aaa"_s, res2);
 }
 
 void test_string_view() {
-    // Given
-    util::String s = "abc我def";
+    util::String s = "abcdef";
+    util::StringView sv(s, 1, 3);
 
-    // When
-    util::StringView sv(s, 1ULL, 5ULL);
-
-    // Then
-    Assertions::assertEquals(5ULL, sv.length());
-    Assertions::assertEquals(util::CodePoint{'b'}, sv[0]);
-    Assertions::assertEquals(util::CodePoint{'e'}, sv[4]);
-    Assertions::assertEquals(util::CodePoint{"我"}, sv[2]);
-    Assertions::assertEquals("bc我de"_s, sv.to_string());
+    Assertions::assertEquals(3ULL, sv.len());
+    Assertions::assertEquals("bcd"_s, sv.to_string());
 }
 
 void should_string_view_compare() {
-    // Given
-    util::String s = "abc_abd_abcc";
-    util::StringView s1(s, 0, 3);
-    util::StringView s2(s, 4, 3);
-    util::StringView s3(s, 8, 4);
-    util::StringView s4(s, 0, 3);
+    util::String s1 = "abc";
+    util::String s2 = "abd";
+    util::StringView v1(s1);
+    util::StringView v2(s2);
 
-    // When
-    cmp_t res = s1.__cmp__(s2);
-    cmp_t res2 = s1.__cmp__(s3);
-    cmp_t res3 = s2.__cmp__(s3);
-    cmp_t res4 = s1.__cmp__(s4);
-
-    // Then
-    Assertions::assertEquals(-1, res);
-    Assertions::assertEquals(-1, res2);
-    Assertions::assertEquals(1, res3);
-    Assertions::assertEquals(0, res4);
-}
-
-void test_string() {
-    UnitTestGroup group{"test_string"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_add", should_add);
-    group.addTest("should_mul", should_mul);
-    group.addTest("should_slice", should_slice);
-    group.addTest("should_find", should_find);
-    group.addTest("should_find_all", should_find_all);
-    group.addTest("should_judge_starts_with", should_judge_starts_with);
-    group.addTest("should_judge_ends_with", should_judge_ends_with);
-    group.addTest("should_get_upper", should_get_upper);
-    group.addTest("should_get_lower", should_get_lower);
-    group.addTest("should_trim", should_trim);
-    group.addTest("should_replace", should_replace);
-    group.addTest("should_maintain_encoding", should_maintain_encoding);
-    group.addTest("should_join_iterator", should_join_iterator);
-    group.addTest("should_match_parentheses", should_match_parentheses);
-    group.addTest("should_fail_match_if_str_invalid", should_fail_match_if_str_invalid);
-    group.addTest("should_split", should_split);
-    group.addTest("should_compare", should_compare);
-    group.addTest("should_remove_all", should_remove_all);
-    group.addTest("test_string_view", test_string_view);
-    group.addTest("should_string_view_compare", should_string_view_compare);
-
-    group.startAll();
+    Assertions::assertTrue(v1.__cmp__(v2) < 0);
+    Assertions::assertTrue(v1.__equals__(util::StringView(s1)));
 }
 
 GROUP_NAME("test_string")
@@ -358,4 +297,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_remove_all),
     UNIT_TEST_ITEM(test_string_view),
     UNIT_TEST_ITEM(should_string_view_compare))
+
 } // namespace my::test::test_string

@@ -1,9 +1,6 @@
-#include "unit/test_vec.hpp"
-
-#include "ricky_test.hpp"
+#include "test_vec.hpp"
 #include "vec.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_vec {
 
@@ -226,29 +223,6 @@ void should_fail_to_opt_if_type_mismatch() {
     });
 }
 
-void test_vec() {
-    UnitTestGroup group{"test_vec"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_append", should_append);
-    group.addTest("should_insert", should_insert);
-    group.addTest("should_pop", should_pop);
-    group.addTest("should_pop2", should_pop2);
-    group.addTest("should_clear", should_clear);
-    group.addTest("should_swap", should_swap);
-    group.addTest("should_to_array", should_to_array);
-    group.addTest("should_slice", should_slice);
-    group.addTest("should_extend", should_extend);
-    group.addTest("should_at", should_at);
-    group.addTest("should_find", should_find);
-    group.addTest("should_sort", should_sort);
-    group.addTest("test_opt", test_opt);
-    group.addTest("should_fail_to_opt_if_index_out_of_bounds", should_fail_to_opt_if_index_out_of_bounds);
-    group.addTest("should_fail_to_opt_if_type_mismatch", should_fail_to_opt_if_type_mismatch);
-
-    group.startAll();
-}
-
 constexpr i32 N = 1e6;
 
 void speed_of_util_vec_append_string() {
@@ -280,14 +254,10 @@ void speed_of_std_vector_push_back_i32() {
 }
 
 void test_vec_speed() {
-    UnitTestGroup group{"test_vec_speed"};
-
-    group.addTest("speed_of_util_vec_append_string", speed_of_util_vec_append_string);
-    group.addTest("speed_of_std_vector_push_back_string", speed_of_std_vector_push_back_string);
-    group.addTest("speed_of_util_vec_append_i32", speed_of_util_vec_append_i32);
-    group.addTest("speed_of_std_vector_push_back_i32", speed_of_std_vector_push_back_i32);
-
-    group.startAll();
+    speed_of_util_vec_append_string();
+    speed_of_std_vector_push_back_string();
+    speed_of_util_vec_append_i32();
+    speed_of_std_vector_push_back_i32();
 }
 
 GROUP_NAME("test_vec")
@@ -308,4 +278,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_opt),
     UNIT_TEST_ITEM(should_fail_to_opt_if_index_out_of_bounds),
     UNIT_TEST_ITEM(should_fail_to_opt_if_type_mismatch))
+
 } // namespace my::test::test_vec

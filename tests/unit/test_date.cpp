@@ -1,9 +1,6 @@
-#include "unit/test_date.hpp"
-
-#include "ricky_test.hpp"
+#include "test_date.hpp"
 #include "date_time.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_date {
 
@@ -154,25 +151,6 @@ void should_calc_epoch_day() {
     Assertions::assertEquals(d4, res4);
 }
 
-void test_date() {
-    UnitTestGroup group{"test_date"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_fail_to_construct_by_month_and_day_if_args_invalid", should_fail_to_construct_by_month_and_day_if_args_invalid);
-    group.addTest("should_fail_to_construct_by_day_of_year_if_args_invalid", should_fail_to_construct_by_day_of_year_if_args_invalid);
-    group.addTest("should_parse", should_parse);
-    // group.addTest("should_fail_to_parse_if_format_invalid", should_fail_to_parse_if_format_invalid);
-    group.addTest("should_fetch_now", should_fetch_now);
-    group.addTest("should_calc_day_of_year", should_calc_day_of_year);
-    group.addTest("should_calc_day_of_week", should_calc_day_of_week);
-    group.addTest("should_plus", should_plus);
-    group.addTest("should_minus", should_minus);
-    group.addTest("should_subtract", should_subtract);
-    group.addTest("should_calc_epoch_day", should_calc_epoch_day);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_date")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -186,4 +164,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_minus),
     UNIT_TEST_ITEM(should_subtract),
     UNIT_TEST_ITEM(should_calc_epoch_day))
+
 } // namespace my::test::test_date

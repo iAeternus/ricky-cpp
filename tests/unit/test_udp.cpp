@@ -1,11 +1,8 @@
-#include "unit/test_udp.hpp"
-
-#include "ricky_test.hpp"
+#include "test_udp.hpp"
 #include "udp.hpp"
+#include "ricky_test.hpp"
 
 #include <thread>
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_udp {
 
@@ -30,15 +27,8 @@ void it_works() {
     server_thread.join(); // 等待服务器线程结束
 }
 
-void test_udp() {
-    UnitTestGroup group{"test_udp"};
-
-    group.addTest("it_works", it_works);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_udp")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works))
+
 } // namespace my::test::test_udp

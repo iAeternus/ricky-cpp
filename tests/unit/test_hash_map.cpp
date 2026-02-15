@@ -1,10 +1,7 @@
-#include "unit/test_hash_map.hpp"
-
-#include "ricky_test.hpp"
+#include "test_hash_map.hpp"
 #include "hash_map.hpp"
 #include "random.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_hash_map {
 
@@ -130,21 +127,6 @@ void should_to_string() {
     Assertions::assertEquals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
 }
 
-void test_hash_map() {
-    UnitTestGroup group{"test_hash_map"};
-
-    group.addTest("should_insert", should_insert);
-    group.addTest("should_get_or_default", should_get_or_default);
-    group.addTest("should_fail_to_get_if_key_not_found", should_fail_to_get_if_key_not_found);
-    group.addTest("should_set_default", should_set_default);
-    group.addTest("should_update", should_update);
-    group.addTest("should_remove", should_remove);
-    group.addTest("should_operator", should_operator);
-    group.addTest("should_to_string", should_to_string);
-
-    group.startAll();
-}
-
 inline usize n;
 inline i32 k;
 inline std::vector<i32> nums;
@@ -188,15 +170,11 @@ void speed_of_unordered_map_insert() {
 }
 
 void test_hash_map_speed() {
-    UnitTestGroup group{"test_hash_map_speed"};
-    group.setup(setup);
-
-    group.addTest("speed_of_hash_map_count", speed_of_hash_map_count);
-    group.addTest("speed_of_unordered_map_count", speed_of_unordered_map_count);
-    group.addTest("speed_of_hash_map_insert", speed_of_hash_map_insert);
-    group.addTest("speed_of_unordered_map_insert", speed_of_unordered_map_insert);
-
-    group.startAll();
+    setup();
+    speed_of_hash_map_count();
+    speed_of_unordered_map_count();
+    speed_of_hash_map_insert();
+    speed_of_unordered_map_insert();
 }
 
 GROUP_NAME("test_hash_map")

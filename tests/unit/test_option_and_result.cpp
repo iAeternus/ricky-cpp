@@ -1,16 +1,13 @@
-#include "unit/test_option_and_result.hpp"
 /**
- * @brief
+ * @brief 测试Result和Option
  * @author Ricky
  * @date 2026/2/15
  * @version 1.0
  */
-
-#include "ricky_test.hpp"
+#include "test_option_and_result.hpp"
 #include "option.hpp"
 #include "result.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_option_and_result {
 
@@ -146,25 +143,6 @@ void test_result_unwrap_or() {
     Assertions::assert_equals(100, err.unwrap_or(100));
 }
 
-void test_option_and_result() {
-    UnitTestGroup group{"test_option_and_result"};
-
-    group.addTest("option_basic", test_option_basic);
-    group.addTest("option_copy_move", test_option_copy_move);
-    group.addTest("option_unwrap_or", test_option_unwrap_or);
-    group.addTest("option_map", test_option_map);
-    group.addTest("option_and_then", test_option_and_then);
-
-    group.addTest("result_basic", test_result_basic);
-    group.addTest("result_copy_move", test_result_copy_move);
-    group.addTest("result_map", test_result_map);
-    group.addTest("result_map_err", test_result_map_err);
-    group.addTest("result_and_then", test_result_and_then);
-    group.addTest("result_unwrap_or", test_result_unwrap_or);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_option_and_result")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_option_basic),
@@ -178,4 +156,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_result_map_err),
     UNIT_TEST_ITEM(test_result_and_then),
     UNIT_TEST_ITEM(test_result_unwrap_or))
+
 } // namespace my::test::test_option_and_result

@@ -1,9 +1,6 @@
-#include "unit/test_vector2.hpp"
-
-#include "ricky_test.hpp"
+#include "test_vector2.hpp"
 #include "vector2.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_vector2 {
 
@@ -99,19 +96,6 @@ void should_calc_norm() {
     Assertions::assertEquals(math::Vector2{-1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
 }
 
-void test_vector2() {
-    UnitTestGroup group{"test_vector2"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_calc_pa", should_calc_pa);
-    group.addTest("should_calc_length", should_calc_length);
-    group.addTest("should_rotate", should_rotate);
-    group.addTest("should_calc_unit", should_calc_unit);
-    group.addTest("should_calc_norm", should_calc_length);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_vector2")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
@@ -119,4 +103,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_calc_length),
     UNIT_TEST_ITEM(should_rotate),
     UNIT_TEST_ITEM(should_calc_unit))
+
 } // namespace my::test::test_vector2

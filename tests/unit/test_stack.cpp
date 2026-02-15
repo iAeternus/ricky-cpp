@@ -1,9 +1,6 @@
-#include "unit/test_stack.hpp"
-
-#include "ricky_test.hpp"
+#include "test_stack.hpp"
 #include "vec_stack.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_stack {
 
@@ -35,17 +32,9 @@ void should_fail_to_peek_if_stack_is_empty() {
     });
 }
 
-void test_stack() {
-    UnitTestGroup group{"test_stack"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_fail_to_peek_if_stack_is_empty", should_fail_to_peek_if_stack_is_empty);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_stack")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
     UNIT_TEST_ITEM(should_fail_to_peek_if_stack_is_empty))
+
 } // namespace my::test::test_stack

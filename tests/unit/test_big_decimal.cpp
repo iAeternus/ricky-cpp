@@ -1,9 +1,6 @@
-#include "unit/test_big_decimal.hpp"
-
-#include "ricky_test.hpp"
+#include "test_big_decimal.hpp"
 #include "big_decimal.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_big_decimal {
 
@@ -205,25 +202,6 @@ void test_precision() {
     Assertions::assertEquals(3u, bd3.precision());
 }
 
-void test_big_decimal() {
-    UnitTestGroup group{"test_big_decimal"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("test_abs", test_abs);
-    group.addTest("test_add", test_add);
-    group.addTest("test_sub", test_sub);
-    group.addTest("test_mul", test_mul);
-    group.addTest("test_div", test_div);
-    group.addTest("test_scale", test_scale);
-    group.addTest("test_round", test_round);
-    group.addTest("test_move_point", test_move_point);
-    group.addTest("test_strip_trailing_zeros", test_strip_trailing_zeros);
-    group.addTest("test_sqrt", test_sqrt);
-    group.addTest("test_precision", test_precision);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_big_decimal")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -238,4 +216,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_strip_trailing_zeros),
     UNIT_TEST_ITEM(test_sqrt),
     UNIT_TEST_ITEM(test_precision))
+
 } // namespace my::test::test_big_decimal

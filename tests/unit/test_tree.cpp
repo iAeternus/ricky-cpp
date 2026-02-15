@@ -1,9 +1,6 @@
-#include "unit/test_tree.hpp"
-
-#include "ricky_test.hpp"
+#include "test_tree.hpp"
 #include "tree.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_tree {
 
@@ -57,19 +54,10 @@ void should_bfs() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 }
 
-void test_tree() {
-    UnitTestGroup group{"test_tree"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_dfs", should_dfs);
-    group.addTest("should_bfs", should_bfs);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_tree")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
     UNIT_TEST_ITEM(should_dfs),
     UNIT_TEST_ITEM(should_bfs))
+
 } // namespace my::test::test_tree

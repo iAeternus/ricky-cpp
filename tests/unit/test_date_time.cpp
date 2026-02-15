@@ -1,9 +1,6 @@
-#include "unit/test_date_time.hpp"
-
-#include "ricky_test.hpp"
+#include "test_date_time.hpp"
 #include "date_time.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_date_time {
 
@@ -108,21 +105,6 @@ void should_subtract() {
     Assertions::assertEquals("PT-10H"_cs, res2.__str__());
 }
 
-void test_date_time() {
-    UnitTestGroup group{"test_date_time"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_parse", should_parse);
-    // group.addTest("should_fail_to_parse_if_format_invalid", should_fail_to_parse_if_format_invalid);
-    group.addTest("should_fetch_now", should_fetch_now);
-    group.addTest("should_construct_by_epoch_second", should_construct_by_epoch_second);
-    group.addTest("should_plus", should_plus);
-    group.addTest("should_minus", should_minus);
-    group.addTest("should_subtract", should_subtract);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_date_time")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -132,4 +114,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_plus),
     UNIT_TEST_ITEM(should_minus),
     UNIT_TEST_ITEM(should_subtract))
+
 } // namespace my::test::test_date_time

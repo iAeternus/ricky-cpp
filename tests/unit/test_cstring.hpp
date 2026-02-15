@@ -1,9 +1,8 @@
 #ifndef TEST_CSTRING_HPP
 #define TEST_CSTRING_HPP
 
-#include "my_types.hpp"
-
 namespace my::test::test_cstring {
+
 void should_construct();
 void should_hash();
 void should_compare();
@@ -19,7 +18,7 @@ void should_remove_all();
 void should_add();
 void should_iterate();
 void test_cstring_view();
-void test_cstring();
+
 } // namespace my::test::test_cstring
 
 #endif // TEST_CSTRING_HPP

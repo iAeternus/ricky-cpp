@@ -1,9 +1,6 @@
-#include "unit/test_big_integer.hpp"
-
-#include "ricky_test.hpp"
+#include "test_big_integer.hpp"
 #include "big_integer.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_big_integer {
 
@@ -315,30 +312,6 @@ void should_compare() {
     Assertions::assertTrue(res6);
 }
 
-void test_big_integer() {
-    UnitTestGroup group{"test_big_integer"};
-
-    group.addTest("should_construct_with_i64", should_construct_with_i64);
-    group.addTest("should_construct_with_c_string", should_construct_with_c_string);
-    group.addTest("should_fail_to_construct_if_str_invalid", should_fail_to_construct_if_str_invalid);
-    group.addTest("should_fail_to_construct_if_invalid_char_in_str", should_fail_to_construct_if_invalid_char_in_str);
-    group.addTest("should_judge_odd", should_judge_odd);
-    group.addTest("should_left_shift", should_left_shift);
-    group.addTest("should_right_shift", should_right_shift);
-    group.addTest("should_add", should_add);
-    group.addTest("should_subtract", should_subtract);
-    group.addTest("should_multiply", should_multiply);
-    group.addTest("should_divide", should_divide);
-    group.addTest("should_fail_to_divide_if_divide_by_zero", should_fail_to_divide_if_divide_by_zero);
-    group.addTest("should_modulus", should_modulus);
-    group.addTest("should_power", should_power);
-    group.addTest("should_slice", should_slice);
-    group.addTest("should_logical", should_logical);
-    group.addTest("should_compare", should_compare);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_big_integer")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct_with_i64),
@@ -358,4 +331,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_slice),
     UNIT_TEST_ITEM(should_logical),
     UNIT_TEST_ITEM(should_compare))
+
 } // namespace my::test::test_big_integer

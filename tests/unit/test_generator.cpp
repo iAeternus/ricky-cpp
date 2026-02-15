@@ -1,17 +1,14 @@
-#include "unit/test_generator.hpp"
-
-#include "ricky_test.hpp"
+#include "test_generator.hpp"
 #include "generator.hpp"
 #include "vec.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_generator {
 
-auto range(i32 start, i32 end) -> my::coro::Generator<i32> {
+static auto range(i32 start, i32 end) -> my::coro::Generator<i32> {
     for (i32 i = start; i <= end; ++i) {
         co_yield i;
-    }
+    } // TODO: 没有return?
 }
 
 void should_generate() {
@@ -27,15 +24,8 @@ void should_generate() {
     Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
 }
 
-void test_generator() {
-    UnitTestGroup group{"test_generator"};
-
-    group.addTest("should_generate", should_generate);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_generator")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_generate))
+
 } // namespace my::test::test_generator

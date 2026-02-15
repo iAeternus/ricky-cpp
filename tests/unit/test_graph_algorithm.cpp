@@ -1,9 +1,6 @@
-#include "unit/test_graph_algorithm.hpp"
-
-#include "ricky_test.hpp"
+#include "test_graph_algorithm.hpp"
 #include "graph_algorithm.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_graph_algorithm {
 
@@ -361,23 +358,6 @@ void test_floyd() {
     Assertions::assertEquals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.__str__());
 }
 
-void test_graph_algorithm() {
-    UnitTestGroup group{"test_graph_algorithm"};
-
-    group.addTest("test_adj2matrix", test_adj2matrix);
-    group.addTest("test_is_exist_el", test_is_exist_el);
-    group.addTest("should_bfs", should_bfs);
-    group.addTest("should_dfs", should_dfs);
-    group.addTest("test_is_tree", test_is_tree);
-    group.addTest("test_can_reach", test_can_reach);
-    group.addTest("should_get_all_paths", should_get_all_paths);
-    group.addTest("test_prim", test_prim);
-    group.addTest("test_dijkstra", test_dijkstra);
-    group.addTest("test_floyd", test_floyd);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_graph_algorithm")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_adj2matrix),
@@ -390,4 +370,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_prim),
     UNIT_TEST_ITEM(test_dijkstra),
     UNIT_TEST_ITEM(test_floyd))
+
 } // namespace my::test::test_graph_algorithm

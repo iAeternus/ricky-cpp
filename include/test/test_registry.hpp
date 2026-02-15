@@ -118,8 +118,6 @@ int run_benchmarks();
 
 } // namespace my::test
 
-// ---------------------- 少量宏（可选）----------------------
-
 /**
  * @brief 声明当前文件测试套件名
  */
@@ -129,7 +127,6 @@ int run_benchmarks();
 #ifdef BENCH_NAME
 #undef BENCH_NAME
 #endif
-#define TEST_SUITE(name) static constexpr const char* MY_TEST_SUITE = name;
 
 /**
  * @brief 测试组名称（单元）
@@ -142,44 +139,46 @@ int run_benchmarks();
 #define BENCH_NAME(name) static constexpr const char* MY_TEST_SUITE = name;
 
 /**
- * @brief 单项注册（保留）
- */
-#define TEST_CASE(name, fn) ::my::test::register_case(MY_TEST_SUITE, name, fn)
-#define BENCH_CASE(name, fn) ::my::test::register_bench(MY_TEST_SUITE, name, fn)
-
-/**
  * @brief 基准测试配置
  */
-#define BENCH_CONFIG(warmup, iters, repeats) ::my::test::BenchConfig{(warmup), (iters), (repeats)}
+#define BENCH_CONFIG(warmup, iters, repeats) \
+    ::my::test::BenchConfig { (warmup), (iters), (repeats) }
 
 /**
- * @brief 批量注册（推荐）
+ * @brief 批量注册
  */
-#define REGISTER_UNIT_TESTS(...) \
-    namespace { \
-    struct AutoRegisterUnit { \
-        AutoRegisterUnit() { \
-            ::my::test::register_case_items(MY_TEST_SUITE, { __VA_ARGS__ }); \
-        } \
-    }; \
-    static AutoRegisterUnit g_auto_register_unit; \
+#define REGISTER_UNIT_TESTS(...)                                           \
+    namespace {                                                            \
+    struct AutoRegisterUnit {                                              \
+        AutoRegisterUnit() {                                               \
+            ::my::test::register_case_items(MY_TEST_SUITE, {__VA_ARGS__}); \
+        }                                                                  \
+    };                                                                     \
+    static AutoRegisterUnit g_auto_register_unit;                          \
     }
 
-#define REGISTER_BENCH_TESTS(...) \
-    namespace { \
-    struct AutoRegisterBench { \
-        AutoRegisterBench() { \
-            ::my::test::register_bench_items(MY_TEST_SUITE, { __VA_ARGS__ }); \
-        } \
-    }; \
-    static AutoRegisterBench g_auto_register_bench; \
+#define REGISTER_BENCH_TESTS(...)                                           \
+    namespace {                                                             \
+    struct AutoRegisterBench {                                              \
+        AutoRegisterBench() {                                               \
+            ::my::test::register_bench_items(MY_TEST_SUITE, {__VA_ARGS__}); \
+        }                                                                   \
+    };                                                                      \
+    static AutoRegisterBench g_auto_register_bench;                         \
     }
 
 /**
  * @brief 便捷项构造
  */
-#define UNIT_TEST_ITEM(fn) ::my::test::TestRegItem{#fn, fn}
-#define BENCH_TEST_ITEM(fn) ::my::test::BenchRegItem{#fn, fn, {}}
-#define BENCH_TEST_ITEM_CFG(fn, cfg) ::my::test::BenchRegItem{#fn, fn, cfg}
+#define UNIT_TEST_ITEM(fn) \
+    ::my::test::TestRegItem { #fn, fn }
+
+#define BENCH_TEST_ITEM(fn)    \
+    ::my::test::BenchRegItem { \
+        #fn, fn, {}            \
+    }
+
+#define BENCH_TEST_ITEM_CFG(fn, cfg) \
+    ::my::test::BenchRegItem { #fn, fn, cfg }
 
 #endif // TEST_REGISTRY_HPP

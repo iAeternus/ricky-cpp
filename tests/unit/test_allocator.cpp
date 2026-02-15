@@ -1,14 +1,11 @@
-#include "unit/test_allocator.hpp"
-
-#include <vector>
-#include <list>
-
-#include "ricky_test.hpp"
+#include "test_allocator.hpp"
 #include "binary_utils.hpp"
 #include "alloc.hpp"
 #include "str.hpp"
+#include "ricky_test.hpp"
 
-#include "test/test_registry.hpp"
+#include <vector>
+#include <list>
 
 namespace my::test::test_allocator {
 
@@ -271,8 +268,6 @@ void test_exception_safety() {
     }
 }
 
-// ==================== STL 容器集成测试 ====================
-
 /**
  * @brief 与 std::vector 集成测试
  */
@@ -343,8 +338,6 @@ void test_container_copy() {
     }
 }
 
-// ==================== 性能测试 ====================
-
 /**
  * @brief 批量分配性能测试
  */
@@ -380,8 +373,6 @@ void test_batch_allocation_performance() {
         alloc.deallocate(pointers[i], BATCH_SIZE);
     }
 }
-
-// ==================== 边界情况测试 ====================
 
 /**
  * @brief 最大分配测试
@@ -427,37 +418,6 @@ void test_mixed_operations() {
 
     alloc.destroy_n(large, 1000);
     alloc.deallocate(large, 1000);
-}
-
-// ==================== 运行所有测试 ====================
-
-void test_allocator() {
-    UnitTestGroup group("test_allocator");
-
-    // 基础功能测试
-    group.addTest("test_basic_allocation", test_basic_allocation);
-    group.addTest("test_object_construction", test_object_construction);
-    group.addTest("test_batch_operations", test_batch_operations);
-    group.addTest("test_safe_creation", test_safe_creation);
-
-    // 高级功能测试
-    group.addTest("test_aligned_allocation", test_aligned_allocation);
-    group.addTest("test_over_allocation", test_over_allocation);
-    group.addTest("test_exception_safety", test_exception_safety);
-
-    // STL集成测试
-    group.addTest("test_vector_integration", test_vector_integration);
-    group.addTest("test_list_integration", test_list_integration);
-    group.addTest("test_container_copy", test_container_copy);
-
-    // 性能测试
-    group.addTest("test_batch_allocation_performance", test_batch_allocation_performance);
-
-    // 边界情况测试
-    group.addTest("test_max_allocation", test_max_allocation);
-    group.addTest("test_mixed_operations", test_mixed_operations);
-
-    group.startAll();
 }
 
 GROUP_NAME("test_allocator")

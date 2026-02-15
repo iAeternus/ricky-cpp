@@ -1,12 +1,9 @@
-#include "unit/test_queue.hpp"
-
-#include "ricky_test.hpp"
+#include "test_queue.hpp"
 #include "link_list_queue.hpp"
 #include "random.hpp"
+#include "ricky_test.hpp"
 
 #include <queue>
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_queue {
 
@@ -66,17 +63,6 @@ void should_fail_to_get_tail_if_queue_is_empty() {
     });
 }
 
-void test_queue() {
-    UnitTestGroup group{"test_queue"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_fail_to_pop_if_queue_is_empty", should_fail_to_pop_if_queue_is_empty);
-    group.addTest("should_fail_to_get_front_if_queue_is_empty", should_fail_to_get_front_if_queue_is_empty);
-    group.addTest("should_fail_to_get_tail_if_queue_is_empty", should_fail_to_get_tail_if_queue_is_empty);
-
-    group.startAll();
-}
-
 constexpr i32 N = 1e6;
 
 void speed_of_util_queue_push_and_pop() {
@@ -100,12 +86,8 @@ void speed_of_std_queue_push_and_pop() {
 }
 
 void test_queue_speed() {
-    UnitTestGroup group{"test_queue_speed"};
-
-    group.addTest("speed_of_util_queue_push_and_pop", speed_of_util_queue_push_and_pop);
-    group.addTest("speed_of_std_queue_push_and_pop", speed_of_std_queue_push_and_pop);
-
-    group.startAll();
+    speed_of_util_queue_push_and_pop();
+    speed_of_std_queue_push_and_pop();
 }
 
 GROUP_NAME("test_queue")
@@ -114,4 +96,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_fail_to_pop_if_queue_is_empty),
     UNIT_TEST_ITEM(should_fail_to_get_front_if_queue_is_empty),
     UNIT_TEST_ITEM(should_fail_to_get_tail_if_queue_is_empty))
+
 } // namespace my::test::test_queue

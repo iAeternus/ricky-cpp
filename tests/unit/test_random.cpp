@@ -1,10 +1,7 @@
-#include "unit/test_random.hpp"
-
-#include "unit_test.hpp"
+#include "test_random.hpp"
 #include "random.hpp"
 #include "printer.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_random {
 
@@ -30,17 +27,9 @@ void should_generate_uniform_sum_numbers() {
     io::println(util::Random::instance().generate_uniform_sum_numbers(n, sum));
 }
 
-void test_random() {
-    UnitTestGroup group{"test_random"};
-
-    group.addTest("should_generate_random", should_generate_random);
-    group.addTest("should_generate_uniform_sum_numbers", should_generate_uniform_sum_numbers);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_random")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_generate_random),
     UNIT_TEST_ITEM(should_generate_uniform_sum_numbers))
+
 } // namespace my::test::test_random

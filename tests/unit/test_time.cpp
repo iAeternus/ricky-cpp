@@ -1,9 +1,6 @@
-#include "unit/test_time.hpp"
-
-#include "ricky_test.hpp"
+#include "test_time.hpp"
 #include "date_time.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_time {
 
@@ -130,24 +127,6 @@ void should_subtract() {
     Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.__str__());
 }
 
-void test_time() {
-    UnitTestGroup group{"test_time"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_fail_to_construct_by_hour_minute_and_second_if_args_invalid", should_fail_to_construct_by_hour_minute_and_second_if_args_invalid);
-    group.addTest("should_fail_to_construct_by_second_of_day_if_args_invalid", should_fail_to_construct_by_second_of_day_if_args_invalid);
-    group.addTest("should_parse", should_parse);
-    // group.addTest("should_fail_to_parse_if_format_invalid", should_fail_to_parse_if_format_invalid);
-    group.addTest("should_fetch_now", should_fetch_now);
-    group.addTest("should_calc_second_of_day", should_calc_second_of_day);
-    group.addTest("should_calc_nanos_of_day", should_calc_nanos_of_day);
-    group.addTest("should_plus", should_plus);
-    group.addTest("should_minus", should_minus);
-    group.addTest("should_subtract", should_subtract);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_time")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -160,4 +139,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_plus),
     UNIT_TEST_ITEM(should_minus),
     UNIT_TEST_ITEM(should_subtract))
+
 } // namespace my::test::test_time

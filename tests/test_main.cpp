@@ -3,7 +3,7 @@
  */
 #define TEST_MODE 1
 
-#include "test/test.hpp"
+#include "ricky_test.hpp"
 
 auto main() -> int {
 #if TEST_MODE == 0

@@ -1,9 +1,6 @@
-#include "unit/test_match.hpp"
-
+#include "test_match.hpp"
 #include "match.hpp"
 #include "ricky_test.hpp"
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_match {
 
@@ -33,15 +30,8 @@ void it_works() {
     Assertions::assertEquals("abc", res2);
 }
 
-void test_match() {
-    UnitTestGroup group{"test_match"};
-
-    group.addTest("it_works", it_works);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_match")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works))
+
 } // namespace my::test::test_match

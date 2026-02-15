@@ -1,9 +1,8 @@
 #ifndef TEST_RBTREE_MAP_HPP
 #define TEST_RBTREE_MAP_HPP
 
-#include "my_types.hpp"
-
 namespace my::test::test_rbtree_map {
+
 void it_works();
 void it_works2();
 void should_insert();
@@ -21,10 +20,11 @@ void should_iterable();
 void should_operator();
 void should_cmp();
 void should_equals();
-void test_rbtree_map();
+
 void test_sorted_hash_map_operations_speed();
 void test_map_operations_speed();
 void test_rbtree_map_speed();
+
 } // namespace my::test::test_rbtree_map
 
 #endif // TEST_RBTREE_MAP_HPP

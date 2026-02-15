@@ -1,4 +1,4 @@
-#include "bench/test_speed.hpp"
+#include "test_speed.hpp"
 
 #include "unit/test_dynarray.hpp"
 #include "unit/test_vec.hpp"
@@ -9,7 +9,7 @@
 #include "unit/test_thread_pool.hpp"
 #include "unit/test_rbtree_map.hpp"
 
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test {
 

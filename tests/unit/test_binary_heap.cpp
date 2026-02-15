@@ -1,9 +1,6 @@
-#include "unit/test_binary_heap.hpp"
-
-#include "ricky_test.hpp"
+#include "test_binary_heap.hpp"
 #include "binary_heap.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_binary_heap {
 
@@ -64,19 +61,10 @@ void should_heapify() {
     Assertions::assertEquals("[8,6,7,4,1,3,5]"_cs, bh.__str__());
 }
 
-void test_binary_heap() {
-    UnitTestGroup group{"test_binary_heap"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("it_works2", it_works2);
-    group.addTest("should_heapify", should_heapify);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_binary_heap")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
     UNIT_TEST_ITEM(it_works2),
     UNIT_TEST_ITEM(should_heapify))
+
 } // namespace my::test::test_binary_heap

@@ -1,9 +1,6 @@
-#include "unit/test_buffer.hpp"
-
-#include "ricky_test.hpp"
+#include "test_buffer.hpp"
 #include "buffer.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_buffer {
 
@@ -21,15 +18,8 @@ void should_get_front_and_back() {
     Assertions::assertEquals(3, res2);
 }
 
-void test_buffer() {
-    UnitTestGroup group{"test_buffer"};
-
-    group.addTest("should_get_front_and_back", should_get_front_and_back);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_buffer")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_get_front_and_back))
+
 } // namespace my::test::test_buffer

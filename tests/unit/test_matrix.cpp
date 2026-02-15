@@ -1,9 +1,6 @@
-#include "unit/test_matrix.hpp"
-
-#include "ricky_test.hpp"
+#include "test_matrix.hpp"
 #include "matrix.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_matrix {
 
@@ -328,38 +325,6 @@ void test_matrix_view() {
     Assertions::assertEquals(8, v.at_abs(2, 1));
 }
 
-void test_matrix() {
-    UnitTestGroup group{"test_matrix"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_at", should_at);
-    group.addTest("should_fail_to_get_if_index_out_of_bounds", should_fail_to_get_if_index_out_of_bounds);
-    group.addTest("should_get_sub_mat", should_get_sub_mat);
-    group.addTest("should_fail_to_get_sub_mat_if_index_invalid", should_fail_to_get_sub_mat_if_index_invalid);
-    group.addTest("should_fill", should_fill);
-    group.addTest("should_add", should_add);
-    group.addTest("should_fail_to_add_if_matrix_not_match", should_fail_to_add_if_matrix_not_match);
-    group.addTest("should_subtract", should_subtract);
-    group.addTest("should_fail_to_subtract_if_matrix_not_match", should_fail_to_subtract_if_matrix_not_match);
-    group.addTest("should_multiply", should_multiply);
-    group.addTest("should_fail_to_multiply_if_matrix_not_match", should_fail_to_multiply_if_matrix_not_match);
-    group.addTest("should_dot", should_dot);
-    group.addTest("should_fail_to_dot_if_matrix_not_match", should_fail_to_dot_if_matrix_not_match);
-    group.addTest("should_transpose", should_transpose);
-    group.addTest("should_calculate_inverse", should_calculate_inverse);
-    group.addTest("should_fail_to_calc_inv_if_matrix_not_square", should_fail_to_calc_inv_if_matrix_not_square);
-    group.addTest("should_calculate_det", should_calculate_det);
-    group.addTest("should_fail_to_calc_det_if_matrix_not_square", should_fail_to_calc_det_if_matrix_not_square);
-    group.addTest("should_calculate_rank", should_calculate_rank);
-    group.addTest("should_lu_decomposition", should_lu_decomposition);
-    group.addTest("should_fail_to_lu_decomposition_if_matrix_not_square", should_fail_to_lu_decomposition_if_matrix_not_square);
-    group.addTest("should_cmp", should_cmp);
-    group.addTest("should_fail_to_cmp_if_matrix_not_match", should_fail_to_cmp_if_matrix_not_match);
-    group.addTest("test_matrix_view", test_matrix_view);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_matrix")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -387,4 +352,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_cmp),
     UNIT_TEST_ITEM(should_fail_to_cmp_if_matrix_not_match),
     UNIT_TEST_ITEM(test_matrix_view))
+
 } // namespace my::test::test_matrix

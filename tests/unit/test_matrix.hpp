@@ -1,9 +1,8 @@
 #ifndef TEST_MATRIX_HPP
 #define TEST_MATRIX_HPP
 
-#include "my_types.hpp"
-
 namespace my::test::test_matrix {
+
 void should_construct();
 void should_at();
 void should_fail_to_get_if_index_out_of_bounds();
@@ -29,7 +28,7 @@ void should_fail_to_lu_decomposition_if_matrix_not_square();
 void should_cmp();
 void should_fail_to_cmp_if_matrix_not_match();
 void test_matrix_view();
-void test_matrix();
+
 } // namespace my::test::test_matrix
 
 #endif // TEST_MATRIX_HPP

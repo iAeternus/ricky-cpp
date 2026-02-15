@@ -1,9 +1,6 @@
-#include "unit/test_pair.hpp"
-
-#include "ricky_test.hpp"
+#include "test_pair.hpp"
 #include "my_pair.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_pair {
 
@@ -42,17 +39,9 @@ void should_structured_binding() {
     Assertions::assertEquals(2, y);
 }
 
-void test_pair() {
-    UnitTestGroup group{"test_pair"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_structured_binding", should_structured_binding);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_pair")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
     UNIT_TEST_ITEM(should_structured_binding))
+
 } // namespace my::test::test_pair

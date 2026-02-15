@@ -1,15 +1,12 @@
-#include "unit/test_thread_pool.hpp"
-
+#include "test_thread_pool.hpp"
 #include "my_exception.hpp"
-#include "ricky_test.hpp"
 #include "thread_pool.hpp"
 #include "hash_map.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_thread_pool {
 
-i32 add(i32 a, i32 b) {
+inline i32 add(i32 a, i32 b) {
     return a + b;
 }
 
@@ -79,17 +76,6 @@ void should_wait() {
     }
 }
 
-void test_thread_pool() {
-    UnitTestGroup group{"test_thread_pool"};
-
-    group.addTest("should_push", should_push);
-    group.addTest("should_push_tasks", should_push_tasks);
-    group.addTest("should_push_tasks_with_exception", should_push_tasks_with_exception);
-    group.addTest("should_wait", should_wait);
-
-    group.startAll();
-}
-
 usize n; // count of tasks
 void task() {
     std::this_thread::sleep_for(std::chrono::milliseconds(3));
@@ -110,15 +96,9 @@ void speed_of_sync() {
 }
 
 void test_thread_pool_speed() {
-    UnitTestGroup group{"test_thread_pool_speed"};
-    group.setup([]() {
-        n = 100;
-    });
-
-    group.addTest("speed_of_thread_pool", speed_of_thread_pool);
-    group.addTest("speed_of_sync", speed_of_sync);
-
-    group.startAll();
+    n = 100;
+    speed_of_thread_pool();
+    speed_of_sync();
 }
 
 GROUP_NAME("test_thread_pool")
@@ -127,4 +107,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_push_tasks),
     UNIT_TEST_ITEM(should_push_tasks_with_exception),
     UNIT_TEST_ITEM(should_wait))
+
 } // namespace my::test::test_thread_pool

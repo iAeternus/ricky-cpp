@@ -1,9 +1,6 @@
-#include "unit/test_string_builder.hpp"
-
-#include "ricky_test.hpp"
+#include "test_string_builder.hpp"
 #include "str_builder.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_string_builder {
 
@@ -65,18 +62,6 @@ void should_find() {
     Assertions::assertEquals(6ull, pos);
 }
 
-void test_string_builder() {
-    UnitTestGroup group{"test_string_builder"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_append_format_string", should_append_format_string);
-    group.addTest("should_append_n", should_append_n);
-    group.addTest("should_append_array", should_append_array);
-    group.addTest("should_find", should_find);
-
-    group.startAll();
-}
-
 constexpr usize N = 1e5;
 
 void speed_of_string_builder_append_string() {
@@ -97,12 +82,8 @@ void speed_of_std_string_append_string() {
 }
 
 void test_string_builder_speed() {
-    UnitTestGroup group{"test_string_builder_speed"};
-
-    group.addTest("speed_of_string_builder_append_string", speed_of_string_builder_append_string);
-    group.addTest("speed_of_std_string_append_string", speed_of_std_string_append_string);
-
-    group.startAll();
+    speed_of_string_builder_append_string();
+    speed_of_std_string_append_string();
 }
 
 GROUP_NAME("test_string_builder")
@@ -112,4 +93,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_append_n),
     UNIT_TEST_ITEM(should_append_array),
     UNIT_TEST_ITEM(should_find))
+
 } // namespace my::test::test_string_builder

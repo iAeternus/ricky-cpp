@@ -1,11 +1,8 @@
-#include "unit/test_tcp.hpp"
-
-#include "ricky_test.hpp"
+#include "test_tcp.hpp"
 #include "tcp.hpp"
+#include "ricky_test.hpp"
 
 #include <thread>
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_tcp {
 
@@ -61,17 +58,9 @@ void should_send_all() {
     server_thread.join();
 }
 
-void test_tcp() {
-    UnitTestGroup group{"test_tcp"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_send_all", should_send_all);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_tcp")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
     UNIT_TEST_ITEM(should_send_all))
+
 } // namespace my::test::test_tcp

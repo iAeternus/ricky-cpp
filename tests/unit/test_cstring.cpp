@@ -1,8 +1,5 @@
-#include "unit/test_cstring.hpp"
-
+#include "test_cstring.hpp"
 #include "ricky_test.hpp"
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_cstring {
 
@@ -218,28 +215,6 @@ void test_cstring_view() {
     Assertions::assertEquals("[b,c,d,e,f]"_cs, chs.__str__());
 }
 
-void test_cstring() {
-    UnitTestGroup group{"test_cstring"};
-
-    group.addTest("should_construct", should_construct);
-    group.addTest("should_hash", should_hash);
-    group.addTest("should_compare", should_compare);
-    group.addTest("should_slice", should_slice);
-    group.addTest("should_find", should_find);
-    group.addTest("should_find_all", should_find_all);
-    group.addTest("should_judge_starts_with", should_judge_starts_with);
-    group.addTest("should_judge_ends_with", should_judge_ends_with);
-    group.addTest("should_get_upper", should_get_upper);
-    group.addTest("should_get_lower", should_get_lower);
-    group.addTest("should_trim", should_trim);
-    group.addTest("should_remove_all", should_remove_all);
-    group.addTest("should_add", should_add);
-    group.addTest("should_iterate", should_iterate);
-    group.addTest("test_cstring_view", test_cstring_view);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_cstring")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_construct),
@@ -257,4 +232,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_add),
     UNIT_TEST_ITEM(should_iterate),
     UNIT_TEST_ITEM(test_cstring_view))
+
 } // namespace my::test::test_cstring

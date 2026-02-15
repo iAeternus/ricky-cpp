@@ -1,15 +1,11 @@
-#include "unit/test_rbtree_map.hpp"
-
-#include "ricky_test.hpp"
+#include "test_rbtree_map.hpp"
 #include "printer.hpp"
 #include "random.hpp"
 #include "str.hpp"
 #include "rbtree_map.hpp"
-#include "my_config.hpp"
+#include "ricky_test.hpp"
 
 #include <map>
-
-#include "test/test_registry.hpp"
 
 namespace my::test::test_rbtree_map {
 
@@ -273,30 +269,6 @@ void should_equals() {
     Assertions::assertFalse(res2);
 }
 
-void test_rbtree_map() {
-    UnitTestGroup group{"test_rbtree_map"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("it_works2", it_works2);
-    group.addTest("should_insert", should_insert);
-    group.addTest("should_insert_rev", should_insert_rev);
-    group.addTest("should_construct_by_initializer_list", should_construct_by_initializer_list);
-    group.addTest("should_clone", should_clone);
-    group.addTest("should_for_each", should_for_each);
-    group.addTest("should_get", should_get);
-    group.addTest("should_fail_to_get_if_key_not_found", should_fail_to_get_if_key_not_found);
-    group.addTest("should_get_or_default", should_get_or_default);
-    group.addTest("should_count", should_count);
-    group.addTest("should_set_default", should_set_default);
-    group.addTest("should_remove", should_remove);
-    group.addTest("should_iterable", should_iterable);
-    group.addTest("should_operator", should_operator);
-    group.addTest("should_cmp", should_cmp);
-    group.addTest("should_equals", should_equals);
-
-    group.startAll();
-}
-
 static i32 g_speed_n = 0;
 static util::Vec<i32> g_speed_nums;
 
@@ -339,21 +311,15 @@ void test_map_operations_speed() {
 }
 
 void test_rbtree_map_speed() {
-    UnitTestGroup group{"test_rbtree_map_speed"};
+    g_speed_n = 1000000;
+    g_speed_nums.clear();
+    g_speed_nums.reserve(g_speed_n);
+    for (i32 i = 0; i < g_speed_n; ++i) {
+        g_speed_nums.push(util::Random::instance().next<i32>(1, g_speed_n));
+    }
 
-    group.setup([]() {
-        g_speed_n = 1000000;
-        g_speed_nums.clear();
-        g_speed_nums.reserve(g_speed_n);
-        for (i32 i = 0; i < g_speed_n; ++i) {
-            g_speed_nums.push(util::Random::instance().next<i32>(1, g_speed_n));
-        }
-    });
-
-    group.addTest("test_sorted_hash_map_operations_speed", test_sorted_hash_map_operations_speed);
-    group.addTest("test_map_operations_speed", test_map_operations_speed);
-
-    group.startAll();
+    test_sorted_hash_map_operations_speed();
+    test_map_operations_speed();
 }
 
 GROUP_NAME("test_rbtree_map")
@@ -375,4 +341,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_operator),
     UNIT_TEST_ITEM(should_cmp),
     UNIT_TEST_ITEM(should_equals))
+
 } // namespace my::test::test_rbtree_map

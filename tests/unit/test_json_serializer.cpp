@@ -1,9 +1,6 @@
-#include "unit/test_json_serializer.hpp"
-
-#include "ricky_test.hpp"
+#include "test_json_serializer.hpp"
 #include "json_serializer.hpp"
-
-#include "test/test_registry.hpp"
+#include "ricky_test.hpp"
 
 namespace my::test::test_json_serializer {
 
@@ -101,18 +98,6 @@ void should_fail_missing_field() {
     });
 }
 
-void test_json_serializer() {
-    UnitTestGroup group{"test_json_serializer"};
-
-    group.addTest("it_works", it_works);
-    group.addTest("should_roundtrip_basic_types", should_roundtrip_basic_types);
-    group.addTest("should_roundtrip_container_types", should_roundtrip_container_types);
-    group.addTest("should_roundtrip_person", should_roundtrip_person);
-    group.addTest("should_fail_missing_field", should_fail_missing_field);
-
-    group.startAll();
-}
-
 GROUP_NAME("test_json_serializer")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
@@ -120,4 +105,5 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_roundtrip_container_types),
     UNIT_TEST_ITEM(should_roundtrip_person),
     UNIT_TEST_ITEM(should_fail_missing_field))
+
 } // namespace my::test::test_json_serializer
