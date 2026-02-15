@@ -12,13 +12,6 @@ void should_remove();
 void should_operator();
 void should_to_string();
 
-void setup();
-void speed_of_hash_map_count();
-void speed_of_unordered_map_count();
-void speed_of_hash_map_insert();
-void speed_of_unordered_map_insert();
-void test_hash_map_speed();
-
 } // namespace my::test::test_hash_map
 
 #endif // TEST_HASH_MAP_HPP

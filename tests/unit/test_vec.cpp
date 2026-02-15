@@ -223,43 +223,6 @@ void should_fail_to_opt_if_type_mismatch() {
     });
 }
 
-constexpr i32 N = 1e6;
-
-void speed_of_util_vec_append_string() {
-    util::Vec<std::string> d;
-    for (usize i = 0; i < N; ++i) {
-        d.push("aaaaa");
-    }
-}
-
-void speed_of_std_vector_push_back_string() {
-    std::vector<std::string> v;
-    for (usize i = 0; i < N; ++i) {
-        v.push_back("aaaaa");
-    }
-}
-
-void speed_of_util_vec_append_i32() {
-    util::Vec<i32> d;
-    for (usize i = 0; i < N; ++i) {
-        d.push(i);
-    }
-}
-
-void speed_of_std_vector_push_back_i32() {
-    std::vector<i32> v;
-    for (usize i = 0; i < N; ++i) {
-        v.push_back(i);
-    }
-}
-
-void test_vec_speed() {
-    speed_of_util_vec_append_string();
-    speed_of_std_vector_push_back_string();
-    speed_of_util_vec_append_i32();
-    speed_of_std_vector_push_back_i32();
-}
-
 GROUP_NAME("test_vec")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),

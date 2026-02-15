@@ -127,56 +127,6 @@ void should_to_string() {
     Assertions::assertEquals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
 }
 
-inline usize n;
-inline i32 k;
-inline std::vector<i32> nums;
-inline std::vector<std::string> strs;
-
-void setup() {
-    n = 1e6;
-    k = 100;
-    for (usize i = 0; i < n; ++i) {
-        nums.push_back(util::Random::instance().next<i32>(0, k));
-        strs.push_back(std::to_string(i));
-    }
-}
-
-void speed_of_hash_map_count() {
-    util::HashMap<i32, i32> d;
-    for (const auto& num : nums) {
-        ++d[num];
-    }
-}
-
-void speed_of_unordered_map_count() {
-    std::unordered_map<i32, i32> mp;
-    for (const auto& num : nums) {
-        ++mp[num];
-    }
-}
-
-void speed_of_hash_map_insert() {
-    util::HashMap<std::string, i32> d;
-    for (usize i = 0; i < n; ++i) {
-        d.insert(strs[i], 1);
-    }
-}
-
-void speed_of_unordered_map_insert() {
-    std::unordered_map<std::string, i32> mp;
-    for (usize i = 0; i < n; ++i) {
-        mp.insert(std::make_pair(strs[i], 1));
-    }
-}
-
-void test_hash_map_speed() {
-    setup();
-    speed_of_hash_map_count();
-    speed_of_unordered_map_count();
-    speed_of_hash_map_insert();
-    speed_of_unordered_map_insert();
-}
-
 GROUP_NAME("test_hash_map")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_insert),

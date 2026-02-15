@@ -4,11 +4,13 @@
 #include "timer.hpp"
 #include "my_exception.hpp"
 
+#include <cstring>
+
 namespace my::test {
 
 static io::ColorPrinter g_passed{stdout, color::Color::GREEN};
 static io::ColorPrinter g_failed{stdout, color::Color::RED};
-static io::ColorPrinter g_info{stdout, color::Color::CYAN};
+static io::ColorPrinter g_info{stdout, color::Color::AQUA};
 
 Registry& Registry::instance() {
     static Registry inst{};
@@ -74,6 +76,30 @@ static double avg_of(const util::Vec<u64>& values) {
     return static_cast<double>(sum / static_cast<long double>(values.len()));
 }
 
+static const char* pick_unit(u64 ns) {
+    if (ns >= 1000000000ULL) return "s";
+    if (ns >= 1000000ULL) return "ms";
+    if (ns >= 1000ULL) return "us";
+    return "ns";
+}
+
+static std::string format_time_ns(u64 ns, const char* unit) {
+    if (std::strcmp(unit, "s") == 0) {
+        return std::format("{:.2f}", static_cast<double>(ns) / 1e9);
+    }
+    if (std::strcmp(unit, "ms") == 0) {
+        return std::format("{:.2f}", static_cast<double>(ns) / 1e6);
+    }
+    if (std::strcmp(unit, "us") == 0) {
+        return std::format("{:.2f}", static_cast<double>(ns) / 1e3);
+    }
+    return std::format("{}", ns);
+}
+
+static std::string color_line(const char* color, const std::string& line) {
+    return std::format("{}{}{}", color, line, color::Color::CLOSE);
+}
+
 int run_benchmarks() {
     const auto& benches = Registry::instance().benches();
     if (benches.is_empty()) {
@@ -118,7 +144,13 @@ int run_benchmarks() {
 
         g_info(std::format("[BENCH] {} | iters={} repeats={} warmup={}",
                            item.name, item.cfg.iters, item.cfg.repeats, item.cfg.warmup));
-        io::println(std::format("         ns/iter: min={} avg={:.2f} max={}", min_v, avg_v, max_v));
+        const auto unit = pick_unit(static_cast<u64>(avg_v));
+        const auto avg_str = format_time_ns(static_cast<u64>(avg_v), unit);
+        const auto min_str = format_time_ns(min_v, unit);
+        const auto max_str = format_time_ns(max_v, unit);
+        io::println(color_line(color::Color::YELLOW,
+                               std::format("         time/iter: min={}{} avg={}{} max={}{}",
+                                           min_str, unit, avg_str, unit, max_str, unit)));
     }
 
     return 0;

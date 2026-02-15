@@ -14,12 +14,6 @@ void should_extend();
 void should_at();
 void should_find();
 
-void speed_of_dny_array_append_string();
-void speed_of_std_vector_push_back_string();
-void speed_of_dny_array_append_i32();
-void speed_of_std_vector_push_back_i32();
-void test_dynarray_speed();
-
 } // namespace my::test::test_dynarray
 
 #endif // TEST_DYNARRAY_HPP

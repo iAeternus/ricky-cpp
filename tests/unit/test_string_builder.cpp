@@ -62,30 +62,6 @@ void should_find() {
     Assertions::assertEquals(6ull, pos);
 }
 
-constexpr usize N = 1e5;
-
-void speed_of_string_builder_append_string() {
-    util::StringBuilder sb;
-    for (usize i = 0; i < N; ++i) {
-        sb.append("abcdef");
-    }
-    auto str = sb.build();
-    Assertions::assertEquals(N * 6, str.len());
-}
-
-void speed_of_std_string_append_string() {
-    std::string str;
-    for (usize i = 0; i < N; ++i) {
-        str += "abcdef";
-    }
-    Assertions::assertEquals(N * 6, str.length());
-}
-
-void test_string_builder_speed() {
-    speed_of_string_builder_append_string();
-    speed_of_std_string_append_string();
-}
-
 GROUP_NAME("test_string_builder")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),

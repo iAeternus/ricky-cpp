@@ -8,6 +8,7 @@ cmake_minimum_required(VERSION 3.20)
 # -------------------------------------------------------------------
 file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.cxx")
 list(FILTER TEST_SOURCES EXCLUDE REGEX ".*/main\\.cpp$")
+list(FILTER TEST_SOURCES EXCLUDE REGEX ".*/test_speed\\.cpp$")
 add_executable(RICKY_CPP_TESTS ${TEST_SOURCES})
 
 # 继承主库配置

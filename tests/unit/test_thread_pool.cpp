@@ -76,31 +76,6 @@ void should_wait() {
     }
 }
 
-usize n; // count of tasks
-void task() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(3));
-}
-
-void speed_of_thread_pool() {
-    async::ThreadPool tp{100};
-    for (usize i = 0; i < n; ++i) {
-        tp.push(task);
-    }
-    tp.wait();
-}
-
-void speed_of_sync() {
-    for (usize i = 0; i < n; ++i) {
-        task();
-    }
-}
-
-void test_thread_pool_speed() {
-    n = 100;
-    speed_of_thread_pool();
-    speed_of_sync();
-}
-
 GROUP_NAME("test_thread_pool")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_push),

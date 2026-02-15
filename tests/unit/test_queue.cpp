@@ -63,33 +63,6 @@ void should_fail_to_get_tail_if_queue_is_empty() {
     });
 }
 
-constexpr i32 N = 1e6;
-
-void speed_of_util_queue_push_and_pop() {
-    util::Queue<CString> q;
-    for (usize i = 0; i < N; ++i) {
-        q.push(util::Random::instance().next_str(3));
-    }
-    while (!q.empty()) {
-        q.pop();
-    }
-}
-
-void speed_of_std_queue_push_and_pop() {
-    std::queue<CString> q;
-    for (usize i = 0; i < N; ++i) {
-        q.push(util::Random::instance().next_str(3));
-    }
-    while (!q.empty()) {
-        q.pop();
-    }
-}
-
-void test_queue_speed() {
-    speed_of_util_queue_push_and_pop();
-    speed_of_std_queue_push_and_pop();
-}
-
 GROUP_NAME("test_queue")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),

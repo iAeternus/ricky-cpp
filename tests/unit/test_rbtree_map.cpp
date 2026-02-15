@@ -269,59 +269,6 @@ void should_equals() {
     Assertions::assertFalse(res2);
 }
 
-static i32 g_speed_n = 0;
-static util::Vec<i32> g_speed_nums;
-
-void test_sorted_hash_map_operations_speed() {
-    util::RBTreeMap<i32, i32> t;
-
-    // insert
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        t.insert(g_speed_nums[i], 0);
-    }
-
-    // get
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        t[g_speed_nums[i]]++;
-    }
-
-    // remove
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        t.remove(g_speed_nums[i]);
-    }
-}
-
-void test_map_operations_speed() {
-    std::map<i32, i32> mp;
-
-    // insert
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        mp.emplace(g_speed_nums[i], 0);
-    }
-
-    // get
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        mp[g_speed_nums[i]]++;
-    }
-
-    // remove
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        mp.erase(g_speed_nums[i]);
-    }
-}
-
-void test_rbtree_map_speed() {
-    g_speed_n = 1000000;
-    g_speed_nums.clear();
-    g_speed_nums.reserve(g_speed_n);
-    for (i32 i = 0; i < g_speed_n; ++i) {
-        g_speed_nums.push(util::Random::instance().next<i32>(1, g_speed_n));
-    }
-
-    test_sorted_hash_map_operations_speed();
-    test_map_operations_speed();
-}
-
 GROUP_NAME("test_rbtree_map")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
