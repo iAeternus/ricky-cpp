@@ -1,10 +1,4 @@
-/**
-* @brief json序列化工具
-* @author Ricky
-* @date 2025/7/20
-* @version 1.0
-*/
-#ifndef JSON_SERIALIZER_HPP
+﻿#ifndef JSON_SERIALIZER_HPP
 #define JSON_SERIALIZER_HPP
 
 #include "json_parser.hpp"
@@ -12,149 +6,137 @@
 
 namespace my::json {
 
-/**
-* @brief 支持序列化的类型
-*/
 template <typename T>
 concept SerializerType = requires(Json& json_mut, const T& obj, const Json& json, T& obj_mut) {
-   { to_json(json_mut, obj) } -> std::convertible_to<void>;
-   { from_json(json, obj_mut) } -> std::convertible_to<void>;
+    { to_json(json_mut, obj) } -> std::convertible_to<void>;
+    { from_json(json, obj_mut) } -> std::convertible_to<void>;
 };
 
-/**
-* @brief json序列化工具
-*/
 class JsonSerializer : public Serializer<JsonSerializer> {
 public:
-   using Self = JsonSerializer;
+    using Self = JsonSerializer;
 
-   static util::String do_serialize(i64 val) { return Json(val).dump(); }
-   static util::String do_serialize(f64 val) { return Json(val).dump(); }
-   static util::String do_serialize(bool val) { return Json(val).dump(); }
-   static util::String do_serialize(const util::String& val) { return Json(val).dump(); }
-   static util::String do_serialize(Null) { return Json().dump(); }
+    static util::String do_serialize(i64 val) { return Json(val).dump(); }
+    static util::String do_serialize(f64 val) { return Json(val).dump(); }
+    static util::String do_serialize(bool val) { return Json(val).dump(); }
+    static util::String do_serialize(const util::String& val) { return Json(val).dump(); }
+    static util::String do_serialize(Null) { return Json().dump(); }
 
-   template <typename T>
-   static util::String do_serialize(const util::Vec<T>& vec) {
-       util::StringBuilder sb;
-       sb.append('[');
-       for (usize i = 0; i < vec.len(); ++i) {
-           if (i > 0) sb.append(',');
-           sb.append(JsonSerializer::do_serialize(vec[i]));
-       }
-       sb.append(']');
-       return sb.build();
-   }
+    template <typename T>
+    static util::String do_serialize(const util::Vec<T>& vec) {
+        Json json;
+        to_json(json, vec);
+        return json.dump();
+    }
 
-   template <typename V>
-   static util::String do_serialize(const util::HashMap<util::String, V>& hash_map) {
-       util::StringBuilder sb;
-       sb.append('{');
-       bool first = true;
-       for (const auto& [key, value] : hash_map) {
-           if (!first) sb.append(',');
-           first = false;
-           sb.append(JsonSerializer::do_serialize(key));
-           sb.append(':');
-           sb.append(JsonSerializer::do_serialize(value));
-       }
-       sb.append('}');
-       return sb.build();
-   }
+    template <typename V>
+    static util::String do_serialize(const util::HashMap<util::String, V>& map) {
+        Json json;
+        to_json(json, map);
+        return json.dump();
+    }
 
-   template <SerializerType T>
-   static util::String do_serialize(const T& val) {
-       Json json;
-       to_json(json, val);
-       return json.dump();
-   }
+    template <SerializerType T>
+    static util::String do_serialize(const T& val) {
+        Json json;
+        to_json(json, val);
+        return json.dump();
+    }
 
-   static void do_deserialize(const util::String& str, i64& res) {
-       res = parse_json(str).into<JsonType::JsonInt>();
-   }
-   static void do_deserialize(const util::String& str, f64& res) {
-       res = parse_json(str).into<JsonType::JsonFloat>();
-   }
-   static void do_deserialize(const util::String& str, bool& res) {
-       res = parse_json(str).into<JsonType::JsonBool>();
-   }
-   static void do_deserialize(const util::String& str, util::String& res) {
-       res = parse_json(str).into<JsonType::JsonStr>();
-   }
+    static void do_deserialize(const util::String& str, i64& res) {
+        res = parse_json(str).into<i64>();
+    }
 
-   template <typename T>
-   static void do_deserialize(const util::String& str, util::Vec<T>& res) {
-       auto json = parse_json(str);
-       if (!json.is<JsonType::JsonArray>()) {
-           throw type_exception("Expected array for container");
-       }
-       res.clear();
-       const auto& array = json.into<JsonType::JsonArray>();
-       for (const auto& item : array) {
-           T value;
-           do_deserialize(item.dump(), value);
-           res.append(std::move(value));
-       }
-   }
+    static void do_deserialize(const util::String& str, f64& res) {
+        res = parse_json(str).into<f64>();
+    }
 
-   template <typename V>
-   static void do_deserialize(const util::String& str, util::HashMap<util::String, V>& res) {
-       auto json = parse_json(str);
-       if (!json.is<JsonType::JsonMap>()) {
-           throw type_exception("Expected hash_map for container");
-       }
-       res.clear();
-       const auto& hash_map = json.into<JsonType::JsonMap>();
-       for (const auto& [key, value] : hash_map) {
-           V val;
-           do_deserialize(value.dump(), val);
-           res.insert(key, std::move(val));
-       }
-   }
+    static void do_deserialize(const util::String& str, bool& res) {
+        res = parse_json(str).into<bool>();
+    }
 
-   template <SerializerType T>
-   static void do_deserialize(const util::String& str, T& res) {
-       auto json = parse_json(str);
-       from_json(json, res);
-   }
+    static void do_deserialize(const util::String& str, util::String& res) {
+        res = parse_json(str).into<util::String>();
+    }
 
-private:
-   static Json parse_json(const util::String& str) {
-       return JsonParser::parse(str);
-   }
+    template <typename T>
+    static void do_deserialize(const util::String& str, util::Vec<T>& res) {
+        auto json = parse_json(str);
+        if (!json.is<JsonType::JsonArray>()) {
+            throw type_exception("Expected JsonArray");
+        }
+        res.clear();
+        const auto& arr = json.as_array();
+        for (const auto& item : arr) {
+            T value;
+            if constexpr (SerializerType<T>) {
+                from_json(item, value);
+            } else {
+                value = item.template into<T>();
+            }
+            res.push(std::move(value));
+        }
+    }
+
+    template <typename V>
+    static void do_deserialize(const util::String& str, util::HashMap<util::String, V>& res) {
+        auto json = parse_json(str);
+        if (!json.is<JsonType::JsonMap>()) {
+            throw type_exception("Expected JsonMap");
+        }
+        res.clear();
+        const auto& obj = json.as_object();
+        for (const auto& [key, value] : obj) {
+            V v;
+            if constexpr (SerializerType<V>) {
+                from_json(value, v);
+            } else {
+                v = value.template into<V>();
+            }
+            res.insert(key, std::move(v));
+        }
+    }
+
+    template <SerializerType T>
+    static void do_deserialize(const util::String& str, T& res) {
+        auto json = parse_json(str);
+        from_json(json, res);
+    }
 };
 
-#define DEFINE_JSON_ADAPTER(Type)                        \
-   namespace my::io {                                   \
-   inline void to_json(::my::io::Json&, const Type&);   \
-   inline void from_json(const ::my::io::Json&, Type&); \
-   }
-
-// 为Vec提供适配器
+// Vec adapter
 template <typename T>
 void to_json(Json& j, const util::Vec<T>& vec) {
-   JsonType::JsonArray arr;
-   for (const auto& item : vec) {
-       Json j_item;
-       to_json(j_item, item);
-       arr.push(j_item);
-   }
-   j = std::move(arr);
+    Json::Array arr;
+    for (const auto& item : vec) {
+        if constexpr (SerializerType<T>) {
+            Json j_item;
+            to_json(j_item, item);
+            arr.push(std::move(j_item));
+        } else {
+            arr.push(Json(item));
+        }
+    }
+    j = Json(std::move(arr));
 }
 
-// 为哈希表提供适配器
+// HashMap adapter
 template <typename V>
-void to_json(Json& j, const util::HashMap<util::String, V>& hash_map) {
-   JsonType::JsonMap j_hash_map;
-   for (const auto& [key, value] : hash_map) {
-       Json j_value;
-       to_json(j_value, value);
-       j_hash_map.insert(key, j_value);
-   }
-   j = std::move(j_hash_map);
+void to_json(Json& j, const util::HashMap<util::String, V>& map) {
+    Json::Map obj;
+    for (const auto& [key, value] : map) {
+        if constexpr (SerializerType<V>) {
+            Json j_value;
+            to_json(j_value, value);
+            obj.insert(key, std::move(j_value));
+        } else {
+            obj.insert(key, Json(value));
+        }
+    }
+    j = Json(std::move(obj));
 }
 
-// 基础类型的 to_json 重载
+// Basic types
 inline void to_json(Json& j, i32 value) { j = Json(value); }
 inline void to_json(Json& j, i64 value) { j = Json(value); }
 inline void to_json(Json& j, f32 value) { j = Json(value); }

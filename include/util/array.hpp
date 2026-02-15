@@ -80,9 +80,8 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        alloc_.destroy_n(arr_, size_);
-        alloc_.deallocate(arr_, size_);
-        alloc_.construct(this, other);
+        Self tmp(other);
+        swap(tmp);
         return *this;
     }
 
@@ -94,11 +93,13 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        alloc_.destroy_n(arr_, size_);
-        alloc_.deallocate(arr_, size_);
-
+        if (arr_) {
+            alloc_.destroy_n(arr_, size_);
+            alloc_.deallocate(arr_, size_);
+        }
+        this->alloc_ = std::move(other.alloc_);
         this->size_ = other.size_;
-        this->arr_ = std::move(other.arr_);
+        this->arr_ = other.arr_;
         other.size_ = 0;
         other.arr_ = nullptr;
         return *this;
@@ -188,8 +189,15 @@ public:
      */
     template <typename... Args>
     void resize(usize new_size, const Args&... args) {
-        alloc_.destroy(this);
-        alloc_.construct(this, new_size, args...);
+        if (arr_) {
+            alloc_.destroy_n(arr_, size_);
+            alloc_.deallocate(arr_, size_);
+        }
+        size_ = new_size;
+        arr_ = alloc_.allocate(size_);
+        for (usize i = 0; i < size_; ++i) {
+            alloc_.construct(arr_ + i, args...);
+        }
     }
 
     /**

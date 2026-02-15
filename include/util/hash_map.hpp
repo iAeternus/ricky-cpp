@@ -127,7 +127,9 @@ public:
      * @return 返回负载因子
      */
     f64 load_factor() const {
-        return 1.0 * size() / capacity();
+        const auto cap = capacity();
+        if (cap == 0) return 0.0;
+        return 1.0 * size() / cap;
     }
 
     /**
@@ -754,6 +756,7 @@ private:
      * @return 如果存在返回 true，否则返回 false
      */
     bool contains_hash_val(hash_t hash_val) const {
+        if (capacity() == 0) return false;
         return bucket_.contains(hash_val);
     }
 
@@ -779,6 +782,9 @@ private:
      */
     template <typename _K, typename _V>
     value_t& insert_impl(_K&& key, _V&& value, hash_t hash_val) {
+        if (capacity() == 0) {
+            bucket_.expand(MIN_BUCKET_SIZE);
+        }
         if (load_factor() >= MAX_LOAD_FACTOR) {
             expand();
         }
@@ -808,6 +814,7 @@ private:
      * @return 返回值的指针
      */
     value_t* get_impl(hash_t hash_val) {
+        if (capacity() == 0) return nullptr;
         return bucket_.try_get(hash_val);
     }
 
@@ -817,6 +824,7 @@ private:
      * @return 返回值的常量指针
      */
     const value_t* get_impl(hash_t hash_val) const {
+        if (capacity() == 0) return nullptr;
         return bucket_.try_get(hash_val);
     }
 

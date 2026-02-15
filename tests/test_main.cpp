@@ -99,7 +99,7 @@ auto main() -> int {
     test_math_utils::test_math_utils();
     test_big_integer::test_big_integer();
     test_pair::test_pair();
-//    test_json_parser::test_json_parser();
+    test_json_parser::test_json_parser();
     test_complex::test_complex();
     test_matrix::test_matrix();
     test_disjoint_set::test_disjoint_set();
@@ -127,7 +127,7 @@ auto main() -> int {
     test_match::test_match();
     test_udp::test_udp();
     test_tcp::test_tcp();
-//    test_json_serializer::test_json_serializer();
+    test_json_serializer::test_json_serializer();
     test_string_algorithm::test_string_algorithm();
     test_linked_list::test_linked_list();
     test_num_base::test_num_base();

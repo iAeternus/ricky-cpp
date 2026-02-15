@@ -71,7 +71,7 @@ public:
             alloc_(alloc), len_(iter.len()), capacity_(len_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : iter) {
-            alloc_.construct(data_ + pos, std::forward<value_t>(item));
+            alloc_.construct(data_ + pos, std::forward<decltype(item)>(item));
             pos++;
         }
     }
@@ -105,8 +105,8 @@ public:
     Self& operator=(const Self& other) {
         if (this == &other) return *this;
 
-        alloc_.destroy(this);
-        alloc_.construct(this, other);
+        Self tmp(other);
+        swap(tmp);
         return *this;
     }
 
@@ -118,8 +118,16 @@ public:
     Self& operator=(Self&& other) noexcept {
         if (this == &other) return *this;
 
-        alloc_.destroy(this);
-        alloc_.construct(this, std::move(other));
+        if (data_) {
+            alloc_.destroy_n(data_, len_);
+            alloc_.deallocate(data_, capacity_);
+        }
+        alloc_ = std::move(other.alloc_);
+        data_ = other.data_;
+        len_ = other.len_;
+        capacity_ = other.capacity_;
+        other.data_ = nullptr;
+        other.len_ = other.capacity_ = 0;
         return *this;
     }
 
@@ -283,8 +291,15 @@ public:
     void insert(usize idx, Args&&... args) {
         if (idx > len_) return;
         try_expand();
-        for (auto it = Super::end(); it >= Super::begin() + idx; --it) {
-            *std::next(it) = std::move(*it);
+        for (usize i = len_; i > idx; --i) {
+            if (i == len_) {
+                alloc_.construct(data_ + i, std::move(data_[i - 1]));
+            } else {
+                data_[i] = std::move(data_[i - 1]);
+            }
+        }
+        if (idx < len_) {
+            alloc_.destroy(data_ + idx);
         }
         alloc_.construct(data_ + idx, std::forward<Args>(args)...);
         ++len_;

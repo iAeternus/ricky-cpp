@@ -62,7 +62,9 @@ public:
      * @brief 将hash值转换为索引
      */
     virtual usize hash2index(const hash_t hash_val) const {
-        return hash_val % capacity();
+        const auto cap = capacity();
+        if (cap == 0) return 0;
+        return hash_val % cap;
     }
 
     /**
