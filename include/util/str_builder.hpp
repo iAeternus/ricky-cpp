@@ -63,8 +63,8 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const StringView& str) {
-        if (!str.empty()) {
-            buf_.reserve(buf_.size() + str.size());
+        if (!str.is_empty()) {
+            buf_.reserve(buf_.len() + str.len());
             buf_.extend(str);
         }
         return *this;
@@ -76,7 +76,7 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const CStringView& cstr) {
-        buf_.reserve(buf_.size() + cstr.length());
+        buf_.reserve(buf_.len() + cstr.len());
         buf_.extend(cstr);
         return *this;
     }
@@ -108,7 +108,7 @@ public:
      */
     Self& append(const char* str) {
         const auto len = std::strlen(str);
-        buf_.reserve(buf_.size() + len);
+        buf_.reserve(buf_.len() + len);
         for (usize i = 0; i < len; ++i) {
             buf_.push(CodePoint(str[i]));
         }
@@ -135,7 +135,7 @@ public:
      * @return 构建器自身引用
      */
     Self& append_n(const CodePoint<Enc>& cp, const usize count) {
-        buf_.reserve(buf_.size() + count);
+        buf_.reserve(buf_.len() + count);
         for (usize i = 0; i < count; ++i) {
             buf_.push(cp);
         }
@@ -149,7 +149,7 @@ public:
      * @return 构建器自身引用
      */
     Self& append_array(const CodePoint<Enc>* cps, const usize cnt) {
-        buf_.reserve(buf_.size() + cnt);
+        buf_.reserve(buf_.len() + cnt);
         for (usize i = 0; i < cnt; ++i) {
             buf_.push(cps[i]);
         }
@@ -197,7 +197,7 @@ public:
      * @return 当前存储的码点数量
      */
     usize size() const noexcept {
-        return buf_.size();
+        return buf_.len();
     }
 
     /**

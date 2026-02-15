@@ -24,7 +24,7 @@ auto should_add = []() {
     s += cs;
 
     // Then
-    Assertions::assertEquals(9ULL, s.size());
+    Assertions::assertEquals(9ULL, s.len());
     Assertions::assertEquals(util::CodePoint{'b'}, s[3]);
     Assertions::assertEquals("abcbcdcde"_s, s);
 };
@@ -37,7 +37,7 @@ auto should_mul = []() {
     s = s * 2;
 
     // Then
-    Assertions::assertEquals(6ULL, s.size());
+    Assertions::assertEquals(6ULL, s.len());
     Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
 };
 
@@ -51,7 +51,7 @@ auto should_slice = []() {
     auto res3 = s.slice(1, -1);
 
     // Then
-    Assertions::assertEquals(1ULL, res.size());
+    Assertions::assertEquals(1ULL, res.len());
     Assertions::assertEquals("b"_s, res);
     Assertions::assertEquals("def"_s, res2);
     Assertions::assertEquals("bcde"_s, res3);
@@ -85,7 +85,7 @@ auto should_find_all = []() {
     auto poss = s.find_all("abc"_s);
 
     // Then
-    Assertions::assertEquals(2ULL, poss.size());
+    Assertions::assertEquals(2ULL, poss.len());
     Assertions::assertEquals("[0,6]"_cs, poss.__str__());
 };
 
@@ -178,7 +178,7 @@ auto should_maintain_encoding = []() {
     Assertions::assertEquals("你好世界"_s, s);
     Assertions::assertEquals("你好世界"_s, s2);
     Assertions::assertEquals("你a世界"_s, s3);
-    Assertions::assertEquals("你好世界"_s, s.slice(0, s.size()));
+    Assertions::assertEquals("你好世界"_s, s.slice(0, s.len()));
 
     // When
     auto res = s.replace("你"_s, "你们"_s);

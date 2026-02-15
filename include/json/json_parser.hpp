@@ -52,7 +52,7 @@ private:
     */
    static auto parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint<>& stopSign) -> Pair<Json, JsonType::JsonStr> {
        jsonStr = jsonStr.trim();
-       if (jsonStr.size() == 0) {
+       if (jsonStr.len() == 0) {
            throw argument_exception("Json string is is_empty");
        }
 
@@ -72,8 +72,8 @@ private:
            }
        }
 
-       JsonType::JsonStr remain = jsonStr.slice(match.size()).trim();
-       if (remain.size()) {
+       JsonType::JsonStr remain = jsonStr.slice(match.len()).trim();
+       if (remain.len()) {
            if (remain[0] != stopSign) {
                throw not_found_exception("Stop sign \'{}\' not found", stopSign.data());
            }
@@ -86,7 +86,7 @@ private:
        JsonType::JsonMap hash_map;
        jsonStr = jsonStr.slice(1, -1).trim(); // 去掉 {}
 
-       while (jsonStr.size()) {
+       while (jsonStr.len()) {
            auto [key, remain] = parseFirstObject(jsonStr, util::CodePoint{':'});
            jsonStr = remain;
 
@@ -102,7 +102,7 @@ private:
        JsonType::JsonArray arr;
        jsonStr = jsonStr.slice(1, -1).trim(); // 去掉 []
 
-       while (jsonStr.size()) {
+       while (jsonStr.len()) {
            auto [item, remain] = parseFirstObject(jsonStr, util::CodePoint{','});
            arr.push(item);
            jsonStr = remain;

@@ -67,7 +67,7 @@ public:
      * @brief 字符串视图长度，适配可迭代约束
      * @return 字符串视图长度
      */
-    constexpr usize size() const noexcept {
+    constexpr usize len() const noexcept {
         return begin_ ? (end_ - begin_) : 0;
     }
 
@@ -83,7 +83,7 @@ public:
      * @brief 判断是否为空视图
      * @return true=是 false=否
      */
-    constexpr bool empty() const noexcept {
+    constexpr bool is_empty() const noexcept {
         return begin_ == end_;
     }
 
@@ -412,7 +412,7 @@ public:
      * @note KMP算法，时间复杂度 O(n + m)，n为文本串的长度
      */
     usize find(const CStringView& pattern, const usize pos = 0) const noexcept {
-        if (pattern.empty()) return npos;
+        if (pattern.is_empty()) return npos;
         const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = pos, j = 0; i < m_size; ++i) {
@@ -437,7 +437,7 @@ public:
      */
     std::vector<usize> find_all(const CStringView& pattern) const noexcept {
         std::vector<usize> res;
-        if (pattern.empty()) return res;
+        if (pattern.is_empty()) return res;
         const auto m_size = length(), p_size = pattern.length();
         const auto next = get_next(pattern);
         for (usize i = 0, j = 0; i < m_size; ++i) {

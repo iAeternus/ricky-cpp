@@ -98,7 +98,7 @@ public:
             if (after_each_) after_each_();
         }
         if (teardown_) teardown_();
-        io::println(std::format("Total tests run: {}, Failures: {}", group_.size(), failed_));
+        io::println(std::format("Total tests run: {}, Failures: {}", group_.len(), failed_));
     }
 
 private:

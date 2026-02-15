@@ -117,7 +117,7 @@ public:
         board.push(sum + n);
 
         // 计算相邻元素的差值，并减去1得到最终结果
-        for (usize i = 1; i < board.size(); ++i) {
+        for (usize i = 1; i < board.len(); ++i) {
             const i32 diff = board[i] - board[i - 1];
             numbers.push(diff - 1);
         }

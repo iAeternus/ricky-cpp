@@ -38,7 +38,7 @@ public:
    static util::String do_serialize(const util::Vec<T>& vec) {
        util::StringBuilder sb;
        sb.append('[');
-       for (usize i = 0; i < vec.size(); ++i) {
+       for (usize i = 0; i < vec.len(); ++i) {
            if (i > 0) sb.append(',');
            sb.append(JsonSerializer::do_serialize(vec[i]));
        }

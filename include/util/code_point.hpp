@@ -29,26 +29,26 @@ public:
     static const Array<CodePoint<Enc>> UPPER_CASE_LETTER;
 
     CodePoint(const Alloc& alloc = Alloc()) :
-            alloc_(alloc), code_size_(0), byte_code_(nullptr) {}
+            alloc_(alloc), code_len_(0), byte_code_(nullptr) {}
 
     CodePoint(const char ch, const Alloc& alloc = Alloc()) :
-            alloc_(alloc), code_size_(sizeof(u8)), byte_code_(alloc_.allocate(code_size_)) {
+            alloc_(alloc), code_len_(sizeof(u8)), byte_code_(alloc_.allocate(code_len_)) {
         byte_code_[0] = ch;
     }
 
     CodePoint(const char* str, const Alloc& alloc = Alloc()) :
-            alloc_(alloc), code_size_(EncodingTraits<Enc>::char_size(str)), byte_code_(alloc_.allocate(code_size_)) {
-        std::memcpy(data(), str, code_size_);
+            alloc_(alloc), code_len_(EncodingTraits<Enc>::char_size(str)), byte_code_(alloc_.allocate(code_len_)) {
+        std::memcpy(data(), str, code_len_);
     }
 
     CodePoint(const Self& other) :
-            alloc_(other.alloc_), code_size_(other.code_size_), byte_code_(alloc_.allocate(this->code_size_)) {
-        std::memcpy(this->data(), other.data(), this->code_size_);
+            alloc_(other.alloc_), code_len_(other.code_len_), byte_code_(alloc_.allocate(this->code_len_)) {
+        std::memcpy(this->data(), other.data(), this->code_len_);
     }
 
     CodePoint(Self&& other) noexcept :
-            alloc_(other.alloc_), code_size_(other.code_size_), byte_code_(other.byte_code_) {
-        other.code_size_ = 0;
+            alloc_(other.alloc_), code_len_(other.code_len_), byte_code_(other.byte_code_) {
+        other.code_len_ = 0;
         other.byte_code_ = nullptr;
     }
 
@@ -74,17 +74,17 @@ public:
 
     Self& operator=(const char ch) {
         alloc_.destroy(byte_code_);
-        this->code_size_ = sizeof(u8);
-        this->byte_code_ = alloc_.allocate(code_size_);
+        this->code_len_ = sizeof(u8);
+        this->byte_code_ = alloc_.allocate(code_len_);
         byte_code_[0] = ch;
         return *this;
     }
 
     ~CodePoint() {
         if (byte_code_ != nullptr) {
-            alloc_.deallocate(byte_code_, code_size_);
+            alloc_.deallocate(byte_code_, code_len_);
             byte_code_ = nullptr;
-            code_size_ = 0;
+            code_len_ = 0;
         }
     }
 
@@ -102,8 +102,8 @@ public:
     /**
      * @brief 字节码长度
      */
-    usize size() const noexcept {
-        return code_size_;
+    usize len() const noexcept {
+        return code_len_;
     }
 
     /**
@@ -166,15 +166,15 @@ public:
     }
 
     [[nodiscard]] CString __str__() const {
-        return CString{data(), size()};
+        return CString{data(), len()};
     }
 
     [[nodiscard]] hash_t __hash__() const {
-        return bytes_hash(data(), size());
+        return bytes_hash(data(), len());
     }
 
     [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        const usize m_size = this->size(), o_size = other.size();
+        const usize m_size = this->len(), o_size = other.len();
         if (m_size != o_size) {
             return static_cast<cmp_t>(m_size) - static_cast<cmp_t>(o_size);
         }
@@ -191,7 +191,7 @@ public:
 
 private:
     Alloc alloc_{};   // 内存分配器
-    u8 code_size_;    // 字节码长度
+    u8 code_len_;     // 字节码长度
     char* byte_code_; // 字节码
 };
 

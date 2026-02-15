@@ -71,7 +71,7 @@ public:
      * @brief 视图长度（码点数），适配可迭代约束
      * @return 视图长度（码点数）
      */
-    constexpr usize size() const noexcept {
+    constexpr usize len() const noexcept {
         return static_cast<usize>(std::distance(begin_, end_));
     }
 
@@ -86,8 +86,8 @@ public:
      * @brief 字符串视图是否为空
      * @return true=是 false=否
      */
-    constexpr bool empty() const noexcept {
-        return length() == 0;
+    constexpr bool is_empty() const noexcept {
+        return len() == 0;
     }
 
     /**
@@ -121,7 +121,7 @@ public:
      * @return 子字符串
      */
     Self slice(const usize start) const {
-        return slice(start, size());
+        return slice(start, len());
     }
 
     /**
@@ -167,10 +167,10 @@ public:
      * @return 是否以指定子字符串开头
      */
     bool starts_with(const Self& prefix) const {
-        if (length() < prefix.size()) {
+        if (length() < prefix.len()) {
             return false;
         }
-        return slice(0, prefix.size()) == prefix;
+        return slice(0, prefix.len()) == prefix;
     }
 
     /**
@@ -179,10 +179,10 @@ public:
      * @return 是否以指定子字符串结尾
      */
     bool ends_with(const Self& suffix) const {
-        if (length() < suffix.size()) {
+        if (length() < suffix.len()) {
             return false;
         }
-        return slice(length() - suffix.size()) == suffix;
+        return slice(length() - suffix.len()) == suffix;
     }
 
     /**
@@ -252,7 +252,7 @@ public:
         const auto actual_splits = (max_split < 0) ? m_size : std::min(static_cast<usize>(max_split), m_size);
 
         // 空模式处理：按每个字符分割
-        if (pattern.empty()) {
+        if (pattern.is_empty()) {
             for (usize i = 0; i < actual_splits; ++i) {
                 res.push(Self(operator[](i)));
             }

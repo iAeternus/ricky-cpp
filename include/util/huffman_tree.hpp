@@ -160,7 +160,7 @@ private:
 
         // 处理单字符特例
         if (bh.size() == 1) {
-            Node dummy{nodes_.size(), 0, bh.top().idx, NIL};
+            Node dummy{nodes_.len(), 0, bh.top().idx, NIL};
             nodes_.push(dummy);
             root_idx_ = dummy.idx;
             return;
@@ -176,7 +176,7 @@ private:
                 std::swap(left, right);
             }
 
-            Node parent(nodes_.size(), left.freq + right.freq, left.idx, right.idx);
+            Node parent(nodes_.len(), left.freq + right.freq, left.idx, right.idx);
             nodes_.push(parent);
             bh.push(parent);
         }

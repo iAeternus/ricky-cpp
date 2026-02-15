@@ -27,7 +27,7 @@ public:
             data_() {}
 
     usize size() const {
-        return data_.size();
+        return data_.len();
     }
 
     bool is_empty() const {

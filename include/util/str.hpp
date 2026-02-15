@@ -61,23 +61,10 @@ public:
      * @param str 字符指针
      * @param length 字符串的长度（可选）
      */
-    // BasicString(const char* str, usize length = npos) {
-    //     length = ifelse(length != npos, length, std::strlen(str));
-    //     auto [size, arr] = get_code_points<Enc, CodePointAlloc>(str, length, alloc_).separate();
-    //     length_ = size;
-    //     is_sso_ = length_ <= SSO_CAPACITY;
-    //     if (is_sso_) {
-    //         for (usize i = 0; i < length_; ++i) {
-    //             alloc_.construct(sso_data + i, arr[i]);
-    //         }
-    //     } else {
-    //         heap_storage = arr;
-    //     }
-    // }
     BasicString(const char* str, usize length = npos) {
         length = length != npos ? length : std::strlen(str);
         auto cps_vec = get_code_points<Enc, CharAlloc>(str, length);
-        length_ = cps_vec.size();
+        length_ = cps_vec.len();
         is_sso_ = length_ <= SSO_CAPACITY;
         if (is_sso_) {
             for (usize i = 0; i < length_; ++i) {
@@ -103,7 +90,7 @@ public:
      * @param cp 码点
      */
     BasicString(const value_t& cp) :
-            BasicString(cp.data(), cp.size()) {}
+            BasicString(cp.data(), cp.len()) {}
 
     /**
      * @brief 构造函数，创建一个长度为 length 的字符串，并用码点 cp 填充 TODO 默认参数使其模棱两可
@@ -307,7 +294,7 @@ public:
         result.reserve(byte_length());
         for (usize i = 0; i < length_; ++i) {
             const value_t& cp = operator[](i);
-            result.append(cp.data(), cp.size());
+            result.append(cp.data(), cp.len());
         }
         return result;
     }
@@ -440,7 +427,7 @@ public:
      * @brief 获取字符串的长度，适配可迭代约束
      * @return 字符串的长度
      */
-    usize size() const {
+    usize len() const noexcept {
         return length_;
     }
 
@@ -456,7 +443,7 @@ public:
      * @brief 判断字符串是否为空
      * @return true=是 false=否
      */
-    bool empty() const {
+    bool is_empty() const {
         return length_ == 0;
     }
 
@@ -474,7 +461,7 @@ public:
     usize byte_length() const {
         usize length = 0;
         for (auto&& ch : *this) {
-            length += ch.size();
+            length += ch.len();
         }
         return length;
     }
@@ -509,7 +496,7 @@ public:
      * @return 子字符串
      */
     View slice(const usize start) const {
-        return slice(start, size());
+        return slice(start, len());
     }
 
     /**
@@ -548,10 +535,10 @@ public:
      * @return 是否以指定子字符串开头
      */
     bool starts_with(const View& prefix) const {
-        if (length() < prefix.size()) {
+        if (length() < prefix.len()) {
             return false;
         }
-        return slice(0, prefix.size()) == prefix;
+        return slice(0, prefix.len()) == prefix;
     }
 
     /**
@@ -560,10 +547,10 @@ public:
      * @return 是否以指定子字符串结尾
      */
     bool ends_with(const View& suffix) const {
-        if (length() < suffix.size()) {
+        if (length() < suffix.len()) {
             return false;
         }
-        return slice(length() - suffix.size()) == suffix;
+        return slice(length() - suffix.len()) == suffix;
     }
 
     /**
@@ -652,7 +639,7 @@ public:
      */
     template <Iterable I>
     Self join(const I& iter) const {
-        if (iter.size() == 0) {
+        if (iter.len() == 0) {
             return Self{};
         }
 
@@ -701,9 +688,9 @@ public:
     Self replace(const View& old_, const View& new_) const {
         const auto indices = find_all(old_);
         const auto m_size = length();
-        Self result{m_size + indices.size() * (new_.length() - old_.length()), ' '};
+        Self result{m_size + indices.len() * (new_.length() - old_.length()), ' '};
         for (usize i = 0, j = 0, k = 0; i < m_size; ++i) {
-            if (j < indices.size() && i == indices[j]) {
+            if (j < indices.len() && i == indices[j]) {
                 for (auto&& c : new_) {
                     result[k++] = c;
                 }
@@ -759,7 +746,7 @@ public:
         const auto actual_splits = (max_split < 0) ? m_size : std::min(static_cast<usize>(max_split), m_size);
 
         // 空模式处理：按每个字符分割
-        if (pattern.empty()) {
+        if (pattern.is_empty()) {
             for (usize i = 0; i < actual_splits; ++i) {
                 res.push(Self(operator[](i)));
             }
@@ -811,7 +798,7 @@ public:
                 buf.push(operator[](i));
             }
         }
-        const auto length = buf.size();
+        const auto length = buf.len();
         auto [size, code_points] = buf.separate();
         return Self(code_points, length);
     }
@@ -881,7 +868,7 @@ public:
         CString res{byte_length()};
         usize pos = 0;
         for (auto&& ch : *this) {
-            usize ch_size = ch.size();
+            usize ch_size = ch.len();
             std::memcpy(res.data() + pos, ch.data(), ch_size);
             pos += ch_size;
         }

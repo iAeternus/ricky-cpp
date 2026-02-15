@@ -264,7 +264,7 @@ public:
 
     Self clone() const {
         Self ans(this->rows_, this->cols_);
-        usize size = this->data_.size();
+        usize size = this->data_.len();
         for (usize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i];
         }
@@ -277,7 +277,7 @@ public:
                                        a.rows_, a.cols_, b.rows_, b.cols_);
         }
         Self ans(a.rows_, a.cols_);
-        usize size = ans.data_.size();
+        usize size = ans.data_.len();
         for (usize i = 0; i < size; ++i) {
             ans.data_[i] = a.data_[i] + b.data_[i];
         }
@@ -289,7 +289,7 @@ public:
             throw arithmetic_exception("cannot add a ({}x{}) matrix and a ({}x{}) matrix.",
                                        this->rows_, this->cols_, other.rows_, other.cols_);
         }
-        usize size = this->data_.size();
+        usize size = this->data_.len();
         for (usize i = 0; i < size; ++i) {
             this->data_[i] += other.data_[i];
         }
@@ -302,7 +302,7 @@ public:
                                        a.rows_, a.cols_, b.rows_, b.cols_);
         }
         Self ans(a.rows_, a.cols_);
-        usize size = ans.data_.size();
+        usize size = ans.data_.len();
         for (usize i = 0; i < size; ++i) {
             ans.data_[i] = a.data_[i] - b.data_[i];
         }
@@ -314,7 +314,7 @@ public:
             throw arithmetic_exception("cannot substract a ({}x{}) matrix and a ({}x{}) matrix.",
                                        this->rows_, this->cols_, other.rows_, other.cols_);
         }
-        usize size = this->data_.size();
+        usize size = this->data_.len();
         for (usize i = 0; i < size; ++i) {
             this->data_[i] -= other.data_[i];
         }
@@ -352,7 +352,7 @@ public:
                                        this->rows_, this->cols_, other.rows_, other.cols_);
         }
         Self ans(this->rows_, this->cols_);
-        usize size = ans.data_.size();
+        usize size = ans.data_.len();
         for (usize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i] * other.data_[i];
         }
@@ -361,7 +361,7 @@ public:
 
     Self dot(value_t value) const {
         Self ans(rows_, cols_);
-        usize size = ans.data_.size();
+        usize size = ans.data_.len();
         for (usize i = 0; i < size; ++i) {
             ans.data_[i] = this->data_[i] * value;
         }
@@ -602,7 +602,7 @@ public:
         if (!this->shape_equals(other)) {
             throw runtime_exception("only matrices of the same dimension are comparable");
         }
-        usize size = this->data_.size();
+        usize size = this->data_.len();
         for (usize i = 0; i < size; ++i) {
             if (fcmp(this->data_[i], other.data_[i]) > 0) {
                 return 1;
@@ -632,7 +632,7 @@ private:
     }
 
     void correct() {
-        usize size = data_.size();
+        usize size = data_.len();
         for (usize i = 0; i < size; ++i) {
             data_[i] = correct_float(data_[i]);
         }

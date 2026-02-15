@@ -331,7 +331,7 @@ public:
      * @return 返回哈希桶的容量
      */
     usize capacity() const override {
-        return robin_managers_.size();
+        return robin_managers_.len();
     }
 
     /**
@@ -566,7 +566,7 @@ public:
          */
         Self& operator++() {
             ++index_;
-            usize m_size = bucket_ptr_->size();
+            usize m_size = bucket_ptr_->len();
             while (index_ < m_size && !bucket_ptr_->at(index_).is_managed()) {
                 ++index_;
             }

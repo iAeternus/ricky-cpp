@@ -378,7 +378,7 @@ private:
         response_builder.append("\r\n");
 
         // 主体
-        if (!resp.body.empty()) {
+        if (!resp.body.is_empty()) {
             response_builder.append(resp.body);
         }
 
@@ -456,14 +456,14 @@ private:
 
         // 读取请求行
         auto line = read_line(client);
-        if (line.empty()) {
+        if (line.is_empty()) {
             throw runtime_exception("Empty request");
         }
         log::console.debug("Request line: {}", line);
 
         // 解析请求行
         auto parts = line.split(" "_s);
-        if (parts.size() < 3) {
+        if (parts.len() < 3) {
             throw runtime_exception("Invalid request line: {}", line);
         }
 
@@ -477,7 +477,7 @@ private:
         // 读取头部
         loop {
             auto header_line = read_line(client);
-            if (header_line.empty()) break; // 空行结束头部
+            if (header_line.is_empty()) break; // 空行结束头部
 
             log::console.debug("Header: {}", header_line);
 

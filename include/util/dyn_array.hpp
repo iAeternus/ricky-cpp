@@ -140,7 +140,7 @@ public:
      * @brief 获取动态数组的大小
      * @return 返回数组中元素的个数
      */
-    usize size() const {
+    usize len() const noexcept {
         return size_;
     }
 
@@ -263,7 +263,7 @@ public:
         if (idx > size_) return;
 
         append(std::forward<U>(item));
-        for (isize i = size() - 1; i > static_cast<isize>(idx); --i) {
+        for (isize i = len() - 1; i > static_cast<isize>(idx); --i) {
             std::swap(at(i), at(i - 1));
         }
     }
@@ -281,7 +281,7 @@ public:
         }
 
         auto& back_block = get_back_block();
-        if (back_block.size() == 1) {
+        if (back_block.len() == 1) {
             pop_back_block();
         } else {
             back_block.pop_back();
@@ -484,7 +484,7 @@ public:
          * @return 返回自增后的迭代器
          */
         Self& operator++() {
-            if (inblock_idx_ == dynarray_->blocks_.at(block_idx_).size() - 1) {
+            if (inblock_idx_ == dynarray_->blocks_.at(block_idx_).len() - 1) {
                 ++block_idx_;
                 inblock_idx_ = 0;
                 return *this;
@@ -510,9 +510,9 @@ public:
          * @return 返回自减后的迭代器
          */
         Self& operator--() {
-            if (dynarray_->blocks_.at(block_idx_).size() == 0) {
+            if (dynarray_->blocks_.at(block_idx_).len() == 0) {
                 --block_idx_;
-                inblock_idx_ = dynarray_->blocks_.at(block_idx_).size() - 1;
+                inblock_idx_ = dynarray_->blocks_.at(block_idx_).len() - 1;
                 return *this;
             }
             --inblock_idx_;
@@ -542,13 +542,13 @@ public:
             i32 new_block = dynarray_->get_block_idx(target + 1);
             usize new_inblock = dynarray_->get_inblock_idx(target, new_block);
 
-            if (new_block >= dynarray_->blocks_.size()) {
-                new_block = dynarray_->blocks_.size() - 1;
-                new_inblock = dynarray_->blocks_.at(new_block).size();
+            if (new_block >= dynarray_->blocks_.len()) {
+                new_block = dynarray_->blocks_.len() - 1;
+                new_inblock = dynarray_->blocks_.at(new_block).len();
             }
 
             block_idx_ = new_block;
-            inblock_idx_ = new_inblock < dynarray_->blocks_.at(new_block).size() ? new_inblock : dynarray_->blocks_.at(new_block).size();
+            inblock_idx_ = new_inblock < dynarray_->blocks_.at(new_block).len() ? new_inblock : dynarray_->blocks_.at(new_block).len();
 
             return *this;
         }
@@ -581,12 +581,12 @@ public:
                 new_inblock = 0;
             }
 
-            if (new_block < dynarray_->blocks_.size()) {
+            if (new_block < dynarray_->blocks_.len()) {
                 inblock_idx_ = new_inblock;
                 block_idx_ = new_block;
             } else {
-                block_idx_ = dynarray_->blocks_.size() - 1;
-                inblock_idx_ = dynarray_->blocks_.at(block_idx_).size();
+                block_idx_ = dynarray_->blocks_.len() - 1;
+                inblock_idx_ = dynarray_->blocks_.at(block_idx_).len();
             }
 
             return *this;
@@ -618,9 +618,9 @@ public:
             if (this->block_idx_ == other.block_idx_) {
                 return this->inblock_idx_ - other.inblock_idx_;
             }
-            difference_type diff = this->dynarray_->blocks_.at(other.block_idx_).size() - other.inblock_idx_;
+            difference_type diff = this->dynarray_->blocks_.at(other.block_idx_).len() - other.inblock_idx_;
             for (usize i = other.block_idx_ + 1; i < this->block_idx_; ++i) {
-                diff += this->dynarray_->blocks_.at(i).size();
+                diff += this->dynarray_->blocks_.at(i).len();
             }
             return diff + this->inblock_idx_;
         }
@@ -773,7 +773,7 @@ private:
             // 计算新块的大小：
             // - 如果当前块不存在，初始大小为 BASE_CAP
             // - 如果当前块存在且已满，新块大小为原块大小的两倍
-            const usize new_capacity = bbi == BLOCK_NOT_EXISTS ? BASE_CAP : blocks_.at(bbi).size() << 1;
+            const usize new_capacity = bbi == BLOCK_NOT_EXISTS ? BASE_CAP : blocks_.at(bbi).len() << 1;
             ++back_block_index_;                   // 将最后一个块的索引递增，指向新块
             get_back_block().resize(new_capacity); // 调整新块的大小
         }

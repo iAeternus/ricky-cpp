@@ -27,8 +27,8 @@ auto should_append = []() {
     }
 
     // Then
-    Assertions::assertEquals(n, d.size());
-    Assertions::assertEquals(cstr(n - 1), d.at(d.size() - 1));
+    Assertions::assertEquals(n, d.len());
+    Assertions::assertEquals(cstr(n - 1), d.at(d.len() - 1));
 
     i32 num = 0;
     for (const auto& it : d) {
@@ -44,7 +44,7 @@ auto should_insert = []() {
     d.insert(0, 100);
 
     // Then
-    Assertions::assertEquals(6ULL, d.size());
+    Assertions::assertEquals(6ULL, d.len());
     Assertions::assertEquals(100, *d.begin());
     Assertions::assertEquals(1ULL, d.find(1));
 };
@@ -57,14 +57,14 @@ auto should_pop = []() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(4ULL, d.size());
-    Assertions::assertEquals(4, d.at(d.size() - 1));
+    Assertions::assertEquals(4ULL, d.len());
+    Assertions::assertEquals(4, d.at(d.len() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    Assertions::assertEquals(3ULL, d.size());
+    Assertions::assertEquals(3ULL, d.len());
     Assertions::assertEquals(2, d.at(0));
 };
 
@@ -76,7 +76,7 @@ auto should_pop2 = []() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(0ULL, d.size());
+    Assertions::assertEquals(0ULL, d.len());
     Assertions::assertTrue(d.empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
@@ -95,7 +95,7 @@ auto should_clear = []() {
     d.clear();
 
     // Then
-    Assertions::assertEquals(0ULL, d.size());
+    Assertions::assertEquals(0ULL, d.len());
     Assertions::assertTrue(d.empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
@@ -108,8 +108,8 @@ auto should_to_array = []() {
     auto arr = d.to_array();
 
     // Then
-    Assertions::assertEquals(5ULL, arr.size());
-    Assertions::assertEquals(5, arr.at(arr.size() - 1));
+    Assertions::assertEquals(5ULL, arr.len());
+    Assertions::assertEquals(5, arr.at(arr.len() - 1));
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
@@ -122,7 +122,7 @@ auto should_extend = []() {
     d = d + util::DynArray<i32>{8, 9, 10};
 
     // Then
-    Assertions::assertEquals(10ULL, d.size());
+    Assertions::assertEquals(10ULL, d.len());
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
@@ -151,7 +151,7 @@ auto should_find = []() {
 
     // Then
     Assertions::assertEquals(0ULL, res);
-    Assertions::assertEquals(d.size(), res2);
+    Assertions::assertEquals(d.len(), res2);
 };
 
 // auto should_sort = []() {

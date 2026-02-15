@@ -334,7 +334,7 @@ public:
     */
    [[nodiscard]] usize size() const {
        if (is<JsonType::JsonArray>()) {
-           return into<JsonType::JsonArray>().size();
+           return into<JsonType::JsonArray>().len();
        }
        if (is<JsonType::JsonMap>()) {
            return into<JsonType::JsonMap>().size();

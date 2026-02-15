@@ -156,7 +156,7 @@ public:
      * @brief 获取数组的大小
      * @return 返回数组的大小
      */
-    usize size() const {
+    usize len() const noexcept {
         return size_;
     }
 

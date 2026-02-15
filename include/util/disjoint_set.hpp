@@ -39,7 +39,7 @@ public:
     using Self = DisjointSet<value_t>;
 
     DisjointSet(const Vec<value_t>& arr) :
-            nodes_(arr.size()) {
+            nodes_(arr.len()) {
         for (auto&& item : arr) {
             nodes_.insert(item, new Node{item});
         }

@@ -68,7 +68,7 @@ public:
      */
     template <Iterable I>
     Vec(I&& iter, const Alloc& alloc = Alloc{}) :
-            alloc_(alloc), len_(iter.size()), capacity_(len_), data_(alloc_.allocate(capacity_)) {
+            alloc_(alloc), len_(iter.len()), capacity_(len_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : iter) {
             alloc_.construct(data_ + pos, std::forward<value_t>(item));
@@ -146,7 +146,7 @@ public:
      * @brief 获取元素个数
      * @return 当前存储的元素个数
      */
-    usize size() const noexcept {
+    usize len() const noexcept {
         return len_;
     }
 
@@ -356,7 +356,7 @@ public:
      * @return 子数组
      */
     Self slice(usize start, isize end) const {
-        const auto m_size = size();
+        const auto m_size = len();
         start = neg_index(start, m_size);
         usize u_end = static_cast<usize>(neg_index(end, static_cast<isize>(m_size)));
         Self ans(u_end - start);
@@ -373,7 +373,7 @@ public:
      * @return 子数组
      */
     Self slice(const usize start) const {
-        return slice(start, size());
+        return slice(start, len());
     }
 
     /**
@@ -515,8 +515,8 @@ private:
  */
 template <typename T>
 auto opt(const Vec<std::any>& args, usize idx) -> T {
-    if (idx >= args.size()) {
-        throw index_out_of_bounds_exception("Index {} out of bounds [0..{}] in opt function.", idx, args.size());
+    if (idx >= args.len()) {
+        throw index_out_of_bounds_exception("Index {} out of bounds [0..{}] in opt function.", idx, args.len());
     }
 
     try {

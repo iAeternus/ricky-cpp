@@ -14,7 +14,7 @@ namespace my::util {
 /**
  * @class Sequence
  * @brief 序列CRTP基类  TODO Alloc
- * @note 需要子类实现 size() 和 at()
+ * @note 需要子类实现 len() 和 at()
  * @tparam D 实现类类型
  * @tparam T 元素类型
  */
@@ -35,9 +35,9 @@ public:
      * @brief 迭代器接口
      */
     iterator begin() { return iterator(this, 0); }
-    iterator end() { return iterator(this, size()); }
+    iterator end() { return iterator(this, len()); }
     const_iterator begin() const { return const_iterator(this, 0); }
-    const_iterator end() const { return const_iterator(this, size()); }
+    const_iterator end() const { return const_iterator(this, len()); }
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end(); }
 
@@ -66,8 +66,8 @@ public:
      * @brief 获取序列的大小
      * @return 返回序列的大小
      */
-    usize size() const noexcept {
-        return static_cast<const D*>(this)->size();
+    usize len() const noexcept {
+        return static_cast<const D*>(this)->len();
     }
 
     /**
@@ -75,7 +75,7 @@ public:
      * @note 负数下标代表倒序下标
      */
     value_t& operator[](const isize idx) {
-        return at(neg_index(idx, static_cast<isize>(size())));
+        return at(neg_index(idx, static_cast<isize>(len())));
     }
 
     /**
@@ -83,7 +83,7 @@ public:
      * @note 负数下标代表倒序下标
      */
     const value_t& operator[](const isize idx) const {
-        return at(neg_index(idx, static_cast<isize>(size())));
+        return at(neg_index(idx, static_cast<isize>(len())));
     }
 
     /**
@@ -102,7 +102,7 @@ public:
      */
     template <typename V>
     usize find(const V& v) const {
-        for (usize i = 0, siz = size(); i < siz; ++i) {
+        for (usize i = 0, siz = len(); i < siz; ++i) {
             if (at(i) == v) {
                 return i;
             }
@@ -117,7 +117,7 @@ public:
      */
     template <typename V>
     usize find_first_of(const V& v) const {
-        for (usize i = 0, siz = size(); i < siz; ++i) {
+        for (usize i = 0, siz = len(); i < siz; ++i) {
             if (at(i) == v) {
                 return i;
             }
@@ -132,7 +132,7 @@ public:
      */
     template <typename V>
     usize find_last_of(const V& v) const {
-        for (i32 i = size() - 1; i >= 0; --i) {
+        for (i32 i = len() - 1; i >= 0; --i) {
             if (at(i) == v) {
                 return i;
             }
@@ -188,7 +188,7 @@ public:
     }
 
     [[nodiscard]] bool __equals__(const D& other) const {
-        if (size() != other.size()) {
+        if (len() != other.len()) {
             return false;
         }
         return static_cast<const D*>(this)->__cmp__(other) == 0;

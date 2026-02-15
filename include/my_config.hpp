@@ -30,7 +30,7 @@ namespace my {
 
 /**
  * @brief 负数索引支持
- * @details 取模运算, 运算结果为 [0, size]
+ * @details 取模运算, 运算结果为 [0, len]
  */
 #define neg_index(index, size) (((index) == (size)) ? (index) : ((index) + (size)) % (size))
 

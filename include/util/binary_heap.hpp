@@ -65,7 +65,7 @@ public:
      * @return 队列中元素的数量
      */
     usize size() const noexcept {
-        return heap_.size();
+        return heap_.len();
     }
 
     /**
@@ -83,7 +83,7 @@ public:
     template <typename V>
     void push(V&& val) {
         heap_.push(std::forward<V>(val));
-        heapify_up(heap_.size() - 1);
+        heapify_up(heap_.len() - 1);
     }
 
     /**
@@ -93,7 +93,7 @@ public:
     template <typename... Args>
     void push(Args&&... args) {
         heap_.push(std::forward<Args>(args)...);
-        heapify_up(heap_.size() - 1);
+        heapify_up(heap_.len() - 1);
     }
 
     /**
@@ -146,7 +146,7 @@ public:
         }
         std::stringstream stream;
         stream << '[' << heap_[0];
-        for (usize i = 1; i < heap_.size(); ++i) {
+        for (usize i = 1; i < heap_.len(); ++i) {
             stream << ',' << heap_[i];
         }
         stream << ']';
@@ -197,7 +197,7 @@ private:
      * @param idx 开始下沉的索引
      */
     void heapify_down(usize idx) {
-        const auto m_size = heap_.size();
+        const auto m_size = heap_.len();
         auto curr = idx;
 
         loop {
@@ -226,7 +226,7 @@ private:
      * @param vec 数组
      */
     void heapify() {
-        const auto n = heap_.size();
+        const auto n = heap_.len();
         if (n <= 1) return;
         for (i64 i = (n >> 1) - 1; i >= 0; --i) {
             heapify_down(static_cast<usize>(i));

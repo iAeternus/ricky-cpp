@@ -71,7 +71,7 @@ template <typename T>
 concept Iterable = requires(T obj) {
     { obj.begin() };
     { obj.end() };
-    { obj.size() };
+    { obj.len() };
 };
 
 /**

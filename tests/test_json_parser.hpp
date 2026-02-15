@@ -16,7 +16,7 @@ auto should_parse = []() {
 
     // Then
     io::println(json);
-//    io::println(json.size());
+//    io::println(json.len());
     io::println(json["array"]);
     io::println(json["other"]);
     io::println(json["bool"]);

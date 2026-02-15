@@ -84,7 +84,7 @@ auto speed_of_string_builder_append_string = []() {
         sb.append("abcdef");
     }
     auto str = sb.build();
-    Assertions::assertEquals(N * 6, str.size());
+    Assertions::assertEquals(N * 6, str.len());
 };
 
 auto speed_of_std_string_append_string = []() {

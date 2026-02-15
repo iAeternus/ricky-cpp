@@ -45,7 +45,7 @@ public:
      */
     Buffer(const Self& other) :
             alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), buf_(alloc_.allocate(capacity_)) {
-        for (usize i = 0; i < other.size(); ++i) {
+        for (usize i = 0; i < other.len(); ++i) {
             alloc_.construct(buf_ + i, other.buf_[i]);
         }
     }
@@ -97,7 +97,7 @@ public:
     /**
      * @brief 获取当前Buffer的大小
      */
-    usize size() const {
+    usize len() const noexcept {
         return size_;
     }
 

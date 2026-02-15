@@ -27,8 +27,8 @@ auto should_append = []() {
     }
 
     // Then
-    Assertions::assertEquals(usize(n), d.size());
-    Assertions::assertEquals(cstr(n - 1), d.at(d.size() - 1));
+    Assertions::assertEquals(usize(n), d.len());
+    Assertions::assertEquals(cstr(n - 1), d.at(d.len() - 1));
 
     i32 num = 0;
     for (const auto& it : d) {
@@ -44,7 +44,7 @@ auto should_insert = []() {
     d.insert(0, 100);
 
     // Then
-    Assertions::assertEquals(6, d.size());
+    Assertions::assertEquals(6, d.len());
     Assertions::assertEquals(100, *d.begin());
     Assertions::assertEquals(1, d.find(1));
 };
@@ -57,14 +57,14 @@ auto should_pop = []() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(4, d.size());
-    Assertions::assertEquals(4, d.at(d.size() - 1));
+    Assertions::assertEquals(4, d.len());
+    Assertions::assertEquals(4, d.at(d.len() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    Assertions::assertEquals(3, d.size());
+    Assertions::assertEquals(3, d.len());
     Assertions::assertEquals(2, d.at(0));
 };
 
@@ -76,7 +76,7 @@ auto should_pop2 = []() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(0, d.size());
+    Assertions::assertEquals(0, d.len());
     Assertions::assertTrue(d.is_empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
@@ -95,7 +95,7 @@ auto should_clear = []() {
     d.clear();
 
     // Then
-    Assertions::assertEquals(0, d.size());
+    Assertions::assertEquals(0, d.len());
     Assertions::assertTrue(d.is_empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
@@ -121,8 +121,8 @@ auto should_to_array = []() {
     auto arr = d.to_array();
 
     // Then
-    Assertions::assertEquals(5, i32(arr.size()));
-    Assertions::assertEquals(5, arr.at(arr.size() - 1));
+    Assertions::assertEquals(5, i32(arr.len()));
+    Assertions::assertEquals(5, arr.at(arr.len() - 1));
     Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
 };
 
@@ -136,7 +136,7 @@ auto should_slice = []() {
     auto res3 = v.slice(1ULL, -1LL);
 
     // Then
-    Assertions::assertEquals(1ULL, res.size());
+    Assertions::assertEquals(1ULL, res.len());
     Assertions::assertEquals("[2]"_cs, res.__str__());
     Assertions::assertEquals("[4,5,6]"_cs, res2.__str__());
     Assertions::assertEquals("[2,3,4,5]"_cs, res3.__str__());
@@ -151,7 +151,7 @@ auto should_extend = []() {
     d = d + util::Vec<i32>{8, 9, 10};
 
     // Then
-    Assertions::assertEquals(10, d.size());
+    Assertions::assertEquals(10, d.len());
     Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
 };
 
@@ -180,7 +180,7 @@ auto should_find = []() {
 
     // Then
     Assertions::assertEquals(0, res);
-    Assertions::assertEquals(d.size(), res2);
+    Assertions::assertEquals(d.len(), res2);
 };
 
 auto should_sort = []() {

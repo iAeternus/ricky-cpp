@@ -187,7 +187,7 @@ public:
         Self ans;
         ans.length_ = n + 1;
         n /= WIDTH;
-        while (ans.num_.size() <= n) {
+        while (ans.num_.len() <= n) {
             ans.num_.push(0);
         }
         // ans.num_[n] = 1;
@@ -229,7 +229,7 @@ public:
         }
         Self ans;
         i32 carry = 0;
-        const auto a_size = a.num_.size(), b_size = b.num_.size();
+        const auto a_size = a.num_.len(), b_size = b.num_.len();
         const auto max_size = std::max(a_size, b_size);
         ans.num_.clear();
         for (usize i = 0; i < max_size; ++i) {
@@ -281,7 +281,7 @@ public:
         }
         Self ans;
         i32 carry = 0;
-        const auto a_size = a.num_.size(), b_size = b.num_.size();
+        const auto a_size = a.num_.len(), b_size = b.num_.len();
         const auto max_size = std::max(a_size, b_size);
         ans.num_.clear();
         for (usize i = 0; i < max_size; ++i) {
@@ -311,21 +311,21 @@ public:
     }
 
     friend Self operator*(const Self& a, const Self& b) {
-        const auto a_size = a.num_.size(), b_size = b.num_.size();
+        const auto a_size = a.num_.len(), b_size = b.num_.len();
         util::Vec<i64> res;
         for (usize i = 0; i < a_size; ++i) {
             for (usize j = 0; j < b_size; ++j) {
                 i64 tmp = static_cast<i64>(a.num_[i]) * static_cast<i64>(b.num_[j]);
-                i + j < res.size() ? res[i + j] += tmp : res.push(tmp);
+                i + j < res.len() ? res[i + j] += tmp : res.push(tmp);
             }
         }
-        while (res.last() == 0 && res.size() != 1) {
+        while (res.last() == 0 && res.len() != 1) {
             res.pop();
         }
         Self ans;
-        ans.sign_ = a.sign_ == b.sign_ || (res.size() == 1 && res[0] == 0);
+        ans.sign_ = a.sign_ == b.sign_ || (res.len() == 1 && res[0] == 0);
         ans.num_.clear();
-        const auto resSize = res.size();
+        const auto resSize = res.len();
         i64 carry = 0;
         for (usize i = 0; i < resSize; ++i) {
             const i64 tmp = res[i];
@@ -352,8 +352,8 @@ public:
     //     if (aa < bb) {
     //         return ZERO;
     //     }
-    //     CString str(aa.size() + 1);
-    //     std::memset(str.data(), 0, str.size());
+    //     CString str(aa.len() + 1);
+    //     std::memset(str.data(), 0, str.len());
     //     Self tmp;
     //     auto lenDiff = aa.length_ - bb.length_;
     //     for (usize i = 0; i <= lenDiff; ++i) {
@@ -514,7 +514,7 @@ public:
             stream << '-';
         }
         stream << num_.last();
-        for (isize i = num_.size() - 2; i >= 0; --i) {
+        for (isize i = num_.len() - 2; i >= 0; --i) {
             stream << std::format("{:0{}d}", num_[i], WIDTH);
         }
         return CString{stream.str()};
@@ -534,7 +534,7 @@ public:
             if (this->length_ > other.length_) {
                 return 1;
             }
-            const auto a_size = this->num_.size();
+            const auto a_size = this->num_.len();
             for (isize i = a_size - 1; i >= 0; --i) {
                 if (this->num_[i] < other.num_[i]) {
                     return -1;
@@ -557,7 +557,7 @@ private:
      */
     static void cut_leading_zero(util::Vec<i32>& num) {
         if (num.is_empty()) return;
-        while (num.last() == 0 && num.size() != 1) {
+        while (num.last() == 0 && num.len() != 1) {
             num.pop();
         }
     }
@@ -571,7 +571,7 @@ private:
         if (tmp == 0) {
             length_ = 1;
         } else {
-            length_ = (num_.size() - 1) * WIDTH;
+            length_ = (num_.len() - 1) * WIDTH;
             while (tmp > 0) {
                 ++length_;
                 tmp /= 10;

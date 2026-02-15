@@ -67,7 +67,7 @@ struct Node : public Object<Node<N, E>> {
      * @brief 获取出度
      */
     usize out_deg() const {
-        return edges.size();
+        return edges.len();
     }
 
     /**
@@ -89,7 +89,7 @@ struct Node : public Object<Node<N, E>> {
      * @return true=两节点已连接 false=两节点未连接
      */
     bool disconnect(Idx to) {
-        auto size = edges.size();
+        auto size = edges.len();
         for (usize i = 0; i < size; ++i) {
             if (edges[i].to == to) {
                 edges.pop(i);

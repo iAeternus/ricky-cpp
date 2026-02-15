@@ -103,7 +103,7 @@ public:
      * @return 返回键值对的数量
      */
     usize size() const {
-        return keys_.size();
+        return keys_.len();
     }
 
     /**
