@@ -4,8 +4,6 @@
 
 namespace my::bench::bench_dynarray {
 
-static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
-
 constexpr i32 N = 1e6;
 
 void speed_of_dny_array_append_string() {
@@ -36,6 +34,7 @@ void speed_of_std_vector_push_back_i32() {
     }
 }
 
+static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
 BENCH_NAME("bench_dynarray");
 REGISTER_BENCH_TESTS(
     BENCH_TEST_ITEM_CFG(speed_of_dny_array_append_string, BENCH_CFG),

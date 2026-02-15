@@ -8,7 +8,6 @@
 
 namespace my::bench::bench_thread_pool {
 
-static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
 static usize g_n = 50;
 
 static void task() {
@@ -29,6 +28,7 @@ void speed_of_sync() {
     }
 }
 
+static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
 BENCH_NAME("bench_thread_pool");
 REGISTER_BENCH_TESTS(
     BENCH_TEST_ITEM_CFG(speed_of_thread_pool, BENCH_CFG),

@@ -8,8 +8,6 @@
 
 namespace my::bench::bench_rbtree_map {
 
-static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
-
 static i32 g_n = 0;
 static util::Vec<i32> g_nums;
 
@@ -57,6 +55,7 @@ void test_map_operations_speed() {
     }
 }
 
+static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
 BENCH_NAME("bench_rbtree_map");
 REGISTER_BENCH_TESTS(
     BENCH_TEST_ITEM_CFG(test_sorted_hash_map_operations_speed, BENCH_CFG),

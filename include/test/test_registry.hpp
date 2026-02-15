@@ -129,7 +129,7 @@ int run_benchmarks();
 #endif
 
 /**
- * @brief 测试组名称（单元）
+ * @brief 单元测试组名称
  */
 #define GROUP_NAME(name) static constexpr const char* MY_TEST_SUITE = name;
 

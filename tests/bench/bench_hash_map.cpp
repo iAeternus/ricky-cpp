@@ -10,8 +10,6 @@
 
 namespace my::bench::bench_hash_map {
 
-static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
-
 static usize g_n = 0;
 static i32 g_k = 0;
 static std::vector<i32> g_nums;
@@ -61,6 +59,7 @@ void speed_of_unordered_map_insert() {
     }
 }
 
+static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
 BENCH_NAME("bench_hash_map");
 REGISTER_BENCH_TESTS(
     BENCH_TEST_ITEM_CFG(speed_of_hash_map_count, BENCH_CFG),

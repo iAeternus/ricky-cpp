@@ -7,8 +7,6 @@
 
 namespace my::bench::bench_string_builder {
 
-static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
-
 constexpr usize N = 100000;
 
 void speed_of_string_builder_append_string() {
@@ -26,6 +24,7 @@ void speed_of_std_string_append_string() {
     }
 }
 
+static constexpr auto BENCH_CFG = BENCH_CONFIG(1, 1, 3);
 BENCH_NAME("bench_string_builder");
 REGISTER_BENCH_TESTS(
     BENCH_TEST_ITEM_CFG(speed_of_string_builder_append_string, BENCH_CFG),
