@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @brief 内存泄露检测
  * @author Ricky
  * @date 2025/8/14
@@ -36,7 +36,7 @@ using namespace my;
  * 8 = util::Array
  * 9 = util::Queue
  */
-#define TRACE_OBJECT 4
+#define TRACE_OBJECT 2
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
@@ -57,7 +57,6 @@ void trace_cstring() {
     TraceCString c6 = std::move(c4);
 }
 
-// TODO 存在内存泄漏问题！段错误！
 void trace_string() {
     using TraceString = util::BasicString<util::EncodingType::UTF8, mem::TracingAllocator<char>>;
     using Utf16TraceString = util::BasicString<util::EncodingType::UTF16, mem::TracingAllocator<char>>;
@@ -85,7 +84,7 @@ void trace_string() {
 
     // +
     TraceString c11;
-    for (i32 i = 0; i < 1024; ++i) {
+    for (i32 i = 0; i < 128; ++i) {
         c11 += c2;
     }
 
@@ -303,3 +302,4 @@ int main() {
 #endif
     return 0;
 }
+

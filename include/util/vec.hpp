@@ -127,10 +127,11 @@ public:
      * @brief 析构函数
      */
     ~Vec() {
-        clear();
         if (data_) {
-            alloc_.deallocate(data_, len_);
+            alloc_.destroy_n(data_, len_);
+            alloc_.deallocate(data_, capacity_);
         }
+        len_ = 0;
         capacity_ = 0;
     }
 
@@ -446,7 +447,7 @@ public:
             }
         }
 
-        alloc_.deallocate(data_, len_);
+        alloc_.deallocate(data_, capacity_);
         data_ = ptr;
         capacity_ = new_cap;
     }

@@ -9,6 +9,8 @@
 
 #include "str.hpp"
 
+#include <iterator>
+
 namespace my::util {
 
 /**
@@ -162,9 +164,7 @@ public:
      * @note 内部会复制码点数组，原构建器可继续使用
      */
     [[nodiscard]] String build() const {
-        Vec tmp(buf_);
-        auto [size, code_points] = tmp.separate();
-        return {code_points, size};
+        return String{buf_.begin(), buf_.end()};
     }
 
     /**
@@ -173,8 +173,9 @@ public:
      * @note 内部会移动码点数组，原构建器不能继续使用
      */
     [[nodiscard]] String build_move() {
-        auto [size, code_points] = buf_.separate();
-        return {code_points, size};
+        String res{std::make_move_iterator(buf_.begin()), std::make_move_iterator(buf_.end())};
+        buf_.clear();
+        return res;
     }
 
     /**

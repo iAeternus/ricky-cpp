@@ -313,7 +313,7 @@ public:
                 return cmp;
             }
         }
-        return static_cast<usize>(this->length() - other.length());
+        return static_cast<cmp_t>(this->length()) - static_cast<cmp_t>(other.length());
     }
 
     // 迭代器接口

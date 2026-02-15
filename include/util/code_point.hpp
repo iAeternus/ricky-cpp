@@ -20,7 +20,7 @@ namespace my::util {
 template <EncodingType Enc = EncodingType::UTF8, typename Alloc = mem::Allocator<char>>
 class CodePoint : public Object<CodePoint<Enc>> {
 public:
-    using Self = CodePoint<Enc>;
+    using Self = CodePoint<Enc, Alloc>;
     using Super = Object<Self>;
 
     static const Array<CodePoint<Enc>> BLANK;
@@ -57,8 +57,18 @@ public:
             return *this;
         }
 
-        alloc_.destroy(byte_code_);
-        alloc_.construct(this, other);
+        if (byte_code_ != nullptr) {
+            alloc_.deallocate(byte_code_, code_len_);
+        }
+
+        code_len_ = other.code_len_;
+        if (code_len_ == 0) {
+            byte_code_ = nullptr;
+            return *this;
+        }
+
+        byte_code_ = alloc_.allocate(code_len_);
+        std::memcpy(byte_code_, other.byte_code_, code_len_);
         return *this;
     }
 
@@ -67,15 +77,24 @@ public:
             return *this;
         }
 
-        alloc_.destroy(byte_code_);
-        alloc_.construct(this, std::move(other));
+        if (byte_code_ != nullptr) {
+            alloc_.deallocate(byte_code_, code_len_);
+        }
+
+        alloc_ = other.alloc_;
+        code_len_ = other.code_len_;
+        byte_code_ = other.byte_code_;
+        other.code_len_ = 0;
+        other.byte_code_ = nullptr;
         return *this;
     }
 
     Self& operator=(const char ch) {
-        alloc_.destroy(byte_code_);
-        this->code_len_ = sizeof(u8);
-        this->byte_code_ = alloc_.allocate(code_len_);
+        if (byte_code_ != nullptr) {
+            alloc_.deallocate(byte_code_, code_len_);
+        }
+        code_len_ = sizeof(u8);
+        byte_code_ = alloc_.allocate(code_len_);
         byte_code_[0] = ch;
         return *this;
     }
@@ -213,7 +232,11 @@ Vec<CodePoint<Enc, Alloc>> get_code_points(const char* str, const usize length, 
     Vec<CodePoint<Enc, Alloc>> cps;
     usize i = 0;
     while (i < length) {
+        const auto remaining = length - i;
         const auto code_size = EncodingTraits<Enc>::char_size(str + i);
+        if (code_size > remaining || !EncodingTraits<Enc>::is_valid(str + i, remaining)) {
+            throw runtime_exception("Invalid CodePoint at index {}", i);
+        }
         if (code_size == 1) {
             cps.push(CodePoint<Enc, Alloc>(str[i], alloc));
             i += 1;

@@ -163,6 +163,7 @@ public:
             for (usize i = 0; i < len_; ++i) {
                 alloc_.construct(sso + i, std::move(other.sso[i]));
             }
+            other.destroy_sso();
         } else {
             heap = other.heap;
             other.heap = nullptr;
@@ -175,13 +176,7 @@ public:
      * @brief 析构函数，自动释放堆分配内存
      */
     ~BasicString() {
-        if (!is_sso_ && heap != nullptr) {
-            alloc_.destroy_n(heap, len_);
-            alloc_.deallocate(heap, len_);
-            heap = nullptr;
-        }
-        len_ = 0;
-        is_sso_ = true;
+        destroy_storage();
     }
 
     /**
@@ -190,23 +185,21 @@ public:
      * @return 自身的引用
      */
     Self& operator=(const Self& other) {
-        if (this != &other) {
-            if (!is_sso_ && heap != nullptr) {
-                alloc_.destroy_n(heap, len_);
-                alloc_.deallocate(heap, len_);
-                heap = nullptr;
+        if (this == &other) {
+            return *this;
+        }
+
+        destroy_storage();
+        len_ = other.len_;
+        is_sso_ = other.is_sso_;
+        if (is_sso_) {
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, other[i]);
             }
-            len_ = other.len_;
-            is_sso_ = other.is_sso_;
-            if (is_sso_) {
-                for (usize i = 0; i < len_; ++i) {
-                    alloc_.construct(sso + i, other.sso[i]);
-                }
-            } else {
-                heap = alloc_.allocate(len_);
-                for (usize i = 0; i < len_; ++i) {
-                    alloc_.construct(heap + i, other.heap[i]);
-                }
+        } else {
+            heap = alloc_.allocate(len_);
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(heap + i, other[i]);
             }
         }
         return *this;
@@ -218,26 +211,25 @@ public:
      * @return 自身的引用
      */
     Self& operator=(Self&& other) noexcept {
-        if (this != &other) {
-            if (!is_sso_ && heap != nullptr) {
-                alloc_.destroy_n(heap, len_);
-                alloc_.deallocate(heap, len_);
-                heap = nullptr;
-            }
-            alloc_ = std::move(other.alloc_);
-            len_ = other.len_;
-            is_sso_ = other.is_sso_;
-            if (is_sso_) {
-                for (usize i = 0; i < len_; ++i) {
-                    alloc_.construct(sso + i, std::move(other.sso[i]));
-                }
-            } else {
-                heap = other.heap;
-                other.heap = nullptr;
-            }
-            other.len_ = 0;
-            other.is_sso_ = true;
+        if (this == &other) {
+            return *this;
         }
+
+        destroy_storage();
+        alloc_ = std::move(other.alloc_);
+        len_ = other.len_;
+        is_sso_ = other.is_sso_;
+        if (is_sso_) {
+            for (usize i = 0; i < len_; ++i) {
+                alloc_.construct(sso + i, std::move(other.sso[i]));
+            }
+            other.destroy_sso();
+        } else {
+            heap = other.heap;
+            other.heap = nullptr;
+        }
+        other.len_ = 0;
+        other.is_sso_ = true;
         return *this;
     }
 
@@ -361,7 +353,7 @@ public:
      * @param n 复制的份数
      * @return 复制后的新字符串
      */
-    Self operator*(usize n) {
+    Self operator*(usize n) const {
         usize pos = 0;
         const auto m_size = len();
         Self res{m_size * n, ' '};
@@ -380,7 +372,7 @@ public:
      * @exception Exception 若下标越界，则抛出 index_out_of_bounds_exception
      */
     value_t& at(usize index) {
-        if (index > len_) {
+        if (index >= len_) {
             throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, len_);
         }
         return operator[](index);
@@ -393,7 +385,7 @@ public:
      * @exception Exception 若下标越界，则抛出 index_out_of_bounds_exception
      */
     const value_t& at(const usize index) const {
-        if (index > len_) {
+        if (index >= len_) {
             throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", index, len_);
         }
         return operator[](index);
@@ -470,13 +462,7 @@ public:
      * @brief 清空字符串
      */
     void clear() {
-        if (!is_sso_ && heap != nullptr) {
-            alloc_.destroy_n(heap, len_);
-            alloc_.deallocate(heap, len_);
-            heap = nullptr;
-        }
-        len_ = 0;
-        is_sso_ = true;
+        destroy_storage();
     }
 
     /**
@@ -798,66 +784,19 @@ public:
                 buf.push(operator[](i));
             }
         }
-        const auto length = buf.len();
-        auto [size, code_points] = buf.separate();
-        return Self(code_points, length);
+        return Self(buf.begin(), buf.end());
     }
 
     /**
      * @brief 交换两个字符串
      */
     void swap(Self& other) noexcept {
-        std::swap(alloc_, other.alloc_);
-        std::swap(len_, other.len_);
-        std::swap(is_sso_, other.is_sso_);
-
-        if (is_sso_ && other.is_sso_) {
-            for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                std::swap(sso[i], other.sso[i]);
-            }
-        } else if (!is_sso_ && !other.is_sso_) {
-            std::swap(heap, other.heap);
-        } else {
-            value_t temp_buffer[SSO_CAPACITY];
-
-            if (is_sso_) {
-                for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    temp_buffer[i] = std::move(sso[i]);
-                }
-                if (other.len_ <= SSO_CAPACITY) {
-                    for (usize i = 0; i < other.len_; ++i) {
-                        sso[i] = std::move(other.heap[i]);
-                    }
-                    alloc_.destroy_n(other.heap, other.len_);
-                    alloc_.deallocate(other.heap, other.len_);
-                    other.heap = nullptr;
-                } else {
-                    heap = other.heap;
-                    other.heap = nullptr;
-                }
-                for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    other.sso[i] = std::move(temp_buffer[i]);
-                }
-            } else {
-                for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    temp_buffer[i] = std::move(other.sso[i]);
-                }
-                if (len_ <= SSO_CAPACITY) {
-                    for (usize i = 0; i < len_; ++i) {
-                        other.sso[i] = std::move(heap[i]);
-                    }
-                    alloc_.destroy_n(heap, len_);
-                    alloc_.deallocate(heap, len_);
-                    heap = nullptr;
-                } else {
-                    other.heap = heap;
-                    heap = nullptr;
-                }
-                for (usize i = 0; i < SSO_CAPACITY; ++i) {
-                    sso[i] = std::move(temp_buffer[i]);
-                }
-            }
+        if (this == &other) {
+            return;
         }
+        Self temp = std::move(*this);
+        *this = std::move(other);
+        other = std::move(temp);
     }
 
     /**
@@ -891,7 +830,7 @@ public:
                 return cmp;
             }
         }
-        return static_cast<usize>(this->len() - other.len());
+        return static_cast<cmp_t>(this->len()) - static_cast<cmp_t>(other.len());
     }
 
 private:
@@ -903,10 +842,33 @@ private:
      */
     BasicString(const usize length) :
             len_(length), is_sso_(len_ <= SSO_CAPACITY) {
-        if (is_sso_) {
-        } else {
+        if (!is_sso_) {
             heap = alloc_.allocate(len_);
         }
+    }
+
+    void destroy_sso() noexcept {
+        if (len_ > 0) {
+            alloc_.destroy_n(sso, len_);
+        }
+    }
+
+    void destroy_heap() noexcept {
+        if (heap != nullptr) {
+            alloc_.destroy_n(heap, len_);
+            alloc_.deallocate(heap, len_);
+            heap = nullptr;
+        }
+    }
+
+    void destroy_storage() noexcept {
+        if (is_sso_) {
+            destroy_sso();
+        } else {
+            destroy_heap();
+        }
+        len_ = 0;
+        is_sso_ = true;
     }
 
     /**

@@ -8,7 +8,6 @@
 #define OPTION_HPP
 
 #include <utility>
-#include <type_traits>
 #include <concepts>
 
 namespace my {
@@ -16,23 +15,30 @@ namespace my {
 template <typename T>
 class Option {
 public:
-    // None
-    constexpr Option() noexcept :
-            has_(false) {}
+    static constexpr Option None() noexcept {
+        return Option();
+    }
 
-    // Some
-    constexpr Option(const T& v) :
-            has_(true), value_(v) {}
+    static constexpr Option Some(const T& v) {
+        Option o;
+        o.has_ = true;
+        new (&o.value_) T(v);
+        return o;
+    }
 
-    constexpr Option(T&& v) :
-            has_(true), value_(std::move(v)) {}
+    static constexpr Option Some(T&& v) {
+        Option o;
+        o.has_ = true;
+        new (&o.value_) T(std::move(v));
+        return o;
+    }
 
-    constexpr Option(const Option& other) :
+    Option(const Option& other) :
             has_(other.has_) {
         if (has_) new (&value_) T(other.value_);
     }
 
-    constexpr Option(Option&& other) noexcept :
+    Option(Option&& other) noexcept :
             has_(other.has_) {
         if (has_) new (&value_) T(std::move(other.value_));
     }
@@ -41,7 +47,7 @@ public:
         if (has_) value_.~T();
     }
 
-    constexpr Option& operator=(const Option& other) {
+    Option& operator=(const Option& other) {
         if (this == &other) return *this;
         this->~Option();
         has_ = other.has_;
@@ -49,7 +55,7 @@ public:
         return *this;
     }
 
-    constexpr Option& operator=(Option&& other) noexcept {
+    Option& operator=(Option&& other) noexcept {
         if (this == &other) return *this;
         this->~Option();
         has_ = other.has_;
@@ -64,10 +70,6 @@ public:
     constexpr const T& unwrap() const& { return value_; }
     constexpr T&& unwrap() && { return std::move(value_); }
 
-    constexpr T& expect([[maybe_unused]] const char* msg) & {
-        return value_;
-    }
-
     template <typename U>
     constexpr T unwrap_or(U&& fallback) const {
         return has_ ? value_ : static_cast<T>(std::forward<U>(fallback));
@@ -78,9 +80,9 @@ public:
     constexpr auto map(F&& f) const {
         using U = std::invoke_result_t<F, const T&>;
         if (has_) {
-            return Option<U>(f(value_));
+            return Option<U>::Some(f(value_));
         } else {
-            return Option<U>();
+            return Option<U>::None();
         }
     }
 
@@ -91,9 +93,13 @@ public:
         if (has_) {
             return f(value_);
         } else {
-            return R();
+            return R::None();
         }
     }
+
+private:
+    constexpr Option() noexcept :
+            has_(false) {}
 
 private:
     bool has_;

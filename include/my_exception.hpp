@@ -14,9 +14,6 @@
 
 namespace my {
 
-//// 前向声明
-// void log_exception(const char*, std::source_location);
-
 /**
  * @brief 异常类型枚举
  */
@@ -102,13 +99,6 @@ public:
     [[nodiscard]] CString message() const {
         return message_;
     }
-
-    //    /**
-    //     * @brief 记录异常到日志
-    //     */
-    //    void log() const {
-    //        log_exception(what(), loc_);
-    //    }
 
     /**
      * @brief 异常类型转字符串

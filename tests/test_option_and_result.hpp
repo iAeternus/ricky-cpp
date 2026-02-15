@@ -14,34 +14,34 @@
 namespace my::test::test_option_and_result {
 
 void test_option_basic() {
-    my::Option<int> a;
+    auto a = my::Option<int>::None();
     Assertions::assert_true(a.is_none());
 
-    my::Option<int> b(10);
+    auto b = my::Option<int>::Some(10);
     Assertions::assert_true(b.is_some());
     Assertions::assert_equals(10, b.unwrap());
 }
 
 void test_option_copy_move() {
-    my::Option<int> a(42);
-    my::Option<int> b = a;
+    auto a = my::Option<int>::Some(42);
+    auto b = a;
     Assertions::assert_equals(42, b.unwrap());
 
-    my::Option<int> c = std::move(a);
+    auto c = std::move(a);
     Assertions::assert_equals(42, c.unwrap());
 }
 
 void test_option_unwrap_or() {
-    my::Option<int> a;
-    my::Option<int> b(5);
+    auto a = my::Option<int>::None();
+    auto b = my::Option<int>::Some(5);
 
     Assertions::assert_equals(100, a.unwrap_or(100));
     Assertions::assert_equals(5, b.unwrap_or(100));
 }
 
 void test_option_map() {
-    my::Option<int> a(3);
-    my::Option<int> b;
+    auto a = my::Option<int>::Some(3);
+    auto b = my::Option<int>::None();
 
     auto r1 = a.map([](int x) { return x * 2; });
     auto r2 = b.map([](int x) { return x * 2; });
@@ -53,15 +53,15 @@ void test_option_map() {
 }
 
 void test_option_and_then() {
-    my::Option<int> a(4);
-    my::Option<int> b;
+    auto a = my::Option<int>::Some(4);
+    auto b = my::Option<int>::None();
 
     auto r1 = a.and_then([](int x) {
-        return my::Option<int>(x + 1);
+        return my::Option<int>::Some(x + 1);
     });
 
     auto r2 = b.and_then([](int x) {
-        return my::Option<int>(x + 1);
+        return my::Option<int>::Some(x + 1);
     });
 
     Assertions::assert_true(r1.is_some());
@@ -69,8 +69,6 @@ void test_option_and_then() {
 
     Assertions::assert_true(r2.is_none());
 }
-
-// ---------- Result ----------
 
 void test_result_basic() {
     auto ok = my::Result<int, const char*>::Ok(10);
