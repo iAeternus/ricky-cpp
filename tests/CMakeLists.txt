@@ -40,7 +40,7 @@ if (WIN32)
 endif ()
 
 # 大对象支持
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if (MINGW)
     target_compile_options(RICKY_CPP_TESTS PRIVATE -Wa,-mbig-obj)
 elseif (MSVC)
     target_compile_options(RICKY_CPP_TESTS PRIVATE /bigobj)

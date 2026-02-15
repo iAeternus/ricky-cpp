@@ -18,11 +18,22 @@ if (MINGW)
 endif ()
 
 # -------------------------------------------------------------------
+# 平台宏
+# -------------------------------------------------------------------
+if (WIN32)
+    add_compile_definitions(RICKY_WIN)
+elseif (UNIX)
+    add_compile_definitions(RICKY_LINUX)
+endif ()
+
+# -------------------------------------------------------------------
 # 构建系统优化
 # -------------------------------------------------------------------
-if (NOT CMAKE_GENERATOR AND NINJA_EXE)
-    set(CMAKE_GENERATOR "Ninja" CACHE INTERNAL "Build system generator")
-    message(STATUS "[MAIN] Using Ninja build system")
+if (NOT CMAKE_GENERATOR)
+    find_program(NINJA_EXE ninja)
+    if (NINJA_EXE)
+        message(STATUS "[MAIN] Ninja detected. Consider using -G Ninja for faster builds.")
+    endif ()
 endif ()
 
 # 设置并行编译
@@ -92,7 +103,8 @@ target_link_options(RICKY_CPP PRIVATE
 # GNU/Clang特定优化
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     target_compile_options(RICKY_CPP PRIVATE
-            -ffunction-sections -fdata-sections -Wa,-mbig-obj
+            -ffunction-sections -fdata-sections
+            $<$<BOOL:${MINGW}>:-Wa,-mbig-obj>
     )
     target_link_options(RICKY_CPP PRIVATE
             -Wl,--gc-sections $<$<CONFIG:RELEASE>:-Wl,--strip-all>
@@ -115,10 +127,15 @@ endif ()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # 添加测试和示例目录
-add_subdirectory(tests)
-enable_testing()
+option(RICKY_BUILD_TESTS "Build tests" ON)
+option(RICKY_BUILD_EXAMPLES "Build examples" ON)
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/examples)
+if (RICKY_BUILD_TESTS)
+    add_subdirectory(tests)
+    enable_testing()
+endif ()
+
+if (RICKY_BUILD_EXAMPLES AND EXISTS ${CMAKE_SOURCE_DIR}/examples)
     add_subdirectory(examples)
 endif ()
 

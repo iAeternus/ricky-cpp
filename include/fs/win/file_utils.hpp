@@ -11,6 +11,7 @@
 
 #include <fileapi.h>
 #include <handleapi.h>
+#include <winerror.h>
 
 namespace my::fs::win {
 
