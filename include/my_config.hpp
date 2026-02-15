@@ -12,6 +12,27 @@
 namespace my {
 
 /**
+ * @brief 平台宏定义
+ */
+#if defined(_WIN32) || defined(_WIN64)
+#define RICKY_WIN 1
+#else
+#define RICKY_WIN 0
+#endif
+
+#if defined(__linux__)
+#define RICKY_LINUX 1
+#else
+#define RICKY_LINUX 0
+#endif
+
+#if defined(__APPLE__)
+#define RICKY_MAC 1
+#else
+#define RICKY_MAC 0
+#endif
+
+/**
  * @brief rust-like `loop` 关键字
  * @note 规范：
  * 仅可用于无限循环

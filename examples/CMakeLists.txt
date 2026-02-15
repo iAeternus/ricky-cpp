@@ -12,15 +12,8 @@ foreach (example_source ${EXAMPLE_SOURCES})
     get_filename_component(example_name ${example_source} NAME_WE)
     add_executable(${example_name} ${example_source})
 
-    # 继承主项目配置
-    target_include_directories(${example_name} PRIVATE ${INCLUDE_DIRS})
-    target_compile_options(${example_name} PRIVATE $<TARGET_PROPERTY:RICKY_CPP,COMPILE_OPTIONS>)
-
-    # 链接库
-    get_target_property(MAIN_LIBS RICKY_CPP LINK_LIBRARIES)
-    if (MAIN_LIBS)
-        target_link_libraries(${example_name} PRIVATE ${MAIN_LIBS})
-    endif ()
+    # 继承主库配置
+    target_link_libraries(${example_name} PRIVATE ricky_cpp::ricky_cpp)
 
     # 输出目录
     set_target_properties(${example_name} PROPERTIES

@@ -8,18 +8,19 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
+#include "my_config.hpp"
 #include "my_exception.hpp"
 #include "color.hpp"
 #include "marker.hpp"
 #include "printer.hpp"
 #include "date_time.hpp"
 
-#ifdef _WIN32
+#if RICKY_WIN
 #include "processthreadsapi.h"
 #else
 #include <sys/types.h>
 #include <unistd.h>
-#endif // _WIN32
+#endif // RICKY_WIN
 
 namespace my::log {
 
@@ -95,11 +96,11 @@ struct LogRecord {
  * @brief 获取当前pid
  */
 inline auto get_current_pid() -> u32 {
-#ifdef _WIN32
+#if RICKY_WIN
     return static_cast<u32>(GetCurrentProcessId());
 #else
     return static_cast<u32>(getpid());
-#endif
+#endif // RICKY_WIN
 }
 
 template <typename D>

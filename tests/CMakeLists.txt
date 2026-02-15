@@ -10,16 +10,8 @@ file(GLOB_RECURSE TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURR
 list(FILTER TEST_SOURCES EXCLUDE REGEX ".*/main\\.cpp$")
 add_executable(RICKY_CPP_TESTS ${TEST_SOURCES})
 
-# 继承主项目配置
-target_include_directories(RICKY_CPP_TESTS PRIVATE ${INCLUDE_DIRS})
-target_compile_options(RICKY_CPP_TESTS PRIVATE $<TARGET_PROPERTY:RICKY_CPP,COMPILE_OPTIONS>)
-target_link_options(RICKY_CPP_TESTS PRIVATE $<TARGET_PROPERTY:RICKY_CPP,LINK_OPTIONS>)
-
-# 链接主项目的库
-get_target_property(MAIN_LIBS RICKY_CPP LINK_LIBRARIES)
-if (MAIN_LIBS)
-    target_link_libraries(RICKY_CPP_TESTS PRIVATE ${MAIN_LIBS})
-endif ()
+# 继承主库配置
+target_link_libraries(RICKY_CPP_TESTS PRIVATE ricky_cpp::ricky_cpp)
 
 # 测试专用配置
 target_compile_definitions(RICKY_CPP_TESTS PRIVATE UNIT_TESTING=1)

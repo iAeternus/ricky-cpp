@@ -14,6 +14,8 @@
  */
 #define TEST_MODE 1
 
+#include "my_config.hpp"
+
 #if TEST_MODE == 0
 #include "test_speed.hpp"
 #elif TEST_MODE == 1
@@ -29,8 +31,6 @@
 #include "test_string_builder.hpp"
 #include "test_array.hpp"
 #include "test_thread_pool.hpp"
-#include "test_win_file_utils.hpp"
-#include "test_win_file.hpp"
 #include "test_math_utils.hpp"
 #include "test_big_integer.hpp"
 #include "test_pair.hpp"
@@ -55,7 +55,6 @@
 #include "test_vector2.hpp"
 #include "test_geometry_2d.hpp"
 #include "test_polygon.hpp"
-#include "test_huffman_tree.hpp"
 #include "test_big_decimal.hpp"
 #include "test_binary_heap.hpp"
 #include "test_allocator.hpp"
@@ -67,18 +66,34 @@
 #include "test_linked_list.hpp"
 #include "test_num_base.hpp"
 #include "test_option_and_result.hpp"
+#if RICKY_WIN
+#include "test_win_file_utils.hpp"
+#include "test_win_file.hpp"
+#include "test_huffman_tree.hpp"
+#endif // RICKY_WIN
 #elif TEST_MODE == 2
 #include "banner.hpp"
 #include "ricky_test.hpp"
-#endif
+#endif // TEST_MODE
 
+#if RICKY_WIN
 #include <winnls.h>
+#endif // RICKY_WIN
 
 using namespace my::test;
 
-auto main() -> int {
-    system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
+// 运行所有测试
+auto test_all() -> void;
 
+auto main() -> int {
+#if RICKY_WIN
+    system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
+#endif
+    test_all();
+    return 0;
+}
+
+auto test_all() -> void {
 #if TEST_MODE == 0
     test_speed();
 #elif TEST_MODE == 1
@@ -94,8 +109,10 @@ auto main() -> int {
     test_string_builder::test_string_builder();
     test_array::test_array();
     test_thread_pool::test_thread_pool();
+#if RICKY_WIN
     test_win_file_utils::test_win_file_utils();
     test_win_file::test_win_file();
+#endif
     test_math_utils::test_math_utils();
     test_big_integer::test_big_integer();
     test_pair::test_pair();
@@ -120,7 +137,9 @@ auto main() -> int {
     test_vector2::test_vector2();
     test_geometry_2d::test_geometry_2d();
     test_polygon::test_polygon();
+#if RICKY_WIN
     test_huffman_tree::test_huffman_tree();
+#endif
     test_big_decimal::test_big_decimal();
     test_binary_heap::test_binary_heap();
     test_allocator::test_allocator();
@@ -135,5 +154,4 @@ auto main() -> int {
 #elif TEST_MODE == 2
     my::print_banner();
 #endif
-    return 0;
 }

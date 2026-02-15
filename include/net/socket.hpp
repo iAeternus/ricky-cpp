@@ -11,12 +11,14 @@
 #include "buffer.hpp"
 #include "marker.hpp"
 
+#if RICKY_WIN
 #include <WinSock2.h>
 #include <minwindef.h>
+#endif
 
 namespace my::net {
 
-#if defined(RICKY_WIN)
+#if RICKY_WIN
 /**
  * @brief Windows套接字初始化
  * @throws runtime_exception 如果WSAStartup失败
@@ -41,7 +43,7 @@ inline auto win_startup() {
 
 #define socket_startup() my::net::win_startup()
 
-#elif defined(RICKY_LINUX)
+#elif RICKY_LINUX
 #include <cerrno>
 #include <unistd.h>
 #include <sys/socket.h>
@@ -56,7 +58,7 @@ auto closesocket(i32 socket) {
     ::close(socket);
 }
 
-#endif // defined (RICKY_WIN)
+#endif // RICKY_WIN
 
 /**
  * @brief 获取套接字错误信息
@@ -64,13 +66,13 @@ auto closesocket(i32 socket) {
  */
 inline auto error_msg() -> CString {
     CString error_msg{256};
-#if _WIN32 || _WIN64
+#if RICKY_WIN
     int errorno = WSAGetLastError();
     FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, nullptr, errorno,
                    MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), error_msg.data(), 128, nullptr);
 #else
     strerror(error_msg.data(), errno);
-#endif // _WIN32 || _WIN64
+#endif // RICKY_WIN
     return error_msg;
 }
 
@@ -523,7 +525,7 @@ public:
      * @throws runtime_exception 如果设置失败
      */
     void set_timeout(u32 timeout_ms, bool receive = true) const {
-#if defined(RICKY_WIN)
+#if RICKY_WIN
         DWORD timeout = timeout_ms;
         set_option(SOL_SOCKET, receive ? SO_RCVTIMEO : SO_SNDTIMEO, &timeout, sizeof(timeout));
 #else
@@ -531,7 +533,7 @@ public:
             .tv_sec = static_cast<time_t>(timeout_ms / 1000),
             .tv_usec = static_cast<suseconds_t>((timeout_ms % 1000) * 1000)};
         set_option(SOL_SOCKET, receive ? SO_RCVTIMEO : SO_SNDTIMEO, &tv, sizeof(tv));
-#endif
+#endif // RICKY_WIN
     }
 
     /**

@@ -1,7 +1,9 @@
 #ifndef WIN_LIB_HPP
 #define WIN_LIB_HPP
 
-#if defined(_WIN32) || defined(_WIN64)
+#include "my_config.hpp"
+
+#if RICKY_WIN
 #include <WinSock2.h>
 #include <Windows.h>
 #include <fileapi.h>
@@ -11,7 +13,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 #endif // _MSC_VER
 
-#endif // _WIN32
+#endif // RICKY_WIN
 
 namespace my::fs::win {
 
