@@ -1,3 +1,9 @@
+/**
+ * @brief 测试套件
+ * @author Ricky
+ * @date 2026/2/15
+ * @version 1.0
+ */
 #ifndef TEST_REGISTRY_HPP
 #define TEST_REGISTRY_HPP
 
