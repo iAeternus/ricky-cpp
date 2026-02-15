@@ -30,15 +30,15 @@ public:
         return data_.size();
     }
 
-    bool empty() const {
-        return data_.empty();
+    bool is_empty() const {
+        return data_.is_empty();
     }
 
     /**
      * @brief 入栈
      */
     void push(const value_t& item) {
-        data_.append(item);
+        data_.push(item);
     }
 
     /**
@@ -46,7 +46,7 @@ public:
      */
     template <typename U>
     void push(U&& item) {
-        data_.append(std::forward<U>(item));
+        data_.push(std::forward<U>(item));
     }
 
     /**
@@ -62,10 +62,10 @@ public:
      * @exception Exception 若栈空，则抛出 runtime_exception
      */
     value_t& peek() {
-        if (empty()) {
-            throw runtime_exception("Stack is empty.");
+        if (is_empty()) {
+            throw runtime_exception("Stack is is_empty.");
         }
-        return data_.back();
+        return data_.last();
     }
 
     /**
@@ -74,10 +74,10 @@ public:
      * @exception Exception 若栈空，则抛出 runtime_exception
      */
     const value_t& peek() const {
-        if (empty()) {
-            throw runtime_exception("stack is empty.");
+        if (is_empty()) {
+            throw runtime_exception("stack is is_empty.");
         }
-        return data_.back();
+        return data_.last();
     }
 
 private:

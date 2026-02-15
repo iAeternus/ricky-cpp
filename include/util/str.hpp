@@ -659,10 +659,10 @@ public:
         Vec<CString> elem_strs;
         usize total_len = 0;
         for (auto&& elem : iter) {
-            elem_strs.append(cstr(elem));
-            total_len += elem_strs.back().length() + length_;
+            elem_strs.push(cstr(elem));
+            total_len += elem_strs.last().length() + length_;
         }
-        if (!elem_strs.empty()) {
+        if (!elem_strs.is_empty()) {
             total_len -= length_;
         }
 
@@ -761,10 +761,10 @@ public:
         // 空模式处理：按每个字符分割
         if (pattern.empty()) {
             for (usize i = 0; i < actual_splits; ++i) {
-                res.append(Self(operator[](i)));
+                res.push(Self(operator[](i)));
             }
             if (actual_splits < m_size) {
-                res.append(slice(actual_splits));
+                res.push(slice(actual_splits));
             }
             return res;
         }
@@ -775,14 +775,14 @@ public:
                 break;
             }
             if (pos >= start && pos <= m_size) {
-                res.append(slice(start, pos));
+                res.push(slice(start, pos));
                 start = pos + p_size;
                 split_cnt++;
             }
         }
 
         // 添加最后一段
-        res.append(slice(start));
+        res.push(slice(start));
 
         return res;
     }
@@ -808,7 +808,7 @@ public:
         Vec<CodePoint<Enc>> buf;
         for (usize i = 0; i < m_size; ++i) {
             if (!pred(operator[](i))) {
-                buf.append(operator[](i));
+                buf.push(operator[](i));
             }
         }
         const auto length = buf.size();

@@ -80,7 +80,7 @@ public:
      */
     std::shared_ptr<Socket> accept() {
         auto client = std::make_shared<Socket>(socket_.accept());
-        clients_.append(client);
+        clients_.push(client);
         return client;
     }
 

@@ -106,11 +106,11 @@ auto should_for_each = []() {
 
     // When
     t.for_each([&](const auto& k, const auto& v) {
-        res.append(k);
+        res.push(k);
     });
 
     t.for_each_rev([&](const auto& k, const auto& v) {
-        res2.append(k);
+        res2.push(k);
     });
 
     // Then
@@ -210,8 +210,8 @@ auto should_iterable = []() {
 
     // When
     for (const auto& [k, v] : t) {
-        keys.append(k);
-        values.append(v);
+        keys.push(k);
+        values.push(v);
     }
 
     // Then
@@ -303,7 +303,7 @@ auto test_rbtree_map_speed() {
 
     group.setup([&]() {
         for (i32 i = 0; i < n; ++i) {
-            nums.append(util::Random::instance().next<i32>(1, n));
+            nums.push(util::Random::instance().next<i32>(1, n));
         }
     });
 

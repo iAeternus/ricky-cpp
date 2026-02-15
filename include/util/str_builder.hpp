@@ -87,7 +87,7 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const char ch) {
-        buf_.append(CodePoint(ch));
+        buf_.push(CodePoint(ch));
         return *this;
     }
 
@@ -97,7 +97,7 @@ public:
      * @return 构建器自身引用
      */
     Self& append(const CodePoint<Enc>& cp) {
-        buf_.append(cp);
+        buf_.push(cp);
         return *this;
     }
 
@@ -110,7 +110,7 @@ public:
         const auto len = std::strlen(str);
         buf_.reserve(buf_.size() + len);
         for (usize i = 0; i < len; ++i) {
-            buf_.append(CodePoint(str[i]));
+            buf_.push(CodePoint(str[i]));
         }
         return *this;
     }
@@ -137,7 +137,7 @@ public:
     Self& append_n(const CodePoint<Enc>& cp, const usize count) {
         buf_.reserve(buf_.size() + count);
         for (usize i = 0; i < count; ++i) {
-            buf_.append(cp);
+            buf_.push(cp);
         }
         return *this;
     }
@@ -151,7 +151,7 @@ public:
     Self& append_array(const CodePoint<Enc>* cps, const usize cnt) {
         buf_.reserve(buf_.size() + cnt);
         for (usize i = 0; i < cnt; ++i) {
-            buf_.append(cps[i]);
+            buf_.push(cps[i]);
         }
         return *this;
     }
@@ -205,7 +205,7 @@ public:
      * @return 是否为空
      */
     bool empty() const noexcept {
-        return buf_.empty();
+        return buf_.is_empty();
     }
 
 private:

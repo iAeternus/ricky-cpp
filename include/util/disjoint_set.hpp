@@ -111,7 +111,7 @@ public:
     [[nodiscard]] CString __str__() const {
         HashMap<value_t, Vec<value_t>> sets;
         for (const auto& elem : nodes_.keys()) {
-            sets[find(elem)].append(elem);
+            sets[find(elem)].push(elem);
         }
         return sets.__str__();
     }

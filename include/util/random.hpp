@@ -87,7 +87,7 @@ public:
             return numbers;
         }
         if (n == 1) {
-            numbers.append(sum);
+            numbers.push(sum);
             return numbers;
         }
 
@@ -97,7 +97,7 @@ public:
 
         // 创建数组 [1, 2, ..., total_elements]
         for (i32 i = 1; i <= total_elements; ++i) {
-            elements.append(i);
+            elements.push(i);
         }
 
         std::shuffle(elements.begin(), elements.end(), generator_);
@@ -105,7 +105,7 @@ public:
         // 选择前 n-1 个元素作为隔板位置
         Vec<i32> partitions;
         for (i32 i = 0; i < n - 1; ++i) {
-            partitions.append(elements[i]);
+            partitions.push(elements[i]);
         }
 
         // 排序隔板位置
@@ -114,12 +114,12 @@ public:
         // 添加前导0和后导sum + n
         Vec<i32> board = {0};
         board.extend(partitions);
-        board.append(sum + n);
+        board.push(sum + n);
 
         // 计算相邻元素的差值，并减去1得到最终结果
         for (usize i = 1; i < board.size(); ++i) {
             const i32 diff = board[i] - board[i - 1];
-            numbers.append(diff - 1);
+            numbers.push(diff - 1);
         }
 
         return numbers;

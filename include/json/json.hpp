@@ -42,7 +42,7 @@ public:
            json_type_ = GetJsonTypeIDStrict<JsonType::JsonArray>::ID;
            auto* arr = new JsonType::JsonArray();
            for (auto&& elem : item) {
-               arr->append(Json(std::forward<decltype(elem)>(elem)));
+               arr->push(Json(std::forward<decltype(elem)>(elem)));
            }
            json_item_ = arr;
        } else if constexpr (std::is_same_v<MappedType, JsonType::JsonMap>) {
@@ -162,7 +162,7 @@ public:
    template <typename... Args>
    static Json array(Args&&... args) {
        JsonType::JsonArray arr;
-       arr.append(to_json_object(std::forward<Args>(args))...);
+       arr.push(to_json_object(std::forward<Args>(args))...);
        return Json(std::move(arr));
    }
 
@@ -287,7 +287,7 @@ public:
     * @brief 尾部添加一个Json对象，需要当前Json对象为JsonArray类型
     */
    Self& append(const Self& json) {
-       into<JsonType::JsonArray>().append(json);
+       into<JsonType::JsonArray>().push(json);
        return *this;
    }
 
@@ -435,7 +435,7 @@ private:
        util::Vec<ValueType> result;
        const auto& arr = *static_cast<JsonType::JsonArray*>(json_item_);
        for (const auto& item : arr) {
-           result.append(item.template into<ValueType>());
+           result.push(item.template into<ValueType>());
        }
        return result;
    }
@@ -524,7 +524,7 @@ private:
     * @brief 序列化数组
     */
    static util::String dump_array(const JsonType::JsonArray& arr, i32 indent, i32 depth) {
-       if (arr.empty()) return "[]";
+       if (arr.is_empty()) return "[]";
 
        util::StringBuilder res;
        res.append('[');

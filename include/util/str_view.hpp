@@ -254,10 +254,10 @@ public:
         // 空模式处理：按每个字符分割
         if (pattern.empty()) {
             for (usize i = 0; i < actual_splits; ++i) {
-                res.append(Self(operator[](i)));
+                res.push(Self(operator[](i)));
             }
             if (actual_splits < m_size) {
-                res.append(slice(actual_splits));
+                res.push(slice(actual_splits));
             }
             return res;
         }
@@ -268,14 +268,14 @@ public:
                 break;
             }
             if (pos >= start && pos <= m_size) {
-                res.append(slice(start, pos));
+                res.push(slice(start, pos));
                 start = pos + p_size;
                 split_cnt++;
             }
         }
 
         // 添加最后一段
-        res.append(slice(start));
+        res.push(slice(start));
 
         return res;
     }

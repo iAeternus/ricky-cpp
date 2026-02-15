@@ -130,7 +130,7 @@ auto listdir(const char* path) -> util::Vec<CString> {
         if (strcmp(find_data.cFileName, ".") == 0 || strcmp(find_data.cFileName, "..") == 0) {
             continue;
         }
-        results.append(find_data.cFileName);
+        results.push(find_data.cFileName);
     } while (FindNextFileA(handle, &find_data));
 
     FindClose(handle);

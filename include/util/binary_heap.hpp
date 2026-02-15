@@ -56,8 +56,8 @@ public:
      * @brief 检查队列是否为空
      * @return 如果队列为空返回 true，否则返回 false
      */
-    bool empty() const noexcept {
-        return heap_.empty();
+    bool is_empty() const noexcept {
+        return heap_.is_empty();
     }
 
     /**
@@ -82,7 +82,7 @@ public:
      */
     template <typename V>
     void push(V&& val) {
-        heap_.append(std::forward<V>(val));
+        heap_.push(std::forward<V>(val));
         heapify_up(heap_.size() - 1);
     }
 
@@ -92,7 +92,7 @@ public:
      */
     template <typename... Args>
     void push(Args&&... args) {
-        heap_.append(std::forward<Args>(args)...);
+        heap_.push(std::forward<Args>(args)...);
         heapify_up(heap_.size() - 1);
     }
 
@@ -100,17 +100,17 @@ public:
      * @brief 移除堆顶元素
      */
     void pop() {
-        if (empty()) return;
+        if (is_empty()) return;
 
-        heap_.front() = std::move(heap_.back());
+        heap_.first() = std::move(heap_.last());
         heap_.pop();
-        if (!empty()) {
+        if (!is_empty()) {
             heapify_down(0);
         }
     }
 
     const T& top() const {
-        return heap_.front();
+        return heap_.first();
     }
 
     /**
@@ -141,7 +141,7 @@ public:
      * @brief 仅用于debug
      */
     CString __str__() const {
-        if (heap_.empty()) {
+        if (heap_.is_empty()) {
             return "[]";
         }
         std::stringstream stream;

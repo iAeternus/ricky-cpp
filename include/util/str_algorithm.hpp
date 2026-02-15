@@ -73,7 +73,7 @@ public:
             j += *it == at(pat_begin, j); // 匹配，j前进
             // 模式串匹配完，返回文本串匹配起点
             if (j == p_size) {
-                res.append(std::distance(txt_begin, it - p_size + 1));
+                res.push(std::distance(txt_begin, it - p_size + 1));
                 j = next[j - 1];
             }
         }

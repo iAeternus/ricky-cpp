@@ -128,7 +128,7 @@ private:
         auto handle_num = [&]() {
             if (num_str.empty()) return;
             check_num(num_str);
-            tokens_.append(Token::NUMBER, "", std::stod(num_str));
+            tokens_.push(Token::NUMBER, "", std::stod(num_str));
             num_str.clear();
         };
 
@@ -138,13 +138,13 @@ private:
             } else {
                 handle_num();
                 if (is_unary_neg_sign(c)) {
-                    tokens_.append(Token::UNARY_OP, "u-");
+                    tokens_.push(Token::UNARY_OP, "u-");
                 } else if (c == '(') {
-                    tokens_.append(Token::LEFT_PAREN, "(");
+                    tokens_.push(Token::LEFT_PAREN, "(");
                 } else if (c == ')') {
-                    tokens_.append(Token::RIGHT_PAREN, ")");
+                    tokens_.push(Token::RIGHT_PAREN, ")");
                 } else if (is_op(c)) {
-                    tokens_.append(Token::OPERATOR, CString::of(c));
+                    tokens_.push(Token::OPERATOR, CString::of(c));
                 } else if (c != ' ') {
                     throw runtime_exception("invalid character: {}", c);
                 }
@@ -179,7 +179,7 @@ private:
      * @brief 判断是否为一元负号
      */
     bool is_unary_neg_sign(char ch) const {
-        return ch == '-' && (tokens_.empty() || tokens_.back().type == Token::LEFT_PAREN || tokens_.back().type == Token::OPERATOR || tokens_.back().type == Token::UNARY_OP);
+        return ch == '-' && (tokens_.is_empty() || tokens_.last().type == Token::LEFT_PAREN || tokens_.last().type == Token::OPERATOR || tokens_.last().type == Token::UNARY_OP);
     }
 
     /**
@@ -199,13 +199,13 @@ private:
             if (token.type == Token::LEFT_PAREN) {
                 st.push(token);
             } else if (token.type == Token::RIGHT_PAREN) {
-                if (st.empty() || st.peek().type != Token::LEFT_PAREN) {
+                if (st.is_empty() || st.peek().type != Token::LEFT_PAREN) {
                     return false;
                 }
                 st.pop();
             }
         }
-        return st.empty();
+        return st.is_empty();
     }
 
     /**
@@ -218,23 +218,23 @@ private:
         for (const auto& token : tokens_) {
             switch (token.type) {
             case Token::NUMBER:
-                ans.append(token);
+                ans.push(token);
                 break;
             case Token::LEFT_PAREN:
                 op_st.push(token);
                 break;
             case Token::RIGHT_PAREN:
-                while (!op_st.empty() && op_st.peek().type != Token::LEFT_PAREN) {
-                    ans.append(op_st.peek());
+                while (!op_st.is_empty() && op_st.peek().type != Token::LEFT_PAREN) {
+                    ans.push(op_st.peek());
                     op_st.pop();
                 }
-                if (op_st.empty()) throw runtime_exception("mismatched parentheses");
+                if (op_st.is_empty()) throw runtime_exception("mismatched parentheses");
                 op_st.pop(); // pop左括号
                 break;
             case Token::OPERATOR:
             case Token::UNARY_OP:
-                while (!op_st.empty() && op_st.peek().type != Token::LEFT_PAREN && should_pop(token, op_st.peek())) {
-                    ans.append(op_st.peek());
+                while (!op_st.is_empty() && op_st.peek().type != Token::LEFT_PAREN && should_pop(token, op_st.peek())) {
+                    ans.push(op_st.peek());
                     op_st.pop();
                 }
                 op_st.push(token); // 当前操作符入栈
@@ -245,11 +245,11 @@ private:
         }
 
         // 处理剩下的操作符
-        while (!op_st.empty()) {
+        while (!op_st.is_empty()) {
             if (op_st.peek().type == Token::LEFT_PAREN) {
                 throw runtime_exception("mismatched parentheses");
             }
-            ans.append(op_st.peek());
+            ans.push(op_st.peek());
             op_st.pop();
         }
 

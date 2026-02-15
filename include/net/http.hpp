@@ -566,7 +566,7 @@ private:
                 auto key = param.slice(0, eq_pos);
                 auto value = param.slice(eq_pos + 1);
                 req.query_params[key] = value;
-            } else if (!param.empty()) {
+            } else if (!param.is_empty()) {
                 req.query_params[param] = "";
             }
         }

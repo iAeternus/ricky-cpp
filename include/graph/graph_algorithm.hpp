@@ -219,25 +219,25 @@ auto get_all_paths = [](const auto& g, auto&& args) -> util::Vec<SimplePath<Idx>
     // 如果起点和终点相同，返回一个只包含该点的路径
     if (s == t) {
         SimplePath<Idx> path;
-        path.append_node(s);
-        paths.append(path);
+        path.push_node(s);
+        paths.push(path);
         return paths;
     }
 
     SimplePath<Idx> curr_path;
     util::Vec<bool> vis(g.node_cnt(), false);
 
-    curr_path.append_node(s);
+    curr_path.push_node(s);
     vis[s] = true;
     std::function<void(Idx)> dfs_helper = [&](Idx curr) {
         if (curr == t) {
-            paths.append(curr_path);
+            paths.push(curr_path);
             return;
         }
 
         g.get_node(curr).for_each([&](Idx v, E _) {
             if (vis[v]) return;
-            curr_path.append_node(v);
+            curr_path.push_node(v);
             vis[v] = true;
             dfs_helper(v);
             curr_path.pop_node();
@@ -323,7 +323,7 @@ auto prim2 = [](const auto& g, auto&& _) -> Tree<N, E, Idx> {
 
     dis[0] = 0; // TODO 任选一个节点开始
     bh.push(0, 0);
-    while (!bh.empty()) {
+    while (!bh.is_empty()) {
         // 1. 取出距离最小的未访问节点
         auto [min_dis, u] = bh.top();
         bh.pop();
@@ -400,7 +400,7 @@ auto kruskal = [](const auto& g, auto&& _) -> Tree<N, E, Idx> { // TODO 段错�
 
     // 4. 处理优先队列中的边
     usize edge_count = 0;
-    while (!bh.empty() && edge_count < n - 1) {
+    while (!bh.is_empty() && edge_count < n - 1) {
         auto edge = bh.top();
         bh.pop();
 
@@ -435,7 +435,7 @@ auto dijkstra = [](const auto& g, auto&& args) -> util::Vec<E> {
     util::BinaryHeap<Node, std::greater<>> bh;
     bh.push(E{}, s);
 
-    while (!bh.empty()) {
+    while (!bh.is_empty()) {
         auto [d, u] = bh.top();
         bh.pop();
 

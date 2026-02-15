@@ -154,13 +154,13 @@ public:
     Node* add_child(Node* parent, Args&&... args) {
         Node* sub = alloc_.create(std::forward<Args>(args)...);
         sub->p_ = parent;
-        parent->subs_.append(std::move(sub));
+        parent->subs_.push(std::move(sub));
         ++size_;
         return sub;
     }
 
     void remove_child(Node* parent, isize idx = -1) {
-        if (parent == nullptr || parent->subs_.empty()) return;
+        if (parent == nullptr || parent->subs_.is_empty()) return;
         parent->subs_.pop(idx);
         --size_;
     }
@@ -195,7 +195,7 @@ public:
 
     [[nodiscard]] CString __str__() const {
         if (root_ == nullptr) {
-            return "(empty tree)"_cs;
+            return "(is_empty tree)"_cs;
         }
         return root_->__str__();
     }

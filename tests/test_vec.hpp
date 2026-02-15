@@ -12,8 +12,8 @@ auto it_works = []() {
     util::Vec<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.__str__());
     Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.__str__());
-    Assertions::assertEquals(1, d3.front());
-    Assertions::assertEquals(10, d3.back());
+    Assertions::assertEquals(1, d3.first());
+    Assertions::assertEquals(10, d3.last());
 };
 
 auto should_append = []() {
@@ -23,7 +23,7 @@ auto should_append = []() {
 
     // When
     for (usize i = 0; i < n; ++i) {
-        d.append(cstr(i));
+        d.push(cstr(i));
     }
 
     // Then
@@ -77,7 +77,7 @@ auto should_pop2 = []() {
 
     // Then
     Assertions::assertEquals(0, d.size());
-    Assertions::assertTrue(d.empty());
+    Assertions::assertTrue(d.is_empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
 
@@ -89,14 +89,14 @@ auto should_clear = []() {
     d.clear();
 
     // Then
-    Assertions::assertTrue(d.empty());
+    Assertions::assertTrue(d.is_empty());
 
     // When
     d.clear();
 
     // Then
     Assertions::assertEquals(0, d.size());
-    Assertions::assertTrue(d.empty());
+    Assertions::assertTrue(d.is_empty());
     Assertions::assertEquals(d.begin(), d.end());
 };
 
@@ -253,7 +253,7 @@ constexpr i32 N = 1e6;
 auto speed_of_util_vec_append_string = []() {
     util::Vec<std::string> d;
     for (usize i = 0; i < N; ++i) {
-        d.append("aaaaa");
+        d.push("aaaaa");
     }
 };
 
@@ -267,7 +267,7 @@ auto speed_of_std_vector_push_back_string = []() {
 auto speed_of_util_vec_append_i32 = []() {
     util::Vec<i32> d;
     for (usize i = 0; i < N; ++i) {
-        d.append(i);
+        d.push(i);
     }
 };
 

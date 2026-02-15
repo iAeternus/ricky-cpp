@@ -60,7 +60,7 @@ public:
     Vec<value_t> collect() && {
         Vec<value_t> result;
         for (auto&& elem : static_cast<D&>(*this).generator()) {
-            result.append(std::forward<decltype(elem)>(elem));
+            result.push(std::forward<decltype(elem)>(elem));
         }
         return result;
     }

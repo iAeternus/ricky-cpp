@@ -191,7 +191,7 @@ auto should_iterate = []() {
     }
 
     for (const auto& c : str) {
-        chs.append(c);
+        chs.push(c);
     }
 
     // Then
@@ -207,7 +207,7 @@ auto test_cstring_view = []() {
     // When
     const CStringView sv = str.slice(1, 6);
     for (const char c : sv) {
-        chs.append(c);
+        chs.push(c);
     }
 
     // Then

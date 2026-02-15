@@ -18,7 +18,7 @@ auto it_works = []() {
 
     // Then
     Assertions::assertEquals(4, bh.size());
-    Assertions::assertFalse(bh.empty());
+    Assertions::assertFalse(bh.is_empty());
     Assertions::assertEquals(1, bh.top());
 
     // When
@@ -41,7 +41,7 @@ auto it_works2 = []() {
 
     // Then
     Assertions::assertEquals(4, bh.size());
-    Assertions::assertFalse(bh.empty());
+    Assertions::assertFalse(bh.is_empty());
     Assertions::assertEquals(4, bh.top());
 
     // When

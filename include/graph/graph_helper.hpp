@@ -80,7 +80,7 @@ struct Node : public Object<Node<N, E>> {
                 return false;
             }
         }
-        edges.append(Edge{to, w});
+        edges.push(Edge{to, w});
         return true;
     }
 
@@ -147,7 +147,7 @@ struct Node : public Object<Node<N, E>> {
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '(' << id << ',' << w << ")->"; // TODO 点权输出有问题，不能适配其他类型
-        if (edges.empty()) {
+        if (edges.is_empty()) {
             stream << "null";
             return CString{stream.str()};
         }
@@ -172,8 +172,8 @@ struct SimplePath : public Object<SimplePath<Idx>> {
     /**
      * @brief 添加顶点
      */
-    void append_node(Idx node_id) {
-        nodes.append(node_id);
+    void push_node(Idx node_id) {
+        nodes.push(node_id);
     }
 
     /**

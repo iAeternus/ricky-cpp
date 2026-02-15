@@ -215,10 +215,10 @@ Vec<CodePoint<Enc, Alloc>> get_code_points(const char* str, const usize length, 
     while (i < length) {
         const auto code_size = EncodingTraits<Enc>::char_size(str + i);
         if (code_size == 1) {
-            cps.append(CodePoint<Enc, Alloc>(str[i], alloc));
+            cps.push(CodePoint<Enc, Alloc>(str[i], alloc));
             i += 1;
         } else {
-            cps.append(CodePoint<Enc, Alloc>(str + i, alloc));
+            cps.push(CodePoint<Enc, Alloc>(str + i, alloc));
             i += code_size;
         }
     }

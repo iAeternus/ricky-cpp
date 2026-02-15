@@ -19,7 +19,7 @@ auto should_generate = []() {
 
     // When
     for (const auto& item : range(1, 5)) {
-        res.append(item);
+        res.push(item);
     }
 
     // Then

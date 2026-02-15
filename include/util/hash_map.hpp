@@ -111,7 +111,7 @@ public:
      * @return true=是 false=否
      */
     bool empty() const {
-        return keys_.empty();
+        return keys_.is_empty();
     }
 
     /**
@@ -784,7 +784,7 @@ private:
         }
 
         value_t& v = *bucket_.set_value(std::forward<_V>(value), hash_val);
-        keys_.append(std::forward<_K>(key));
+        keys_.push(std::forward<_K>(key));
         return v;
     }
 

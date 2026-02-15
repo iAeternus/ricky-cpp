@@ -79,7 +79,7 @@ auto should_register = []() {
         util::Vec<i64> res;
         for (const auto& edge : g.edges()) {
             if (math::fcmp(edge.w, min) > 0 && math::fcmp(edge.w, max) < 0) {
-                res.append(edge.w);
+                res.push(edge.w);
             }
         }
         return res;

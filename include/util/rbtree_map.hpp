@@ -260,7 +260,7 @@ public:
      */
     value_t& front() {
         if (empty()) {
-            throw runtime_exception("red-black-tree is empty");
+            throw runtime_exception("red-black-tree is is_empty");
         }
         return find_min(root_)->val;
     }
@@ -271,7 +271,7 @@ public:
      */
     const value_t& front() const {
         if (empty()) {
-            throw runtime_exception("red-black-tree is empty");
+            throw runtime_exception("red-black-tree is is_empty");
         }
         return find_min(root_)->val;
     }
@@ -282,7 +282,7 @@ public:
      */
     value_t& back() {
         if (empty()) {
-            throw runtime_exception("red-black-tree is empty");
+            throw runtime_exception("red-black-tree is is_empty");
         }
         return find_max(root_)->val;
     }
@@ -293,7 +293,7 @@ public:
      */
     const value_t& back() const {
         if (empty()) {
-            throw runtime_exception("red-black-tree is empty");
+            throw runtime_exception("red-black-tree is is_empty");
         }
         return find_max(root_)->val;
     }
@@ -641,7 +641,7 @@ public:
      */
     [[nodiscard]] CString tree_struct() const {
         if (root_ == nil_) {
-            return "(empty hash_map)"_cs;
+            return "(is_empty hash_map)"_cs;
         }
         std::stringstream stream;
         print_tree(root_, stream, "");
@@ -769,7 +769,7 @@ public:
         const_pointer operator->() const { return &kv_; }
 
         /**
-         * @breif 前缀递增/递减
+         * @brief 前缀递增/递减
          */
         Self& operator++() {
             if (curr_ != tree_->nil_) {
@@ -788,7 +788,7 @@ public:
         }
 
         /**
-         * @breif 后缀递增/递减
+         * @brief 后缀递增/递减
          */
         Self operator++(int) {
             Self tmp = *this;

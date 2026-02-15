@@ -95,7 +95,7 @@ public:
             n = -n;
         }
         while (n > 0) {
-            num_.append(n % BASE);
+            num_.push(n % BASE);
             n /= BASE;
         }
         calc_len();
@@ -123,13 +123,13 @@ public:
             tmp += c2i(str[i - 1]) * ten;
             ten *= 10;
             if ((len - i) % WIDTH + 1 == WIDTH) {
-                num_.append(tmp);
+                num_.push(tmp);
                 tmp = 0;
                 ten = 1;
             }
         }
         if ((len - stop) % WIDTH != 0) {
-            num_.append(tmp);
+            num_.push(tmp);
         }
         calc_len();
         return *this;
@@ -152,7 +152,7 @@ public:
      * @return true=是 false=否
      */
     constexpr bool is_odd() const noexcept {
-        return num_.front() & 1;
+        return num_.first() & 1;
     }
 
     /**
@@ -188,7 +188,7 @@ public:
         ans.length_ = n + 1;
         n /= WIDTH;
         while (ans.num_.size() <= n) {
-            ans.num_.append(0);
+            ans.num_.push(0);
         }
         // ans.num_[n] = 1;
         // while (bit_shift--) {
@@ -235,11 +235,11 @@ public:
         for (usize i = 0; i < max_size; ++i) {
             const i32 aa = a_size <= i ? 0 : a.num_[i];
             const i32 bb = b_size <= i ? 0 : b.num_[i];
-            ans.num_.append((aa + bb + carry) % BASE);
+            ans.num_.push((aa + bb + carry) % BASE);
             carry = (aa + bb + carry) / BASE;
         }
         if (carry > 0) {
-            ans.num_.append(carry);
+            ans.num_.push(carry);
         }
         ans.calc_len();
         return ans;
@@ -287,7 +287,7 @@ public:
         for (usize i = 0; i < max_size; ++i) {
             const i32 aa = a.num_[i];
             const i32 bb = b_size <= i ? 0 : b.num_[i];
-            ans.num_.append((aa - bb - carry + BASE) % BASE);
+            ans.num_.push((aa - bb - carry + BASE) % BASE);
             carry = aa < bb + carry ? 1 : 0;
         }
         ans.calc_len();
@@ -316,10 +316,10 @@ public:
         for (usize i = 0; i < a_size; ++i) {
             for (usize j = 0; j < b_size; ++j) {
                 i64 tmp = static_cast<i64>(a.num_[i]) * static_cast<i64>(b.num_[j]);
-                i + j < res.size() ? res[i + j] += tmp : res.append(tmp);
+                i + j < res.size() ? res[i + j] += tmp : res.push(tmp);
             }
         }
-        while (res.back() == 0 && res.size() != 1) {
+        while (res.last() == 0 && res.size() != 1) {
             res.pop();
         }
         Self ans;
@@ -329,11 +329,11 @@ public:
         i64 carry = 0;
         for (usize i = 0; i < resSize; ++i) {
             const i64 tmp = res[i];
-            ans.num_.append((tmp + carry) % BASE);
+            ans.num_.push((tmp + carry) % BASE);
             carry = (tmp + carry) / BASE;
         }
         if (carry > 0) {
-            ans.num_.append(carry);
+            ans.num_.push(carry);
         }
         ans.calc_len();
         return ans;
@@ -513,7 +513,7 @@ public:
         if (!sign_) {
             stream << '-';
         }
-        stream << num_.back();
+        stream << num_.last();
         for (isize i = num_.size() - 2; i >= 0; --i) {
             stream << std::format("{:0{}d}", num_[i], WIDTH);
         }
@@ -556,8 +556,8 @@ private:
      * @brief 移除前导0
      */
     static void cut_leading_zero(util::Vec<i32>& num) {
-        if (num.empty()) return;
-        while (num.back() == 0 && num.size() != 1) {
+        if (num.is_empty()) return;
+        while (num.last() == 0 && num.size() != 1) {
             num.pop();
         }
     }
@@ -567,7 +567,7 @@ private:
      */
     void calc_len() {
         cut_leading_zero(num_);
-        i32 tmp = num_.back();
+        i32 tmp = num_.last();
         if (tmp == 0) {
             length_ = 1;
         } else {

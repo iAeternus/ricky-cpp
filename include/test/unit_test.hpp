@@ -84,7 +84,7 @@ public:
 
     void addTest(CString&& displayName, Runnable&& testCase) {
         auto* item = new UnitTest{std::forward<CString>(displayName), std::forward<Runnable>(testCase)};
-        group_.append(item);
+        group_.push(item);
     }
 
     void startAll() {

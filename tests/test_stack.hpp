@@ -8,10 +8,10 @@ namespace my::test::test_stack {
 
 auto it_works = []() {
     util::Stack<i32> st;
-    Assertions::assertTrue(st.empty());
+    Assertions::assertTrue(st.is_empty());
 
     st.push(1), st.push(2), st.push(3);
-    Assertions::assertFalse(st.empty());
+    Assertions::assertFalse(st.is_empty());
     Assertions::assertEquals(3, st.size());
     Assertions::assertEquals(3, st.peek());
 
@@ -20,7 +20,7 @@ auto it_works = []() {
     Assertions::assertEquals(2, st.peek());
 
     st.pop(), st.pop();
-    Assertions::assertTrue(st.empty());
+    Assertions::assertTrue(st.is_empty());
     Assertions::assertEquals(0, st.size());
 };
 
@@ -29,7 +29,7 @@ auto should_fail_to_peek_if_stack_is_empty = []() {
     util::Stack<i32> st;
 
     // When & Then
-    Assertions::assertThrows("Stack is empty.", [&]() {
+    Assertions::assertThrows("Stack is is_empty.", [&]() {
         st.peek();
     });
 };

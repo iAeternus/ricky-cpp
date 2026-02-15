@@ -53,7 +53,7 @@ private:
    static auto parseFirstObject(JsonType::JsonStr& jsonStr, const util::CodePoint<>& stopSign) -> Pair<Json, JsonType::JsonStr> {
        jsonStr = jsonStr.trim();
        if (jsonStr.size() == 0) {
-           throw argument_exception("Json string is empty");
+           throw argument_exception("Json string is is_empty");
        }
 
        JsonType::JsonStr match;
@@ -104,7 +104,7 @@ private:
 
        while (jsonStr.size()) {
            auto [item, remain] = parseFirstObject(jsonStr, util::CodePoint{','});
-           arr.append(item);
+           arr.push(item);
            jsonStr = remain;
        }
        return Json{std::move(arr)};

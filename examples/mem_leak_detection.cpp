@@ -115,9 +115,9 @@ void trace_vec() {
     TraceVec v5(std::move(v3));
     TraceVec v6 = std::move(v4);
 
-    // append
+    // push
     for (i32 i = 0; i < 1024; ++i) {
-        v2.append(i);
+        v2.push(i);
     }
 
     // pop
@@ -139,7 +139,7 @@ void trace_linked_list() {
     // 构造
     TraceLinkedList l1;
 
-    // append
+    // push
     for (i32 i = 0; i < 1024; ++i) {
         l1.push_back(i);
     }

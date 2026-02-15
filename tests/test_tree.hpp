@@ -30,7 +30,7 @@ auto should_dfs = []() {
 
     // When
     t.dfs([&res](const auto& v) {
-        res.append(v);
+        res.push(v);
     });
 
     // Then
@@ -49,7 +49,7 @@ auto should_bfs = []() {
 
     // When
     t.bfs([&res](const auto& v) {
-        res.append(v);
+        res.push(v);
     });
 
     // Then

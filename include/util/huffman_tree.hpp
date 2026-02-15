@@ -58,8 +58,8 @@ public:
         usize idx = 0;
         BinaryHeap<Node> bh;
         for (const auto& [cp, freq] : freqs_) {
-            nodes_.append(idx++, cp, freq);
-            bh.push(nodes_.back());
+            nodes_.push(idx++, cp, freq);
+            bh.push(nodes_.last());
         }
 
         build_tree(bh);
@@ -156,12 +156,12 @@ private:
      * @note 使用优先队列构建哈夫曼树，合并频率最小的两个节点直到只剩一个根节点
      */
     void build_tree(BinaryHeap<Node>& bh) {
-        if (bh.empty()) return;
+        if (bh.is_empty()) return;
 
         // 处理单字符特例
         if (bh.size() == 1) {
             Node dummy{nodes_.size(), 0, bh.top().idx, NIL};
-            nodes_.append(dummy);
+            nodes_.push(dummy);
             root_idx_ = dummy.idx;
             return;
         }
@@ -177,7 +177,7 @@ private:
             }
 
             Node parent(nodes_.size(), left.freq + right.freq, left.idx, right.idx);
-            nodes_.append(parent);
+            nodes_.push(parent);
             bh.push(parent);
         }
         root_idx_ = bh.top().idx;

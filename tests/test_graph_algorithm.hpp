@@ -121,7 +121,7 @@ auto should_bfs = []() {
 
     util::Vec<u64> vis_order;
     Consumer<const graph::Node<f64, f64>&> callback = [&vis_order](const graph::Node<>& node) {
-        vis_order.append(node.id);
+        vis_order.push(node.id);
     };
 
     // When
@@ -156,7 +156,7 @@ auto should_dfs = []() {
 
     util::Vec<u64> vis_order;
     Consumer<const graph::Node<f64, f64>&> callback = [&vis_order](const graph::Node<>& node) {
-        vis_order.append(node.id);
+        vis_order.push(node.id);
     };
 
     // When

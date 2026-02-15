@@ -116,7 +116,7 @@ public:
         util::Vec<Edge<E>> edges;
         for (const auto& vertex : nodes_.values()) {
             for (const auto& edge : vertex.edges) {
-                edges.append(edge);
+                edges.push(edge);
             }
         }
         return edges;

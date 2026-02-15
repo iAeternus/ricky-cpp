@@ -31,7 +31,7 @@ public:
      * @param alloc 内存分配器
      */
     Vec(const Alloc& alloc = Alloc{}) :
-            alloc_(alloc), size_(0), capacity_(DEFAULT_CAPACITY), data_(alloc_.allocate(capacity_)) {}
+            alloc_(alloc), len_(0), capacity_(DEFAULT_CAPACITY), data_(alloc_.allocate(capacity_)) {}
 
     /**
      * @brief 构造指定大小的向量并用默认值填充
@@ -40,8 +40,8 @@ public:
      * @param alloc 内存分配器
      */
     explicit Vec(const usize size, const value_t& val = value_t{}, const Alloc& alloc = Alloc{}) :
-            alloc_(alloc), size_(size), capacity_(size_), data_(alloc_.allocate(capacity_)) {
-        for (usize i = 0; i < size_; ++i) {
+            alloc_(alloc), len_(size), capacity_(len_), data_(alloc_.allocate(capacity_)) {
+        for (usize i = 0; i < len_; ++i) {
             alloc_.construct(data_ + i, val);
         }
     }
@@ -52,7 +52,7 @@ public:
      * @param alloc 内存分配器
      */
     Vec(std::initializer_list<value_t>&& init_list, const Alloc& alloc = Alloc{}) :
-            alloc_(alloc), size_(init_list.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
+            alloc_(alloc), len_(init_list.size()), capacity_(len_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : init_list) {
             alloc_.construct(data_ + pos, std::forward<decltype(item)>(item));
@@ -68,7 +68,7 @@ public:
      */
     template <Iterable I>
     Vec(I&& iter, const Alloc& alloc = Alloc{}) :
-            alloc_(alloc), size_(iter.size()), capacity_(size_), data_(alloc_.allocate(capacity_)) {
+            alloc_(alloc), len_(iter.size()), capacity_(len_), data_(alloc_.allocate(capacity_)) {
         usize pos = 0;
         for (auto&& item : iter) {
             alloc_.construct(data_ + pos, std::forward<value_t>(item));
@@ -81,8 +81,8 @@ public:
      * @param other 被拷贝的向量
      */
     Vec(const Self& other) :
-            alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), data_(alloc_.allocate(capacity_)) {
-        for (usize i = 0; i < size_; ++i) {
+            alloc_(other.alloc_), len_(other.len_), capacity_(other.capacity_), data_(alloc_.allocate(capacity_)) {
+        for (usize i = 0; i < len_; ++i) {
             alloc_.construct(data_ + i, other.data_[i]);
         }
     }
@@ -92,9 +92,9 @@ public:
      * @param other 被移动的向量
      */
     Vec(Self&& other) noexcept :
-            alloc_(other.alloc_), size_(other.size_), capacity_(other.capacity_), data_(other.data_) {
+            alloc_(other.alloc_), len_(other.len_), capacity_(other.capacity_), data_(other.data_) {
         other.data_ = nullptr;
-        other.size_ = other.capacity_ = 0;
+        other.len_ = other.capacity_ = 0;
     }
 
     /**
@@ -129,7 +129,7 @@ public:
     ~Vec() {
         clear();
         if (data_) {
-            alloc_.deallocate(data_, size_);
+            alloc_.deallocate(data_, len_);
         }
         capacity_ = 0;
     }
@@ -147,15 +147,15 @@ public:
      * @return 当前存储的元素个数
      */
     usize size() const noexcept {
-        return size_;
+        return len_;
     }
 
     /**
      * @brief 判断是否为空
      * @return true=是 false=否
      */
-    bool empty() const noexcept {
-        return size_ == 0;
+    bool is_empty() const noexcept {
+        return len_ == 0;
     }
 
     /**
@@ -181,7 +181,7 @@ public:
      * @note 空向量访问时行为未定义
      * @return 首元素的引用
      */
-    value_t& front() noexcept {
+    value_t& first() noexcept {
         return data_[0];
     }
 
@@ -190,7 +190,7 @@ public:
      * @note 空向量访问时行为未定义
      * @return 首元素的引用
      */
-    const value_t& front() const noexcept {
+    const value_t& first() const noexcept {
         return data_[0];
     }
 
@@ -199,8 +199,8 @@ public:
      * @note 空向量访问时行为未定义
      * @return 末元素的引用
      */
-    value_t& back() noexcept {
-        return data_[size_ - 1];
+    value_t& last() noexcept {
+        return data_[len_ - 1];
     }
 
     /**
@@ -208,8 +208,8 @@ public:
      * @note 空向量访问时行为未定义
      * @return 末元素的引用
      */
-    const value_t& back() const noexcept {
-        return data_[size_ - 1];
+    const value_t& last() const noexcept {
+        return data_[len_ - 1];
     }
 
     /**
@@ -239,12 +239,12 @@ public:
      * @return 若找到返回索引，否则返回向量长度
      */
     usize find(const value_t& value) const {
-        for (usize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < len_; ++i) {
             if (data_[i] == value) {
                 return i;
             }
         }
-        return size_;
+        return len_;
     }
 
     /**
@@ -253,11 +253,11 @@ public:
      * @return 被追加元素的引用
      */
     template <typename U>
-    value_t& append(U&& item) {
+    value_t& push(U&& item) {
         try_expand();
-        alloc_.construct(data_ + size_, std::forward<U>(item));
-        ++size_;
-        return back();
+        alloc_.construct(data_ + len_, std::forward<U>(item));
+        ++len_;
+        return last();
     }
 
     /**
@@ -265,11 +265,11 @@ public:
      * @param args 构造元素的参数
      */
     template <typename... Args>
-    value_t& append(Args&&... args) {
+    value_t& push(Args&&... args) {
         try_expand();
-        alloc_.construct(data_ + size_, std::forward<Args>(args)...);
-        ++size_;
-        return back();
+        alloc_.construct(data_ + len_, std::forward<Args>(args)...);
+        ++len_;
+        return last();
     }
 
     /**
@@ -280,13 +280,13 @@ public:
      */
     template <typename... Args>
     void insert(usize idx, Args&&... args) {
-        if (idx > size_) return;
+        if (idx > len_) return;
         try_expand();
         for (auto it = Super::end(); it >= Super::begin() + idx; --it) {
             *std::next(it) = std::move(*it);
         }
         alloc_.construct(data_ + idx, std::forward<Args>(args)...);
-        ++size_;
+        ++len_;
     }
 
     /**
@@ -294,22 +294,22 @@ public:
      * @param idx 移除位置，从 0 开始，默认移除最后一个元素
      */
     void pop(isize idx = -1) {
-        if (empty()) return;
+        if (is_empty()) return;
 
-        idx = neg_index(idx, static_cast<isize>(size_));
+        idx = neg_index(idx, static_cast<isize>(len_));
         for (auto it = Super::begin() + idx + 1; it != Super::end(); ++it) {
             *std::prev(it) = std::move(*it);
         }
         alloc_.destroy(data_ + idx);
-        --size_;
+        --len_;
     }
 
     /**
      * @brief 清空所有元素，容量不变
      */
     void clear() {
-        alloc_.destroy_n(data_, size_);
-        size_ = 0;
+        alloc_.destroy_n(data_, len_);
+        len_ = 0;
     }
 
     /**
@@ -319,7 +319,7 @@ public:
     void swap(Self& other) noexcept {
         std::swap(alloc_, other.alloc_);
         std::swap(capacity_, other.capacity_);
-        std::swap(size_, other.size_);
+        std::swap(len_, other.len_);
         std::swap(data_, other.data_);
     }
 
@@ -328,8 +328,8 @@ public:
      * @return 返回包含所有元素的 Array
      */
     Array<value_t> to_array() const {
-        Array<value_t> arr(size_);
-        for (usize i = 0; i < size_; ++i) {
+        Array<value_t> arr(len_);
+        for (usize i = 0; i < len_; ++i) {
             arr[i] = data_[i];
         }
         return arr;
@@ -341,8 +341,8 @@ public:
      * @note 转换后原动态数组将被清空
      */
     Array<value_t> to_array() {
-        Array<value_t> arr(size_);
-        for (usize i = 0; i < size_; ++i) {
+        Array<value_t> arr(len_);
+        for (usize i = 0; i < len_; ++i) {
             arr[i] = std::move(data_[i]);
         }
         clear();
@@ -385,7 +385,7 @@ public:
     template <Iterable I>
     Self& extend(I&& other) {
         for (auto&& item : other) {
-            append(std::forward<decltype(item)>(item));
+            push(std::forward<decltype(item)>(item));
         }
         return *this;
     }
@@ -435,7 +435,7 @@ public:
     void resize(usize new_cap) {
         if (new_cap == capacity_) return;
         value_t* ptr = alloc_.allocate(new_cap);
-        const usize min_size = std::min(size_, new_cap);
+        const usize min_size = std::min(len_, new_cap);
 
         if constexpr (std::is_trivially_copyable_v<value_t>) {
             std::memcpy(ptr, data_, min_size * sizeof(value_t));
@@ -446,7 +446,7 @@ public:
             }
         }
 
-        alloc_.deallocate(data_, size_);
+        alloc_.deallocate(data_, len_);
         data_ = ptr;
         capacity_ = new_cap;
     }
@@ -457,9 +457,9 @@ public:
      * @note 分离后，原数组将不再管理数组的内存，用户需要手动管理返回的指针
      */
     Pair<usize, value_t*> separate() {
-        auto res = Pair{size_, data_};
+        auto res = Pair{len_, data_};
         data_ = nullptr;
-        size_ = capacity_ = 0;
+        len_ = capacity_ = 0;
         return res;
     }
 
@@ -480,7 +480,7 @@ public:
     [[nodiscard]] CString __str__() const {
         std::stringstream stream;
         stream << '[';
-        for (usize i = 0; i < size_; ++i) {
+        for (usize i = 0; i < len_; ++i) {
             if (i) stream << ',';
             stream << at(i);
         }
@@ -490,14 +490,14 @@ public:
 
 private:
     auto try_expand() {
-        if (size_ == capacity_) {
+        if (len_ == capacity_) {
             resize(capacity_ << 1);
         }
     }
 
 private:
     Alloc alloc_{};  // 内存分配器
-    usize size_;     // 元素个数
+    usize len_;     // 元素个数
     usize capacity_; // 总容量
     value_t* data_;  // 指向数据首地址的指针
 

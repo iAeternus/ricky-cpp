@@ -137,7 +137,7 @@ void to_json(Json& j, const util::Vec<T>& vec) {
    for (const auto& item : vec) {
        Json j_item;
        to_json(j_item, item);
-       arr.append(j_item);
+       arr.push(j_item);
    }
    j = std::move(arr);
 }
