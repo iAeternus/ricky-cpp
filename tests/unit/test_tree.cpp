@@ -1,5 +1,6 @@
 #include "test_tree.hpp"
 #include "tree.hpp"
+#include "printer.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_tree {

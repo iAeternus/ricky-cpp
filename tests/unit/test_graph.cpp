@@ -1,5 +1,6 @@
 #include "test_graph.hpp"
 #include "graph.hpp"
+#include "printer.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_graph {

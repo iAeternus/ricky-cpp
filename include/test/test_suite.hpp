@@ -7,11 +7,7 @@
 #ifndef TEST_REGISTRY_HPP
 #define TEST_REGISTRY_HPP
 
-#include "my_types.hpp"
-#include "my_func.hpp"
-#include "cstring.hpp"
 #include "vec.hpp"
-#include "object.hpp"
 
 namespace my::test {
 

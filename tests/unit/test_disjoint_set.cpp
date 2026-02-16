@@ -1,5 +1,6 @@
 #include "test_disjoint_set.hpp"
 #include "disjoint_set.hpp"
+#include "printer.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_disjoint_set {

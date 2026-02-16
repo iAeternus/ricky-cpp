@@ -9,6 +9,5 @@
 
 #include "assertions.hpp"
 #include "test_suite.hpp"
-#include "printer.hpp"
 
 #endif // RICKY_TEST_HPP

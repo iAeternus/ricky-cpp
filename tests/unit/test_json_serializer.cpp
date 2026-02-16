@@ -1,5 +1,6 @@
 #include "test_json_serializer.hpp"
 #include "json_serializer.hpp"
+#include "printer.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_json_serializer {
