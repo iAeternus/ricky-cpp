@@ -21,6 +21,18 @@ struct DirEntry {
 struct FileHandle;
 
 /**
+ * @brief 文件打开模式（平台无关）
+ */
+enum class OpenMode {
+    Read,
+    Write,
+    Append,
+    ReadBinary,
+    WriteBinary,
+    AppendBinary
+};
+
+/**
  * @brief 路径是否存在
  */
 bool exists(const char* path);
@@ -38,13 +50,15 @@ bool is_dir(const char* path);
 /**
  * @brief 创建目录
  * @param recursive 是否递归创建
+ * @param exist_ok 目录已存在时是否视为成功
  */
-void mkdir(const char* path, bool recursive);
+void mkdir(const char* path, bool recursive = false, bool exist_ok = true);
 
 /**
- * @brief 删除文件或目录（由实现决定是否递归）
+ * @brief 删除文件或目录
+ * @param recursive 是否递归删除目录
  */
-void remove(const char* path);
+void remove(const char* path, bool recursive = false);
 
 /**
  * @brief 路径拼接
@@ -62,9 +76,19 @@ util::Vec<DirEntry> listdir(const char* path);
 FileHandle* open(const char* path, const char* mode);
 
 /**
+ * @brief 打开文件，返回句柄（平台无关模式）
+ */
+FileHandle* open(const char* path, OpenMode mode);
+
+/**
  * @brief 读取整个文件内容
  */
 util::String read_all(FileHandle* file);
+
+/**
+ * @brief 读取整个文件内容（按路径）
+ */
+util::String read_all(const char* path);
 
 /**
  * @brief 写入数据

@@ -1,9 +1,6 @@
 #include "test_queue.hpp"
 #include "link_list_queue.hpp"
-#include "random.hpp"
 #include "ricky_test.hpp"
-
-#include <queue>
 
 namespace my::test::test_queue {
 

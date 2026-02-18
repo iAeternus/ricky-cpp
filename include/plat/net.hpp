@@ -7,8 +7,8 @@
 namespace my::plat::net {
 
 enum class SocketFamily : u8 {
-    IPv4,
-    IPv6
+    Ipv4,
+    Ipv6
 };
 
 enum class SocketType : u8 {
