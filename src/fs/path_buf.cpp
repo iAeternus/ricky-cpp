@@ -24,17 +24,22 @@ size_t trim_trailing_seps(const std::string& path) {
     return end;
 }
 
+std::string to_std(const str::String<>& s) {
+    auto view = s.as_str();
+    return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
+}
+
 } // namespace
 
 PathBuf::PathBuf(const char* path) {
-    path_ = util::String(path ? path : "");
+    path_ = str::String<>(path ? path : "");
 }
 
 PathBuf::PathBuf(const CString& path) {
-    path_ = util::String(path.data(), path.length());
+    path_ = str::String<>(path.data(), path.length());
 }
 
-PathBuf::PathBuf(const util::String& path) :
+PathBuf::PathBuf(const str::String<>& path) :
         path_(path) {}
 
 bool PathBuf::is_empty() const {
@@ -46,7 +51,7 @@ usize PathBuf::len() const {
 }
 
 bool PathBuf::is_absolute() const {
-    const auto s = path_.into_string();
+    const auto s = to_std(path_);
     if (s.empty()) {
         return false;
     }
@@ -61,8 +66,10 @@ bool PathBuf::is_relative() const {
 }
 
 PathBuf PathBuf::join(const char* other) const {
-    auto base = path_.__str__();
-    return PathBuf(plat::fs::join(base.data(), other));
+    auto base = as_cstr();
+    auto joined = plat::fs::join(base.data(), other);
+    auto c = joined.__str__();
+    return PathBuf(str::String<>(c.data(), c.length()));
 }
 
 PathBuf PathBuf::join(const PathBuf& other) const {
@@ -81,79 +88,79 @@ void PathBuf::push(const PathBuf& other) {
 }
 
 bool PathBuf::pop() {
-    auto s = path_.into_string();
+    auto s = to_std(path_);
     if (s.empty()) {
         return false;
     }
 
     const auto end = trim_trailing_seps(s);
     if (end == std::string::npos) {
-        path_ = util::String();
+        path_ = str::String<>();
         return true;
     }
 
     const auto sep = s.find_last_of("/\\", end);
     if (sep == std::string::npos) {
-        path_ = util::String();
+        path_ = str::String<>();
         return true;
     }
 
     if (sep == 0) {
         s.resize(1);
-        path_ = util::String(s.c_str(), s.size());
+        path_ = str::String<>(s.c_str(), s.size());
         return true;
     }
 
     if (sep == 2 && is_drive_prefix(s)) {
         s.resize(3);
         s[2] = '\\';
-        path_ = util::String(s.c_str(), s.size());
+        path_ = str::String<>(s.c_str(), s.size());
         return true;
     }
 
     s.resize(sep);
-    path_ = util::String(s.c_str(), s.size());
+    path_ = str::String<>(s.c_str(), s.size());
     return true;
 }
 
-util::String PathBuf::file_name() const {
-    auto s = path_.into_string();
+str::String<> PathBuf::file_name() const {
+    auto s = to_std(path_);
     const auto end = trim_trailing_seps(s);
     if (end == std::string::npos) {
-        return util::String();
+        return str::String<>();
     }
 
     const auto sep = s.find_last_of("/\\", end);
     if (sep == std::string::npos) {
-        return util::String(s.c_str(), end + 1);
+        return str::String<>(s.c_str(), end + 1);
     }
-    return util::String(s.c_str() + sep + 1, end - sep);
+    return str::String<>(s.c_str() + sep + 1, end - sep);
 }
 
-util::String PathBuf::file_stem() const {
-    auto name = file_name().into_string();
+str::String<> PathBuf::file_stem() const {
+    auto name = to_std(file_name());
     if (name.empty()) {
-        return util::String();
+        return str::String<>();
     }
 
     const auto dot = name.find_last_of('.');
     if (dot == std::string::npos || dot == 0) {
-        return util::String(name.c_str(), name.size());
+        return str::String<>(name.c_str(), name.size());
     }
-    return util::String(name.c_str(), dot);
+    return str::String<>(name.c_str(), dot);
 }
 
-util::String PathBuf::extension() const {
-    auto name = file_name().into_string();
+str::String<> PathBuf::extension() const {
+    auto name = to_std(file_name());
     if (name.empty()) {
-        return util::String();
+        return str::String<>();
     }
 
     const auto dot = name.find_last_of('.');
     if (dot == std::string::npos || dot == 0 || dot + 1 >= name.size()) {
-        return util::String();
+        return str::String<>();
     }
-    return util::String(name.c_str() + dot + 1, name.size() - dot - 1);
+    return str::String<>(name.c_str() + dot + 1, name.size() - dot - 1);
 }
 
 bool PathBuf::set_extension(const char* ext) {
@@ -161,7 +168,7 @@ bool PathBuf::set_extension(const char* ext) {
         return false;
     }
 
-    auto s = path_.into_string();
+    auto s = to_std(path_);
     const auto end = trim_trailing_seps(s);
     if (end == std::string::npos) {
         return false;
@@ -195,7 +202,7 @@ bool PathBuf::set_extension(const char* ext) {
     }
 
     base += filename;
-    path_ = util::String(base.c_str(), base.size());
+    path_ = str::String<>(base.c_str(), base.size());
     return true;
 }
 
@@ -205,16 +212,12 @@ PathBuf PathBuf::parent() const {
     return res;
 }
 
-const util::String& PathBuf::as_string() const {
+const str::String<>& PathBuf::as_string() const {
     return path_;
 }
 
 CString PathBuf::as_cstr() const {
-    return path_.__str__();
-}
-
-CString PathBuf::__str__() const {
-    return path_.__str__();
+    return CString(reinterpret_cast<const char*>(path_.as_bytes()), path_.len());
 }
 
 } // namespace my::fs

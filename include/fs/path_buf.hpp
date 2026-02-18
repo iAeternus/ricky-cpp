@@ -7,16 +7,16 @@
 #ifndef PATH_BUF_HPP
 #define PATH_BUF_HPP
 
-#include "str.hpp"
+#include "string.hpp"
 
 namespace my::fs {
 
-class PathBuf : public Object<PathBuf> {
+class PathBuf {
 public:
     PathBuf() = default;
     explicit PathBuf(const char* path);
     explicit PathBuf(const CString& path);
-    explicit PathBuf(const util::String& path);
+    explicit PathBuf(const str::String<>& path);
     PathBuf(const PathBuf& other) = default;
     PathBuf(PathBuf&& other) noexcept = default;
     PathBuf& operator=(const PathBuf& other) = default;
@@ -37,19 +37,18 @@ public:
 
     bool pop();
 
-    util::String file_name() const;
-    util::String file_stem() const;
-    util::String extension() const;
+    str::String<> file_name() const;
+    str::String<> file_stem() const;
+    str::String<> extension() const;
     bool set_extension(const char* ext);
 
     PathBuf parent() const;
 
-    const util::String& as_string() const;
+    const str::String<>& as_string() const;
     CString as_cstr() const;
-    CString __str__() const;
 
 private:
-    util::String path_{};
+    str::String<> path_{};
 };
 
 } // namespace my::fs

@@ -4,12 +4,12 @@
 namespace my::fs {
 
 File::File(const char* path, plat::fs::OpenMode mode) {
-    fd_ = plat::fs::open(path, mode);
+    handle_ = plat::fs::open(path, mode);
 }
 
 File::File(const PathBuf& path, plat::fs::OpenMode mode) {
     auto cstr = path.as_cstr();
-    fd_ = plat::fs::open(cstr.data(), mode);
+    handle_ = plat::fs::open(cstr.data(), mode);
 }
 
 File::~File() {
@@ -41,36 +41,36 @@ File File::append(const PathBuf& path) {
 }
 
 bool File::is_open() const {
-    return fd_ != nullptr;
+    return handle_ != nullptr;
 }
 
 void File::close() {
-    if (fd_ == nullptr) {
+    if (handle_ == nullptr) {
         return;
     }
-    plat::fs::close(fd_);
-    fd_ = nullptr;
+    plat::fs::close(handle_);
+    handle_ = nullptr;
 }
 
 util::String File::read_all() {
-    if (fd_ == nullptr) {
+    if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
-    return plat::fs::read_all(fd_);
+    return plat::fs::read_all(handle_);
 }
 
 util::String File::read_all() const {
-    if (fd_ == nullptr) {
+    if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
-    return plat::fs::read_all(fd_);
+    return plat::fs::read_all(handle_);
 }
 
 usize File::write(const char* data, usize size) {
-    if (fd_ == nullptr) {
+    if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
-    return plat::fs::write(fd_, data, size);
+    return plat::fs::write(handle_, data, size);
 }
 
 usize File::write(const CString& data) {
@@ -78,10 +78,10 @@ usize File::write(const CString& data) {
 }
 
 void File::flush() {
-    if (fd_ == nullptr) {
+    if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
-    plat::fs::flush(fd_);
+    plat::fs::flush(handle_);
 }
 
 } // namespace my::fs

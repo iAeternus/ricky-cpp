@@ -14,7 +14,7 @@
 
 namespace my::fs {
 
-class File : public Object<File>, public NoCopyMove {
+class File : public NoCopyMove {
 public:
     using Handle = plat::fs::FileHandle;
 
@@ -41,10 +41,10 @@ public:
 
     void flush();
 
-    Handle* handle() const { return fd_; }
+    Handle* handle() const { return handle_; }
 
 private:
-    Handle* fd_{nullptr};
+    Handle* handle_{nullptr};
 };
 
 } // namespace my::fs
