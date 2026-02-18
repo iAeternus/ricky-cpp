@@ -8,8 +8,4 @@ if [[ ! -f "${build_dir}/CMakeCache.txt" ]]; then
   "${root_dir}/build.sh"
 fi
 
-if command -v ctest >/dev/null 2>&1; then
-  ctest --test-dir "${build_dir}" --output-on-failure
-else
-  "${build_dir}/bin/tests/RICKY_CPP_TESTS"
-fi
+"${build_dir}/bin/tests/RICKY_CPP_TESTS" "$@"

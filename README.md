@@ -34,3 +34,15 @@ git clone https://github.com/iAeternus/ricky-cpp.git
 ./run_tests
 ```
 
+### 4. 运行基准测试
+
+```shell
+./run_tests --bench
+```
+
+或
+
+```shell
+./run_tests -B
+```
+

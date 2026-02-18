@@ -28,9 +28,21 @@ git clone https://github.com/iAeternus/ricky-cpp.git
 ./build
 ```
 
-### 3. Run the Test
+### 3. Run the Tests
 
 ```shell
 ./run_tests
+```
+
+### 4. Run the Bench Tests
+
+```shell
+./run_tests --bench
+```
+
+or
+
+```shell
+./run_tests -B
 ```
 

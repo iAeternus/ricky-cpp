@@ -15,9 +15,11 @@ if not exist "%TEST_ARTIFACTS%\%TEST_BINARY%.exe" (
     exit /b 1
 )
 
+set TEST_ARGS=%*
+
 echo Running tests...
 cd "%TEST_ARTIFACTS%"
-"%TEST_BINARY%.exe"
+"%TEST_BINARY%.exe" %TEST_ARGS%
 if %ERRORLEVEL% NEQ 0 (
     echo Error: Tests failed.
     exit /b %ERRORLEVEL%
