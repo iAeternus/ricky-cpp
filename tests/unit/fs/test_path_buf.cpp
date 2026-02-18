@@ -2,8 +2,6 @@
 #include "path_buf.hpp"
 #include "ricky_test.hpp"
 
-#include <string>
-
 namespace my::test::test_path_buf {
 
 namespace {

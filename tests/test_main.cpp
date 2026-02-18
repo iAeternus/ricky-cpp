@@ -1,7 +1,7 @@
 /**
  * @brief 测试入口
  */
-#define TEST_MODE 1
+#define TEST_MODE 0
 
 #include "ricky_test.hpp"
 

@@ -1,35 +1,35 @@
 #include "test_file.hpp"
 #include "file.hpp"
+#include "path_buf.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_file {
 
 namespace {
 
-const std::string& repo_root() {
-    static const std::string root = []() {
+const fs::PathBuf& repo_root() {
+    static const fs::PathBuf root = []() {
         std::string file = __FILE__;
-        const char* win_suffix = "\\tests\\unit\\test_file.cpp";
-        const char* posix_suffix = "/tests/unit/test_file.cpp";
+        const char* win_suffix = "\\tests\\unit\\fs\\test_file.cpp";
+        const char* posix_suffix = "/tests/unit/fs/test_file.cpp";
         auto pos = file.find(win_suffix);
         if (pos == std::string::npos) {
             pos = file.find(posix_suffix);
         }
         if (pos == std::string::npos) {
-            return std::string(".");
+            return fs::PathBuf(".");
         }
-        return file.substr(0, pos);
+        return fs::PathBuf(file.substr(0, pos).c_str());
     }();
     return root;
 }
 
-util::String res_dir() {
-    return plat::fs::join(repo_root().c_str(), R"(tests\resources)");
+fs::PathBuf res_dir() {
+    return repo_root().join(R"(tests\resources)");
 }
 
-util::String make_res_path(const char* leaf) {
-    auto base = res_dir().__str__();
-    return plat::fs::join(base.data(), leaf);
+fs::PathBuf make_res_path(const char* leaf) {
+    return res_dir().join(leaf);
 }
 
 void remove_if_exists(const char* path) {
@@ -45,7 +45,7 @@ void test_open_and_read_all() {
     auto path = make_res_path("text.txt");
 
     // When
-    auto file = fs::File::open(path.__str__().data());
+    auto file = fs::File::open(path);
     auto content = file.read_all().into_string();
 
     // Then
@@ -54,12 +54,13 @@ void test_open_and_read_all() {
 
 void test_create_write_and_read() {
     // Given
-    auto path = make_res_path("fs_file_tmp_write.txt").into_string();
-    remove_if_exists(path.c_str());
+    auto path = make_res_path("fs_file_tmp_write.txt");
+    auto path_cstr = path.as_cstr();
+    remove_if_exists(path_cstr.data());
     const char data[] = "file write test";
 
     // When
-    auto file = fs::File::create(path.c_str());
+    auto file = fs::File::create(path_cstr.data());
     Assertions::assert_true(file.is_open());
     auto written = file.write(data, sizeof(data) - 1);
     file.flush();
@@ -67,41 +68,43 @@ void test_create_write_and_read() {
 
     // Then
     Assertions::assert_equals(static_cast<usize>(sizeof(data) - 1), written);
-    auto content = fs::File::open(path.c_str()).read_all().into_string();
+    auto content = fs::File::open(path_cstr.data()).read_all().into_string();
     Assertions::assert_equals(std::string(data), content);
 
     // Final
-    plat::fs::remove(path.c_str());
+    plat::fs::remove(path_cstr.data());
 }
 
 void test_append() {
     // Given
-    auto path = make_res_path("fs_file_tmp_append.txt").into_string();
-    remove_if_exists(path.c_str());
+    auto path = make_res_path("fs_file_tmp_append.txt");
+    auto path_cstr = path.as_cstr();
+    remove_if_exists(path_cstr.data());
 
     // When
     {
-        auto file = fs::File::create(path.c_str());
+        auto file = fs::File::create(path_cstr.data());
         file.write("a", 1);
     }
     {
-        auto file = fs::File::append(path.c_str());
+        auto file = fs::File::append(path_cstr.data());
         file.write("b", 1);
     }
 
     // Then
-    auto content = fs::File::open(path.c_str()).read_all().into_string();
+    auto content = fs::File::open(path_cstr.data()).read_all().into_string();
     Assertions::assert_equals(std::string("ab"), content);
 
     // Final
-    plat::fs::remove(path.c_str());
+    plat::fs::remove(path_cstr.data());
 }
 
 void should_throw_when_handle_invalid() {
     // Given
-    auto path = make_res_path("fs_file_tmp_invalid.txt").into_string();
-    remove_if_exists(path.c_str());
-    auto file = fs::File::create(path.c_str());
+    auto path = make_res_path("fs_file_tmp_invalid.txt");
+    auto path_cstr = path.as_cstr();
+    remove_if_exists(path_cstr.data());
+    auto file = fs::File::create(path_cstr.data());
     file.close();
     CString expected_msg = CString("Invalid file handle");
 
@@ -111,7 +114,7 @@ void should_throw_when_handle_invalid() {
     });
 
     // Final
-    plat::fs::remove(path.c_str());
+    plat::fs::remove(path_cstr.data());
 }
 
 GROUP_NAME("test_file");
