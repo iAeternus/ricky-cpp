@@ -1,3 +1,9 @@
+/**
+ * @brief 字符串视图，类似 rust 的 &str
+ * @author Ricky
+ * @date 2026/2/16
+ * @version 1.0
+ */
 #ifndef STR_STRING_VIEW_HPP
 #define STR_STRING_VIEW_HPP
 

@@ -1,3 +1,9 @@
+/**
+ * @brief UTF-8 字符串，类似 rust 的 String
+ * @author Ricky
+ * @date 2026/2/16
+ * @version 1.0
+ */
 #ifndef STR_STRING_HPP
 #define STR_STRING_HPP
 
@@ -215,5 +221,14 @@ private:
 };
 
 } // namespace my::str
+
+namespace my {
+
+template <typename T>
+concept ToString = requires(const T& t) {
+    { to_string(t) } -> std::same_as<str::String<>>;
+};
+
+} // namespace my
 
 #endif // STR_STRING_HPP
