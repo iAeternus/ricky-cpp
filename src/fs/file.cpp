@@ -1,15 +1,13 @@
 #include "file.hpp"
-#include "my_exception.hpp"
 
 namespace my::fs {
 
 File::File(const char* path, plat::fs::OpenMode mode) {
-    handle_ = plat::fs::open(path, mode);
+    handle_ = plat::fs::open(str::StringView(path ? path : ""), mode);
 }
 
 File::File(const PathBuf& path, plat::fs::OpenMode mode) {
-    auto cstr = path.as_cstr();
-    handle_ = plat::fs::open(cstr.data(), mode);
+    handle_ = plat::fs::open(path.as_string().as_str(), mode);
 }
 
 File::~File() {
@@ -52,14 +50,14 @@ void File::close() {
     handle_ = nullptr;
 }
 
-util::String File::read_all() {
+str::String<> File::read_all() {
     if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
     return plat::fs::read_all(handle_);
 }
 
-util::String File::read_all() const {
+str::String<> File::read_all() const {
     if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
@@ -70,7 +68,11 @@ usize File::write(const char* data, usize size) {
     if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
-    return plat::fs::write(handle_, data, size);
+    if (data == nullptr && size > 0) {
+        throw argument_exception("Invalid data pointer");
+    }
+    const auto view = str::StringView(data ? data : "", size);
+    return plat::fs::write(handle_, view, size);
 }
 
 usize File::write(const CString& data) {

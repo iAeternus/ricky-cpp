@@ -9,7 +9,6 @@
 
 #include "marker.hpp"
 #include "fs.hpp"
-#include "str.hpp"
 #include "path_buf.hpp"
 
 namespace my::fs {
@@ -33,8 +32,8 @@ public:
     bool is_open() const;
     void close();
 
-    util::String read_all();
-    util::String read_all() const;
+    str::String<> read_all();
+    str::String<> read_all() const;
 
     usize write(const char* data, usize size);
     usize write(const CString& data);

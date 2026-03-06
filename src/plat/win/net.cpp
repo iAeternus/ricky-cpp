@@ -3,13 +3,9 @@
 #if RICKY_WIN
 
 #include "net.hpp"
-#include "my_exception.hpp"
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
-#include <cstring>
-#include <vector>
 
 namespace my::plat::net {
 
@@ -35,18 +31,24 @@ int to_type(const SocketType type) {
     }
 }
 
-void fill_sockaddr(const char* ip, const u16 port, sockaddr_storage& addr, int& len) {
+std::string to_std(const str::StringView view) {
+    return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
+}
+
+void fill_sockaddr(const str::StringView ip, const u16 port, sockaddr_storage& addr, int& len) {
     std::memset(&addr, 0, sizeof(addr));
-    if (ip == nullptr || ip[0] == '\0') {
+    if (ip.len() == 0) {
         throw argument_exception("Invalid ip");
     }
+    const auto ip_s = to_std(ip);
+    const auto* ip_cstr = ip_s.c_str();
 
-    if (std::strchr(ip, ':') != nullptr) {
+    if (std::strchr(ip_cstr, ':') != nullptr) {
         auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
         a6->sin6_family = AF_INET6;
         a6->sin6_port = htons(port);
-        if (InetPtonA(AF_INET6, ip, &a6->sin6_addr) != 1) {
-            throw argument_exception("Invalid IPv6 address: {}", ip);
+        if (InetPtonA(AF_INET6, ip_cstr, &a6->sin6_addr) != 1) {
+            throw argument_exception("Invalid IPv6 address: {}", ip_s);
         }
         len = sizeof(sockaddr_in6);
         return;
@@ -55,8 +57,8 @@ void fill_sockaddr(const char* ip, const u16 port, sockaddr_storage& addr, int& 
     auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
     a4->sin_family = AF_INET;
     a4->sin_port = htons(port);
-    if (InetPtonA(AF_INET, ip, &a4->sin_addr) != 1) {
-        throw argument_exception("Invalid IPv4 address: {}", ip);
+    if (InetPtonA(AF_INET, ip_cstr, &a4->sin_addr) != 1) {
+        throw argument_exception("Invalid IPv4 address: {}", ip_s);
     }
     len = sizeof(sockaddr_in);
 }
@@ -75,15 +77,15 @@ void cleanup() {
     WSACleanup();
 }
 
-util::String last_error() {
+str::String<> last_error() {
     const int err = WSAGetLastError();
     char* msg = nullptr;
     const DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
     const DWORD len = FormatMessageA(flags, nullptr, err, 0, reinterpret_cast<char*>(&msg), 0, nullptr);
     if (len == 0 || msg == nullptr) {
-        return util::String("Unknown socket error");
+        return str::String<>("Unknown socket error");
     }
-    util::String res(msg, static_cast<usize>(len));
+    str::String<> res(msg, static_cast<usize>(len));
     LocalFree(msg);
     return res;
 }
@@ -113,7 +115,7 @@ void close(SocketHandle* socket) {
     delete socket;
 }
 
-void bind(SocketHandle* socket, const char* ip, const u16 port) {
+void bind(SocketHandle* socket, const str::StringView ip, const u16 port) {
     if (!is_valid(socket)) {
         throw null_pointer_exception("Invalid socket");
     }
@@ -147,7 +149,7 @@ SocketHandle* accept(SocketHandle* socket) {
     return handle;
 }
 
-void connect(SocketHandle* socket, const char* ip, const u16 port) {
+void connect(SocketHandle* socket, const str::StringView ip, const u16 port) {
     if (!is_valid(socket)) {
         throw null_pointer_exception("Invalid socket");
     }
@@ -159,26 +161,27 @@ void connect(SocketHandle* socket, const char* ip, const u16 port) {
     }
 }
 
-usize send_bytes(SocketHandle* socket, const char* data, const usize size, const i32 flags) {
+usize send_bytes(SocketHandle* socket, const str::StringView data, const usize size, const i32 flags) {
     if (!is_valid(socket)) {
         throw null_pointer_exception("Invalid socket");
     }
-    if (data == nullptr && size > 0) {
-        throw argument_exception("Invalid data pointer");
+    if (size > data.len()) {
+        throw argument_exception("Send size exceeds data length");
     }
-    const int sent = ::send(socket->socket, data, static_cast<int>(size), flags);
+    const auto* bytes = reinterpret_cast<const char*>(data.as_bytes());
+    const int sent = ::send(socket->socket, bytes, static_cast<int>(size), flags);
     if (sent == SOCKET_ERROR) {
         throw system_exception("Send failed: {}", last_error());
     }
     return static_cast<usize>(sent);
 }
 
-util::String recv_bytes(SocketHandle* socket, const usize size, const i32 flags) {
+str::String<> recv_bytes(SocketHandle* socket, const usize size, const i32 flags) {
     if (!is_valid(socket)) {
         throw null_pointer_exception("Invalid socket");
     }
     if (size == 0) {
-        return util::String{};
+        return str::String<>{};
     }
     std::vector<char> buffer(size);
     const int received = ::recv(socket->socket, buffer.data(), static_cast<int>(size), flags);
@@ -186,9 +189,9 @@ util::String recv_bytes(SocketHandle* socket, const usize size, const i32 flags)
         throw system_exception("Recv failed: {}", last_error());
     }
     if (received == 0) {
-        return util::String{};
+        return str::String<>{};
     }
-    return util::String(buffer.data(), static_cast<usize>(received));
+    return str::String<>(buffer.data(), static_cast<usize>(received));
 }
 
 void set_timeout_ms(SocketHandle* socket, const u32 timeout_ms, const bool receive) {

@@ -16,6 +16,18 @@ class String {
 public:
     using value_type = u8;
     static constexpr usize npos = StringView::npos;
+    
+    using cstr_allocator = typename Alloc::template rebind<char>::other;
+    struct CStrDeleter {
+        cstr_allocator alloc{};
+        usize size{0};
+
+        void operator()(char* p) noexcept {
+            if (!p) return;
+            alloc.deallocate(p, size);
+        }
+    };
+    using CStrPtr = std::unique_ptr<char[], CStrDeleter>;
 
     String() = default;
 
@@ -53,6 +65,26 @@ public:
     [[nodiscard]] StringView as_str() const noexcept { return StringView(buf_.data(), buf_.len()); }
 
     [[nodiscard]] String to_string() const { return String(*this); }
+    [[nodiscard]] const char* as_cstr() const noexcept {
+        if (buf_.len() == 0) {
+            return "";
+        }
+        const auto* data = buf_.data();
+        if (data[buf_.len() - 1] == 0) {
+            return reinterpret_cast<const char*>(data);
+        }
+        return nullptr;
+    }
+    [[nodiscard]] CStrPtr into_cstr() const {
+        const usize size = buf_.len() + 1;
+        cstr_allocator alloc{};
+        char* out = alloc.allocate(size);
+        if (buf_.len() != 0) {
+            std::memcpy(out, buf_.data(), buf_.len());
+        }
+        out[buf_.len()] = '\0';
+        return CStrPtr(out, CStrDeleter{alloc, size});
+    }
 
     void push(const char32_t cp) {
         u8 bytes[4]{};
@@ -230,5 +262,14 @@ concept ToString = requires(const T& t) {
 };
 
 } // namespace my
+
+template <typename Alloc>
+struct std::formatter<my::str::String<Alloc>, char> : std::formatter<std::string_view, char> {
+    auto format(const my::str::String<Alloc>& value, auto& ctx) const {
+        auto view = value.as_str();
+        return std::formatter<std::string_view, char>::format(
+                std::string_view(reinterpret_cast<const char*>(view.as_bytes()), view.len()), ctx);
+    }
+};
 
 #endif // STR_STRING_HPP

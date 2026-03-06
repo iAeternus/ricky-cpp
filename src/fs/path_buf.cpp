@@ -66,15 +66,13 @@ bool PathBuf::is_relative() const {
 }
 
 PathBuf PathBuf::join(const char* other) const {
-    auto base = as_cstr();
-    auto joined = plat::fs::join(base.data(), other);
-    auto c = joined.__str__();
-    return PathBuf(str::String<>(c.data(), c.length()));
+    auto joined = plat::fs::join(path_.as_str(), str::StringView(other ? other : ""));
+    return PathBuf(joined);
 }
 
 PathBuf PathBuf::join(const PathBuf& other) const {
-    auto other_cstr = other.as_cstr();
-    return join(other_cstr.data());
+    auto joined = plat::fs::join(path_.as_str(), other.as_string().as_str());
+    return PathBuf(joined);
 }
 
 void PathBuf::push(const char* other) {

@@ -70,33 +70,24 @@ void should_register() {
 
     // When
     // 注册自定义算法，使用新的插件系统
-    g.register_algo("filter_edge", [](const auto& g, auto&& args) {
-        using namespace my::graph;
-        auto min = util::opt<f64>(args, 0);
-        auto max = util::opt<f64>(args, 1);
-
-        util::Vec<i64> res;
-        for (const auto& edge : g.edges()) {
-            if (math::fcmp(edge.w, min) > 0 && math::fcmp(edge.w, max) < 0) {
-                res.push(edge.w);
-            }
-        }
-        return res;
+    g.register_algo("edge_cnt", [](const auto& graph, auto&&) {
+        return graph.edge_cnt();
     });
 
     // When
-    auto res = g.call_algo<util::Vec<i64>>("filter_edge", 5.0, 25.0);
+    auto res = g.call_algo<usize>("edge_cnt");
 
     // Then
-    Assertions::assertEquals("[7,15,15,20]"_cs, res.__str__());
+    Assertions::assertEquals(10ULL, res);
 }
 
 void should_fail_to_call_algo_if_algorithm_is_not_found() {
     // Given
     graph::Graph g;
+    g.register_algo("noop", [](const auto&, auto&&) {});
 
     // When & Then
-    Assertions::assertThrows("algorithm[dij] not found.", [g]() {
+    Assertions::assertThrows("algorithm[dij] not found.", [&g]() {
         g.call_algo("dij", 1, 100);
     });
 }

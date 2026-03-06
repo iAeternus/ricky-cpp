@@ -1,8 +1,7 @@
 #ifndef PLAT_NET_HPP
 #define PLAT_NET_HPP
 
-#include "str.hpp"
-#include "my_types.hpp"
+#include "string.hpp"
 
 namespace my::plat::net {
 
@@ -34,7 +33,7 @@ void cleanup();
 /**
  * @brief 获取最近一次错误信息
  */
-util::String last_error();
+str::String<> last_error();
 
 /**
  * @brief 创建套接字
@@ -54,7 +53,7 @@ void close(SocketHandle* socket);
 /**
  * @brief 绑定地址
  */
-void bind(SocketHandle* socket, const char* ip, u16 port);
+void bind(SocketHandle* socket, str::StringView ip, u16 port);
 
 /**
  * @brief 监听连接
@@ -69,17 +68,17 @@ SocketHandle* accept(SocketHandle* socket);
 /**
  * @brief 连接到远端
  */
-void connect(SocketHandle* socket, const char* ip, u16 port);
+void connect(SocketHandle* socket, str::StringView ip, u16 port);
 
 /**
  * @brief 发送原始字节
  */
-usize send_bytes(SocketHandle* socket, const char* data, usize size, i32 flags);
+usize send_bytes(SocketHandle* socket, str::StringView data, usize size, i32 flags);
 
 /**
  * @brief 接收指定字节数
  */
-util::String recv_bytes(SocketHandle* socket, usize size, i32 flags);
+str::String<> recv_bytes(SocketHandle* socket, usize size, i32 flags);
 
 /**
  * @brief 设置超时（毫秒）

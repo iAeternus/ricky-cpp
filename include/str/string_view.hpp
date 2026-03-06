@@ -126,6 +126,17 @@ class StringView {
 public:
     using value_type = u8;
     static constexpr usize npos = static_cast<usize>(-1);
+    using cstr_allocator = mem::Allocator<char>;
+    struct CStrDeleter {
+        cstr_allocator alloc{};
+        usize size{0};
+
+        void operator()(char* p) noexcept {
+            if (!p) return;
+            alloc.deallocate(p, size);
+        }
+    };
+    using CStrPtr = std::unique_ptr<char[], CStrDeleter>;
 
     constexpr StringView() noexcept = default;
 
@@ -137,6 +148,8 @@ public:
     [[nodiscard]] constexpr bool is_empty() const noexcept { return len_ == 0; }
     [[nodiscard]] constexpr const u8* as_bytes() const noexcept { return data_; }
     [[nodiscard]] constexpr StringView as_str() const noexcept { return *this; }
+    [[nodiscard]] const char* as_cstr() const noexcept;
+    [[nodiscard]] CStrPtr into_cstr() const;
 
     struct BytesRange {
         const u8* begin_;
@@ -267,5 +280,13 @@ private:
 };
 
 } // namespace my::str
+
+namespace my {
+
+inline str::StringView operator""_sv(const char* s, size_t len) noexcept {
+    return str::StringView(s, static_cast<usize>(len));
+}
+
+} // namespace my
 
 #endif // STR_STRING_VIEW_HPP

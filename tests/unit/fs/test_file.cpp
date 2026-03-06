@@ -32,7 +32,7 @@ fs::PathBuf make_res_path(const char* leaf) {
     return res_dir().join(leaf);
 }
 
-void remove_if_exists(const char* path) {
+void remove_if_exists(str::StringView path) {
     if (plat::fs::exists(path)) {
         plat::fs::remove(path, true);
     }
@@ -46,17 +46,17 @@ void test_open_and_read_all() {
 
     // When
     auto file = fs::File::open(path);
-    auto content = file.read_all().into_string();
+    auto content = file.read_all();
 
     // Then
-    Assertions::assert_true(content.find("Huffman Coding") != std::string::npos);
+    Assertions::assert_true(content.find("Huffman Coding"_sv).is_some());
 }
 
 void test_create_write_and_read() {
     // Given
     auto path = make_res_path("fs_file_tmp_write.txt");
     auto path_cstr = path.as_cstr();
-    remove_if_exists(path_cstr.data());
+    remove_if_exists(str::StringView(path_cstr.data(), path_cstr.length()));
     const char data[] = "file write test";
 
     // When
@@ -68,18 +68,19 @@ void test_create_write_and_read() {
 
     // Then
     Assertions::assert_equals(static_cast<usize>(sizeof(data) - 1), written);
-    auto content = fs::File::open(path_cstr.data()).read_all().into_string();
-    Assertions::assert_equals(std::string(data), content);
+    auto content = fs::File::open(path_cstr.data()).read_all();
+    std::string content_std(reinterpret_cast<const char*>(content.as_bytes()), content.len());
+    Assertions::assert_equals(std::string(data), content_std);
 
     // Final
-    plat::fs::remove(path_cstr.data());
+    plat::fs::remove(str::StringView(path_cstr.data(), path_cstr.length()));
 }
 
 void test_append() {
     // Given
     auto path = make_res_path("fs_file_tmp_append.txt");
     auto path_cstr = path.as_cstr();
-    remove_if_exists(path_cstr.data());
+    remove_if_exists(str::StringView(path_cstr.data(), path_cstr.length()));
 
     // When
     {
@@ -92,18 +93,19 @@ void test_append() {
     }
 
     // Then
-    auto content = fs::File::open(path_cstr.data()).read_all().into_string();
-    Assertions::assert_equals(std::string("ab"), content);
+    auto content = fs::File::open(path_cstr.data()).read_all();
+    std::string content_std(reinterpret_cast<const char*>(content.as_bytes()), content.len());
+    Assertions::assert_equals(std::string("ab"), content_std);
 
     // Final
-    plat::fs::remove(path_cstr.data());
+    plat::fs::remove(str::StringView(path_cstr.data(), path_cstr.length()));
 }
 
 void should_throw_when_handle_invalid() {
     // Given
     auto path = make_res_path("fs_file_tmp_invalid.txt");
     auto path_cstr = path.as_cstr();
-    remove_if_exists(path_cstr.data());
+    remove_if_exists(str::StringView(path_cstr.data(), path_cstr.length()));
     auto file = fs::File::create(path_cstr.data());
     file.close();
     CString expected_msg = CString("Invalid file handle");
@@ -114,7 +116,7 @@ void should_throw_when_handle_invalid() {
     });
 
     // Final
-    plat::fs::remove(path_cstr.data());
+    plat::fs::remove(str::StringView(path_cstr.data(), path_cstr.length()));
 }
 
 GROUP_NAME("test_file");

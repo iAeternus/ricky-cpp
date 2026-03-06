@@ -12,6 +12,7 @@
 #include "link_list_queue.hpp"
 #include "rbtree_map.hpp"
 #include "str.hpp"
+#include "string.hpp"
 #include "tracing_alloc.hpp"
 #include "vec.hpp"
 
@@ -35,8 +36,9 @@ using namespace my;
  * 7 = util::DynArray
  * 8 = util::Array
  * 9 = util::Queue
+ * 10 = str::String
  */
-#define TRACE_OBJECT 2
+#define TRACE_OBJECT 10
 
 void trace_cstring() {
     using TraceCString = BasicCString<mem::TracingAllocator<char>>;
@@ -280,6 +282,36 @@ void trace_queue() {
     q1.clear();
 }
 
+void trace_str_string() {
+    using TraceString = str::String<mem::TracingAllocator<u8>>;
+#if VERBOSE == 1
+    mem::TracingAllocator<util::CodePoint<>>::set_verbose(true);
+#endif
+
+    // 构造
+    TraceString c1("你好世界ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789");
+    TraceString c2("你好世界abcdef"_cs);
+    TraceString c3("我");
+    TraceString c4("abc", 3);
+
+    // 拷贝
+    TraceString c5(c4);
+    TraceString c6 = c3;
+
+    // 移动
+    TraceString c7(std::move(c5));
+    TraceString c8 = std::move(c6);
+
+    // +
+    TraceString c9;
+    for (i32 i = 0; i < 128; ++i) {
+        c9.push_str(c2.as_str());
+    }
+
+    // clear
+    c3.clear();
+}
+
 int main() {
 #if TRACE_OBJECT == 1
     trace_cstring();
@@ -299,6 +331,8 @@ int main() {
     trace_array();
 #elif TRACE_OBJECT == 9
     trace_queue();
+#elif TRACE_OBJECT == 10
+    trace_str_string();
 #endif
     return 0;
 }
