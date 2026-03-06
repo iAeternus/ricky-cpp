@@ -7,6 +7,8 @@
 #ifndef STR_STRING_HPP
 #define STR_STRING_HPP
 
+#include <string_view>
+
 #include "string_view.hpp"
 
 namespace my::str {
@@ -63,6 +65,9 @@ public:
 
     [[nodiscard]] const u8* as_bytes() const noexcept { return buf_.data(); }
     [[nodiscard]] StringView as_str() const noexcept { return StringView(buf_.data(), buf_.len()); }
+    [[nodiscard]] constexpr std::string_view to_std_string_view() const noexcept {
+        return std::string_view(reinterpret_cast<const char*>(buf_.data()), buf_.len());
+    }
 
     [[nodiscard]] String to_string() const { return String(*this); }
     [[nodiscard]] const char* as_cstr() const noexcept {
@@ -251,6 +256,51 @@ public:
 private:
     util::Vec<u8, Alloc> buf_{};
 };
+
+template <typename AllocL, typename AllocR>
+inline bool operator==(const String<AllocL>& lhs, const String<AllocR>& rhs) {
+    return lhs.as_str() == rhs.as_str();
+}
+
+template <typename Alloc>
+inline bool operator==(const String<Alloc>& lhs, const StringView rhs) {
+    return lhs.as_str() == rhs;
+}
+
+template <typename Alloc>
+inline bool operator==(const StringView lhs, const String<Alloc>& rhs) {
+    return lhs == rhs.as_str();
+}
+
+template <typename Alloc>
+inline bool operator==(const String<Alloc>& lhs, const char* rhs) {
+    return lhs.as_str() == rhs;
+}
+
+template <typename Alloc>
+inline bool operator==(const char* lhs, const String<Alloc>& rhs) {
+    return lhs == rhs.as_str();
+}
+
+template <typename Alloc>
+inline bool operator!=(const String<Alloc>& lhs, const StringView rhs) {
+    return !(lhs == rhs);
+}
+
+template <typename Alloc>
+inline bool operator!=(const StringView lhs, const String<Alloc>& rhs) {
+    return !(lhs == rhs);
+}
+
+template <typename Alloc>
+inline bool operator!=(const String<Alloc>& lhs, const char* rhs) {
+    return !(lhs == rhs);
+}
+
+template <typename Alloc>
+inline bool operator!=(const char* lhs, const String<Alloc>& rhs) {
+    return !(lhs == rhs);
+}
 
 } // namespace my::str
 

@@ -111,17 +111,18 @@ Option<usize> twoway_find(const u8* hay, const usize hlen, const u8* pat, const 
 
 StringView::StringView(const char* s) :
         data_(reinterpret_cast<const u8*>(s)),
-        len_(s ? static_cast<usize>(std::strlen(s)) : 0) {
+        len_(s ? static_cast<usize>(std::strlen(s)) : 0),
+        cstr_backed_(s != nullptr) {
     detail::validate_utf8(data_, len_);
 }
 
 StringView::StringView(const char* s, const usize len) :
-        data_(reinterpret_cast<const u8*>(s)), len_(len) {
+        data_(reinterpret_cast<const u8*>(s)), len_(len), cstr_backed_(false) {
     detail::validate_utf8(data_, len_);
 }
 
 StringView::StringView(const u8* s, const usize len) :
-        data_(s), len_(len) {
+        data_(s), len_(len), cstr_backed_(false) {
     detail::validate_utf8(data_, len_);
 }
 
@@ -222,6 +223,27 @@ StringView::CharsRange::EnumerateRange::Iterator& StringView::CharsRange::Enumer
 
 StringView::BytesRange StringView::bytes() const {
     return {data_, data_ + len_};
+}
+
+const char* StringView::as_cstr() const noexcept {
+    if (len_ == 0) {
+        return "";
+    }
+    if (cstr_backed_) {
+        return reinterpret_cast<const char*>(data_);
+    }
+    return nullptr;
+}
+
+StringView::CStrPtr StringView::into_cstr() const {
+    const usize size = len_ + 1;
+    cstr_allocator alloc{};
+    char* out = alloc.allocate(size);
+    if (len_ != 0) {
+        std::memcpy(out, data_, len_);
+    }
+    out[len_] = '\0';
+    return CStrPtr(out, CStrDeleter{alloc, size});
 }
 
 StringView::CharsRange StringView::chars() const {

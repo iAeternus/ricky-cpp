@@ -7,6 +7,9 @@
 #ifndef STR_STRING_VIEW_HPP
 #define STR_STRING_VIEW_HPP
 
+#include <string>
+#include <string_view>
+
 #include "my_pair.hpp"
 #include "option.hpp"
 #include "vec.hpp"
@@ -148,6 +151,12 @@ public:
     [[nodiscard]] constexpr bool is_empty() const noexcept { return len_ == 0; }
     [[nodiscard]] constexpr const u8* as_bytes() const noexcept { return data_; }
     [[nodiscard]] constexpr StringView as_str() const noexcept { return *this; }
+    [[nodiscard]] constexpr std::string_view to_std_string_view() const noexcept {
+        return std::string_view(reinterpret_cast<const char*>(data_), len_);
+    }
+    [[nodiscard]] std::string to_std_string() const {
+        return std::string(reinterpret_cast<const char*>(data_), len_);
+    }
     [[nodiscard]] const char* as_cstr() const noexcept;
     [[nodiscard]] CStrPtr into_cstr() const;
 
@@ -277,7 +286,50 @@ public:
 private:
     const u8* data_{nullptr};
     usize len_{0};
+    bool cstr_backed_{false};
 };
+
+inline bool operator==(const StringView lhs, const StringView rhs) noexcept {
+    if (lhs.len() != rhs.len()) return false;
+    if (lhs.len() == 0) return true;
+    return std::memcmp(lhs.as_bytes(), rhs.as_bytes(), lhs.len()) == 0;
+}
+
+inline bool operator!=(const StringView lhs, const StringView rhs) noexcept {
+    return !(lhs == rhs);
+}
+
+inline bool operator==(const StringView lhs, const char* rhs) {
+    return lhs == StringView(rhs);
+}
+
+inline bool operator==(const char* lhs, const StringView rhs) {
+    return StringView(lhs) == rhs;
+}
+
+inline bool operator!=(const StringView lhs, const char* rhs) {
+    return !(lhs == rhs);
+}
+
+inline bool operator!=(const char* lhs, const StringView rhs) {
+    return !(lhs == rhs);
+}
+
+inline bool operator==(const StringView lhs, const std::string_view rhs) {
+    return lhs == StringView(rhs.data(), rhs.size());
+}
+
+inline bool operator==(const std::string_view lhs, const StringView rhs) {
+    return StringView(lhs.data(), lhs.size()) == rhs;
+}
+
+inline bool operator!=(const StringView lhs, const std::string_view rhs) {
+    return !(lhs == rhs);
+}
+
+inline bool operator!=(const std::string_view lhs, const StringView rhs) {
+    return !(lhs == rhs);
+}
 
 } // namespace my::str
 

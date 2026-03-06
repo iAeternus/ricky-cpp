@@ -69,8 +69,7 @@ void test_create_write_and_read() {
     // Then
     Assertions::assert_equals(static_cast<usize>(sizeof(data) - 1), written);
     auto content = fs::File::open(path_cstr.data()).read_all();
-    std::string content_std(reinterpret_cast<const char*>(content.as_bytes()), content.len());
-    Assertions::assert_equals(std::string(data), content_std);
+    Assertions::assert_equals(data, content);
 
     // Final
     plat::fs::remove(str::StringView(path_cstr.data(), path_cstr.length()));
@@ -94,8 +93,7 @@ void test_append() {
 
     // Then
     auto content = fs::File::open(path_cstr.data()).read_all();
-    std::string content_std(reinterpret_cast<const char*>(content.as_bytes()), content.len());
-    Assertions::assert_equals(std::string("ab"), content_std);
+    Assertions::assert_equals("ab", content);
 
     // Final
     plat::fs::remove(str::StringView(path_cstr.data(), path_cstr.length()));
