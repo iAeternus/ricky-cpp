@@ -1,4 +1,4 @@
-#include "test_json_parser.hpp"
+﻿#include "test_json_parser.hpp"
 #include "printer.hpp"
 #include "json_parser.hpp"
 #include "ricky_test.hpp"
@@ -7,7 +7,7 @@ namespace my::test::test_json_parser {
 
 void should_parse() {
     // Given
-    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
+    str::String<> s(R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })");
 
     // When
     auto json = json::parse_json(s);
@@ -32,7 +32,7 @@ void should_parse() {
 
 void should_fail_to_parse_if_json_str_is_empty() {
     // Given
-    util::String s = "   ";
+    str::String<> s("   ");
 
     Assertions::assertThrows("Empty json input", [&]() {
         json::parse_json(s);
@@ -41,7 +41,7 @@ void should_fail_to_parse_if_json_str_is_empty() {
 
 void should_dump() {
     // Given
-    util::String s = R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })";
+    str::String<> s(R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })");
 
     // When
     auto res = json::parse_json(s).dump(2);
@@ -54,11 +54,11 @@ void should_dump() {
 }
 
 void should_parse_numbers() {
-    auto json1 = json::parse_json("123"_s);
-    auto json2 = json::parse_json("-42"_s);
-    auto json3 = json::parse_json("3.1415"_s);
-    auto json4 = json::parse_json("1e3"_s);
-    auto json5 = json::parse_json("-2.5E-2"_s);
+    auto json1 = json::parse_json("123");
+    auto json2 = json::parse_json("-42");
+    auto json3 = json::parse_json("3.1415");
+    auto json4 = json::parse_json("1e3");
+    auto json5 = json::parse_json("-2.5E-2");
 
     Assertions::assertEquals(123LL, json1.into<i64>());
     Assertions::assertEquals(-42LL, json2.into<i64>());
@@ -68,39 +68,39 @@ void should_parse_numbers() {
 }
 
 void should_parse_string_escapes() {
-    auto json1 = json::parse_json(R"("a\"b\\c\/d\b\f\n\r\t")"_s);
-    auto s = json1.into<util::String>();
-    Assertions::assertTrue(s.find(util::CodePoint{'\"'}) != npos);
-    Assertions::assertTrue(s.find(util::CodePoint{'\\'}) != npos);
+    auto json1 = json::parse_json(R"("a\"b\\c\/d\b\f\n\r\t")");
+    auto s = json1.into<str::String<>>();
+    Assertions::assertTrue(s.find(str::StringView("\"")).is_some());
+    Assertions::assertTrue(s.find(str::StringView("\\")).is_some());
 }
 
 void should_parse_unicode_escape() {
-    auto json1 = json::parse_json(R"("\u4F60\u597D")"_s);
-    Assertions::assertEquals("你好"_s, json1.into<util::String>());
+    auto json1 = json::parse_json(R"("\u4F60\u597D")");
+    Assertions::assertEquals(str::String<>("你好"), json1.into<str::String<>>());
 }
 
 void should_parse_nested() {
-    util::String s = R"({"a":[{"b":1}, {"c":[true, false, null]}], "d":{"e":"x"}})"_s;
+    str::String<> s(R"({"a":[{"b":1}, {"c":[true, false, null]}], "d":{"e":"x"}})");
     auto json = json::parse_json(s);
     Assertions::assertEquals(2ULL, json["a"].size());
     Assertions::assertEquals(1LL, json["a"][0]["b"].into<i64>());
     Assertions::assertTrue(json["a"][1]["c"][0].into<bool>());
     Assertions::assertTrue(json["a"][1]["c"][2].is<json::JsonType::JsonNull>());
-    Assertions::assertEquals("x"_s, json["d"]["e"].into<util::String>());
+    Assertions::assertEquals(str::String<>("x"), json["d"]["e"].into<str::String<>>());
 }
 
 void should_fail_invalid_json() {
     Assertions::assertThrows("Invalid json value", [&]() {
-        json::parse_json("@"_s);
+        json::parse_json("@");
     });
     Assertions::assertThrows("Expected ',' or ']' in array", [&]() {
-        json::parse_json("[1 2]"_s);
+        json::parse_json("[1 2]");
     });
-    Assertions::assertThrows("Expected ',' or '}' in object", [&]() {
-        json::parse_json(R"({"a":1 "b":2})"_s);
+    Assertions::assertThrows("Expected comma or object end", [&]() {
+        json::parse_json(R"({"a":1 "b":2})");
     });
     Assertions::assertThrows("Unterminated string", [&]() {
-        json::parse_json("\"abc"_s);
+        json::parse_json("\"abc");
     });
 }
 

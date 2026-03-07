@@ -7,9 +7,6 @@
 #ifndef STR_STRING_HPP
 #define STR_STRING_HPP
 
-#include <algorithm>
-#include <string_view>
-
 #include "string_view.hpp"
 
 namespace my::str {

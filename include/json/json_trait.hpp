@@ -7,7 +7,7 @@
 #ifndef JSON_TRAIT_HPP
 #define JSON_TRAIT_HPP
 
-#include "str.hpp"
+#include "string.hpp"
 #include "vec.hpp"
 #include "hash_map.hpp"
 
@@ -37,7 +37,7 @@ struct JsonType {
     using JsonInt = i64;
     using JsonFloat = f64;
     using JsonBool = bool;
-    using JsonStr = util::String;
+    using JsonStr = str::String<>;
     using JsonArray = util::Vec<Json>;
     using JsonMap = util::HashMap<JsonStr, Json>;
     using JsonNull = Null;
@@ -79,7 +79,35 @@ struct JsonValueType<bool> {
 
 // 字符串类型映射
 template <>
-struct JsonValueType<util::String> {
+struct JsonValueType<str::String<>> {
+    using Type = JsonType::JsonStr;
+    static constexpr JsonKind kind = JsonKind::String;
+    static constexpr bool valid = true;
+};
+
+template <>
+struct JsonValueType<str::StringView> {
+    using Type = JsonType::JsonStr;
+    static constexpr JsonKind kind = JsonKind::String;
+    static constexpr bool valid = true;
+};
+
+template <>
+struct JsonValueType<const char*> {
+    using Type = JsonType::JsonStr;
+    static constexpr JsonKind kind = JsonKind::String;
+    static constexpr bool valid = true;
+};
+
+template <>
+struct JsonValueType<std::string_view> {
+    using Type = JsonType::JsonStr;
+    static constexpr JsonKind kind = JsonKind::String;
+    static constexpr bool valid = true;
+};
+
+template <>
+struct JsonValueType<std::string> {
     using Type = JsonType::JsonStr;
     static constexpr JsonKind kind = JsonKind::String;
     static constexpr bool valid = true;
@@ -104,8 +132,8 @@ struct JsonValueType<util::Vec<T>> {
 // 哈希表类型映射
 template <typename K, typename V>
 struct JsonValueType<util::HashMap<K, V>> {
-    using Type = std::conditional_t<std::is_convertible_v<K, util::String>, JsonType::JsonMap, void>;
-    static_assert(!std::is_same_v<Type, void>, "JsonMap key must be convertible to util::String");
+    using Type = std::conditional_t<std::is_constructible_v<str::String<>, K>, JsonType::JsonMap, void>;
+    static_assert(!std::is_same_v<Type, void>, "JsonMap key must be constructible to str::String");
     static constexpr JsonKind kind = JsonKind::Object;
     static constexpr bool valid = true;
 };

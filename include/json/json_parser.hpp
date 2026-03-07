@@ -2,13 +2,15 @@
 #define JSON_PARSER_HPP
 
 #include "json.hpp"
-#include "my_exception.hpp"
 
 namespace my::json {
 
 class JsonParser : public Object<JsonParser> {
 public:
-    static Json parse(const util::String& json_str) {
+    using JsonString = str::String<>;
+    using JsonStringView = str::StringView;
+
+    static Json parse(const JsonStringView json_str) {
         JsonParser parser(json_str);
         Json value = parser.parse_value();
         parser.skip_ws();
@@ -18,18 +20,38 @@ public:
         return value;
     }
 
+    static Json parse(const JsonString& json_str) {
+        return parse(json_str.as_str());
+    }
+
+    static Json parse(const char* json_str) {
+        return parse(JsonStringView(json_str));
+    }
+
+    static Json parse(const std::string_view json_str) {
+        return parse(JsonStringView(json_str.data(), json_str.size()));
+    }
+
 private:
-    explicit JsonParser(const util::String& json_str) :
-            buf_(json_str.into_string()), pos_(0) {}
+    explicit JsonParser(const JsonStringView json_str) :
+            input_(json_str), pos_(0) {}
 
-    bool eof() const { return pos_ >= buf_.size(); }
+    bool eof() const {
+        return pos_ >= input_.len();
+    }
 
-    char peek() const { return eof() ? '\0' : buf_[pos_]; }
+    char peek() const {
+        if (eof()) return '\0';
+        return static_cast<char>(input_.as_bytes()[pos_]);
+    }
 
-    char get() { return eof() ? '\0' : buf_[pos_++]; }
+    char get() {
+        if (eof()) return '\0';
+        return static_cast<char>(input_.as_bytes()[pos_++]);
+    }
 
     void skip_ws() {
-        while (!eof() && std::isspace(static_cast<unsigned char>(peek()))) {
+        while (!eof() && std::isspace(static_cast<unsigned char>(peek())) != 0) {
             ++pos_;
         }
     }
@@ -39,14 +61,14 @@ private:
         if (eof()) {
             throw runtime_exception("Empty json input");
         }
-        char c = peek();
+        const char c = peek();
         if (c == '{') return parse_object();
         if (c == '[') return parse_array();
         if (c == '"') return Json(parse_string());
         if (c == 't') return parse_true();
         if (c == 'f') return parse_false();
         if (c == 'n') return parse_null();
-        if (c == '-' || std::isdigit(static_cast<unsigned char>(c))) return parse_number();
+        if (c == '-' || std::isdigit(static_cast<unsigned char>(c)) != 0) return parse_number();
         throw runtime_exception("Invalid json value");
     }
 
@@ -63,7 +85,7 @@ private:
             if (peek() != '"') {
                 throw runtime_exception("Expected string key in object");
             }
-            util::String key = parse_string();
+            Json::String key = parse_string();
             skip_ws();
             expect(':');
             Json value = parse_value();
@@ -77,7 +99,7 @@ private:
                 get();
                 break;
             }
-            throw runtime_exception("Expected ',' or '}}' in object");
+            throw runtime_exception("Expected comma or object end");
         }
         return Json(std::move(obj));
     }
@@ -107,33 +129,41 @@ private:
         return Json(std::move(arr));
     }
 
-    util::String parse_string() {
+    Json::String parse_string() {
         expect('"');
-        std::string out;
+        Json::String out;
+        usize chunk_start = pos_;
+
         while (!eof()) {
-            char c = get();
+            const char c = peek();
             if (c == '"') {
-                return util::String(out.c_str(), out.size());
+                append_raw_chunk(out, chunk_start, pos_ - chunk_start);
+                get();
+                return out;
             }
             if (c == '\\') {
+                append_raw_chunk(out, chunk_start, pos_ - chunk_start);
+                get();
                 if (eof()) throw runtime_exception("Invalid escape in string");
-                char esc = get();
+                const char esc = get();
                 switch (esc) {
-                case '"': out.push_back('"'); break;
-                case '\\': out.push_back('\\'); break;
-                case '/': out.push_back('/'); break;
-                case 'b': out.push_back('\b'); break;
-                case 'f': out.push_back('\f'); break;
-                case 'n': out.push_back('\n'); break;
-                case 'r': out.push_back('\r'); break;
-                case 't': out.push_back('\t'); break;
+                case '"': out.push(static_cast<char32_t>('"')); break;
+                case '\\': out.push(static_cast<char32_t>('\\')); break;
+                case '/': out.push(static_cast<char32_t>('/')); break;
+                case 'b': out.push(static_cast<char32_t>('\b')); break;
+                case 'f': out.push(static_cast<char32_t>('\f')); break;
+                case 'n': out.push(static_cast<char32_t>('\n')); break;
+                case 'r': out.push(static_cast<char32_t>('\r')); break;
+                case 't': out.push(static_cast<char32_t>('\t')); break;
                 case 'u': append_unicode(out); break;
                 default: throw runtime_exception("Invalid escape in string");
                 }
-            } else {
-                out.push_back(c);
+                chunk_start = pos_;
+                continue;
             }
+            ++pos_;
         }
+
         throw runtime_exception("Unterminated string");
     }
 
@@ -163,125 +193,136 @@ private:
     }
 
     Json parse_number() {
-        usize start = pos_;
+        const usize start = pos_;
         if (peek() == '-') {
             get();
         }
         if (peek() == '0') {
             get();
         } else {
-            if (!std::isdigit(static_cast<unsigned char>(peek()))) {
+            if (std::isdigit(static_cast<unsigned char>(peek())) == 0) {
                 throw runtime_exception("Invalid number");
             }
-            while (std::isdigit(static_cast<unsigned char>(peek()))) {
+            while (std::isdigit(static_cast<unsigned char>(peek())) != 0) {
                 get();
             }
         }
+
         bool is_float = false;
         if (peek() == '.') {
             is_float = true;
             get();
-            if (!std::isdigit(static_cast<unsigned char>(peek()))) {
+            if (std::isdigit(static_cast<unsigned char>(peek())) == 0) {
                 throw runtime_exception("Invalid number");
             }
-            while (std::isdigit(static_cast<unsigned char>(peek()))) {
+            while (std::isdigit(static_cast<unsigned char>(peek())) != 0) {
                 get();
             }
         }
+
         if (peek() == 'e' || peek() == 'E') {
             is_float = true;
             get();
             if (peek() == '+' || peek() == '-') {
                 get();
             }
-            if (!std::isdigit(static_cast<unsigned char>(peek()))) {
+            if (std::isdigit(static_cast<unsigned char>(peek())) == 0) {
                 throw runtime_exception("Invalid number");
             }
-            while (std::isdigit(static_cast<unsigned char>(peek()))) {
+            while (std::isdigit(static_cast<unsigned char>(peek())) != 0) {
                 get();
             }
         }
-        auto token = buf_.substr(start, pos_ - start);
+
+        const usize token_len = pos_ - start;
+        const auto* token_ptr = reinterpret_cast<const char*>(input_.as_bytes() + start);
+        const std::string token(token_ptr, token_len);
+
         if (is_float) {
             char* end = nullptr;
-            double val = std::strtod(token.c_str(), &end);
+            const double val = std::strtod(token.c_str(), &end);
             if (!end || *end != '\0') {
                 throw runtime_exception("Invalid number");
             }
             return Json(static_cast<f64>(val));
         }
+
         char* end = nullptr;
-        long long val = std::strtoll(token.c_str(), &end, 10);
+        const long long val = std::strtoll(token.c_str(), &end, 10);
         if (!end || *end != '\0') {
             throw runtime_exception("Invalid number");
         }
         return Json(static_cast<i64>(val));
     }
 
-    void expect(char expected) {
+    void expect(const char expected) {
         if (eof() || get() != expected) {
             throw runtime_exception("Unexpected character in json");
         }
     }
 
-    static int hex_val(char c) {
+    static int hex_val(const char c) {
         if (c >= '0' && c <= '9') return c - '0';
         if (c >= 'a' && c <= 'f') return c - 'a' + 10;
         if (c >= 'A' && c <= 'F') return c - 'A' + 10;
         return -1;
     }
 
-    void append_utf8(std::string& out, uint32_t codepoint) {
-        if (codepoint <= 0x7F) {
-            out.push_back(static_cast<char>(codepoint));
-        } else if (codepoint <= 0x7FF) {
-            out.push_back(static_cast<char>(0xC0 | (codepoint >> 6)));
-            out.push_back(static_cast<char>(0x80 | (codepoint & 0x3F)));
-        } else if (codepoint <= 0xFFFF) {
-            out.push_back(static_cast<char>(0xE0 | (codepoint >> 12)));
-            out.push_back(static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F)));
-            out.push_back(static_cast<char>(0x80 | (codepoint & 0x3F)));
-        } else {
-            out.push_back(static_cast<char>(0xF0 | (codepoint >> 18)));
-            out.push_back(static_cast<char>(0x80 | ((codepoint >> 12) & 0x3F)));
-            out.push_back(static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F)));
-            out.push_back(static_cast<char>(0x80 | (codepoint & 0x3F)));
-        }
+    void append_raw_chunk(Json::String& out, const usize start, const usize len) const {
+        if (len == 0) return;
+        out.push_str(str::StringView(input_.as_bytes() + start, len));
     }
 
-    void append_unicode(std::string& out) {
-        uint32_t codepoint = 0;
+    void append_unicode(Json::String& out) {
+        u32 codepoint = 0;
         for (int i = 0; i < 4; ++i) {
             if (eof()) throw runtime_exception("Invalid unicode escape");
-            int v = hex_val(get());
+            const int v = hex_val(get());
             if (v < 0) throw runtime_exception("Invalid unicode escape");
-            codepoint = (codepoint << 4) | static_cast<uint32_t>(v);
+            codepoint = (codepoint << 4) | static_cast<u32>(v);
         }
+
         if (codepoint >= 0xD800 && codepoint <= 0xDBFF) {
             if (eof() || get() != '\\' || eof() || get() != 'u') {
                 throw runtime_exception("Invalid surrogate pair");
             }
-            uint32_t low = 0;
+
+            u32 low = 0;
             for (int i = 0; i < 4; ++i) {
                 if (eof()) throw runtime_exception("Invalid unicode escape");
-                int v = hex_val(get());
+                const int v = hex_val(get());
                 if (v < 0) throw runtime_exception("Invalid unicode escape");
-                low = (low << 4) | static_cast<uint32_t>(v);
+                low = (low << 4) | static_cast<u32>(v);
             }
+
             if (low < 0xDC00 || low > 0xDFFF) {
                 throw runtime_exception("Invalid surrogate pair");
             }
+
             codepoint = 0x10000 + (((codepoint - 0xD800) << 10) | (low - 0xDC00));
         }
-        append_utf8(out, codepoint);
+
+        out.push(static_cast<char32_t>(codepoint));
     }
 
 private:
-    std::string buf_;
+    JsonStringView input_;
     usize pos_;
 };
 
-inline Json parse_json(const util::String& json_str) {
+inline Json parse_json(const str::StringView json_str) {
+    return JsonParser::parse(json_str);
+}
+
+inline Json parse_json(const str::String<>& json_str) {
+    return JsonParser::parse(json_str);
+}
+
+inline Json parse_json(const char* json_str) {
+    return JsonParser::parse(json_str);
+}
+
+inline Json parse_json(const std::string_view json_str) {
     return JsonParser::parse(json_str);
 }
 
