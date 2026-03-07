@@ -1,4 +1,4 @@
-#include "test_stream.hpp"
+﻿#include "test_stream.hpp"
 #include "stream.hpp"
 #include "my_pair.hpp"
 #include "ricky_test.hpp"
@@ -16,7 +16,7 @@ void should_operates() {
                    .collect();
 
     // Then
-    Assertions::assertEquals("[4,8,12,16]"_cs, res.__str__());
+    Assertions::assertEquals("[4,8,12,16]"_cs, res.to_string());
 }
 
 void should_map_objects() {
@@ -29,7 +29,7 @@ void should_map_objects() {
                    .collect();
 
     // When
-    Assertions::assertEquals("[1,2,3]"_cs, res.__str__());
+    Assertions::assertEquals("[1,2,3]"_cs, res.to_string());
 }
 
 GROUP_NAME("test_stream")

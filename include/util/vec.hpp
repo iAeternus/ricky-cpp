@@ -493,7 +493,7 @@ public:
      * @brief 获取动态数组的字符串表示
      * @return 返回动态数组的 CSV 格式的字符串
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '[';
         for (usize i = 0; i < len_; ++i) {
@@ -557,3 +557,4 @@ constexpr bool is_vec_v = is_vec<T>::value;
 } // namespace my::util
 
 #endif // VEC_HPP
+

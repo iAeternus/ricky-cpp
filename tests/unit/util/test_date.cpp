@@ -12,8 +12,8 @@ void should_construct() {
     Assertions::assertEquals(1970, d.year());
     Assertions::assertEquals(1, d.month());
     Assertions::assertEquals(1, d.day());
-    Assertions::assertEquals("1970-01-01"_cs, d.__str__());
-    Assertions::assertEquals("2025-02-03"_cs, d2.__str__());
+    Assertions::assertEquals("1970-01-01"_cs, d.to_string());
+    Assertions::assertEquals("2025-02-03"_cs, d2.to_string());
 }
 
 void should_fail_to_construct_by_month_and_day_if_args_invalid() {
@@ -76,9 +76,9 @@ void should_calc_day_of_year() {
 
 void should_calc_day_of_week() {
     // Given
-    auto d = util::Date::of(2025, 2, 4);   // 周二
-    auto d2 = util::Date::of(2025, 1, 27); // 周一
-    auto d3 = util::Date::of(2024, 2, 29); // 周四
+    auto d = util::Date::of(2025, 2, 4);   // 说明
+    auto d2 = util::Date::of(2025, 1, 27); // 说明
+    auto d3 = util::Date::of(2024, 2, 29); // 说明
 
     // When
     auto res = d.dayOfWeek();
@@ -101,7 +101,7 @@ void should_plus() {
     auto d4 = d3.plusYears(2);   // 1974-02-02
 
     // Then
-    Assertions::assertEquals("1974-02-02"_cs, d4.__str__());
+    Assertions::assertEquals("1974-02-02"_cs, d4.to_string());
 }
 
 void should_minus() {
@@ -114,7 +114,7 @@ void should_minus() {
     auto d4 = d3.minusYears(2);   // 1965-11-30
 
     // Then
-    Assertions::assertEquals("1965-11-30"_cs, d4.__str__());
+    Assertions::assertEquals("1965-11-30"_cs, d4.to_string());
 }
 
 void should_subtract() {
@@ -128,8 +128,8 @@ void should_subtract() {
     auto res2 = d - d3;
 
     // Then
-    Assertions::assertEquals("PT398D"_cs, res.__str__());
-    Assertions::assertEquals("PT-394D"_cs, res2.__str__());
+    Assertions::assertEquals("PT398D"_cs, res.to_string());
+    Assertions::assertEquals("PT-394D"_cs, res2.to_string());
 }
 
 void should_calc_epoch_day() {

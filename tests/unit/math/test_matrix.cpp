@@ -1,4 +1,4 @@
-#include "test_matrix.hpp"
+﻿#include "test_matrix.hpp"
 #include "matrix.hpp"
 #include "ricky_test.hpp"
 
@@ -15,15 +15,15 @@ void should_construct() {
 
     Assertions::assertEquals(3, m.rows());
     Assertions::assertEquals(4, m.cols());
-    Assertions::assertEquals("[[1,1,1,1],[1,1,1,1],[1,1,1,1]]"_cs, m.__str__());
+    Assertions::assertEquals("[[1,1,1,1],[1,1,1,1],[1,1,1,1]]"_cs, m.to_string());
 
     Assertions::assertEquals(3, m2.rows());
     Assertions::assertEquals(3, m2.cols());
-    Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, m2.__str__());
+    Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, m2.to_string());
 
     Assertions::assertEquals(1, m3.rows());
     Assertions::assertEquals(1, m3.cols());
-    Assertions::assertEquals("[[0]]"_cs, m3.__str__());
+    Assertions::assertEquals("[[0]]"_cs, m3.to_string());
 }
 
 void should_at() {
@@ -56,8 +56,8 @@ void should_get_sub_mat() {
     auto res = m.sub_mat(1, 1, 2, 2);
 
     // Then
-    Assertions::assertEquals(res.__str__(), res.to_matrix().__str__());
-    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.to_matrix().__str__());
+    Assertions::assertEquals(res.to_string(), res.to_matrix().to_string());
+    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.to_matrix().to_string());
 }
 
 void should_fail_to_get_sub_mat_if_index_invalid() {
@@ -82,7 +82,7 @@ void should_fill() {
     m.fill(1);
 
     // Then
-    Assertions::assertEquals("[[1,1,1],[1,1,1],[1,1,1]]"_cs, m.__str__());
+    Assertions::assertEquals("[[1,1,1],[1,1,1],[1,1,1]]"_cs, m.to_string());
 }
 
 void should_add() {
@@ -95,7 +95,7 @@ void should_add() {
     m += m2;
 
     // Then
-    Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, res.__str__());
+    Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, res.to_string());
     Assertions::assertEquals(res, m);
 }
 
@@ -124,7 +124,7 @@ void should_subtract() {
     m -= m2;
 
     // Then
-    Assertions::assertEquals("[[0,1,2],[3,4,5],[6,7,8]]"_cs, res.__str__());
+    Assertions::assertEquals("[[0,1,2],[3,4,5],[6,7,8]]"_cs, res.to_string());
     Assertions::assertEquals(res, m);
 }
 
@@ -153,7 +153,7 @@ void should_multiply() {
     m *= m2;
 
     // Then
-    Assertions::assertEquals("[[19,22],[43,50]]"_cs, res.__str__());
+    Assertions::assertEquals("[[19,22],[43,50]]"_cs, res.to_string());
     Assertions::assertEquals(res, m);
 }
 
@@ -183,8 +183,8 @@ void should_dot() {
     auto res2 = m.dot(n);
 
     // Then
-    Assertions::assertEquals("[[5,12],[21,32]]"_cs, res.__str__());
-    Assertions::assertEquals("[[2,4],[6,8]]"_cs, res2.__str__());
+    Assertions::assertEquals("[[5,12],[21,32]]"_cs, res.to_string());
+    Assertions::assertEquals("[[2,4],[6,8]]"_cs, res2.to_string());
 }
 
 void should_fail_to_dot_if_matrix_not_match() {
@@ -206,7 +206,7 @@ void should_transpose() {
     auto res = m.t();
 
     // Then
-    Assertions::assertEquals("[[1,4],[2,5],[3,6]]"_cs, res.__str__());
+    Assertions::assertEquals("[[1,4],[2,5],[3,6]]"_cs, res.to_string());
 }
 
 void should_calculate_inverse() {
@@ -217,7 +217,7 @@ void should_calculate_inverse() {
     auto res = m.inv();
 
     // Then
-    Assertions::assertEquals("[[0.2,0.2,0],[-0.2,0.3,1],[0.2,-0.3,0]]"_cs, res.__str__());
+    Assertions::assertEquals("[[0.2,0.2,0],[-0.2,0.3,1],[0.2,-0.3,0]]"_cs, res.to_string());
 }
 
 void should_fail_to_calc_inv_if_matrix_not_square() {
@@ -270,8 +270,8 @@ void should_lu_decomposition() {
     auto [L, U] = m.lu();
 
     // Then
-    Assertions::assertEquals("[[1,0,0],[-2,1,0],[4,-3.66667,1]]"_cs, L.__str__());
-    Assertions::assertEquals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.__str__());
+    Assertions::assertEquals("[[1,0,0],[-2,1,0],[4,-3.66667,1]]"_cs, L.to_string());
+    Assertions::assertEquals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.to_string());
 }
 
 void should_fail_to_lu_decomposition_if_matrix_not_square() {
@@ -291,8 +291,8 @@ void should_cmp() {
     math::Matrix<f64> m3 = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
 
     // When
-    auto res = m.__cmp__(m2);
-    auto res2 = m.__cmp__(m3);
+    auto res = m.cmp(m2);
+    auto res2 = m.cmp(m3);
 
     // Then
     Assertions::assertEquals(-1, res);
@@ -306,7 +306,7 @@ void should_fail_to_cmp_if_matrix_not_match() {
 
     // When & Then
     Assertions::assertThrows("only matrices of the same dimension are comparable", [&]() {
-        auto _ = m.__cmp__(m2);
+        auto _ = m.cmp(m2);
     });
 }
 
@@ -319,8 +319,8 @@ void test_matrix_view() {
     auto v2 = v.sub_view(1, 1, 1, 1);
 
     // Then
-    Assertions::assertEquals("[[5,6],[8,9]]"_cs, v.__str__());
-    Assertions::assertEquals("[[9]]"_cs, v2.__str__());
+    Assertions::assertEquals("[[5,6],[8,9]]"_cs, v.to_string());
+    Assertions::assertEquals("[[9]]"_cs, v2.to_string());
     Assertions::assertEquals(8, v.at(1, 0));
     Assertions::assertEquals(8, v.at_abs(2, 1));
 }

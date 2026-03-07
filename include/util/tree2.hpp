@@ -65,7 +65,7 @@ struct BiTreeNode : Object<BiTreeNode<T>> {
         return *this;
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         return cstr(val);
     }
 };
@@ -101,3 +101,4 @@ using Tree = TreeImpl<BiTreeNode<T>>;
 } // namespace my::tmp
 
 #endif // TREE2_HPP
+

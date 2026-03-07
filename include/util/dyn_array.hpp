@@ -384,7 +384,7 @@ public:
      * @brief 获取动态数组的字符串表示
      * @return 返回动态数组的 CSV 格式的字符串
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '[';
         for (usize i = 0; i < size_; ++i) {
@@ -610,7 +610,7 @@ public:
          * @exception Exception 若两个迭代器分属两个不同的容器，则抛出 runtime_exception
          */
         difference_type operator-(const Self& other) const {
-            if (this->__cmp__(other) < 0) return -(other - *this);
+            if (this->cmp(other) < 0) return -(other - *this);
             if (this->dynarray_ != other.dynarray_) {
                 throw runtime_exception("Iterator not belong to the same container.");
             }
@@ -631,7 +631,7 @@ public:
          * @return 如果相等返回 true，否则返回 false
          */
         bool operator==(const Self& other) const {
-            return __equals__(other);
+            return eq(other);
         }
 
         /**
@@ -640,7 +640,7 @@ public:
          * @return 如果不相等返回 true，否则返回 false
          */
         bool operator!=(const Self& other) const {
-            return !__equals__(other);
+            return !eq(other);
         }
 
         /**
@@ -648,7 +648,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果内部状态相等返回 true，否则返回 false
          */
-        [[nodiscard]] bool __equals__(const Self& other) const {
+        [[nodiscard]] bool eq(const Self& other) const {
             return this->block_idx_ == other.block_idx_ && this->inblock_idx_ == other.inblock_idx_ && this->dynarray_ == other.dynarray_;
         }
 
@@ -657,7 +657,7 @@ public:
          * @param other 另一个迭代器
          * @return 返回一个整数值，表示两个迭代器的顺序
          */
-        [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+        [[nodiscard]] cmp_t cmp(const Self& other) const {
             if (this->block_idx_ != other.block_idx_) {
                 return this->block_idx_ - other.block_idx_;
             }

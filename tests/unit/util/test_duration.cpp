@@ -1,4 +1,4 @@
-#include "test_duration.hpp"
+﻿#include "test_duration.hpp"
 #include "duration.hpp"
 #include "ricky_test.hpp"
 
@@ -20,14 +20,14 @@ void should_construct() {
     Assertions::assertEquals(345600, d.getSeconds());
     Assertions::assertEquals(0, d.getNanos());
 
-    Assertions::assertEquals("PT4D"_cs, d.__str__());
-    Assertions::assertEquals("PT4H"_cs, d2.__str__());
-    Assertions::assertEquals("PT4M"_cs, d3.__str__());
-    Assertions::assertEquals("PT4S"_cs, d4.__str__());
-    Assertions::assertEquals("PT0.004000000S"_cs, d5.__str__());
-    Assertions::assertEquals("PT0.000000004S"_cs, d6.__str__());
-    Assertions::assertEquals("PT0.0S"_cs, d7.__str__());
-    Assertions::assertEquals("PT2D1H1S"_cs, (d8 + util::Duration::ofSeconds(3601)).__str__());
+    Assertions::assertEquals("PT4D"_cs, d.to_string());
+    Assertions::assertEquals("PT4H"_cs, d2.to_string());
+    Assertions::assertEquals("PT4M"_cs, d3.to_string());
+    Assertions::assertEquals("PT4S"_cs, d4.to_string());
+    Assertions::assertEquals("PT0.004000000S"_cs, d5.to_string());
+    Assertions::assertEquals("PT0.000000004S"_cs, d6.to_string());
+    Assertions::assertEquals("PT0.0S"_cs, d7.to_string());
+    Assertions::assertEquals("PT2D1H1S"_cs, (d8 + util::Duration::ofSeconds(3601)).to_string());
 }
 
 void should_add() {

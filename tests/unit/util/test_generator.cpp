@@ -21,7 +21,7 @@ void should_generate() {
     }
 
     // Then
-    Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, res.to_string());
 }
 
 GROUP_NAME("test_generator")

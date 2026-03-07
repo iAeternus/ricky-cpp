@@ -29,7 +29,7 @@ class DisjointSet : public Object<DisjointSet<T>> {
         explicit Node(const T& value) :
                 value(value), rank(1), parent(this) {}
 
-        [[nodiscard]] CString __str__() const {
+        [[nodiscard]] CString to_string() const {
             return CString{std::format("([{}] {} {})", value, rank, parent ? parent->value : "null")};
         }
     };
@@ -108,12 +108,12 @@ public:
         return n->rank;
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         HashMap<value_t, Vec<value_t>> sets;
         for (const auto& elem : nodes_.keys()) {
             sets[find(elem)].push(elem);
         }
-        return sets.__str__();
+        return sets.to_string();
     }
 
 private:

@@ -106,9 +106,9 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
     /**
      * @exception Exception 若键类型不可排序，则抛出 type_exception
      */
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         if constexpr (Comparable<key_t>) {
-            return this->key.__cmp__(other.key);
+            return this->key.cmp(other.key);
         } else if constexpr (Subtractble<key_t>) {
             return this->key - other.key;
         } else {
@@ -116,7 +116,7 @@ struct RBTreeNode : Object<RBTreeNode<K, V>> {
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << (color == Color::RED ? color::Color::RED : "") << '(' << key << ',' << val << ')' << color::Color::CLOSE << '\n';
         return CString{stream.str()};
@@ -651,14 +651,14 @@ public:
     /**
      * @brief 比较两个哈希表的包含关系
      * @note 若两个哈希表的比较函数不同，则行为未定义
-     * @note 建议使用__equals__比较集合相等
+     * @note 建议使用eq比较集合相等
      * @return 返回值分以下情况
      * 1. 若this是other的真超集，返回 1
      * 2. 若this与other相等，返回 0
      * 3. 若this是other的真子集，返回 -1
      * 4. 若this与other无法比较（互不为子集），返回 TYPE_MAX(cmp_t)
      */
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         auto it = this->begin();
         auto jt = other.begin();
         bool flag1 = false, flag2 = false;
@@ -694,7 +694,7 @@ public:
      * @param other 另一个哈希表
      * @return 如果相等返回 true，否则返回 false
      */
-    [[nodiscard]] bool __equals__(const Self& other) const {
+    [[nodiscard]] bool eq(const Self& other) const {
         if (this->size() != other.size()) return false;
 
         auto it = this->begin();
@@ -712,7 +712,7 @@ public:
         return true;
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '{';
         for_each([&](const auto& key, const auto& val) {
@@ -802,7 +802,7 @@ public:
             return tmp;
         }
 
-        [[nodiscard]] bool __equals__(const Self& other) const {
+        [[nodiscard]] bool eq(const Self& other) const {
             return this->tree_ == other.tree_ && this->curr_ == other.curr_;
         }
 
@@ -889,7 +889,7 @@ private:
      */
     void print_tree(const Node* root, std::stringstream& stream, const CString& prefix) const {
         if (root == nil_) return;
-        stream << prefix.data() << "+-- " << root->__str__().data();
+        stream << prefix.data() << "+-- " << root->to_string().data();
         print_tree(root->lch, stream, prefix + "|   ");
         print_tree(root->rch, stream, prefix + "|   ");
     }

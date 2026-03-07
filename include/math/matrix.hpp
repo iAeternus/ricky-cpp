@@ -70,7 +70,7 @@ public:
         return result;
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '[';
         for (usize i = 0; i < rows_; ++i) {
@@ -578,7 +578,7 @@ public:
         return Pair{l, u};
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '[';
         for (usize i = 0; i < rows_; ++i) {
@@ -598,7 +598,7 @@ public:
         return CString{stream.str()};
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         if (!this->shape_equals(other)) {
             throw runtime_exception("only matrices of the same dimension are comparable");
         }

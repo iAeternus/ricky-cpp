@@ -1,4 +1,4 @@
-#include "test_tree.hpp"
+﻿#include "test_tree.hpp"
 #include "tree.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -33,7 +33,7 @@ void should_dfs() {
     });
 
     // Then
-    Assertions::assertEquals("[1,2,5,3,4]"_cs, res.__str__());
+    Assertions::assertEquals("[1,2,5,3,4]"_cs, res.to_string());
 }
 
 void should_bfs() {
@@ -52,7 +52,7 @@ void should_bfs() {
     });
 
     // Then
-    Assertions::assertEquals("[1,2,3,4,5]"_cs, res.__str__());
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, res.to_string());
 }
 
 GROUP_NAME("test_tree")

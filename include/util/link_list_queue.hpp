@@ -61,22 +61,22 @@ public:
         return *this;
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << "<Node  " << value_ << '>';
         return CString(stream.str());
     }
 
-    [[nodiscard]] bool __equals__(const Self& other) const {
+    [[nodiscard]] bool eq(const Self& other) const {
         return this->value_ == other.value_;
     }
 
     bool operator==(const Self& other) const {
-        return this->__equals__(other);
+        return this->eq(other);
     }
 
     bool operator!=(const Self& other) const {
-        return !this->__equals__(other);
+        return !this->eq(other);
     }
 
     value_t value_;

@@ -2,7 +2,7 @@
  * @brief 打印工具，将对象打印到文件
  * @author Ricky
  * @date 2024/11/27
- * @version 1.0
+ * @version 2.0
  */
 #ifndef PRINTER_HPP
 #define PRINTER_HPP
@@ -18,7 +18,7 @@ public:
             ew_(std::move(ew)), sw_(std::move(sw)), output_file_(file_ptr) {}
 
     template <Printable T0, Printable... Args>
-    void operator()(const T0& obj, const Args&... args) const {
+    auto operator()(const T0& obj, const Args&... args) const -> void {
         __print__(obj);
         if constexpr (sizeof...(args) > 0) {
             ((__print__(sw_), __print__(args)), ...);
@@ -26,52 +26,52 @@ public:
         __print__(ew_);
     }
 
-    void operator()() const {
+    auto operator()() const -> void {
         __print__(ew_);
     }
 
     /**
      * @brief 设置输出结束符
      */
-    void set_end(CString ew) {
+    auto set_end(CString ew) -> void {
         ew_ = std::move(ew);
     }
 
     /**
      * @brief 设置输出分隔符
      */
-    void set_sep(CString sw) {
+    auto set_sep(CString sw) -> void {
         sw_ = std::move(sw);
     }
 
 protected:
-    void __print__(const bool& obj) const {
+    auto __print__(const bool& obj) const -> void {
         std::fprintf(output_file_, obj ? "true" : "false");
     }
 
-    void __print__(const char& obj) const {
+    auto __print__(const char& obj) const -> void {
         std::fprintf(output_file_, "%c", obj);
     }
 
-    void __print__(const char* obj) const {
+    auto __print__(const char* obj) const -> void {
         std::fprintf(output_file_, "%s", obj);
     }
 
-    void __print__(std::nullptr_t) const {
+    auto __print__(std::nullptr_t) const -> void {
         std::fprintf(output_file_, "nullptr");
     }
 
-    void __print__(const std::string& obj) const {
+    auto __print__(const std::string& obj) const -> void {
         std::fprintf(output_file_, "%s", obj.c_str());
     }
 
-    void __print__(const CString& obj) const {
+    auto __print__(const CString& obj) const -> void {
         std::fprintf(output_file_, "%s", obj.data());
     }
 
     template <typename T>
         requires std::is_integral_v<T>
-    void __print__(const T& obj) const {
+    auto __print__(const T& obj) const -> void {
         if constexpr (std::is_signed_v<T>) {
             std::fprintf(output_file_, "%lld", static_cast<long long>(obj));
         } else {
@@ -81,7 +81,7 @@ protected:
 
     template <typename T>
         requires std::is_floating_point_v<T>
-    void __print__(const T& obj) const {
+    auto __print__(const T& obj) const -> void {
         if constexpr (std::is_same_v<T, f32>) {
             std::fprintf(output_file_, "%f", obj);
         } else if constexpr (std::is_same_v<T, f64>) {
@@ -93,13 +93,14 @@ protected:
 
     template <typename T>
         requires std::is_pointer_v<T>
-    void __print__(const T obj) const {
+    auto __print__(const T obj) const -> void {
         std::fprintf(output_file_, "0x%p", static_cast<void*>(obj));
     }
 
     template <MyPrintable T>
-    void __print__(const T& obj) const {
-        __print__(obj.__str__());
+    auto __print__(const T& obj) const -> void {
+        auto s = std::format("{}", obj.to_string());
+        std::fprintf(output_file_, "%s", s.c_str());
     }
 
 private:
@@ -116,21 +117,21 @@ public:
             Printer(file_ptr), color_(std::move(color)) {}
 
     template <Printable T, Printable... Args>
-    void operator()(const T& obj, const Args&... args) const {
+    auto operator()(const T& obj, const Args&... args) const -> void {
         opencolor();
         Super::operator()(obj, args...);
         closecolor();
     }
 
-    void opencolor() const {
+    auto opencolor() const -> void {
         Super::__print__(color_);
     }
 
-    void closecolor() const {
+    auto closecolor() const -> void {
         Super::__print__(color::Color::CLOSE);
     }
 
-    void setcolor(CString color) {
+    auto setcolor(CString color) -> void {
         color_ = std::move(color);
     }
 
@@ -146,9 +147,10 @@ static ColorPrinter my_error{stderr, color::Color::RED};
 }; // namespace my::io
 
 template <my::MyPrintable T>
-struct std::formatter<T> : std::formatter<const char*> {
+struct std::formatter<T> : std::formatter<std::string, char> {
     auto format(const T& value, std::format_context& ctx) const {
-        return std::formatter<const char*>::format(static_cast<const char*>(value.__str__()), ctx);
+        auto s = std::format("{}", value.to_string());
+        return std::formatter<std::string, char>::format(s, ctx);
     }
 };
 

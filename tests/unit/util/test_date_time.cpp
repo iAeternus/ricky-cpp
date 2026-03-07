@@ -1,4 +1,4 @@
-#include "test_date_time.hpp"
+﻿#include "test_date_time.hpp"
 #include "date_time.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -16,8 +16,8 @@ void should_construct() {
     Assertions::assertEquals(20, dt.minute());
     Assertions::assertEquals(20, dt.second());
     Assertions::assertEquals(20, dt.nano());
-    Assertions::assertEquals("2025-02-05T20:20:20.000000020Z"_cs, dt.__str__());
-    Assertions::assertEquals("2025-02-05T23:59:59.000000000Z"_cs, dt2.__str__());
+    Assertions::assertEquals("2025-02-05T20:20:20.000000020Z"_cs, dt.to_string());
+    Assertions::assertEquals("2025-02-05T23:59:59.000000000Z"_cs, dt2.to_string());
 }
 
 void should_parse() {
@@ -28,7 +28,7 @@ void should_parse() {
     auto dt = util::DateTime::parse(str);
 
     // Then
-    Assertions::assertEquals("2025-02-05T20:20:20.000000000Z"_cs, dt.__str__());
+    Assertions::assertEquals("2025-02-05T20:20:20.000000000Z"_cs, dt.to_string());
 }
 
 void should_fail_to_parse_if_format_invalid() {
@@ -52,7 +52,7 @@ void should_construct_by_epoch_second() {
     auto dt = util::DateTime::ofEpochSecond(epochSecond);
 
     // Then
-    Assertions::assertEquals("2025-02-05T10:45:08.000000000Z"_cs, dt.__str__());
+    Assertions::assertEquals("2025-02-05T10:45:08.000000000Z"_cs, dt.to_string());
 }
 
 void should_plus() {
@@ -70,7 +70,7 @@ void should_plus() {
     auto dt9 = dt8.plusNanos(1);   // 2026-3-13 21:01:01.000000001
 
     // Then
-    Assertions::assertEquals("2026-03-13T21:01:01.000000001Z"_cs, dt9.__str__());
+    Assertions::assertEquals("2026-03-13T21:01:01.000000001Z"_cs, dt9.to_string());
 }
 
 void should_minus() {
@@ -88,7 +88,7 @@ void should_minus() {
     auto dt9 = dt8.minusNanos(1);   // 2023-12-28 18:58:58.999999999
 
     // Then
-    Assertions::assertEquals("2023-12-28T18:58:58.999999999Z"_cs, dt9.__str__());
+    Assertions::assertEquals("2023-12-28T18:58:58.999999999Z"_cs, dt9.to_string());
 }
 
 void should_subtract() {
@@ -102,8 +102,8 @@ void should_subtract() {
     auto res2 = dt - dt3;
 
     // Then
-    Assertions::assertEquals("PT10H"_cs, res.__str__());
-    Assertions::assertEquals("PT-10H"_cs, res2.__str__());
+    Assertions::assertEquals("PT10H"_cs, res.to_string());
+    Assertions::assertEquals("PT-10H"_cs, res2.to_string());
 }
 
 GROUP_NAME("test_date_time")

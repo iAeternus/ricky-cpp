@@ -29,7 +29,7 @@ public:
      */
     TcpServer(const char* ip, u16 port, i32 family = AF_INET) :
             socket_(family, SOCK_STREAM) {
-        // 设置优雅关闭选项
+        // 设置关闭选项
         linger lin{.l_onoff = 1, .l_linger = 5};
         socket_.set_option(SOL_SOCKET, SO_LINGER, &lin, sizeof(lin));
 

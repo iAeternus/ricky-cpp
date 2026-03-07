@@ -639,7 +639,7 @@ public:
      * @brief 转为字符串
      * @return 自身对象
      */
-    [[nodiscard]] Self __str__() const {
+    [[nodiscard]] Self to_string() const {
         return *this;
     }
 
@@ -647,7 +647,7 @@ public:
      * @brief 计算字符串的哈希值
      * @return 字符串的哈希值
      */
-    [[nodiscard]] hash_t __hash__() const {
+    [[nodiscard]] hash_t hash() const {
         return bytes_hash(data(), length());
     }
 
@@ -656,7 +656,7 @@ public:
      * @param other 要比较的字符串
      * @return 比较结果
      */
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         return std::strcmp(data(), other.data());
     }
 
@@ -665,8 +665,8 @@ public:
      * @param other 要比较的字符串
      * @return 是否相等
      */
-    [[nodiscard]] bool __equals__(const Self& other) const {
-        return __cmp__(other) == 0;
+    [[nodiscard]] bool eq(const Self& other) const {
+        return cmp(other) == 0;
     }
 
     /**
@@ -674,21 +674,21 @@ public:
      * @param other 要比较的 C 风格字符串
      * @return 是否相等
      */
-    [[nodiscard]] bool __equals__(const char* other) const {
+    [[nodiscard]] bool eq(const char* other) const {
         return std::strcmp(data(), other) == 0;
     }
 
     /**
      * @brief 比较运算符
      */
-    bool operator>(const Self& other) const { return __cmp__(other) > 0; }
-    bool operator<(const Self& other) const { return __cmp__(other) < 0; }
-    bool operator>=(const Self& other) const { return __cmp__(other) >= 0; }
-    bool operator<=(const Self& other) const { return __cmp__(other) <= 0; }
-    bool operator==(const Self& other) const { return __cmp__(other) == 0; }
-    bool operator!=(const Self& other) const { return __cmp__(other) != 0; }
-    bool operator==(const char* other) const { return __equals__(other); }
-    bool operator!=(const char* other) const { return !__equals__(other); }
+    bool operator>(const Self& other) const { return cmp(other) > 0; }
+    bool operator<(const Self& other) const { return cmp(other) < 0; }
+    bool operator>=(const Self& other) const { return cmp(other) >= 0; }
+    bool operator<=(const Self& other) const { return cmp(other) <= 0; }
+    bool operator==(const Self& other) const { return cmp(other) == 0; }
+    bool operator!=(const Self& other) const { return cmp(other) != 0; }
+    bool operator==(const char* other) const { return eq(other); }
+    bool operator!=(const char* other) const { return !eq(other); }
 
     /**
      * @brief 迭代器支持
@@ -950,7 +950,7 @@ using CString = BasicCString<mem::Allocator<char>>;
  */
 template <MyPrintable T>
 auto cstr_impl(const T& value) -> CString {
-    return value.__str__();
+    return value.to_string();
 }
 
 /**

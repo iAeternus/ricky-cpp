@@ -124,11 +124,11 @@ public:
         return container_->operator[](index_ + n);
     }
 
-    [[nodiscard]] bool __equals__(const Self& other) const {
+    [[nodiscard]] bool eq(const Self& other) const {
         return container_ == other.container_ && index_ == other.index_;
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         return this->index_ - other.index_;
     }
 
@@ -140,3 +140,4 @@ private:
 } // namespace my::util
 
 #endif // INDEX_ITERATOR_HPP
+

@@ -195,7 +195,7 @@ public:
      * @param other 另一个时间间隔对象
      * @return 比较结果（-1、0、1），0 表示相等
      */
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         if (seconds_ != other.seconds_)
             return seconds_ - other.seconds_;
         return nanos_ - other.nanos_;
@@ -205,7 +205,7 @@ public:
      * @brief 返回时间间隔的字符串表示（如 PT1H30M30.0S）。
      * @return 时间间隔的字符串
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         if (*this == ZERO) {
             return CString{"PT0.0S"};
         }

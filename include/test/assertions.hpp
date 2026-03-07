@@ -199,8 +199,8 @@ public:
      */
     template <Assertable T, Assertable U>
     static void assertEquals(const T& expected, const U& actual, std::source_location loc = SRC_LOC) {
-        if (expected.__cmp__(actual) != 0) {
-            fail(std::format("Expected {}, but got {}.", expected.__str__(), actual.__str__()), loc);
+        if (expected.cmp(actual) != 0) {
+            fail(std::format("Expected {}, but got {}.", expected.to_string(), actual.to_string()), loc);
         }
     }
 
@@ -214,8 +214,8 @@ public:
      */
     template <Assertable T, Assertable U, typename... Args>
     static void assertEquals(const T& expected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
-        if (expected.__cmp__(actual) != 0) {
-            auto prefix = std::format("Expected {}, but got {}. ", expected.__str__(), actual.__str__());
+        if (expected.cmp(actual) != 0) {
+            auto prefix = std::format("Expected {}, but got {}. ", expected.to_string(), actual.to_string());
             fail_with_prefix(prefix, fmt_w, std::forward<Args>(args)...);
         }
     }
@@ -274,8 +274,8 @@ public:
      */
     template <Assertable T, Assertable U>
     static void assertNotEquals(const T& unexpected, const U& actual, std::source_location loc = SRC_LOC) {
-        if (unexpected.__cmp__(actual) == 0) {
-            fail(std::format("Expected not {}, but got {}.", unexpected.__str__(), actual.__str__()), loc);
+        if (unexpected.cmp(actual) == 0) {
+            fail(std::format("Expected not {}, but got {}.", unexpected.to_string(), actual.to_string()), loc);
         }
     }
 
@@ -289,8 +289,8 @@ public:
      */
     template <Assertable T, Assertable U, typename... Args>
     static void assertNotEquals(const T& unexpected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
-        if (unexpected.__cmp__(actual) == 0) {
-            auto prefix = std::format("Expected not {}, but got {}. ", unexpected.__str__(), actual.__str__());
+        if (unexpected.cmp(actual) == 0) {
+            auto prefix = std::format("Expected not {}, but got {}. ", unexpected.to_string(), actual.to_string());
             fail_with_prefix(prefix, fmt_w, std::forward<Args>(args)...);
         }
     }
@@ -413,3 +413,4 @@ private:
 } // namespace my::test
 
 #endif // ASSERTIONS_HPP
+

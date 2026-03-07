@@ -1,4 +1,4 @@
-#include "test_json_serializer.hpp"
+﻿#include "test_json_serializer.hpp"
 #include "json_serializer.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -19,8 +19,8 @@ struct Person : Object<Person> {
     Person(util::String name, i32 age, bool is_student, const util::Vec<i32>& scores, const util::HashMap<util::String, util::String>& address) :
             name(std::move(name)), age(age), is_student(is_student), scores(scores), address(address) {}
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
-        return name.__cmp__(other.name);
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
+        return name.cmp(other.name);
     }
 };
 
@@ -108,3 +108,4 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_fail_missing_field))
 
 } // namespace my::test::test_json_serializer
+

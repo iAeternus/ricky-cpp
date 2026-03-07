@@ -23,7 +23,7 @@ void it_works() {
 
 void it_works2() {
     util::RBTreeMap<util::String, i32> t = {{"hello", 1}, {"world", 1}, {"你好", 2}, {"世界", 2}};
-    Assertions::assertEquals("{hello:1,world:1,世界:2,你好:2}"_cs, t.__str__()); // TODO String前置声明，__str__
+    Assertions::assertEquals("{hello:1,world:1,世界:2,你好:2}"_cs, t.to_string()); // TODO String前置声明，to_string
 }
 
 void should_insert() {
@@ -33,7 +33,7 @@ void should_insert() {
     i32 idx = 1;
 
     // Then
-    Assertions::assertEquals("{}"_cs, t.__str__());
+    Assertions::assertEquals("{}"_cs, t.to_string());
     Assertions::assertEquals(0, t.size());
     Assertions::assertTrue(t.empty());
 
@@ -43,7 +43,7 @@ void should_insert() {
     }
 
     // Then
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.__str__());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
     Assertions::assertEquals(11, t.size());
     Assertions::assertFalse(t.empty());
 }
@@ -60,7 +60,7 @@ void should_insert_rev() {
     }
 
     // Then
-    Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t.__str__());
+    Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t.to_string());
     Assertions::assertEquals(11, t.size());
     Assertions::assertFalse(t.empty());
 }
@@ -71,11 +71,11 @@ void should_construct_by_initializer_list() {
     util::RBTreeMap<i32, i32, std::greater<>> t2 = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
 
     // When & Then
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.__str__());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
     Assertions::assertEquals(11, t.size());
     Assertions::assertFalse(t.empty());
 
-    Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t2.__str__());
+    Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t2.to_string());
     Assertions::assertEquals(11, t2.size());
     Assertions::assertFalse(t2.empty());
 }
@@ -91,9 +91,9 @@ void should_clone() {
     res2 = t;
 
     // Then
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.__str__());
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res.__str__());
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res2.__str__());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res.to_string());
+    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res2.to_string());
 }
 
 void should_for_each() {
@@ -111,8 +111,8 @@ void should_for_each() {
     });
 
     // Then
-    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, res.__str__());
-    Assertions::assertEquals("[34,27,25,23,18,17,15,9,8,6,5]"_cs, res2.__str__());
+    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, res.to_string());
+    Assertions::assertEquals("[34,27,25,23,18,17,15,9,8,6,5]"_cs, res2.to_string());
 }
 
 void should_get() {
@@ -168,7 +168,7 @@ void should_count() {
     }
 
     // Then
-    Assertions::assertEquals("{1:3,2:2,3:1,4:4}"_cs, t.__str__());
+    Assertions::assertEquals("{1:3,2:2,3:1,4:4}"_cs, t.to_string());
 }
 
 void should_set_default() {
@@ -212,8 +212,8 @@ void should_iterable() {
     }
 
     // Then
-    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, keys.__str__());
-    Assertions::assertEquals("[10,8,9,7,6,1,2,3,11,5,4]"_cs, values.__str__());
+    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, keys.to_string());
+    Assertions::assertEquals("[10,8,9,7,6,1,2,3,11,5,4]"_cs, values.to_string());
 }
 
 void should_operator() {
@@ -222,10 +222,10 @@ void should_operator() {
     util::RBTreeMap<i32, i32> t2 = {{4, 1}, {5, 1}, {6, 1}, {7, 1}, {8, 1}};
 
     // When
-    auto res = t & t2;  // 交集
-    auto res2 = t | t2; // 并集
+    auto res = t & t2;  // 说明
+    auto res2 = t | t2; // 说明
     auto res3 = t ^ t2; // 相对补集
-    auto res4 = t - t2; // 差集
+    auto res4 = t - t2; // 说明
 
     // Then
     Assertions::assertEquals(2, i32(res.size()));
@@ -242,10 +242,10 @@ void should_cmp() {
     util::RBTreeMap<i32, i32> t4 = {{2, 2}, {4, 4}};
 
     // When
-    auto res = t.__cmp__(t2);
-    auto res2 = t.__cmp__(t3);
-    auto res3 = t3.__cmp__(t);
-    auto res4 = t3.__cmp__(t4);
+    auto res = t.cmp(t2);
+    auto res2 = t.cmp(t3);
+    auto res3 = t3.cmp(t);
+    auto res4 = t3.cmp(t4);
 
     // Then
     Assertions::assertEquals(0, res);
@@ -261,8 +261,8 @@ void should_equals() {
     util::RBTreeMap<i32, i32> t3 = {{1, 1}};
 
     // When
-    auto res = t.__equals__(t2);
-    auto res2 = t.__equals__(t3);
+    auto res = t.eq(t2);
+    auto res2 = t.eq(t3);
 
     // Then
     Assertions::assertTrue(res);
@@ -290,3 +290,4 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_equals))
 
 } // namespace my::test::test_rbtree_map
+

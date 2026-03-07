@@ -156,7 +156,7 @@ public:
         return ntohs(addr_.sin_port);
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         return std::format("{}:{}", get_ip(), get_port());
     }
 
@@ -565,3 +565,4 @@ private:
 } // namespace my::net
 
 #endif // SOCKET_HPP
+

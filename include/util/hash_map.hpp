@@ -471,7 +471,7 @@ public:
      * @param other 另一个哈希表
      * @return 如果相等返回 true，否则返回 false
      */
-    [[nodiscard]] bool __equals__(const Self& other) const {
+    [[nodiscard]] bool eq(const Self& other) const {
         if (this->size() != other.size()) return false;
 
         for (auto&& kv : *this) {
@@ -489,7 +489,7 @@ public:
      * @brief 获取哈希表的字符串表示
      * @return 返回哈希表的 CSV 格式的字符串
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '{';
         for (auto&& item : *this) {
@@ -671,7 +671,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果相等返回 true，否则返回 false
          */
-        [[nodiscard]] bool __equals__(const Self& other) const {
+        [[nodiscard]] bool eq(const Self& other) const {
             return hash_map_ == other.hash_map_ && index_ == other.index_;
         }
 
@@ -681,7 +681,7 @@ public:
          * @return 如果相等返回 true，否则返回 false
          */
         bool operator==(const Self& other) const {
-            return this->__equals__(other);
+            return this->eq(other);
         }
 
         /**
@@ -690,7 +690,7 @@ public:
          * @return 如果不相等返回 true，否则返回 false
          */
         bool operator!=(const Self& other) const {
-            return !this->__equals__(other);
+            return !this->eq(other);
         }
 
     private:

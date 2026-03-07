@@ -1,4 +1,4 @@
-#include "test_graph_algorithm.hpp"
+﻿#include "test_graph_algorithm.hpp"
 #include "graph_algorithm.hpp"
 #include "ricky_test.hpp"
 
@@ -127,7 +127,7 @@ void should_bfs() {
     g.call_algo("bfs", 0ULL, callback);
 
     // Then
-    Assertions::assertEquals("[0,1,2,3,4,5,6]"_cs, vis_order.__str__());
+    Assertions::assertEquals("[0,1,2,3,4,5,6]"_cs, vis_order.to_string());
 }
 
 void should_dfs() {
@@ -162,7 +162,7 @@ void should_dfs() {
     g.call_algo("dfs", 0ULL, callback);
 
     // Then
-    Assertions::assertEquals("[0,1,4,6,2,5,3]"_cs, vis_order.__str__());
+    Assertions::assertEquals("[0,1,4,6,2,5,3]"_cs, vis_order.to_string());
 }
 
 void test_is_tree() {
@@ -248,7 +248,7 @@ void should_get_all_paths() {
     auto paths = g.call_algo<util::Vec<graph::SimplePath<>>>("get_all_paths", 0ULL, 5ULL);
 
     // Then
-    Assertions::assertEquals("[[0,1,3,4,5],[0,1,3,5],[0,2,3,4,5],[0,2,3,5],[0,3,4,5],[0,3,5]]"_cs, paths.__str__());
+    Assertions::assertEquals("[[0,1,3,4,5],[0,1,3,5],[0,2,3,4,5],[0,2,3,5],[0,3,4,5],[0,3,5]]"_cs, paths.to_string());
 }
 
 void test_prim() {
@@ -334,7 +334,7 @@ void test_dijkstra() {
     auto dis = g.call_algo<util::Vec<f64>>("dijkstra", 0ULL);
 
     // Then
-    Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.__str__());
+    Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.to_string());
 }
 
 void test_floyd() {
@@ -355,7 +355,7 @@ void test_floyd() {
     auto res = g.call_algo<math::Matrix<f64>>("floyd");
 
     // Then
-    Assertions::assertEquals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.__str__());
+    Assertions::assertEquals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.to_string());
 }
 
 GROUP_NAME("test_graph_algorithm")

@@ -119,8 +119,8 @@ void should_to_string() {
     d2.insert("ccc"_cs, 2);
 
     // When
-    CString s = d.__str__();
-    CString s2 = d2.__str__();
+    CString s = d.to_string();
+    CString s2 = d2.to_string();
 
     // Then
     Assertions::assertEquals("{1:1,2:1,3:1}"_cs, s);
@@ -138,3 +138,4 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_operator),
     UNIT_TEST_ITEM(should_to_string))
 } // namespace my::test::test_hash_map
+

@@ -174,7 +174,7 @@ public:
         return end_;
     }
 
-    [[nodiscard]] cmp_t __cmp__(const D& other) const {
+    [[nodiscard]] cmp_t cmp(const D& other) const {
         auto m_it = begin(), m_end = end();
         auto o_it = other.begin(), o_end = other.end();
         while (m_it != m_end && o_it != o_end) {
@@ -187,11 +187,11 @@ public:
         return 0;
     }
 
-    [[nodiscard]] bool __equals__(const D& other) const {
+    [[nodiscard]] bool eq(const D& other) const {
         if (len() != other.len()) {
             return false;
         }
-        return static_cast<const D*>(this)->__cmp__(other) == 0;
+        return static_cast<const D*>(this)->cmp(other) == 0;
     }
 };
 

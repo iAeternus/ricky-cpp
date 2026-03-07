@@ -1,4 +1,4 @@
-#include "test_binary_heap.hpp"
+﻿#include "test_binary_heap.hpp"
 #include "binary_heap.hpp"
 #include "ricky_test.hpp"
 
@@ -58,7 +58,7 @@ void should_heapify() {
     util::BinaryHeap<i32, std::greater<i32>> bh{v};
 
     // Then
-    Assertions::assertEquals("[8,6,7,4,1,3,5]"_cs, bh.__str__());
+    Assertions::assertEquals("[8,6,7,4,1,3,5]"_cs, bh.to_string());
 }
 
 GROUP_NAME("test_binary_heap")

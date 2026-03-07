@@ -216,7 +216,7 @@ public:
      * @brief 获取数组的字符串表示
      * @return 返回数组的 CSV 格式的字符串
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '[';
         for (usize i = 0; i < size_; ++i) {
@@ -372,7 +372,7 @@ public:
          * @param other 另一个迭代器
          * @return 如果相等返回 true，否则返回 false
          */
-        [[nodiscard]] bool __equals__(const Self& other) const {
+        [[nodiscard]] bool eq(const Self& other) const {
             return current_ == other.current_;
         }
 

@@ -172,16 +172,16 @@ public:
         return Self{tmp};
     }
 
-    [[nodiscard]] bool __equals__(const Self& other) const {
+    [[nodiscard]] bool eq(const Self& other) const {
         return iter_ == other.iter_;
     }
 
     bool operator==(const Self& other) const {
-        return __equals__(other);
+        return eq(other);
     }
 
     bool operator!=(const Self& other) const {
-        return !__equals__(other);
+        return !eq(other);
     }
 
 private:

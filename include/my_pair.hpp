@@ -94,11 +94,11 @@ public:
         }
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         if constexpr (Comparable<S> && Comparable<T>) {
-            auto cmp = first_.__cmp__(other.first_);
+            auto cmp = first_.cmp(other.first_);
             if (cmp != 0) return cmp;
-            return second_.__cmp__(other.second_);
+            return second_.cmp(other.second_);
         } else if constexpr (Subtractble<S> && Subtractble<T>) {
             auto cmp = first_ - other.first_;
             if (cmp != 0) return cmp;
@@ -108,7 +108,7 @@ public:
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '('; // TODO String
         if constexpr (is_same<S, CString /*, String*/, std::string>) {

@@ -58,7 +58,7 @@ struct Token : Object<Token> {
         return op_mp.get(op_value);
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         if (op_value.empty()) {
             if (op_value == "u-") {
@@ -114,8 +114,8 @@ public:
         return eval_post(in2post());
     }
 
-    [[nodiscard]] CString __str__() const {
-        return tokens_.__str__();
+    [[nodiscard]] CString to_string() const {
+        return tokens_.to_string();
     }
 
 private:

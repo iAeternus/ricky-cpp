@@ -385,7 +385,7 @@ private:
         // 发送响应
         auto response_str = response_builder.build();
         log::console.debug("Sending response: {}", response_str);
-        client.send_bytes(response_str.__str__().data(), response_str.len());
+        client.send_bytes(response_str.to_string().data(), response_str.len());
     }
 
     /**
@@ -598,13 +598,13 @@ private:
 
                 try {
                     // 检查文件是否存在
-                    if (!fs::win::exists(fs_path.__str__())) {
+                    if (!fs::win::exists(fs_path.to_string())) {
                         send_error_response(client, HttpStatusCode::NOT_FOUND);
                         return true;
                     }
 
                     // 打开文件
-                    fs::win::File file(fs_path.__str__(), "r"); // TODO 改成rb
+                    fs::win::File file(fs_path.to_string(), "r"); // TODO 改成rb
 
                     // 读取文件内容
                     auto content = file.read();

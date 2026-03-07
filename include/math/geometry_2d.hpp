@@ -68,7 +68,7 @@ inline auto distance(const Point2& p, const Point2& a, const Point2& b) -> f64 {
  * @brief 计算点p到线段AB距离
  */
 inline auto distance_to_seg(const Point2& p, const Point2& a, const Point2& b) -> f64 {
-    if (a.__equals__(b)) {
+    if (a.eq(b)) {
         return (a - p).length();
     }
 

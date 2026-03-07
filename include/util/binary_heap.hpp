@@ -140,7 +140,7 @@ public:
     /**
      * @brief 仅用于debug
      */
-    CString __str__() const {
+    CString to_string() const {
         if (heap_.is_empty()) {
             return "[]";
         }

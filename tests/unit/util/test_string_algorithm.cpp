@@ -41,8 +41,8 @@ void test_kmp_find_all() {
     auto res = util::StringAlgorithm::kmp_find_all(s.begin(), s.end(), t.begin(), t.end());
     auto res2 = util::StringAlgorithm::kmp_find_all(v1.begin(), v1.end(), v2.begin(), v2.end());
 
-    Assertions::assertEquals("[1,5]"_cs, res.__str__());
-    Assertions::assertEquals("[1,5]"_cs, res2.__str__());
+    Assertions::assertEquals("[1,5]"_cs, res.to_string());
+    Assertions::assertEquals("[1,5]"_cs, res2.to_string());
 }
 
 GROUP_NAME("test_string_algorithm")

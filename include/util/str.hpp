@@ -803,7 +803,7 @@ public:
      * @brief 返回字符串的 C 风格字符串表示
      * @return C 风格字符串
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         CString res{byte_len()};
         usize pos = 0;
         for (auto&& ch : *this) {
@@ -818,14 +818,14 @@ public:
      * @brief 返回字符串的哈希值
      * @return 字符串的哈希值
      */
-    [[nodiscard]] hash_t __hash__() const {
-        return __str__().__hash__();
+    [[nodiscard]] hash_t hash() const {
+        return to_string().hash();
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         auto min_size = std::min(this->len(), other.len());
         for (usize i = 0; i < min_size; ++i) {
-            auto cmp = this->operator[](i).__cmp__(other[i]);
+            auto cmp = this->operator[](i).cmp(other[i]);
             if (cmp != 0) {
                 return cmp;
             }

@@ -125,10 +125,11 @@ inline bool is_ascii_whitespace(const char32_t cp) {
 
 } // namespace detail
 
-class StringView {
+class StringView : public Object<StringView> {
 public:
     using value_type = u8;
     static constexpr usize npos = static_cast<usize>(-1);
+    using Self = StringView;
     using cstr_allocator = mem::Allocator<char>;
     struct CStrDeleter {
         cstr_allocator alloc{};
@@ -282,22 +283,21 @@ public:
     String<mem::Allocator<u8>> to_lowercase() const;
     String<mem::Allocator<u8>> to_uppercase() const;
     String<mem::Allocator<u8>> to_string() const;
+    [[nodiscard]] auto hash() const -> hash_t;
+    [[nodiscard]] auto cmp(const Self& other) const -> cmp_t;
+    [[nodiscard]] auto eq(const Self& other) const -> bool;
+    auto operator==(const Self& other) const -> bool { return eq(other); }
+    auto operator!=(const Self& other) const -> bool { return !eq(other); }
+    auto operator<(const Self& other) const -> bool { return cmp(other) < 0; }
+    auto operator<=(const Self& other) const -> bool { return cmp(other) <= 0; }
+    auto operator>(const Self& other) const -> bool { return cmp(other) > 0; }
+    auto operator>=(const Self& other) const -> bool { return cmp(other) >= 0; }
 
 private:
     const u8* data_{nullptr};
     usize len_{0};
     bool cstr_backed_{false};
 };
-
-inline bool operator==(const StringView lhs, const StringView rhs) noexcept {
-    if (lhs.len() != rhs.len()) return false;
-    if (lhs.len() == 0) return true;
-    return std::memcmp(lhs.as_bytes(), rhs.as_bytes(), lhs.len()) == 0;
-}
-
-inline bool operator!=(const StringView lhs, const StringView rhs) noexcept {
-    return !(lhs == rhs);
-}
 
 inline bool operator==(const StringView lhs, const char* rhs) {
     return lhs == StringView(rhs);

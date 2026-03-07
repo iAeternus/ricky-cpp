@@ -400,6 +400,23 @@ String<mem::Allocator<u8>> StringView::to_string() const {
     return String<mem::Allocator<u8>>(*this);
 }
 
+auto StringView::hash() const -> hash_t {
+    return bytes_hash(reinterpret_cast<const char*>(data_), len_);
+}
+
+auto StringView::cmp(const Self& other) const -> cmp_t {
+    const usize min_len = std::min(len_, other.len_);
+    if (min_len > 0) {
+        const auto rc = std::memcmp(data_, other.data_, min_len);
+        if (rc != 0) return static_cast<cmp_t>(rc);
+    }
+    return static_cast<cmp_t>(len_) - static_cast<cmp_t>(other.len_);
+}
+
+auto StringView::eq(const Self& other) const -> bool {
+    return cmp(other) == 0;
+}
+
 String<mem::Allocator<u8>> StringView::replace(const StringView& from, const StringView& to) const {
     if (from.len() == 0) {
         util::Vec<StringView> parts = split(from);

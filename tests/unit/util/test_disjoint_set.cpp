@@ -1,4 +1,4 @@
-#include "test_disjoint_set.hpp"
+﻿#include "test_disjoint_set.hpp"
 #include "disjoint_set.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -7,22 +7,22 @@ namespace my::test::test_disjoint_set {
 
 void should_merge_and_find() {
     util::DisjointSet<i32> ds = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    io::println(ds.__str__());
+    io::println(ds.to_string());
 
     ds.merge(5, 6);
-    io::println(ds.__str__());
+    io::println(ds.to_string());
 
     ds.merge(1, 2);
-    io::println(ds.__str__());
+    io::println(ds.to_string());
 
     ds.merge(2, 3);
-    io::println(ds.__str__());
+    io::println(ds.to_string());
 
     ds.merge(1, 4);
-    io::println(ds.__str__());
+    io::println(ds.to_string());
 
     ds.merge(1, 5);
-    io::println(ds.__str__());
+    io::println(ds.to_string());
 
     Assertions::assertTrue(ds.same_group(1, 5));
     Assertions::assertTrue(ds.same_group(1, 6));

@@ -30,17 +30,17 @@ struct Edge : public Object<Edge<E>> {
     Edge(Idx to, const E& w = E{}) :
             to(to), w(w) {}
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         if constexpr (math::FloatingPointType<E>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<E>) {
-            return this->w.__cmp__(other.w);
+            return this->w.cmp(other.w);
         } else {
             return this->w - other.w;
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '(' << to << ',' << w << ')'; // TODO 边权输出存在问题，不能输出其他类型
         return CString{stream.str()};
@@ -134,17 +134,17 @@ struct Node : public Object<Node<N, E>> {
         }
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         if constexpr (math::FloatingPointType<N>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<N>) {
-            return this->w.__cmp__(other.w);
+            return this->w.cmp(other.w);
         } else {
             return this->w - other.w;
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << '(' << id << ',' << w << ")->"; // TODO 点权输出有问题，不能适配其他类型
         if (edges.is_empty()) {
@@ -155,7 +155,7 @@ struct Node : public Object<Node<N, E>> {
         bool first = true;
         for (const auto& edge : edges) {
             if (!first) stream << "->";
-            stream << edge.__str__().data();
+            stream << edge.to_string().data();
             first = false;
         }
         return CString{stream.str()};
@@ -190,8 +190,8 @@ struct SimplePath : public Object<SimplePath<Idx>> {
         nodes.clear();
     }
 
-    [[nodiscard]] CString __str__() const {
-        return nodes.__str__();
+    [[nodiscard]] CString to_string() const {
+        return nodes.to_string();
     }
 };
 

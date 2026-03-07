@@ -128,7 +128,7 @@ public:
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         return formatted_message_;
     }
 

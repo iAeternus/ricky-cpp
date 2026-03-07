@@ -172,11 +172,11 @@ public:
     }
 
     constexpr bool is_zero() const noexcept {
-        return this->__equals__(ZERO);
+        return this->eq(ZERO);
     }
 
     constexpr bool is_one() const noexcept {
-        return this->__equals__(ONE);
+        return this->eq(ONE);
     }
 
     /**
@@ -382,7 +382,7 @@ public:
 
         Self quotient;
         Self current;
-        auto a_digits = aa.__str__();
+        auto a_digits = aa.to_string();
 
         for (const char c : a_digits) {
             current = current * TEN + Self(c - '0');
@@ -506,7 +506,7 @@ public:
      * @brief 获取数值的字符串表示
      * @return 字符串形式的数值
      */
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         if (this->is_zero()) return "0";
 
         std::stringstream stream;
@@ -520,7 +520,7 @@ public:
         return CString{stream.str()};
     }
 
-    [[nodiscard]] constexpr cmp_t __cmp__(const Self& other) const noexcept {
+    [[nodiscard]] constexpr cmp_t cmp(const Self& other) const noexcept {
         if (this->is_pos() && other.is_neg()) {
             return 1;
         }
@@ -545,7 +545,7 @@ public:
             }
             return 0;
         }
-        return other.abs().__cmp__(this->abs());
+        return other.abs().cmp(this->abs());
     }
 
 private:

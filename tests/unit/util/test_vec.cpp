@@ -8,8 +8,8 @@ void it_works() {
     util::Vec<i32> d(10, 0);
     util::Vec<util::Vec<i32>> d2(3, util::Vec<i32>(3, 0));
     util::Vec<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.__str__());
-    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.__str__());
+    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.to_string());
+    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.to_string());
     Assertions::assertEquals(1, d3.first());
     Assertions::assertEquals(10, d3.last());
 }
@@ -107,8 +107,8 @@ void should_swap() {
     d.swap(d2);
 
     // Then
-    Assertions::assertEquals("[ccc,bbb,aaa]"_cs, d.__str__());
-    Assertions::assertEquals("[aaa,bbb,ccc]"_cs, d2.__str__());
+    Assertions::assertEquals("[ccc,bbb,aaa]"_cs, d.to_string());
+    Assertions::assertEquals("[aaa,bbb,ccc]"_cs, d2.to_string());
 }
 
 void should_to_array() {
@@ -121,7 +121,7 @@ void should_to_array() {
     // Then
     Assertions::assertEquals(5, i32(arr.len()));
     Assertions::assertEquals(5, arr.at(arr.len() - 1));
-    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.to_string());
 }
 
 void should_slice() {
@@ -135,9 +135,9 @@ void should_slice() {
 
     // Then
     Assertions::assertEquals(1ULL, res.len());
-    Assertions::assertEquals("[2]"_cs, res.__str__());
-    Assertions::assertEquals("[4,5,6]"_cs, res2.__str__());
-    Assertions::assertEquals("[2,3,4,5]"_cs, res3.__str__());
+    Assertions::assertEquals("[2]"_cs, res.to_string());
+    Assertions::assertEquals("[4,5,6]"_cs, res2.to_string());
+    Assertions::assertEquals("[2,3,4,5]"_cs, res3.to_string());
 }
 
 void should_extend() {
@@ -150,7 +150,7 @@ void should_extend() {
 
     // Then
     Assertions::assertEquals(10, d.len());
-    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
+    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.to_string());
 }
 
 void should_at() {
@@ -186,10 +186,10 @@ void should_sort() {
     util::Vec<i32> d = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
     // When
-    std::sort(d.begin(), d.end()); // TODO clangd 误报
+    std::sort(d.begin(), d.end()); // TODO 说明
 
     // Then
-    Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
+    Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.to_string());
 }
 
 void test_opt() {

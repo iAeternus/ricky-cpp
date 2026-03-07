@@ -184,15 +184,15 @@ public:
         return Self{static_cast<char>(std::tolower(byte_code_[0]))};
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         return CString{data(), len()};
     }
 
-    [[nodiscard]] hash_t __hash__() const {
+    [[nodiscard]] hash_t hash() const {
         return bytes_hash(data(), len());
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         const usize m_size = this->len(), o_size = other.len();
         if (m_size != o_size) {
             return static_cast<cmp_t>(m_size) - static_cast<cmp_t>(o_size);
@@ -200,11 +200,11 @@ public:
         return std::memcmp(this->data(), other.data(), m_size);
     }
 
-    [[nodiscard]] bool __equals__(const Self& other) const {
-        return this->__cmp__(other) == 0;
+    [[nodiscard]] bool eq(const Self& other) const {
+        return this->cmp(other) == 0;
     }
 
-    [[nodiscard]] bool __equals__(const u8 ch) const {
+    [[nodiscard]] bool eq(const u8 ch) const {
         return static_cast<u8>(byte_code_[0]) == ch;
     }
 
@@ -260,8 +260,9 @@ struct std::formatter<my::util::CodePoint<Enc, Alloc>> {
     }
 
     auto format(const my::util::CodePoint<Enc, Alloc>& cp, format_context& ctx) const -> format_context::iterator {
-        return std::format_to(ctx.out(), "{}", cp.__str__());
+        return std::format_to(ctx.out(), "{}", cp.to_string());
     }
 };
 
 #endif // CODE_POINT_HPP
+

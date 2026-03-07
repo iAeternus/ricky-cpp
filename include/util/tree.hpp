@@ -95,7 +95,7 @@ public:
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         this->print(stream, "");
         return CString{stream.str()};
@@ -193,11 +193,11 @@ public:
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         if (root_ == nullptr) {
             return "(is_empty tree)"_cs;
         }
-        return root_->__str__();
+        return root_->to_string();
     }
 
 private:

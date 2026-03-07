@@ -1,4 +1,4 @@
-#include "test_dynarray.hpp"
+﻿#include "test_dynarray.hpp"
 #include "dyn_array.hpp"
 #include "ricky_test.hpp"
 
@@ -8,8 +8,8 @@ void it_works() {
     util::DynArray<i32> d(10, 0);
     util::DynArray<util::DynArray<i32>> d2(3, util::DynArray<i32>(3, 0));
     util::DynArray<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.__str__());
-    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.__str__());
+    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.to_string());
+    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.to_string());
     Assertions::assertEquals(1, d3.front());
     Assertions::assertEquals(10, d3.back());
 }
@@ -108,7 +108,7 @@ void should_to_array() {
     // Then
     Assertions::assertEquals(5ULL, arr.len());
     Assertions::assertEquals(5, arr.at(arr.len() - 1));
-    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.__str__());
+    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.to_string());
 }
 
 void should_extend() {
@@ -121,7 +121,7 @@ void should_extend() {
 
     // Then
     Assertions::assertEquals(10ULL, d.len());
-    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.__str__());
+    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.to_string());
 }
 
 void should_at() {
@@ -161,7 +161,7 @@ void should_find() {
 
 //     // Then
 //     io::println(d);
-//     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.__str__());
+//     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.to_string());
 // };
 
 GROUP_NAME("test_dynarray")

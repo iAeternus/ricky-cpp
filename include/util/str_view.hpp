@@ -291,11 +291,11 @@ public:
      * @brief 返回字符串的哈希值
      * @return 字符串的哈希值
      */
-    [[nodiscard]] hash_t __hash__() const {
-        return to_string().__hash__();
+    [[nodiscard]] hash_t hash() const {
+        return to_string().hash();
     }
 
-    [[nodiscard]] bool __equals__(const Self& other) const {
+    [[nodiscard]] bool eq(const Self& other) const {
         if (length() != other.length()) {
             return false;
         }
@@ -305,10 +305,10 @@ public:
         return std::equal(begin_, end_, other.begin_);
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         auto min_size = std::min(this->length(), other.length());
         for (usize i = 0; i < min_size; ++i) {
-            auto cmp = this->operator[](i).__cmp__(other[i]);
+            auto cmp = this->operator[](i).cmp(other[i]);
             if (cmp != 0) {
                 return cmp;
             }
@@ -417,3 +417,4 @@ BasicStringView(const S&, usize, usize) -> BasicStringView<typename S::const_ite
 } // namespace my::util
 
 #endif // STRING_VIEW_HPP
+

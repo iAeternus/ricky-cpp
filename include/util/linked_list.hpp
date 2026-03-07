@@ -233,7 +233,7 @@ public:
     const_iterator begin() const { return {sentinel_->next, sentinel_}; }
     const_iterator end() const { return {sentinel_, sentinel_}; }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         bool is_first = true;
         stream << '[';
@@ -275,3 +275,4 @@ using LinkedList = LinkedListImpl<LinkedListNode<T>, mem::Allocator<LinkedListNo
 } // namespace my::util
 
 #endif // LINKED_LIST_HPP
+

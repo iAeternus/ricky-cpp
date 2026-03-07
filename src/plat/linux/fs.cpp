@@ -1,4 +1,4 @@
-#include "my_config.hpp"
+﻿#include "my_config.hpp"
 
 #if RICKY_LINUX
 
@@ -143,8 +143,8 @@ void remove(const char* path, const bool recursive) {
         if (recursive) {
             const auto entries = listdir(path);
             for (const auto& entry : entries) {
-                auto child = join(path, entry.name.__str__().data());
-                remove(child.__str__().data(), true);
+                auto child = join(path, entry.name.to_string().data());
+                remove(child.to_string().data(), true);
             }
         }
         if (::rmdir(path) != 0) {
@@ -201,7 +201,7 @@ util::Vec<DirEntry> listdir(const char* path) {
 
         auto full_path = join(path, entry->d_name);
         struct stat st {};
-        if (::stat(full_path.__str__().data(), &st) == 0) {
+        if (::stat(full_path.to_string().data(), &st) == 0) {
             info.is_dir = S_ISDIR(st.st_mode);
             info.is_file = S_ISREG(st.st_mode);
         }
@@ -305,3 +305,4 @@ void close(FileHandle* file) {
 } // namespace my::plat::fs
 
 #endif // RICKY_LINUX
+

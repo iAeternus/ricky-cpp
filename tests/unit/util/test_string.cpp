@@ -1,4 +1,4 @@
-#include "test_string.hpp"
+﻿#include "test_string.hpp"
 #include "str.hpp"
 #include "array.hpp"
 #include "vec.hpp"
@@ -8,7 +8,7 @@ namespace my::test::test_string {
 
 void should_construct() {
     util::String s = "abc";
-    Assertions::assertEquals("abc"_cs, s.__str__());
+    Assertions::assertEquals("abc"_cs, s.to_string());
 }
 
 void should_add() {
@@ -84,7 +84,7 @@ void should_find_all() {
 
     // Then
     Assertions::assertEquals(2ULL, poss.len());
-    Assertions::assertEquals("[0,6]"_cs, poss.__str__());
+    Assertions::assertEquals("[0,6]"_cs, poss.to_string());
 }
 
 void should_judge_starts_with() {
@@ -159,7 +159,7 @@ void should_replace() {
 
 void should_maintain_encoding() {
     // Given
-    util::String s = "你好世界";
+    util::String s = "你好世界"_s;
 
     // When
     util::String s2 = s;
@@ -243,8 +243,8 @@ void should_compare() {
     util::String b = "abc";
     util::String c = "abd";
 
-    Assertions::assertEquals(0, a.__cmp__(b));
-    Assertions::assertTrue(a.__cmp__(c) < 0);
+    Assertions::assertEquals(0, a.cmp(b));
+    Assertions::assertTrue(a.cmp(c) < 0);
 }
 
 void should_remove_all() {
@@ -270,8 +270,8 @@ void should_string_view_compare() {
     util::StringView v1(s1);
     util::StringView v2(s2);
 
-    Assertions::assertTrue(v1.__cmp__(v2) < 0);
-    Assertions::assertTrue(v1.__equals__(util::StringView(s1)));
+    Assertions::assertTrue(v1.cmp(v2) < 0);
+    Assertions::assertTrue(v1.eq(util::StringView(s1)));
 }
 
 GROUP_NAME("test_string")
@@ -299,3 +299,4 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_string_view_compare))
 
 } // namespace my::test::test_string
+

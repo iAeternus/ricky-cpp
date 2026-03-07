@@ -250,7 +250,7 @@ public:
         }
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         std::stringstream stream;
         stream << "Graph (" << (is_directed_ ? "Directed" : "Undirected") << ")\n";
         stream << "Node count: " << node_cnt() << '\n';
@@ -260,7 +260,7 @@ public:
         stream << "Adjacency List:\n";
 
         for (const auto& vertex : nodes_.values()) {
-            stream << vertex.__str__().data() << '\n';
+            stream << vertex.to_string().data() << '\n';
         }
         return CString{stream.str()};
     }

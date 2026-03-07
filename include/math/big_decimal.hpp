@@ -124,11 +124,11 @@ public:
     }
 
     bool is_zero() const {
-        return this->__equals__(ZERO);
+        return this->eq(ZERO);
     }
 
     bool is_one() const {
-        return this->__equals__(ONE);
+        return this->eq(ONE);
     }
 
     /**
@@ -375,7 +375,7 @@ public:
         return x.scale(scale, HALF_UP);
     }
 
-    [[nodiscard]] cmp_t __cmp__(const Self& other) const {
+    [[nodiscard]] cmp_t cmp(const Self& other) const {
         // 比较零值
         if (unscaled_value_.is_zero() && other.unscaled_value_.is_zero()) {
             return 0;
@@ -388,10 +388,10 @@ public:
 
         // 对齐标度后比较
         auto [a_aligned, b_aligned] = align_scales(*this, other);
-        return a_aligned.unscaled_value_.__cmp__(b_aligned.unscaled_value_);
+        return a_aligned.unscaled_value_.cmp(b_aligned.unscaled_value_);
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         if (unscaled_value_.is_zero()) {
             if (scale_ == 0) return "0";
             return "0."_cs + CString::of(scale_, '0');
@@ -405,7 +405,7 @@ public:
         auto divisor = BigInteger(10).pow(scale_);
         auto [integer, decimal] = abs_value.div_rem(divisor);
 
-        CString integer_str = integer.__str__();
+        CString integer_str = integer.to_string();
         // 添加负号
         if (is_negative) {
             integer_str = "-"_cs + integer_str;
@@ -413,7 +413,7 @@ public:
 
         // 格式化小数部分
         if (scale_ > 0) {
-            CString decimal_str = decimal.__str__();
+            CString decimal_str = decimal.to_string();
             // 补足前导零
             if (usize len = decimal_str.length(); len < scale_) {
                 decimal_str = CString::of(scale_ - len, '0') + decimal_str;
@@ -456,7 +456,7 @@ public:
             return ZERO;
         }
 
-        auto str = unscaled_value_.__str__();
+        auto str = unscaled_value_.to_string();
         u32 trailing_zeros = 0;
         for (isize i = static_cast<isize>(str.length()) - 1; i >= 0; --i) {
             if (str.data()[i] == '0') {
@@ -525,7 +525,7 @@ private:
             return 1;
         }
         // 精度等于数字的位数
-        return static_cast<u32>(val.abs().__str__().length());
+        return static_cast<u32>(val.abs().to_string().length());
     }
 
     /**

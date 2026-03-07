@@ -7,6 +7,7 @@
 #ifndef STR_STRING_HPP
 #define STR_STRING_HPP
 
+#include <algorithm>
 #include <string_view>
 
 #include "string_view.hpp"
@@ -14,10 +15,11 @@
 namespace my::str {
 
 template <typename Alloc = mem::Allocator<u8>>
-class String {
+class String : public Object<String<Alloc>> {
 public:
     using value_type = u8;
     static constexpr usize npos = StringView::npos;
+    using Self = String<Alloc>;
     
     using cstr_allocator = typename Alloc::template rebind<char>::other;
     struct CStrDeleter {
@@ -67,6 +69,28 @@ public:
     [[nodiscard]] StringView as_str() const noexcept { return StringView(buf_.data(), buf_.len()); }
 
     [[nodiscard]] String to_string() const { return String(*this); }
+    [[nodiscard]] auto hash() const -> hash_t {
+        return bytes_hash(reinterpret_cast<const char*>(as_bytes()), len());
+    }
+    [[nodiscard]] auto cmp(const Self& other) const -> cmp_t {
+        const usize lhs_len = len();
+        const usize rhs_len = other.len();
+        const usize min_len = std::min(lhs_len, rhs_len);
+        if (min_len > 0) {
+            const auto rc = std::memcmp(as_bytes(), other.as_bytes(), min_len);
+            if (rc != 0) return static_cast<cmp_t>(rc);
+        }
+        return static_cast<cmp_t>(lhs_len) - static_cast<cmp_t>(rhs_len);
+    }
+    [[nodiscard]] auto eq(const Self& other) const -> bool {
+        return cmp(other) == 0;
+    }
+    auto operator==(const Self& other) const -> bool { return eq(other); }
+    auto operator!=(const Self& other) const -> bool { return !eq(other); }
+    auto operator<(const Self& other) const -> bool { return cmp(other) < 0; }
+    auto operator<=(const Self& other) const -> bool { return cmp(other) <= 0; }
+    auto operator>(const Self& other) const -> bool { return cmp(other) > 0; }
+    auto operator>=(const Self& other) const -> bool { return cmp(other) >= 0; }
     [[nodiscard]] const char* as_cstr() const noexcept {
         if (buf_.len() == 0) {
             return "";

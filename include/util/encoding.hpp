@@ -129,7 +129,7 @@ struct EncodingTraits<EncodingType::UTF32> {
         if (length < 4) return false;
 
         const auto code_point = *reinterpret_cast<const u32*>(data);
-        // UTF-32编码必须满足: 0 <= code_point <= 0x10FFFF
+        // 说明
         // 且不能是代理码点(0xD800-0xDFFF)
         return code_point <= 0x10FFFF && (code_point < 0xD800 || code_point > 0xDFFF);
     }

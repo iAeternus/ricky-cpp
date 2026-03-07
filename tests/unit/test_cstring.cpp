@@ -1,4 +1,4 @@
-#include "test_cstring.hpp"
+﻿#include "test_cstring.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_cstring {
@@ -21,8 +21,8 @@ void should_hash() {
     CString str2 = "abd";
 
     // When
-    auto hash1 = str1.__hash__();
-    auto hash2 = str2.__hash__();
+    auto hash1 = str1.hash();
+    auto hash2 = str2.hash();
 
     // Then
     Assertions::assertNotEquals(hash1, hash2);
@@ -36,9 +36,9 @@ void should_compare() {
     CString str4 = "aaab";
 
     // When & Then
-    Assertions::assertTrue(str1.__cmp__(str2) < 0);
-    Assertions::assertTrue(str2.__cmp__(str3) < 0);
-    Assertions::assertTrue(str3.__cmp__(str4) == 0);
+    Assertions::assertTrue(str1.cmp(str2) < 0);
+    Assertions::assertTrue(str2.cmp(str3) < 0);
+    Assertions::assertTrue(str3.cmp(str4) == 0);
 
     Assertions::assertEquals(str3, str4);
     Assertions::assertNotEquals(str2, str4);
@@ -193,8 +193,8 @@ void should_iterate() {
     }
 
     // Then
-    Assertions::assertEquals("bcdefgh"_cs, str.__str__());
-    Assertions::assertEquals("[b,c,d,e,f,g,h]"_cs, chs.__str__());
+    Assertions::assertEquals("bcdefgh"_cs, str.to_string());
+    Assertions::assertEquals("[b,c,d,e,f,g,h]"_cs, chs.to_string());
 }
 
 void test_cstring_view() {
@@ -212,7 +212,7 @@ void test_cstring_view() {
     Assertions::assertEquals("bcdef"_cs, sv.to_string());
     Assertions::assertEquals('b', sv[0]);
     Assertions::assertEquals('f', sv[sv.length() - 1]);
-    Assertions::assertEquals("[b,c,d,e,f]"_cs, chs.__str__());
+    Assertions::assertEquals("[b,c,d,e,f]"_cs, chs.to_string());
 }
 
 GROUP_NAME("test_cstring")

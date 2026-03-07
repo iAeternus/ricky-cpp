@@ -1,4 +1,4 @@
-#include "test_time.hpp"
+﻿#include "test_time.hpp"
 #include "date_time.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -9,8 +9,8 @@ void should_construct() {
     auto t = util::Time::of(20);
     auto t2 = util::Time::of(12, 34, 56, 789);
 
-    Assertions::assertEquals("20:00:00.000000000"_cs, t.__str__());
-    Assertions::assertEquals("12:34:56.000000789"_cs, t2.__str__());
+    Assertions::assertEquals("20:00:00.000000000"_cs, t.to_string());
+    Assertions::assertEquals("12:34:56.000000789"_cs, t2.to_string());
 }
 
 void should_fail_to_construct_by_hour_minute_and_second_if_args_invalid() {
@@ -97,7 +97,7 @@ void should_plus() {
     auto t4 = t3.plusSeconds(61); // 8:02:01
 
     // Then
-    Assertions::assertEquals("08:02:01.000000000"_cs, t4.__str__());
+    Assertions::assertEquals("08:02:01.000000000"_cs, t4.to_string());
 }
 
 void should_minus() {
@@ -110,7 +110,7 @@ void should_minus() {
     auto t4 = t3.minusSeconds(61); // 15:57:59
 
     // Then
-    Assertions::assertEquals("15:57:59.000000000"_cs, t4.__str__());
+    Assertions::assertEquals("15:57:59.000000000"_cs, t4.to_string());
 }
 
 void should_subtract() {
@@ -124,8 +124,8 @@ void should_subtract() {
     auto res2 = t - t3;
 
     // Then
-    Assertions::assertEquals("PT2H20M20.000000020S"_cs, res.__str__());
-    Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.__str__());
+    Assertions::assertEquals("PT2H20M20.000000020S"_cs, res.to_string());
+    Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.to_string());
 }
 
 GROUP_NAME("test_time")

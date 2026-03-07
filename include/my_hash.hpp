@@ -20,7 +20,7 @@ namespace my {
  */
 template <Hashable K>
 auto my_hash_impl(const K& key, std::true_type) -> hash_t {
-    return key.__hash__();
+    return key.hash();
 }
 
 /**

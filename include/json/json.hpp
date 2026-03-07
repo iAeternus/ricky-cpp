@@ -308,7 +308,7 @@ public:
         return dump_impl(indent, 1);
     }
 
-    [[nodiscard]] CString __str__() const {
+    [[nodiscard]] CString to_string() const {
         return cstr(dump());
     }
 
@@ -562,3 +562,4 @@ private:
 } // namespace my::json
 
 #endif // JSON_HPP
+

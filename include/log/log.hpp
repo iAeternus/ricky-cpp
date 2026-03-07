@@ -58,7 +58,7 @@ public:
         }
     }
 
-    CString __str__() const {
+    CString to_string() const {
         switch (level_) {
         case LogLevel::Trace: return "Trace";
         case LogLevel::Debug: return "Debug";
@@ -194,7 +194,7 @@ public:
             "{} [{}{}{}] [pid={}] {}:{} {}",
             r.datetime,
             lvl.color(),
-            lvl.__str__(),
+            lvl.to_string(),
             reset_color(),
             r.pid,
             r.file_name,
@@ -218,3 +218,4 @@ static auto set_consolelog_level(LogLevel level) {
 } // namespace my::log
 
 #endif // LOG_HPP
+
