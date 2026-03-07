@@ -1,5 +1,6 @@
 #include "test_huffman_tree.hpp"
-#include "filesystem.hpp"
+#include "file.hpp"
+#include "fs.hpp"
 #include "huffman_tree.hpp"
 #include "ricky_test.hpp"
 
@@ -9,9 +10,9 @@ static constexpr auto CLASS_PATH = R"(F:\Develop\cpp\ricky-cpp\tests\resources)"
 
 void it_works() {
     // Given
-    const char* path = fs::win::join(CLASS_PATH, "text.txt");
-    fs::win::File file{path, "r"};
-    util::String text = util::String(file.read().data());
+    auto path = plat::fs::join(str::StringView(CLASS_PATH), "text.txt"_sv);
+    auto file = fs::File::open(fs::PathBuf(path));
+    auto text = file.read_all();
 
     // When
     util::HuffmanTree h(text);
@@ -24,40 +25,40 @@ void it_works() {
     auto decode_res = h.decode();
 
     // Then
-    Assertions::assertEquals(text, decode_res);
+    Assertions::assert_equals(text, decode_res);
 }
 
 void should_handle_empty_string() {
     // Given
-    util::String text = ""_s;
+    str::String<> text;
 
     // When
     util::HuffmanTree h(text);
     auto encode_res = h.encode();
 
     // Then
-    Assertions::assertTrue(encode_res.is_empty());
-    Assertions::assertEquals(0ULL, h.wpl());
-    Assertions::assertEquals(0.0, h.acl());
+    Assertions::assert_true(encode_res.is_empty());
+    Assertions::assert_equals(0ULL, h.wpl());
+    Assertions::assert_equals(0.0, h.acl());
 
     // When
     auto decode_res = h.decode();
 
     // Then
-    Assertions::assertTrue(decode_res.is_empty());
+    Assertions::assert_true(decode_res.is_empty());
 }
 
 void should_handle_non_ascii_character() {
     // Given
-    util::String text = "你好好";
+    str::String<> text("\xE4\xBD\xA0\xE5\xA5\xBD\xE5\xA5\xBD"); // "你好好"
 
     // When
     util::HuffmanTree h(text);
     auto encode_res = h.encode();
 
     // Then
-    Assertions::assertEquals("011"_s, encode_res);
-    Assertions::assertEquals(text, h.decode());
+    Assertions::assert_equals(str::String<>("011"), encode_res);
+    Assertions::assert_equals(text, h.decode());
 }
 
 GROUP_NAME("test_huffman_tree")
