@@ -65,9 +65,6 @@ public:
 
     [[nodiscard]] const u8* as_bytes() const noexcept { return buf_.data(); }
     [[nodiscard]] StringView as_str() const noexcept { return StringView(buf_.data(), buf_.len()); }
-    [[nodiscard]] constexpr std::string_view to_std_string_view() const noexcept {
-        return std::string_view(reinterpret_cast<const char*>(buf_.data()), buf_.len());
-    }
 
     [[nodiscard]] String to_string() const { return String(*this); }
     [[nodiscard]] const char* as_cstr() const noexcept {
