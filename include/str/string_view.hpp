@@ -143,21 +143,34 @@ public:
     using CStrPtr = std::unique_ptr<char[], CStrDeleter>;
 
     constexpr StringView() noexcept = default;
-
     explicit StringView(const char* s);
     StringView(const char* s, const usize len);
     StringView(const u8* s, const usize len);
 
-    [[nodiscard]] constexpr usize len() const noexcept { return len_; }
-    [[nodiscard]] constexpr bool is_empty() const noexcept { return len_ == 0; }
-    [[nodiscard]] constexpr const u8* as_bytes() const noexcept { return data_; }
-    [[nodiscard]] constexpr StringView as_str() const noexcept { return *this; }
+    [[nodiscard]] constexpr usize len() const noexcept {
+        return len_;
+    }
+
+    [[nodiscard]] constexpr bool is_empty() const noexcept {
+        return len_ == 0;
+    }
+
+    [[nodiscard]] constexpr const u8* as_bytes() const noexcept {
+        return data_;
+    }
+
+    [[nodiscard]] constexpr StringView as_str() const noexcept {
+        return *this;
+    }
+
     [[nodiscard]] constexpr std::string_view to_std_string_view() const noexcept {
         return std::string_view(reinterpret_cast<const char*>(data_), len_);
     }
+
     [[nodiscard]] std::string to_std_string() const {
         return std::string(reinterpret_cast<const char*>(data_), len_);
     }
+
     [[nodiscard]] const char* as_cstr() const noexcept;
     [[nodiscard]] CStrPtr into_cstr() const;
 
@@ -176,16 +189,28 @@ public:
             }
         };
 
-        Iterator begin() const { return {begin_}; }
-        Iterator end() const { return {end_}; }
+        Iterator begin() const {
+            return {begin_};
+        }
 
-        usize count() const { return static_cast<usize>(end_ - begin_); }
-        usize size() const { return count(); }
+        Iterator end() const {
+            return {end_};
+        }
+
+        usize count() const {
+            return static_cast<usize>(end_ - begin_);
+        }
+
+        usize size() const {
+            return count();
+        }
+
         Option<u8> nth(const usize idx) const {
             const auto n = count();
             if (idx >= n) return Option<u8>::None();
             return Option<u8>::Some(static_cast<u8>(begin_[idx]));
         }
+
         Option<u8> last() const {
             const auto n = count();
             if (n == 0) return Option<u8>::None();
@@ -200,8 +225,14 @@ public:
                 const u8* p;
                 usize idx;
 
-                bool operator!=(const Iterator& other) const { return p != other.p; }
-                Pair<usize, u8> operator*() const { return {idx, *p}; }
+                bool operator!=(const Iterator& other) const {
+                    return p != other.p;
+                }
+
+                Pair<usize, u8> operator*() const {
+                    return {idx, *p};
+                }
+
                 Iterator& operator++() {
                     ++p;
                     ++idx;
@@ -209,11 +240,18 @@ public:
                 }
             };
 
-            Iterator begin() const { return {begin_, 0}; }
-            Iterator end() const { return {end_, static_cast<usize>(end_ - begin_)}; }
+            Iterator begin() const {
+                return {begin_, 0};
+            }
+
+            Iterator end() const {
+                return {end_, static_cast<usize>(end_ - begin_)};
+            }
         };
 
-        EnumerateRange enumerate() const { return {begin_, end_}; }
+        EnumerateRange enumerate() const {
+            return {begin_, end_};
+        }
     };
 
     struct CharsRange {
@@ -227,16 +265,31 @@ public:
             char32_t value;
 
             Iterator(const u8* cur, const u8* end_);
-            bool operator!=(const Iterator& other) const { return p != other.p; }
-            char32_t operator*() const { return value; }
+
+            bool operator!=(const Iterator& other) const {
+                return p != other.p;
+            }
+
+            char32_t operator*() const {
+                return value;
+            }
+
             Iterator& operator++();
         };
 
-        Iterator begin() const { return {begin_, end_}; }
-        Iterator end() const { return {end_, end_}; }
+        Iterator begin() const {
+            return {begin_, end_};
+        }
+
+        Iterator end() const {
+            return {end_, end_};
+        }
+
+        usize size() const {
+            return count();
+        }
 
         usize count() const;
-        usize size() const { return count(); }
         Option<char32_t> nth(usize idx) const;
         Option<char32_t> last() const;
 
@@ -252,16 +305,30 @@ public:
                 usize idx;
 
                 Iterator(const u8* cur, const u8* end_);
-                bool operator!=(const Iterator& other) const { return p != other.p; }
-                Pair<usize, char32_t> operator*() const { return {idx, value}; }
+
+                bool operator!=(const Iterator& other) const {
+                    return p != other.p;
+                }
+
+                Pair<usize, char32_t> operator*() const {
+                    return {idx, value};
+                }
+
                 Iterator& operator++();
             };
 
-            Iterator begin() const { return {begin_, end_}; }
-            Iterator end() const { return {end_, end_}; }
+            Iterator begin() const {
+                return {begin_, end_};
+            }
+
+            Iterator end() const {
+                return {end_, end_};
+            }
         };
 
-        EnumerateRange enumerate() const { return {begin_, end_}; }
+        EnumerateRange enumerate() const {
+            return {begin_, end_};
+        }
     };
 
     BytesRange bytes() const;
@@ -286,6 +353,7 @@ public:
     [[nodiscard]] auto hash() const -> hash_t;
     [[nodiscard]] auto cmp(const Self& other) const -> cmp_t;
     [[nodiscard]] auto eq(const Self& other) const -> bool;
+
     auto operator==(const Self& other) const -> bool { return eq(other); }
     auto operator!=(const Self& other) const -> bool { return !eq(other); }
     auto operator<(const Self& other) const -> bool { return cmp(other) < 0; }

@@ -20,7 +20,7 @@ public:
     using value_type = u8;
     static constexpr usize npos = StringView::npos;
     using Self = String<Alloc>;
-    
+
     using cstr_allocator = typename Alloc::template rebind<char>::other;
     struct CStrDeleter {
         cstr_allocator alloc{};
@@ -58,20 +58,40 @@ public:
 
     ~String() = default;
 
-    [[nodiscard]] usize len() const noexcept { return buf_.len(); }
-    [[nodiscard]] bool is_empty() const noexcept { return buf_.is_empty(); }
-    [[nodiscard]] usize capacity() const noexcept { return buf_.capacity(); }
+    [[nodiscard]] usize len() const noexcept {
+        return buf_.len();
+    }
 
-    void reserve(const usize new_cap) { buf_.reserve(new_cap); }
+    [[nodiscard]] bool is_empty() const noexcept {
+        return buf_.is_empty();
+    }
+
+    [[nodiscard]] usize capacity() const noexcept {
+        return buf_.capacity();
+    }
+
+    void reserve(const usize new_cap) {
+        buf_.reserve(new_cap);
+    }
+
     void clear() { buf_.clear(); }
 
-    [[nodiscard]] const u8* as_bytes() const noexcept { return buf_.data(); }
-    [[nodiscard]] StringView as_str() const noexcept { return StringView(buf_.data(), buf_.len()); }
+    [[nodiscard]] const u8* as_bytes() const noexcept {
+        return buf_.data();
+    }
 
-    [[nodiscard]] String to_string() const { return String(*this); }
+    [[nodiscard]] StringView as_str() const noexcept {
+        return StringView(buf_.data(), buf_.len());
+    }
+
+    [[nodiscard]] String to_string() const {
+        return String(*this);
+    }
+
     [[nodiscard]] auto hash() const -> hash_t {
         return bytes_hash(reinterpret_cast<const char*>(as_bytes()), len());
     }
+
     [[nodiscard]] auto cmp(const Self& other) const -> cmp_t {
         const usize lhs_len = len();
         const usize rhs_len = other.len();
@@ -82,15 +102,18 @@ public:
         }
         return static_cast<cmp_t>(lhs_len) - static_cast<cmp_t>(rhs_len);
     }
+
     [[nodiscard]] auto eq(const Self& other) const -> bool {
         return cmp(other) == 0;
     }
+
     auto operator==(const Self& other) const -> bool { return eq(other); }
     auto operator!=(const Self& other) const -> bool { return !eq(other); }
     auto operator<(const Self& other) const -> bool { return cmp(other) < 0; }
     auto operator<=(const Self& other) const -> bool { return cmp(other) <= 0; }
     auto operator>(const Self& other) const -> bool { return cmp(other) > 0; }
     auto operator>=(const Self& other) const -> bool { return cmp(other) >= 0; }
+
     [[nodiscard]] const char* as_cstr() const noexcept {
         if (buf_.len() == 0) {
             return "";
@@ -101,6 +124,7 @@ public:
         }
         return nullptr;
     }
+
     [[nodiscard]] CStrPtr into_cstr() const {
         const usize size = buf_.len() + 1;
         cstr_allocator alloc{};
@@ -150,8 +174,13 @@ public:
         return Option<char32_t>::Some(cp);
     }
 
-    StringView::BytesRange bytes() const { return as_str().bytes(); }
-    StringView::CharsRange chars() const { return as_str().chars(); }
+    StringView::BytesRange bytes() const {
+        return as_str().bytes();
+    }
+
+    StringView::CharsRange chars() const {
+        return as_str().chars();
+    }
 
     [[nodiscard]] Option<usize> find(const StringView& pat) const {
         return as_str().find(pat);
@@ -339,7 +368,7 @@ struct std::formatter<my::str::String<Alloc>, char> : std::formatter<std::string
     auto format(const my::str::String<Alloc>& value, auto& ctx) const {
         auto view = value.as_str();
         return std::formatter<std::string_view, char>::format(
-                std::string_view(reinterpret_cast<const char*>(view.as_bytes()), view.len()), ctx);
+            std::string_view(reinterpret_cast<const char*>(view.as_bytes()), view.len()), ctx);
     }
 };
 
