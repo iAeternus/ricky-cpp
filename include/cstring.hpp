@@ -1017,6 +1017,16 @@ inline auto operator""_cs(const char* str, const size_t len) -> CString {
 } // namespace my
 
 /**
+ * @brief 为 CStringView 类提供标准库格式化支持
+ */
+template <>
+struct std::formatter<my::CStringView> : std::formatter<const char*> {
+    auto format(const my::CStringView& value, auto& ctx) const {
+        return std::formatter<const char*>::format(value.begin(), ctx);
+    }
+};
+
+/**
  * @brief 为 CString 类提供标准库格式化支持
  */
 template <typename Alloc>

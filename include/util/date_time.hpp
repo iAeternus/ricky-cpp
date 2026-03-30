@@ -86,7 +86,7 @@ public:
      */
     static Self parse(const CString& str) {
         i32 year, month, day;
-        if (sscanf_s(str.data(), "%d-%d-%d", &year, &month, &day) != 3) {
+        if (std::sscanf(str.data(), "%d-%d-%d", &year, &month, &day) != 3) {
             throw runtime_exception("Invalid date format");
         }
         return of(year, month, day);
