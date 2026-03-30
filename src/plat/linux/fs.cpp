@@ -60,47 +60,47 @@ void mkdir_single(const char* path, const bool exist_ok) {
 
 } // namespace
 
-bool exists(const char* path) {
-    if (path == nullptr || path[0] == '\0') {
+bool exists(str::StringView path) {
+    if (path.is_empty()) {
         return false;
     }
-    struct stat st {};
-    return ::stat(path, &st) == 0;
+    struct stat st{};
+    return ::stat(path.data(), &st) == 0;
 }
 
-bool is_file(const char* path) {
-    if (path == nullptr || path[0] == '\0') {
+bool is_file(str::StringView path) {
+    if (path.is_empty()) {
         return false;
     }
-    struct stat st {};
-    if (::stat(path, &st) != 0) {
+    struct stat st{};
+    if (::stat(path.data(), &st) != 0) {
         return false;
     }
     return S_ISREG(st.st_mode);
 }
 
-bool is_dir(const char* path) {
-    if (path == nullptr || path[0] == '\0') {
+bool is_dir(str::StringView path) {
+    if (path.is_empty()) {
         return false;
     }
-    struct stat st {};
-    if (::stat(path, &st) != 0) {
+    struct stat st{};
+    if (::stat(path.data(), &st) != 0) {
         return false;
     }
     return S_ISDIR(st.st_mode);
 }
 
-void mkdir(const char* path, bool recursive, bool exist_ok) {
-    if (path == nullptr || path[0] == '\0') {
+void mkdir(str::StringView path, bool recursive, bool exist_ok) {
+    if (path.is_empty()) {
         throw argument_exception("Invalid path");
     }
 
     if (!recursive) {
-        mkdir_single(path, exist_ok);
+        mkdir_single(path.data(), exist_ok);
         return;
     }
 
-    std::string p(path);
+    std::string p(path.data());
     while (!p.empty() && is_sep(p.back())) {
         p.pop_back();
     }
@@ -124,8 +124,8 @@ void mkdir(const char* path, bool recursive, bool exist_ok) {
     mkdir_single(p.c_str(), exist_ok);
 }
 
-void remove(const char* path, const bool recursive) {
-    if (path == nullptr || path[0] == '\0') {
+void remove(str::StringView path, const bool recursive) {
+    if (path.is_empty()) {
         throw argument_exception("Invalid path");
     }
     if (!exists(path)) {
@@ -133,7 +133,7 @@ void remove(const char* path, const bool recursive) {
     }
 
     if (is_file(path)) {
-        if (::unlink(path) != 0) {
+        if (::unlink(path.data()) != 0) {
             throw system_exception("Failed to remove file: {}", path);
         }
         return;
@@ -143,49 +143,49 @@ void remove(const char* path, const bool recursive) {
         if (recursive) {
             const auto entries = listdir(path);
             for (const auto& entry : entries) {
-                auto child = join(path, entry.name.to_string().data());
-                remove(child.to_string().data(), true);
+                auto child = join(path, entry.name);
+                remove(child, true);
             }
         }
-        if (::rmdir(path) != 0) {
+        if (::rmdir(path.data()) != 0) {
             throw system_exception("Failed to remove directory: {}", path);
         }
     }
 }
 
-util::String join(const char* a, const char* b) {
-    if (a == nullptr || a[0] == '\0') {
-        return util::String(b ? b : "");
+str::String<> join(str::StringView a, str::StringView b) {
+    if (a.is_empty()) {
+        return str::String<>(b);
     }
-    if (b == nullptr || b[0] == '\0') {
-        return util::String(a);
+    if (b.is_empty()) {
+        return str::String<>(a);
     }
-    if (is_abs_path(b)) {
-        return util::String(b);
+    if (is_abs_path(b.data())) {
+        return str::String<>(b);
     }
 
-    const auto a_len = std::strlen(a);
+    const auto a_len = a.len();
     bool needs_sep = true;
     if (a_len > 0 && is_sep(a[a_len - 1])) {
         needs_sep = false;
     }
 
     std::string res;
-    res.reserve(a_len + std::strlen(b) + (needs_sep ? 1 : 0));
-    res.append(a);
+    res.reserve(a_len + b.len() + (needs_sep ? 1 : 0));
+    res.append(a.data());
     if (needs_sep) {
         res.push_back(PATH_SEP);
     }
-    res.append(b);
-    return util::String(res.c_str(), res.size());
+    res.append(b.data());
+    return str::String<>(res.c_str(), res.size());
 }
 
-util::Vec<DirEntry> listdir(const char* path) {
-    if (path == nullptr || path[0] == '\0') {
+util::Vec<DirEntry> listdir(str::StringView path) {
+    if (path.is_empty()) {
         throw argument_exception("Invalid path");
     }
 
-    DIR* dir = ::opendir(path);
+    DIR* dir = ::opendir(path.data());
     if (dir == nullptr) {
         throw system_exception("Failed to list directory: {}", path);
     }
@@ -197,11 +197,11 @@ util::Vec<DirEntry> listdir(const char* path) {
         }
 
         DirEntry info{};
-        info.name = util::String(entry->d_name);
+        info.name = str::String<>(entry->d_name);
 
-        auto full_path = join(path, entry->d_name);
-        struct stat st {};
-        if (::stat(full_path.to_string().data(), &st) == 0) {
+        auto full_path = join(path, str::StringView(entry->d_name));
+        struct stat st{};
+        if (::stat(full_path.data(), &st) == 0) {
             info.is_dir = S_ISDIR(st.st_mode);
             info.is_file = S_ISREG(st.st_mode);
         }
@@ -213,11 +213,11 @@ util::Vec<DirEntry> listdir(const char* path) {
     return results;
 }
 
-FileHandle* open(const char* path, const char* mode) {
-    if (path == nullptr || mode == nullptr) {
+FileHandle* open(str::StringView path, str::StringView mode) {
+    if (path.is_empty() || mode.is_empty()) {
         throw argument_exception("Invalid path or mode");
     }
-    std::FILE* fp = std::fopen(path, mode);
+    std::FILE* fp = std::fopen(path.data(), mode.data());
     if (fp == nullptr) {
         throw io_exception("Failed to open file: {}", path);
     }
@@ -226,11 +226,11 @@ FileHandle* open(const char* path, const char* mode) {
     return handle;
 }
 
-FileHandle* open(const char* path, const OpenMode mode) {
-    return open(path, mode_to_cstr(mode));
+FileHandle* open(str::StringView path, const OpenMode mode) {
+    return open(path, str::StringView(mode_to_cstr(mode)));
 }
 
-util::String read_all(FileHandle* file) {
+str::String<> read_all(FileHandle* file) {
     if (file == nullptr || file->fp == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
@@ -245,7 +245,7 @@ util::String read_all(FileHandle* file) {
     std::rewind(file->fp);
 
     if (end == 0) {
-        return util::String{};
+        return str::String<>{};
     }
 
     std::vector<char> buffer(static_cast<size_t>(end));
@@ -253,10 +253,10 @@ util::String read_all(FileHandle* file) {
     if (read_bytes != buffer.size() && std::ferror(file->fp)) {
         throw io_exception("Failed to read file");
     }
-    return util::String(buffer.data(), static_cast<usize>(read_bytes));
+    return str::String<>(buffer.data(), static_cast<usize>(read_bytes));
 }
 
-util::String read_all(const char* path) {
+str::String<> read_all(str::StringView path) {
     auto* file = open(path, OpenMode::ReadBinary);
     try {
         auto content = read_all(file);
@@ -268,14 +268,14 @@ util::String read_all(const char* path) {
     }
 }
 
-usize write(FileHandle* file, const char* data, usize size) {
+usize write(FileHandle* file, str::StringView data, usize size) {
     if (file == nullptr || file->fp == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
-    if (data == nullptr && size > 0) {
+    if (data.is_empty() && size > 0) {
         throw argument_exception("Invalid data pointer");
     }
-    const size_t written = std::fwrite(data, 1, static_cast<size_t>(size), file->fp);
+    const size_t written = std::fwrite(data.data(), 1, static_cast<size_t>(size), file->fp);
     if (written != size && std::ferror(file->fp)) {
         throw io_exception("Failed to write file");
     }
@@ -305,4 +305,3 @@ void close(FileHandle* file) {
 } // namespace my::plat::fs
 
 #endif // RICKY_LINUX
-
