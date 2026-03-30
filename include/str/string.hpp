@@ -30,15 +30,16 @@ public:
     };
     using CStrPtr = std::unique_ptr<char[], CStrDeleter>;
 
-    String() = default;
+    String() {
+        buf_.push(0);
+    }
 
     explicit String(const StringView& view) {
-        if (!view.is_empty()) {
-            buf_.reserve(view.len());
-            for (auto b : view.bytes()) {
-                buf_.push(b);
-            }
+        buf_.reserve(view.len() + 1);
+        for (auto b : view.bytes()) {
+            buf_.push(b);
         }
+        buf_.push(0);
     }
 
     explicit String(const char* s) :
@@ -56,15 +57,15 @@ public:
     ~String() = default;
 
     [[nodiscard]] usize len() const noexcept {
-        return buf_.len();
+        return buf_.len() > 0 ? buf_.len() - 1 : 0;
     }
 
     [[nodiscard]] bool is_empty() const noexcept {
-        return buf_.is_empty();
+        return len() == 0;
     }
 
     [[nodiscard]] usize capacity() const noexcept {
-        return buf_.capacity();
+        return buf_.capacity() > 0 ? buf_.capacity() - 1 : 0;
     }
 
     [[nodiscard]] u8& first() noexcept {
@@ -76,25 +77,36 @@ public:
     }
 
     [[nodiscard]] u8& last() noexcept {
-        return buf_.last();
+        return buf_.at(buf_.len() - 2);
     }
 
     [[nodiscard]] const u8& last() const noexcept {
-        return buf_.last();
+        return buf_.at(buf_.len() - 2);
     }
 
     void reserve(const usize new_cap) {
-        buf_.reserve(new_cap);
+        buf_.reserve(new_cap + 1);
     }
 
-    void clear() { buf_.clear(); }
+    void clear() {
+        buf_.clear();
+        buf_.push(0);
+    }
 
     [[nodiscard]] const u8* as_bytes() const noexcept {
         return buf_.data();
     }
 
     [[nodiscard]] StringView as_str() const noexcept {
-        return StringView(buf_.data(), buf_.len());
+        return StringView(buf_.data(), len());
+    }
+
+    [[nodiscard]] const char* as_cstr() const noexcept {
+        return reinterpret_cast<const char*>(buf_.data());
+    }
+
+    [[nodiscard]] std::string to_std_string() const {
+        return std::string(as_cstr(), len());
     }
 
     [[nodiscard]] String to_string() const {
@@ -156,51 +168,54 @@ public:
     }
 
     [[nodiscard]] CStrPtr into_cstr() const {
-        const usize size = buf_.len() + 1;
+        const usize size = len() + 1;
         cstr_allocator alloc{};
         char* out = alloc.allocate(size);
-        if (buf_.len() != 0) {
-            std::memcpy(out, buf_.data(), buf_.len());
-        }
-        out[buf_.len()] = '\0';
+        std::memcpy(out, buf_.data(), size);
         return CStrPtr(out, CStrDeleter{alloc, size});
     }
 
     void push(const char32_t cp) {
         u8 bytes[4]{};
         const usize n = detail::encode_utf8(cp, bytes);
+        buf_.pop();
         buf_.reserve(buf_.len() + n);
         for (usize i = 0; i < n; ++i) {
             buf_.push(bytes[i]);
         }
+        buf_.push(0);
     }
 
     void push_str(const StringView& view) {
         if (view.is_empty()) return;
+        buf_.pop();
         buf_.reserve(buf_.len() + view.len());
         for (auto b : view.bytes()) {
             buf_.push(b);
         }
+        buf_.push(0);
     }
 
     Option<char32_t> pop() {
-        if (buf_.is_empty()) {
+        if (len() == 0) {
             return Option<char32_t>::None();
         }
-        usize i = buf_.len() - 1;
+        usize i = len() - 1;
         while (i > 0 && (buf_.at(i) & 0xC0u) == 0x80u) {
             --i;
         }
         const u8* data = buf_.data();
         const u8* p = data + i;
-        const u8* end = data + buf_.len();
+        const u8* end = data + len();
         char32_t cp = 0;
         if (!detail::decode_next(p, end, cp)) {
             throw runtime_exception("Invalid UTF-8");
         }
-        while (buf_.len() > i) {
+        while (buf_.len() > i + 1) {
             buf_.pop();
         }
+        buf_.pop();
+        buf_.push(0);
         return Option<char32_t>::Some(cp);
     }
 
@@ -265,11 +280,15 @@ public:
     }
 
     util::Vec<u8, Alloc> into_bytes() const& {
-        return util::Vec<u8, Alloc>(buf_);
+        return util::Vec<u8, Alloc>(buf_.slice(0, len()));
     }
 
     util::Vec<u8, Alloc> into_bytes() && {
-        return std::move(buf_);
+        auto result = util::Vec<u8, Alloc>(std::move(buf_));
+        if (!result.is_empty() && result.at(result.len() - 1) == 0) {
+            result.pop();
+        }
+        return result;
     }
 
 private:
