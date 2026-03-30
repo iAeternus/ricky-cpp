@@ -122,7 +122,7 @@ StringView::StringView(const char* s) :
         cstr_backed_(s != nullptr) {}
 
 StringView::StringView(const char* s, const usize len) :
-        data_(reinterpret_cast<const u8*>(s)), len_(len), cstr_backed_(false) {}
+        data_(reinterpret_cast<const u8*>(s)), len_(len), cstr_backed_(s != nullptr) {}
 
 StringView::StringView(const u8* s, const usize len) :
         data_(s), len_(len), cstr_backed_(false) {}

@@ -161,7 +161,8 @@ str::String<> join(str::StringView a, str::StringView b) {
     if (b.is_empty()) {
         return str::String<>(a);
     }
-    if (is_abs_path(b.as_cstr())) {
+    const char* b_cstr = b.as_cstr();
+    if (b_cstr != nullptr && is_abs_path(b_cstr)) {
         return str::String<>(b);
     }
 
@@ -173,7 +174,13 @@ str::String<> join(str::StringView a, str::StringView b) {
 
     std::string res;
     res.reserve(a_len + b.len() + (needs_sep ? 1 : 0));
-    res.append(a.as_cstr());
+    for (usize i = 0; i < a_len; ++i) {
+        char c = a[i];
+        if (c == '\\') {
+            c = '/';
+        }
+        res.push_back(c);
+    }
     if (needs_sep) {
         res.push_back(PATH_SEP);
     }
