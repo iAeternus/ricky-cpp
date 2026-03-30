@@ -127,15 +127,32 @@ public:
     auto operator>(const Self& other) const -> bool { return cmp(other) > 0; }
     auto operator>=(const Self& other) const -> bool { return cmp(other) >= 0; }
 
-    [[nodiscard]] const char* as_cstr() const noexcept {
-        if (buf_.len() == 0) {
-            return "";
-        }
-        const auto* data = buf_.data();
-        if (data[buf_.len() - 1] == 0) {
-            return reinterpret_cast<const char*>(data);
-        }
-        return nullptr;
+    [[nodiscard]] u8& operator[](const usize idx) noexcept {
+        return buf_[idx];
+    }
+
+    [[nodiscard]] const u8& operator[](const usize idx) const noexcept {
+        return buf_[idx];
+    }
+
+    [[nodiscard]] u8& at(const usize idx) {
+        return buf_.at(idx);
+    }
+
+    [[nodiscard]] const u8& at(const usize idx) const {
+        return buf_.at(idx);
+    }
+
+    [[nodiscard]] StringView slice(const usize start, const usize end) const noexcept {
+        return as_str().slice(start, end);
+    }
+
+    [[nodiscard]] StringView slice(const usize start) const noexcept {
+        return as_str().slice(start);
+    }
+
+    [[nodiscard]] StringView substr(const usize start, const usize count) const noexcept {
+        return as_str().slice(start, start + count);
     }
 
     [[nodiscard]] CStrPtr into_cstr() const {
@@ -223,7 +240,7 @@ public:
         return as_str().split(pat);
     }
 
-    util::Vec<StringView> split_whitespace() const {
+    [[nodiscard]] util::Vec<StringView> split_whitespace() const {
         return as_str().split_whitespace();
     }
 
@@ -236,76 +253,15 @@ public:
     }
 
     String replace(const StringView& from, const StringView& to) const {
-        if (from.len() == 0) {
-            util::Vec<StringView> parts = split(from);
-            String res;
-            for (usize i = 0; i < parts.len(); ++i) {
-                if (i > 0) res.push_str(to);
-                res.push_str(parts.at(i));
-            }
-            return res;
-        }
-
-        String res;
-        const u8* data = buf_.data();
-        const usize total = buf_.len();
-        usize start = 0;
-        for (usize i = 0; i + from.len() <= total; ++i) {
-            if (std::memcmp(data + i, from.as_bytes(), from.len()) == 0) {
-                if (i > start) {
-                    res.push_str(StringView(data + start, i - start));
-                }
-                res.push_str(to);
-                start = i + from.len();
-                i = start == 0 ? 0 : start - 1;
-            }
-        }
-        if (start < total) {
-            res.push_str(StringView(data + start, total - start));
-        }
-        return res;
+        return as_str().replace(from, to);
     }
 
     String to_lowercase() const {
-        String res;
-        const u8* p = buf_.data();
-        const u8* end = p + buf_.len();
-        while (p < end) {
-            const u8* start = p;
-            char32_t cp = 0;
-            if (!detail::decode_next(p, end, cp)) {
-                throw runtime_exception("Invalid UTF-8");
-            }
-            if (cp <= 0x7Fu) {
-                char c = static_cast<char>(cp);
-                c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
-                res.push(static_cast<char32_t>(c));
-            } else {
-                res.push_str(StringView(start, static_cast<usize>(p - start)));
-            }
-        }
-        return res;
+        return as_str().to_lowercase();
     }
 
     String to_uppercase() const {
-        String res;
-        const u8* p = buf_.data();
-        const u8* end = p + buf_.len();
-        while (p < end) {
-            const u8* start = p;
-            char32_t cp = 0;
-            if (!detail::decode_next(p, end, cp)) {
-                throw runtime_exception("Invalid UTF-8");
-            }
-            if (cp <= 0x7Fu) {
-                char c = static_cast<char>(cp);
-                c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
-                res.push(static_cast<char32_t>(c));
-            } else {
-                res.push_str(StringView(start, static_cast<usize>(p - start)));
-            }
-        }
-        return res;
+        return as_str().to_uppercase();
     }
 
     util::Vec<u8, Alloc> into_bytes() const& {

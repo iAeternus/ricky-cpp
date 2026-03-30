@@ -341,6 +341,23 @@ public:
     [[nodiscard]] Option<StringView> strip_prefix(const StringView& prefix) const;
     [[nodiscard]] Option<StringView> strip_suffix(const StringView& suffix) const;
 
+    [[nodiscard]] constexpr StringView slice(const usize start, const usize end) const noexcept {
+        if (start > len_ || end > len_ || start > end) {
+            return StringView{};
+        }
+        return StringView(data_ + start, end - start);
+    }
+
+    [[nodiscard]] constexpr StringView slice(const usize start) const noexcept {
+        return slice(start, len_);
+    }
+
+    [[nodiscard]] constexpr const u8& operator[](const usize idx) const noexcept {
+        return data_[idx];
+    }
+
+    [[nodiscard]] const u8& at(const usize idx) const;
+
     util::Vec<StringView> split(const StringView& pat) const;
     util::Vec<StringView> split_whitespace() const;
     util::Vec<StringView> lines() const;

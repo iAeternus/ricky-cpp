@@ -109,6 +109,13 @@ Option<usize> twoway_find(const u8* hay, const usize hlen, const u8* pat, const 
 
 } // namespace
 
+const u8& StringView::at(const usize idx) const {
+    if (idx >= len_) {
+        throw std::out_of_range("StringView::at: index out of range");
+    }
+    return data_[idx];
+}
+
 StringView::StringView(const char* s) :
         data_(reinterpret_cast<const u8*>(s)),
         len_(s ? static_cast<usize>(std::strlen(s)) : 0),
