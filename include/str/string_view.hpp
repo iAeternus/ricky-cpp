@@ -147,6 +147,14 @@ public:
     StringView(const char* s, const usize len);
     StringView(const u8* s, const usize len);
 
+    static StringView from_null_terminated(const char* s, const usize len) noexcept {
+        StringView view;
+        view.data_ = reinterpret_cast<const u8*>(s);
+        view.len_ = len;
+        view.cstr_backed_ = (s != nullptr);
+        return view;
+    }
+
     [[nodiscard]] constexpr usize len() const noexcept {
         return len_;
     }
@@ -417,6 +425,14 @@ inline bool operator!=(const std::string_view lhs, const StringView rhs) {
 }
 
 } // namespace my::str
+
+template <>
+struct std::formatter<my::str::StringView, char> : std::formatter<std::string_view, char> {
+    auto format(const my::str::StringView value, auto& ctx) const {
+        return std::formatter<std::string_view, char>::format(
+            std::string_view(reinterpret_cast<const char*>(value.as_bytes()), value.len()), ctx);
+    }
+};
 
 namespace my {
 

@@ -31,24 +31,19 @@ int to_type(const SocketType type) {
     }
 }
 
-std::string to_std(const str::StringView view) {
-    return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
-}
-
 void fill_sockaddr(const str::StringView ip, const u16 port, sockaddr_storage& addr, int& len) {
     std::memset(&addr, 0, sizeof(addr));
     if (ip.len() == 0) {
         throw argument_exception("Invalid ip");
     }
-    const auto ip_s = to_std(ip);
-    const auto* ip_cstr = ip_s.c_str();
+    const auto* ip_cstr = ip.as_cstr();
 
     if (std::strchr(ip_cstr, ':') != nullptr) {
         auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
         a6->sin6_family = AF_INET6;
         a6->sin6_port = htons(port);
         if (InetPtonA(AF_INET6, ip_cstr, &a6->sin6_addr) != 1) {
-            throw argument_exception("Invalid IPv6 address: {}", ip_s);
+            throw argument_exception("Invalid IPv6 address: {}", ip);
         }
         len = sizeof(sockaddr_in6);
         return;
@@ -58,7 +53,7 @@ void fill_sockaddr(const str::StringView ip, const u16 port, sockaddr_storage& a
     a4->sin_family = AF_INET;
     a4->sin_port = htons(port);
     if (InetPtonA(AF_INET, ip_cstr, &a4->sin_addr) != 1) {
-        throw argument_exception("Invalid IPv4 address: {}", ip_s);
+        throw argument_exception("Invalid IPv4 address: {}", ip);
     }
     len = sizeof(sockaddr_in);
 }

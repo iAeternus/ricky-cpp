@@ -98,7 +98,7 @@ public:
     }
 
     [[nodiscard]] StringView as_str() const noexcept {
-        return StringView(buf_.data(), len());
+        return StringView::from_null_terminated(as_cstr(), len());
     }
 
     [[nodiscard]] const char* as_cstr() const noexcept {

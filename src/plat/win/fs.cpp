@@ -20,10 +20,6 @@ bool is_sep(const char ch) {
     return ch == '\\' || ch == '/';
 }
 
-// std::string to_std(const str::StringView view) {
-//     return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
-// }
-
 bool is_abs_path(const str::StringView path) {
     if (path.len() == 0) {
         return false;
@@ -67,7 +63,7 @@ bool exists(const str::StringView path) {
     if (path.len() == 0) {
         return false;
     }
-    const auto path_cstr = path.to_string().into_cstr();
+    const auto path_cstr = path.into_cstr();
     const auto attributes = GetFileAttributesA(path_cstr.get());
     return (attributes != INVALID_FILE_ATTRIBUTES);
 }
@@ -76,7 +72,7 @@ bool is_file(const str::StringView path) {
     if (path.len() == 0) {
         return false;
     }
-    const auto path_cstr = path.to_string().into_cstr();
+    const auto path_cstr = path.into_cstr();
     const auto attr = GetFileAttributesA(path_cstr.get());
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
@@ -85,7 +81,7 @@ bool is_dir(const str::StringView path) {
     if (path.len() == 0) {
         return false;
     }
-    const auto path_cstr = path.to_string().into_cstr();
+    const auto path_cstr = path.into_cstr();
     const auto attr = GetFileAttributesA(path_cstr.get());
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0);
 }
@@ -96,78 +92,54 @@ void mkdir(const str::StringView path, bool recursive, bool exist_ok) {
     }
 
     if (!recursive) {
-        auto path_cstr = path.to_string().into_cstr();
+        const auto path_cstr = path.into_cstr();
         mkdir_single(path_cstr.get(), exist_ok);
         return;
     }
 
-    // auto p = path.to_string();
-    // while (!p.is_empty() && is_sep(p.last())) {
-    //     p.pop();
-    // }
-    // if (p.is_empty()) {
-    //     return;
-    // }
-    // if (p.len() == 2 && p.chars().nth(1).unwrap() == ':') {
-    //     return;
-    // }
-
-    // usize start = 0;
-    // if (p.len() >= 2 && p.chars().nth(1).unwrap() == ':') {
-    //     start = 2;
-    //     if (start > p.len() && is_sep(p.chars().nth(start).unwrap())) {
-    //         ++start;
-    //     }
-    // }
-    // for (usize i = start; i < p.len(); ++i) {
-    //     if (is_sep(p.chars().nth(i).unwrap())) {
-    //         const auto sub = p.
-    //     }
-    // }
-
-    std::string p = path.to_std_string();
-    while (!p.empty() && is_sep(p.back())) {
-        p.pop_back();
+    str::String<> p = str::String<>(path);
+    while (!p.is_empty() && is_sep(p.last())) {
+        p.pop();
     }
-    if (p.empty()) {
+    if (p.is_empty()) {
         return;
     }
-    if (p.size() == 2 && p[1] == ':') {
+    if (p.len() == 2 && p.chars().nth(1).unwrap() == ':') {
         return;
     }
 
-    size_t start = 0;
-    if (p.size() >= 2 && p[1] == ':') {
+    usize start = 0;
+    if (p.len() >= 2 && p.chars().nth(1).unwrap() == ':') {
         start = 2;
-        if (start < p.size() && is_sep(p[start])) {
+        if (start < p.len() && is_sep(p.chars().nth(start).unwrap())) {
             ++start;
         }
     }
-
-    for (size_t i = start; i < p.size(); ++i) {
-        if (is_sep(p[i])) {
-            const auto sub = p.substr(0, i);
-            if (!sub.empty()) {
-                mkdir_single(sub.c_str(), true);
+    for (usize i = start; i < p.len(); ++i) {
+        if (is_sep(p.chars().nth(i).unwrap())) {
+            const auto sub = p.slice(0, i);
+            if (!sub.is_empty()) {
+                const auto sub_cstr = sub.into_cstr();
+                mkdir_single(sub_cstr.get(), true);
             }
         }
     }
-    mkdir_single(p.c_str(), exist_ok);
+    const auto p_cstr = p.into_cstr();
+    mkdir_single(p_cstr.get(), exist_ok);
 }
 
 void remove(const str::StringView path, const bool recursive) {
     if (path.len() == 0) {
         throw argument_exception("Invalid path");
     }
-    const auto p = path.to_string();
     if (!exists(path)) {
-        throw not_found_exception("File or directory not found: {}", path.to_string());
+        throw not_found_exception("File or directory not found: {}", path);
     }
 
-    auto p_cstr = p.into_cstr();
     if (is_file(path)) {
-        if (!DeleteFileA(p_cstr.get())) {
-            throw system_exception("Failed to remove file: {}", p);
+        const auto path_cstr = path.into_cstr();
+        if (!DeleteFileA(path_cstr.get())) {
+            throw system_exception("Failed to remove file: {}", path);
         }
         return;
     }
@@ -180,8 +152,9 @@ void remove(const str::StringView path, const bool recursive) {
                 remove(child.as_str(), true);
             }
         }
-        if (!RemoveDirectoryA(p_cstr.get())) {
-            throw system_exception("Failed to remove directory: {}", p);
+        const auto path_cstr = path.into_cstr();
+        if (!RemoveDirectoryA(path_cstr.get())) {
+            throw system_exception("Failed to remove directory: {}", path);
         }
     }
 }
@@ -197,21 +170,19 @@ str::String<> join(const str::StringView a, const str::StringView b) {
         return str::String<>(b);
     }
 
-    const auto a_s = a.to_string();
-    const auto b_s = b.to_string();
-    const auto a_len = a_s.len();
+    const auto a_len = a.len();
     bool needs_sep = true;
-    if (a_len > 0 && is_sep(a_s.last())) {
+    if (a_len > 0 && is_sep(a[a_len - 1])) {
         needs_sep = false;
     }
 
     str::String res;
-    res.reserve(a_len + b_s.len() + (needs_sep ? 1 : 0));
-    res.push_str(a_s.as_str());
+    res.reserve(a_len + b.len() + (needs_sep ? 1 : 0));
+    res.push_str(a);
     if (needs_sep) {
         res.push(PATH_SEP);
     }
-    res.push_str(b_s.as_str());
+    res.push_str(b);
     return res;
 }
 
@@ -222,10 +193,10 @@ util::Vec<DirEntry> listdir(const str::StringView path) {
 
     WIN32_FIND_DATAA find_data;
     const auto pattern = join(path, str::StringView("*"));
-    auto pattern_cstr = pattern.into_cstr();
+    const auto pattern_cstr = pattern.into_cstr();
     auto handle = FindFirstFileA(pattern_cstr.get(), &find_data);
     if (handle == INVALID_HANDLE_VALUE) {
-        throw system_exception("Failed to list directory: {}", path.to_string());
+        throw system_exception("Failed to list directory: {}", path);
     }
 
     util::Vec<DirEntry> results;
@@ -248,11 +219,9 @@ FileHandle* open(const str::StringView path, const str::StringView mode) {
     if (path.len() == 0 || mode.len() == 0) {
         throw argument_exception("Invalid path or mode");
     }
-    const auto path_s = path.to_string();
-    const auto mode_s = mode.to_string();
-    auto path_cstr = path_s.into_cstr();
-    auto mode_cstr = mode_s.into_cstr();
 
+    const auto path_cstr = path.into_cstr();
+    const auto mode_cstr = mode.into_cstr();
 #if defined(_MSC_VER)
     std::FILE* fp = nullptr;
     if (fopen_s(&fp, path_cstr.get(), mode_cstr.get()) != 0) {
@@ -262,7 +231,7 @@ FileHandle* open(const str::StringView path, const str::StringView mode) {
     std::FILE* fp = std::fopen(path_cstr.get(), mode_cstr.get());
 #endif
     if (fp == nullptr) {
-        throw io_exception("Failed to open file: {}", path_s);
+        throw io_exception("Failed to open file: {}", path);
     }
     auto* handle = new FileHandle{};
     handle->fp = fp;

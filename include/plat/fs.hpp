@@ -21,7 +21,7 @@ struct DirEntry {
 struct FileHandle;
 
 /**
- * @brief 文件打开模式（平台无关）
+ * @brief 文件打开模式
  */
 enum class OpenMode {
     Read,
@@ -76,7 +76,7 @@ util::Vec<DirEntry> listdir(str::StringView path);
 FileHandle* open(str::StringView path, str::StringView mode);
 
 /**
- * @brief 打开文件，返回句柄（平台无关模式）
+ * @brief 打开文件，返回句柄
  */
 FileHandle* open(str::StringView path, OpenMode mode);
 
