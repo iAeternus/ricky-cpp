@@ -65,7 +65,7 @@ bool exists(str::StringView path) {
         return false;
     }
     struct stat st{};
-    return ::stat(path.data(), &st) == 0;
+    return ::stat(path.as_cstr(), &st) == 0;
 }
 
 bool is_file(str::StringView path) {
@@ -73,7 +73,7 @@ bool is_file(str::StringView path) {
         return false;
     }
     struct stat st{};
-    if (::stat(path.data(), &st) != 0) {
+    if (::stat(path.as_cstr(), &st) != 0) {
         return false;
     }
     return S_ISREG(st.st_mode);
@@ -84,7 +84,7 @@ bool is_dir(str::StringView path) {
         return false;
     }
     struct stat st{};
-    if (::stat(path.data(), &st) != 0) {
+    if (::stat(path.as_cstr(), &st) != 0) {
         return false;
     }
     return S_ISDIR(st.st_mode);
@@ -96,11 +96,11 @@ void mkdir(str::StringView path, bool recursive, bool exist_ok) {
     }
 
     if (!recursive) {
-        mkdir_single(path.data(), exist_ok);
+        mkdir_single(path.as_cstr(), exist_ok);
         return;
     }
 
-    std::string p(path.data());
+    std::string p(path.as_cstr());
     while (!p.empty() && is_sep(p.back())) {
         p.pop_back();
     }
@@ -133,7 +133,7 @@ void remove(str::StringView path, const bool recursive) {
     }
 
     if (is_file(path)) {
-        if (::unlink(path.data()) != 0) {
+        if (::unlink(path.as_cstr()) != 0) {
             throw system_exception("Failed to remove file: {}", path);
         }
         return;
@@ -143,11 +143,11 @@ void remove(str::StringView path, const bool recursive) {
         if (recursive) {
             const auto entries = listdir(path);
             for (const auto& entry : entries) {
-                auto child = join(path, entry.name);
-                remove(child, true);
+                auto child = join(path, entry.name.as_str());
+                remove(child.as_str(), true);
             }
         }
-        if (::rmdir(path.data()) != 0) {
+        if (::rmdir(path.as_cstr()) != 0) {
             throw system_exception("Failed to remove directory: {}", path);
         }
     }
@@ -160,7 +160,7 @@ str::String<> join(str::StringView a, str::StringView b) {
     if (b.is_empty()) {
         return str::String<>(a);
     }
-    if (is_abs_path(b.data())) {
+    if (is_abs_path(b.as_cstr())) {
         return str::String<>(b);
     }
 
@@ -172,11 +172,11 @@ str::String<> join(str::StringView a, str::StringView b) {
 
     std::string res;
     res.reserve(a_len + b.len() + (needs_sep ? 1 : 0));
-    res.append(a.data());
+    res.append(a.as_cstr());
     if (needs_sep) {
         res.push_back(PATH_SEP);
     }
-    res.append(b.data());
+    res.append(b.as_cstr());
     return str::String<>(res.c_str(), res.size());
 }
 
@@ -185,7 +185,7 @@ util::Vec<DirEntry> listdir(str::StringView path) {
         throw argument_exception("Invalid path");
     }
 
-    DIR* dir = ::opendir(path.data());
+    DIR* dir = ::opendir(path.as_cstr());
     if (dir == nullptr) {
         throw system_exception("Failed to list directory: {}", path);
     }
@@ -201,7 +201,7 @@ util::Vec<DirEntry> listdir(str::StringView path) {
 
         auto full_path = join(path, str::StringView(entry->d_name));
         struct stat st{};
-        if (::stat(full_path.data(), &st) == 0) {
+        if (::stat(full_path.as_cstr(), &st) == 0) {
             info.is_dir = S_ISDIR(st.st_mode);
             info.is_file = S_ISREG(st.st_mode);
         }
@@ -217,7 +217,7 @@ FileHandle* open(str::StringView path, str::StringView mode) {
     if (path.is_empty() || mode.is_empty()) {
         throw argument_exception("Invalid path or mode");
     }
-    std::FILE* fp = std::fopen(path.data(), mode.data());
+    std::FILE* fp = std::fopen(path.as_cstr(), mode.as_cstr());
     if (fp == nullptr) {
         throw io_exception("Failed to open file: {}", path);
     }
@@ -275,7 +275,7 @@ usize write(FileHandle* file, str::StringView data, usize size) {
     if (data.is_empty() && size > 0) {
         throw argument_exception("Invalid data pointer");
     }
-    const size_t written = std::fwrite(data.data(), 1, static_cast<size_t>(size), file->fp);
+    const size_t written = std::fwrite(data.as_cstr(), 1, static_cast<size_t>(size), file->fp);
     if (written != size && std::ferror(file->fp)) {
         throw io_exception("Failed to write file");
     }

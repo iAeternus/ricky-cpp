@@ -171,7 +171,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr std::string_view to_std_string_view() const noexcept {
+    [[nodiscard]] std::string_view to_std_string_view() const noexcept {
         return std::string_view(reinterpret_cast<const char*>(data_), len_);
     }
 

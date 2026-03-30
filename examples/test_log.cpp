@@ -5,8 +5,7 @@
  * @version 1.0
  */
 #include "log.hpp"
-
-#include <winnls.h>
+#include "process.hpp"
 
 void test_console_log() {
     my::log::set_consolelog_level(my::log::LogLevel::Trace);
@@ -19,7 +18,7 @@ void test_console_log() {
 }
 
 int main() {
-    system(("chcp " + std::to_string(CP_UTF8)).c_str()); // 控制台输出ASC颜色字符
+    my::plat::process::set_console_utf8();
     test_console_log();
     return 0;
 }

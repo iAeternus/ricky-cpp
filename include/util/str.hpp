@@ -256,7 +256,7 @@ public:
      */
     static Self from_i64(const i64 val) {
         char buf[32];
-        const auto len = std::snprintf(buf, sizeof(buf), "%lld", val);
+        const auto len = std::snprintf(buf, sizeof(buf), "%ld", val);
         return Self(buf, static_cast<usize>(len));
     }
 
@@ -265,7 +265,7 @@ public:
      */
     static Self from_u64(const u64 val) {
         char buf[32];
-        const auto len = std::snprintf(buf, sizeof(buf), "%llu", val);
+        const auto len = std::snprintf(buf, sizeof(buf), "%lu", val);
         return Self(buf, static_cast<usize>(len));
     }
 
@@ -639,7 +639,7 @@ public:
             total_len -= len_;
         }
 
-        Self result{std::max(0ULL, total_len), ' '};
+        Self result{std::max(static_cast<usize>(0), total_len), ' '};
         usize pos = 0;
 
         auto elem_it = elem_strs.begin();

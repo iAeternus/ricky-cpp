@@ -12,6 +12,7 @@
 
 #include <memory>
 #include <shared_mutex>
+#include <mutex>
 
 namespace my::graph {
 
