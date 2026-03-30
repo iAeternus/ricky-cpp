@@ -25,7 +25,7 @@ const fs::PathBuf& repo_root() {
 }
 
 fs::PathBuf res_dir() {
-    return repo_root().join(R"(tests\resources)");
+    return repo_root().join("tests/resources");
 }
 
 fs::PathBuf unit_file() {
@@ -166,10 +166,13 @@ void should_fail_to_remove_if_file_or_dir_not_found() {
 void test_join() {
     auto res_path = res_dir().as_cstr();
     auto joined = plat::fs::join(sv(res_path), "text.txt"_sv);
-    Assertions::assert_true(to_std(joined).find(R"(tests\resources\text.txt)") != std::string::npos);
+    auto joined_str = to_std(joined);
+    auto pos1 = joined_str.find("tests/resources/text.txt");
+    auto pos2 = joined_str.find("tests\\resources\\text.txt");
+    Assertions::assert_true(pos1 != std::string::npos || pos2 != std::string::npos);
 
     auto joined2 = plat::fs::join(sv(res_path), ""_sv);
-    Assertions::assert_equals(std::string(res_path.data()), to_std(joined2));
+    Assertions::assert_equals(sv(res_path), joined2.as_str());
 }
 
 void test_listdir() {
