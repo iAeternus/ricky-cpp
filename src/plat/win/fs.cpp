@@ -182,7 +182,13 @@ str::String<> join(const str::StringView a, const str::StringView b) {
     if (needs_sep) {
         res.push(PATH_SEP);
     }
-    res.push_str(b);
+    for (usize i = 0; i < b.len(); ++i) {
+        char c = b[i];
+        if (c == '/') {
+            c = '\\';
+        }
+        res.push(c);
+    }
     return res;
 }
 

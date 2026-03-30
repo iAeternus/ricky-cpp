@@ -26,11 +26,12 @@ namespace {
 static constexpr char PATH_SEP = '/';
 
 bool is_sep(const char ch) {
-    return ch == '/';
+    return ch == '/' || ch == '\\';
 }
 
 bool is_abs_path(const char* path) {
-    return path != nullptr && path[0] == '/';
+    if (path == nullptr) return false;
+    return path[0] == '/' || (path[0] != '\0' && path[1] == ':');
 }
 
 const char* mode_to_cstr(const OpenMode mode) {
@@ -176,7 +177,13 @@ str::String<> join(str::StringView a, str::StringView b) {
     if (needs_sep) {
         res.push_back(PATH_SEP);
     }
-    res.append(b.as_cstr());
+    for (usize i = 0; i < b.len(); ++i) {
+        char c = b[i];
+        if (c == '\\') {
+            c = '/';
+        }
+        res.push_back(c);
+    }
     return str::String<>(res.c_str(), res.size());
 }
 
