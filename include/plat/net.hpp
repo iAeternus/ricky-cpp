@@ -56,6 +56,11 @@ void close(SocketHandle* socket);
 void bind(SocketHandle* socket, str::StringView ip, u16 port);
 
 /**
+ * @brief 获取本地地址
+ */
+void get_local_addr(SocketHandle* socket, str::String<>& ip, u16& port);
+
+/**
  * @brief 监听连接
  */
 void listen(SocketHandle* socket, i32 backlog);
@@ -90,6 +95,22 @@ void set_timeout_ms(SocketHandle* socket, u32 timeout_ms, bool receive);
  * @brief 设置套接字选项
  */
 void set_option(SocketHandle* socket, i32 level, i32 optname, const void* optval, u32 optlen);
+
+/**
+ * @brief UDP发送到指定地址
+ */
+usize send_to(SocketHandle* socket, str::StringView data, usize size, str::StringView ip, u16 port, i32 flags);
+
+/**
+ * @brief UDP接收数据（返回数据和发送方地址）
+ */
+struct UdpRecvResult {
+    str::String<> data;
+    str::String<> src_ip;
+    u16 src_port{0};
+};
+
+UdpRecvResult recv_from(SocketHandle* socket, usize size, i32 flags);
 
 } // namespace my::plat::net
 

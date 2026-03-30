@@ -29,7 +29,7 @@ fs::PathBuf res_dir() {
 }
 
 fs::PathBuf unit_file() {
-    return repo_root().join(R"(tests\unit\test_win_file_utils.hpp)");
+    return repo_root().join(R"(tests\CMakeLists.txt)");
 }
 
 fs::PathBuf tests_dir() {

@@ -1,120 +1,51 @@
 /**
- * @brief UDP服务器、客户端
+ * @brief UDP - Rust风格API
  * @author Ricky
- * @date 2025/7/13
+ * @date 2026/3/30
  * @version 1.0
  */
-#ifndef UDP_HPP
-#define UDP_HPP
+#ifndef NET_UDP_HPP
+#define NET_UDP_HPP
 
-#include "socket.hpp"
+#include "net.hpp"
+#include "option.hpp"
+#include "memory"
 
 namespace my::net {
 
-/**
- * @brief UDP服务器
- * @details 该类用于创建UDP服务器，监听指定端口并接收数据
- */
-class UdpServer : public Object<UdpServer> {
+class UdpSocket {
 public:
-    using Self = UdpServer;
+    static UdpSocket bind(str::StringView ip, u16 port);
+    static UdpSocket bind(u16 port);
 
-    /**
-     * @brief 使用ip和端口构造UDP服务器
-     * @param ip IP地址字符串
-     * @param port 端口号
-     * @param family 地址族，默认为AF_INET
-     * @throws runtime_exception 如果创建套接字失败
-     */
-    UdpServer(const char* ip, u16 port, i32 family = AF_INET) :
-            socket_(family, SOCK_DGRAM) {
-        socket_.bind(ip, port); // 绑定到指定IP和端口
-    }
+    UdpSocket(str::StringView ip, u16 port);
 
-    /**
-     * @brief 发送数据到指定地址，需要用recvfrom接收
-     * @param data 要发送的数据指针
-     * @param size 数据大小
-     * @param to 目标地址
-     * @param flags 发送标志，默认为0
-     * @throws runtime_exception 如果发送失败
-     */
-    void sendto(const char* data, usize size, const SockAddrIn& to, i32 flags = 0) const {
-        return socket_.sendto(data, size, to, flags);
-    }
+    [[nodiscard]] str::String<> local_ip() const;
+    [[nodiscard]] u16 local_port() const;
 
-    /**
-     * @brief 接收数据
-     * @param flags 接收标志，默认为0
-     * @return 返回接收到的数据和发送方地址
-     * @throws runtime_exception 如果接收失败
-     */
-    [[nodiscard]] Pair<CString, SockAddrIn> recvfrom(i32 flags = 0) const {
-        return socket_.recvfrom(flags);
-    }
+    usize send_to(str::StringView ip, u16 port, str::StringView data);
+
+    struct RecvResult {
+        str::String<> data;
+        str::String<> src_ip;
+        u16 src_port{0};
+    };
+
+    RecvResult recv_from(usize max_size = 4096);
+
+    void set_read_timeout(u32 timeout_ms);
+    void set_write_timeout(u32 timeout_ms);
+
+    void close();
 
 private:
-    Socket socket_; // UDP套接字
-};
+    std::unique_ptr<plat::net::SocketHandle, void (*)(plat::net::SocketHandle*)> handle_;
+    str::String<> local_ip_;
+    u16 local_port_{0};
 
-/**
- * @brief UDP客户端
- * @details 该类用于创建UDP客户端，发送数据到指定服务器地址和端口
- */
-class UdpClient : public Object<UdpClient> {
-public:
-    using Self = UdpClient;
-
-    /**
-     * @brief 使用地址族构造UDP客户端
-     * @param family 地址族，默认为AF_INET
-     * @throws runtime_exception 如果创建套接字失败
-     */
-    explicit UdpClient(i32 family = AF_INET) :
-            socket_(family, SOCK_DGRAM) {}
-
-    /**
-     * @brief 使用服务器地址和端口构造UDP客户端
-     * @param server_ip 服务器IP地址字符串
-     * @param server_port 服务器端口号
-     * @param family 地址族，默认为AF_INET
-     */
-    UdpClient(const char* server_ip, u16 server_port, i32 family = AF_INET) :
-            socket_(family, SOCK_DGRAM), server_addr_(server_ip, server_port) {}
-
-    ~UdpClient() {
-        sendto("", 0); // 发送空数据包以通知服务器关闭连接
-    }
-
-    /**
-     * @brief 向服务器发送数据，需要用recvfrom接收
-     * @param data 要发送的数据指针
-     * @param size 数据大小
-     * @param flags 发送标志，默认为0
-     * @throws runtime_exception 如果发送失败
-     */
-    void sendto(const char* data, usize size, i32 flags = 0) const {
-        if (server_addr_.get_socklen() == 0) {
-            throw runtime_exception("Server address is not set");
-        }
-        socket_.sendto(data, size, server_addr_, flags);
-    }
-
-    /**
-     * @brief 接收数据
-     * @param flags 接收标志，默认为0
-     * @return 返回接收到的数据和发送方地址
-     * @throws runtime_exception 如果接收失败
-     */
-    [[nodiscard]] Pair<CString, SockAddrIn> recvfrom(i32 flags = 0) const {
-        return socket_.recvfrom(flags);
-    }
-
-private:
-    Socket socket_;          // UDP套接字
-    SockAddrIn server_addr_; // 服务器地址
+    UdpSocket() : handle_(nullptr, plat::net::close) {}
 };
 
 } // namespace my::net
 
-#endif // UDP_HPP
+#endif // NET_UDP_HPP

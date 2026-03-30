@@ -8,7 +8,7 @@
 #define FILE_HPP
 
 #include "marker.hpp"
-#include "fs.hpp"
+#include "plat/fs.hpp"
 #include "path_buf.hpp"
 
 namespace my::fs {
@@ -16,9 +16,10 @@ namespace my::fs {
 class File : public NoCopyMove {
 public:
     using Handle = plat::fs::FileHandle;
+    using OpenMode = plat::fs::OpenMode;
 
-    File(const char* path, plat::fs::OpenMode mode);
-    File(const PathBuf& path, plat::fs::OpenMode mode);
+    File(const char* path, OpenMode mode);
+    File(const PathBuf& path, OpenMode mode);
 
     ~File();
 

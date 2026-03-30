@@ -119,19 +119,13 @@ const u8& StringView::at(const usize idx) const {
 StringView::StringView(const char* s) :
         data_(reinterpret_cast<const u8*>(s)),
         len_(s ? static_cast<usize>(std::strlen(s)) : 0),
-        cstr_backed_(s != nullptr) {
-    detail::validate_utf8(data_, len_);
-}
+        cstr_backed_(s != nullptr) {}
 
 StringView::StringView(const char* s, const usize len) :
-        data_(reinterpret_cast<const u8*>(s)), len_(len), cstr_backed_(false) {
-    detail::validate_utf8(data_, len_);
-}
+        data_(reinterpret_cast<const u8*>(s)), len_(len), cstr_backed_(false) {}
 
 StringView::StringView(const u8* s, const usize len) :
-        data_(s), len_(len), cstr_backed_(false) {
-    detail::validate_utf8(data_, len_);
-}
+        data_(s), len_(len), cstr_backed_(false) {}
 
 StringView::CharsRange::Iterator::Iterator(const u8* cur, const u8* end_) :
         p(cur), end(end_), next(cur), value(0) {

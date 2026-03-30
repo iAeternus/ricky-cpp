@@ -36,13 +36,13 @@ void fill_sockaddr(const str::StringView ip, const u16 port, sockaddr_storage& a
     if (ip.len() == 0) {
         throw argument_exception("Invalid ip");
     }
-    const auto* ip_cstr = ip.as_cstr();
+    const auto ip_cstr = ip.into_cstr();
 
-    if (std::strchr(ip_cstr, ':') != nullptr) {
+    if (std::strchr(ip_cstr.get(), ':') != nullptr) {
         auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
         a6->sin6_family = AF_INET6;
         a6->sin6_port = htons(port);
-        if (InetPtonA(AF_INET6, ip_cstr, &a6->sin6_addr) != 1) {
+        if (InetPtonA(AF_INET6, ip_cstr.get(), &a6->sin6_addr) != 1) {
             throw argument_exception("Invalid IPv6 address: {}", ip);
         }
         len = sizeof(sockaddr_in6);
@@ -52,7 +52,7 @@ void fill_sockaddr(const str::StringView ip, const u16 port, sockaddr_storage& a
     auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
     a4->sin_family = AF_INET;
     a4->sin_port = htons(port);
-    if (InetPtonA(AF_INET, ip_cstr, &a4->sin_addr) != 1) {
+    if (InetPtonA(AF_INET, ip_cstr.get(), &a4->sin_addr) != 1) {
         throw argument_exception("Invalid IPv4 address: {}", ip);
     }
     len = sizeof(sockaddr_in);
@@ -119,6 +119,30 @@ void bind(SocketHandle* socket, const str::StringView ip, const u16 port) {
     fill_sockaddr(ip, port, addr, len);
     if (::bind(socket->socket, reinterpret_cast<sockaddr*>(&addr), len) == SOCKET_ERROR) {
         throw system_exception("Bind failed: {}", last_error());
+    }
+}
+
+void get_local_addr(SocketHandle* socket, str::String<>& ip, u16& port) {
+    if (!is_valid(socket)) {
+        throw null_pointer_exception("Invalid socket");
+    }
+    sockaddr_storage addr{};
+    int len = sizeof(addr);
+    if (::getsockname(socket->socket, reinterpret_cast<sockaddr*>(&addr), &len) == SOCKET_ERROR) {
+        throw system_exception("getsockname failed: {}", last_error());
+    }
+    if (addr.ss_family == AF_INET) {
+        char ip_str[16];
+        auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
+        inet_ntop(AF_INET, &a4->sin_addr, ip_str, 16);
+        ip = str::String<>(ip_str);
+        port = ntohs(a4->sin_port);
+    } else if (addr.ss_family == AF_INET6) {
+        char ip_str[46];
+        auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
+        inet_ntop(AF_INET6, &a6->sin6_addr, ip_str, 46);
+        ip = str::String<>(ip_str);
+        port = ntohs(a6->sin6_port);
     }
 }
 
@@ -207,6 +231,59 @@ void set_option(SocketHandle* socket, const i32 level, const i32 optname, const 
     if (::setsockopt(socket->socket, level, optname, reinterpret_cast<const char*>(optval), optlen) == SOCKET_ERROR) {
         throw system_exception("Set option failed: {}", last_error());
     }
+}
+
+usize send_to(SocketHandle* socket, const str::StringView data, const usize size, const str::StringView ip, const u16 port, const i32 flags) {
+    if (!is_valid(socket)) {
+        throw null_pointer_exception("Invalid socket");
+    }
+    if (size > data.len()) {
+        throw argument_exception("Send size exceeds data length");
+    }
+    sockaddr_storage addr{};
+    int len = 0;
+    fill_sockaddr(ip, port, addr, len);
+    const auto* bytes = reinterpret_cast<const char*>(data.as_bytes());
+    const int sent = ::sendto(socket->socket, bytes, static_cast<int>(size), flags, reinterpret_cast<sockaddr*>(&addr), len);
+    if (sent == SOCKET_ERROR) {
+        throw system_exception("Sendto failed: {}", last_error());
+    }
+    return static_cast<usize>(sent);
+}
+
+UdpRecvResult recv_from(SocketHandle* socket, const usize size, const i32 flags) {
+    if (!is_valid(socket)) {
+        throw null_pointer_exception("Invalid socket");
+    }
+    UdpRecvResult result;
+    if (size == 0) {
+        return result;
+    }
+    std::vector<char> buffer(size);
+    sockaddr_storage addr{};
+    int len = sizeof(addr);
+    const int received = ::recvfrom(socket->socket, buffer.data(), static_cast<int>(size), flags, reinterpret_cast<sockaddr*>(&addr), &len);
+    if (received == SOCKET_ERROR) {
+        throw system_exception("Recvfrom failed: {}", last_error());
+    }
+    if (received == 0) {
+        return result;
+    }
+    result.data = str::String<>(buffer.data(), static_cast<usize>(received));
+    if (addr.ss_family == AF_INET) {
+        auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
+        char ip_str[16];
+        inet_ntop(AF_INET, &a4->sin_addr, ip_str, 16);
+        result.src_ip = str::String<>(ip_str);
+        result.src_port = ntohs(a4->sin_port);
+    } else if (addr.ss_family == AF_INET6) {
+        char ip_str[46];
+        auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
+        inet_ntop(AF_INET6, &a6->sin6_addr, ip_str, 46);
+        result.src_ip = str::String<>(ip_str);
+        result.src_port = ntohs(a6->sin6_port);
+    }
+    return result;
 }
 
 } // namespace my::plat::net
