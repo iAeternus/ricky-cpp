@@ -9,8 +9,7 @@
 #define TRACKING_ALLOCATOR_HPP
 
 #include "alloc.hpp"
-#include "my_config.hpp"
-#include "my_types.hpp"
+#include "time.hpp"
 
 #include <atomic>
 #include <chrono>
@@ -24,13 +23,7 @@
 namespace my::mem {
 
 inline auto time_conv(time_t t) -> std::tm {
-    std::tm tm;
-#if RICKY_WIN
-    localtime_s(&tm, &t);
-#else
-    localtime_r(&t, &tm);
-#endif // RICKY_WIN
-    return tm;
+    return plat::time::localtime(t);
 }
 
 inline auto format_time(const std::tm& tm, const char* fmt) -> std::string {

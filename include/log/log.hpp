@@ -14,13 +14,7 @@
 #include "marker.hpp"
 #include "printer.hpp"
 #include "date_time.hpp"
-
-#if RICKY_WIN
-#include "processthreadsapi.h"
-#else
-#include <sys/types.h>
-#include <unistd.h>
-#endif // RICKY_WIN
+#include "plat/process.hpp"
 
 namespace my::log {
 
@@ -96,11 +90,7 @@ struct LogRecord {
  * @brief 获取当前pid
  */
 inline auto get_current_pid() -> u32 {
-#if RICKY_WIN
-    return static_cast<u32>(GetCurrentProcessId());
-#else
-    return static_cast<u32>(getpid());
-#endif // RICKY_WIN
+    return plat::process::pid();
 }
 
 template <typename D>
@@ -218,4 +208,3 @@ static auto set_consolelog_level(LogLevel level) {
 } // namespace my::log
 
 #endif // LOG_HPP
-
