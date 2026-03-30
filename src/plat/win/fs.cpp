@@ -20,9 +20,9 @@ bool is_sep(const char ch) {
     return ch == '\\' || ch == '/';
 }
 
-std::string to_std(const str::StringView view) {
-    return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
-}
+// std::string to_std(const str::StringView view) {
+//     return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
+// }
 
 bool is_abs_path(const str::StringView path) {
     if (path.len() == 0) {
@@ -67,8 +67,8 @@ bool exists(const str::StringView path) {
     if (path.len() == 0) {
         return false;
     }
-    const auto p = to_std(path);
-    const auto attributes = GetFileAttributesA(p.c_str());
+    const auto path_cstr = path.to_string().into_cstr();
+    const auto attributes = GetFileAttributesA(path_cstr.get());
     return (attributes != INVALID_FILE_ATTRIBUTES);
 }
 
@@ -76,8 +76,8 @@ bool is_file(const str::StringView path) {
     if (path.len() == 0) {
         return false;
     }
-    const auto p = to_std(path);
-    const auto attr = GetFileAttributesA(p.c_str());
+    const auto path_cstr = path.to_string().into_cstr();
+    const auto attr = GetFileAttributesA(path_cstr.get());
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) == 0);
 }
 
@@ -85,8 +85,8 @@ bool is_dir(const str::StringView path) {
     if (path.len() == 0) {
         return false;
     }
-    const auto p = to_std(path);
-    const auto attr = GetFileAttributesA(p.c_str());
+    const auto path_cstr = path.to_string().into_cstr();
+    const auto attr = GetFileAttributesA(path_cstr.get());
     return (attr != INVALID_FILE_ATTRIBUTES) && ((attr & FILE_ATTRIBUTE_DIRECTORY) != 0);
 }
 
@@ -94,14 +94,38 @@ void mkdir(const str::StringView path, bool recursive, bool exist_ok) {
     if (path.len() == 0) {
         throw argument_exception("Invalid path");
     }
-    const auto path_s = to_std(path);
 
     if (!recursive) {
-        mkdir_single(path_s.c_str(), exist_ok);
+        auto path_cstr = path.to_string().into_cstr();
+        mkdir_single(path_cstr.get(), exist_ok);
         return;
     }
 
-    std::string p(path_s);
+    // auto p = path.to_string();
+    // while (!p.is_empty() && is_sep(p.last())) {
+    //     p.pop();
+    // }
+    // if (p.is_empty()) {
+    //     return;
+    // }
+    // if (p.len() == 2 && p.chars().nth(1).unwrap() == ':') {
+    //     return;
+    // }
+
+    // usize start = 0;
+    // if (p.len() >= 2 && p.chars().nth(1).unwrap() == ':') {
+    //     start = 2;
+    //     if (start > p.len() && is_sep(p.chars().nth(start).unwrap())) {
+    //         ++start;
+    //     }
+    // }
+    // for (usize i = start; i < p.len(); ++i) {
+    //     if (is_sep(p.chars().nth(i).unwrap())) {
+    //         const auto sub = p.
+    //     }
+    // }
+
+    std::string p = path.to_std_string();
     while (!p.empty() && is_sep(p.back())) {
         p.pop_back();
     }
@@ -135,14 +159,15 @@ void remove(const str::StringView path, const bool recursive) {
     if (path.len() == 0) {
         throw argument_exception("Invalid path");
     }
-    const auto path_s = to_std(path);
+    const auto p = path.to_string();
     if (!exists(path)) {
-        throw not_found_exception("File or directory not found: {}", path_s);
+        throw not_found_exception("File or directory not found: {}", path.to_string());
     }
 
+    auto p_cstr = p.into_cstr();
     if (is_file(path)) {
-        if (!DeleteFileA(path_s.c_str())) {
-            throw system_exception("Failed to remove file: {}", path_s);
+        if (!DeleteFileA(p_cstr.get())) {
+            throw system_exception("Failed to remove file: {}", p);
         }
         return;
     }
@@ -155,8 +180,8 @@ void remove(const str::StringView path, const bool recursive) {
                 remove(child.as_str(), true);
             }
         }
-        if (!RemoveDirectoryA(path_s.c_str())) {
-            throw system_exception("Failed to remove directory: {}", path_s);
+        if (!RemoveDirectoryA(p_cstr.get())) {
+            throw system_exception("Failed to remove directory: {}", p);
         }
     }
 }
@@ -172,36 +197,35 @@ str::String<> join(const str::StringView a, const str::StringView b) {
         return str::String<>(b);
     }
 
-    const auto a_s = to_std(a);
-    const auto b_s = to_std(b);
-    const auto a_len = a_s.size();
+    const auto a_s = a.to_string();
+    const auto b_s = b.to_string();
+    const auto a_len = a_s.len();
     bool needs_sep = true;
-    if (a_len > 0 && is_sep(a_s[a_len - 1])) {
+    if (a_len > 0 && is_sep(a_s.last())) {
         needs_sep = false;
     }
 
-    std::string res;
-    res.reserve(a_len + b_s.size() + (needs_sep ? 1 : 0));
-    res.append(a_s);
+    str::String res;
+    res.reserve(a_len + b_s.len() + (needs_sep ? 1 : 0));
+    res.push_str(a_s.as_str());
     if (needs_sep) {
-        res.push_back(PATH_SEP);
+        res.push(PATH_SEP);
     }
-    res.append(b_s);
-    return str::String<>(res.c_str(), res.size());
+    res.push_str(b_s.as_str());
+    return res;
 }
 
 util::Vec<DirEntry> listdir(const str::StringView path) {
     if (path.len() == 0) {
         throw argument_exception("Invalid path");
     }
-    const auto path_s = to_std(path);
 
     WIN32_FIND_DATAA find_data;
     const auto pattern = join(path, str::StringView("*"));
     auto pattern_cstr = pattern.into_cstr();
     auto handle = FindFirstFileA(pattern_cstr.get(), &find_data);
     if (handle == INVALID_HANDLE_VALUE) {
-        throw system_exception("Failed to list directory: {}", path_s);
+        throw system_exception("Failed to list directory: {}", path.to_string());
     }
 
     util::Vec<DirEntry> results;
@@ -224,16 +248,18 @@ FileHandle* open(const str::StringView path, const str::StringView mode) {
     if (path.len() == 0 || mode.len() == 0) {
         throw argument_exception("Invalid path or mode");
     }
-    const auto path_s = to_std(path);
-    const auto mode_s = to_std(mode);
+    const auto path_s = path.to_string();
+    const auto mode_s = mode.to_string();
+    auto path_cstr = path_s.into_cstr();
+    auto mode_cstr = mode_s.into_cstr();
 
 #if defined(_MSC_VER)
     std::FILE* fp = nullptr;
-    if (fopen_s(&fp, path_s.c_str(), mode_s.c_str()) != 0) {
+    if (fopen_s(&fp, path_cstr.get(), mode_cstr.get()) != 0) {
         fp = nullptr;
     }
 #else
-    std::FILE* fp = std::fopen(path_s.c_str(), mode_s.c_str());
+    std::FILE* fp = std::fopen(path_cstr.get(), mode_cstr.get());
 #endif
     if (fp == nullptr) {
         throw io_exception("Failed to open file: {}", path_s);

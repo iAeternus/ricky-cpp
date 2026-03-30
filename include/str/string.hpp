@@ -67,6 +67,22 @@ public:
         return buf_.capacity();
     }
 
+    [[nodiscard]] u8& first() noexcept {
+        return buf_.first();
+    }
+
+    [[nodiscard]] const u8& first() const noexcept {
+        return buf_.first();
+    }
+
+    [[nodiscard]] u8& last() noexcept {
+        return buf_.last();
+    }
+
+    [[nodiscard]] const u8& last() const noexcept {
+        return buf_.last();
+    }
+
     void reserve(const usize new_cap) {
         buf_.reserve(new_cap);
     }
