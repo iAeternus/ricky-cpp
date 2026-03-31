@@ -10,35 +10,35 @@
 using namespace my;
 
 int main() {
-    io::println(str::String("=== TCP Client Demo ==="));
+    io::println("=== TCP Client Demo ===");
 
-    auto client = net::TcpStream::connect(str::StringView("127.0.0.1"), 8080);
-    io::println(str::String("Connected to server!"));
+    auto client = net::TcpStream::connect("127.0.0.1"_sv, 8080);
+    io::println("Connected to server!");
 
     const char* msg1 = "MSG1";
     const char* msg2 = "MSG2";
     const char* msg3 = "MSG3";
 
-    io::print(str::String("Sending: "), str::String(msg1));
+    io::print("Sending: ", msg1);
     client.write(str::StringView(msg1));
 
     auto resp = client.read(1024);
-    io::println(str::String("Response length: "), resp.len());
+    io::println("Response length: ", resp.len());
 
-    io::print(str::String("Sending: "), str::String(msg2));
+    io::print("Sending: ", msg2);
     client.write(str::StringView(msg2));
 
     resp = client.read(1024);
-    io::println(str::String("Response length: "), resp.len());
+    io::println("Response length: ", resp.len());
 
-    io::print(str::String("Sending: "), str::String(msg3));
+    io::print("Sending: ", msg3);
     client.write(str::StringView(msg3));
 
     resp = client.read(1024);
-    io::println(str::String("Response length: "), resp.len());
+    io::println("Response length: ", resp.len());
 
     client.close();
-    io::println(str::String("Connection closed"));
+    io::println("Connection closed");
 
     return 0;
 }
