@@ -3,17 +3,12 @@
 #if RICKY_LINUX
 
 #include "fs.hpp"
-#include "str.hpp"
 #include "vec.hpp"
 
 #include <cerrno>
-#include <cstdio>
-#include <cstring>
 #include <dirent.h>
-#include <string>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <vector>
 
 namespace my::plat::fs {
 
@@ -65,7 +60,7 @@ bool exists(str::StringView path) {
     if (path.is_empty()) {
         return false;
     }
-    struct stat st{};
+    struct stat st {};
     return ::stat(path.as_cstr(), &st) == 0;
 }
 
@@ -73,7 +68,7 @@ bool is_file(str::StringView path) {
     if (path.is_empty()) {
         return false;
     }
-    struct stat st{};
+    struct stat st {};
     if (::stat(path.as_cstr(), &st) != 0) {
         return false;
     }
@@ -84,7 +79,7 @@ bool is_dir(str::StringView path) {
     if (path.is_empty()) {
         return false;
     }
-    struct stat st{};
+    struct stat st {};
     if (::stat(path.as_cstr(), &st) != 0) {
         return false;
     }
@@ -101,11 +96,11 @@ void mkdir(str::StringView path, bool recursive, bool exist_ok) {
         return;
     }
 
-    std::string p(path.as_cstr());
-    while (!p.empty() && is_sep(p.back())) {
-        p.pop_back();
+    str::String<> p = path.to_string();
+    while (!p.is_empty() && is_sep(p.last())) {
+        p.pop();
     }
-    if (p.empty()) {
+    if (p.is_empty()) {
         return;
     }
 
@@ -114,15 +109,15 @@ void mkdir(str::StringView path, bool recursive, bool exist_ok) {
         start = 1;
     }
 
-    for (size_t i = start; i < p.size(); ++i) {
+    for (size_t i = start; i < p.len(); ++i) {
         if (is_sep(p[i])) {
             const auto sub = p.substr(0, i);
-            if (!sub.empty()) {
-                mkdir_single(sub.c_str(), true);
+            if (!sub.is_empty()) {
+                mkdir_single(sub.as_cstr(), true);
             }
         }
     }
-    mkdir_single(p.c_str(), exist_ok);
+    mkdir_single(p.as_cstr(), exist_ok);
 }
 
 void remove(str::StringView path, const bool recursive) {
@@ -172,26 +167,26 @@ str::String<> join(str::StringView a, str::StringView b) {
         needs_sep = false;
     }
 
-    std::string res;
+    str::String res;
     res.reserve(a_len + b.len() + (needs_sep ? 1 : 0));
     for (usize i = 0; i < a_len; ++i) {
         char c = a[i];
         if (c == '\\') {
             c = '/';
         }
-        res.push_back(c);
+        res.push(c);
     }
     if (needs_sep) {
-        res.push_back(PATH_SEP);
+        res.push(PATH_SEP);
     }
     for (usize i = 0; i < b.len(); ++i) {
         char c = b[i];
         if (c == '\\') {
             c = '/';
         }
-        res.push_back(c);
+        res.push(c);
     }
-    return str::String<>(res.c_str(), res.size());
+    return res;
 }
 
 util::Vec<DirEntry> listdir(str::StringView path) {
@@ -214,7 +209,7 @@ util::Vec<DirEntry> listdir(str::StringView path) {
         info.name = str::String<>(entry->d_name);
 
         auto full_path = join(path, str::StringView(entry->d_name));
-        struct stat st{};
+        struct stat st {};
         if (::stat(full_path.as_cstr(), &st) == 0) {
             info.is_dir = S_ISDIR(st.st_mode);
             info.is_file = S_ISREG(st.st_mode);
@@ -262,12 +257,12 @@ str::String<> read_all(FileHandle* file) {
         return str::String<>{};
     }
 
-    std::vector<char> buffer(static_cast<size_t>(end));
-    const size_t read_bytes = std::fread(buffer.data(), 1, buffer.size(), file->fp);
-    if (read_bytes != buffer.size() && std::ferror(file->fp)) {
+    util::Vec<char> buf(static_cast<size_t>(end));
+    const size_t read_bytes = std::fread(buf.data(), 1, buf.len(), file->fp);
+    if (read_bytes != buf.len() && std::ferror(file->fp)) {
         throw io_exception("Failed to read file");
     }
-    return str::String<>(buffer.data(), static_cast<usize>(read_bytes));
+    return str::String<>(buf.data(), static_cast<usize>(read_bytes));
 }
 
 str::String<> read_all(str::StringView path) {

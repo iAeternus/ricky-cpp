@@ -3,15 +3,12 @@
 #if RICKY_LINUX
 
 #include "net.hpp"
-#include "my_exception.hpp"
 
 #include <arpa/inet.h>
 #include <cerrno>
-#include <cstring>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <vector>
 
 namespace my::plat::net {
 
@@ -192,15 +189,15 @@ str::String<> recv_bytes(SocketHandle* socket, const usize size, const i32 flags
     if (size == 0) {
         return str::String<>{};
     }
-    std::vector<char> buffer(size);
-    const auto received = ::recv(socket->fd, buffer.data(), size, flags);
+    util::Vec<char> buf(size);
+    const auto received = ::recv(socket->fd, buf.data(), size, flags);
     if (received < 0) {
         throw system_exception("Recv failed: {}", last_error());
     }
     if (received == 0) {
         return str::String<>{};
     }
-    return str::String<>(buffer.data(), static_cast<usize>(received));
+    return str::String<>(buf.data(), static_cast<usize>(received));
 }
 
 void set_timeout_ms(SocketHandle* socket, const u32 timeout_ms, const bool receive) {
@@ -251,17 +248,17 @@ UdpRecvResult recv_from(SocketHandle* socket, const usize size, const i32 flags)
     if (size == 0) {
         return result;
     }
-    std::vector<char> buffer(size);
+    util::Vec<char> buf(size);
     sockaddr_storage addr{};
     socklen_t len = sizeof(addr);
-    const auto received = ::recvfrom(socket->fd, buffer.data(), size, flags, reinterpret_cast<sockaddr*>(&addr), &len);
+    const auto received = ::recvfrom(socket->fd, buf.data(), size, flags, reinterpret_cast<sockaddr*>(&addr), &len);
     if (received < 0) {
         throw system_exception("Recvfrom failed: {}", last_error());
     }
     if (received == 0) {
         return result;
     }
-    result.data = str::String<>(buffer.data(), static_cast<usize>(received));
+    result.data = str::String<>(buf.data(), static_cast<usize>(received));
     if (addr.ss_family == AF_INET) {
         auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
         char ip_str[16];
