@@ -5,12 +5,12 @@ if [ -z "$1" ]; then
     echo "Example: $0 tcp_server"
     echo ""
     echo "Available examples:"
-    ls -1 bin/examples/*  2>/dev/null | xargs -n1 basename || echo "No examples found"
+    ls -1 build/bin/examples/*  2>/dev/null | xargs -n1 basename || echo "No examples found"
     exit 1
 fi
 
 EXAMPLE="$1"
-EXAMPLE_DIR="bin/examples"
+EXAMPLE_DIR="build/bin/examples"
 
 if [ ! -f "$EXAMPLE_DIR/$EXAMPLE" ]; then
     echo "Error: Example '$EXAMPLE' not found"
