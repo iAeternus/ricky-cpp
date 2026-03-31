@@ -5,7 +5,7 @@ if [ -z "$1" ]; then
     echo "Example: $0 tcp_server"
     echo ""
     echo "Available examples:"
-    ls -1 bin/examples/*.exe 2>/dev/null | xargs -n1 basename || echo "No examples found"
+    ls -1 bin/examples/*  2>/dev/null | xargs -n1 basename || echo "No examples found"
     exit 1
 fi
 
