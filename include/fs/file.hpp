@@ -8,7 +8,7 @@
 #define FILE_HPP
 
 #include "marker.hpp"
-#include "plat/fs.hpp"
+#include "fs.hpp"
 #include "path_buf.hpp"
 
 namespace my::fs {

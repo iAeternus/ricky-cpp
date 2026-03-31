@@ -1,7 +1,6 @@
 #ifndef PLAT_TIME_HPP
 #define PLAT_TIME_HPP
 
-#include "my_types.hpp"
 #include <ctime>
 
 namespace my::plat::time {

@@ -7,10 +7,6 @@
 #ifndef STR_STRING_VIEW_HPP
 #define STR_STRING_VIEW_HPP
 
-#include <string>
-#include <string_view>
-
-#include "my_pair.hpp"
 #include "option.hpp"
 #include "vec.hpp"
 

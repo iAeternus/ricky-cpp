@@ -8,13 +8,11 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
-#include "my_config.hpp"
-#include "my_exception.hpp"
 #include "color.hpp"
 #include "marker.hpp"
 #include "printer.hpp"
 #include "date_time.hpp"
-#include "plat/process.hpp"
+#include "process.hpp"
 
 namespace my::log {
 
