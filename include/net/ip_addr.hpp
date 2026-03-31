@@ -8,8 +8,6 @@
 #define NET_IP_ADDR_HPP
 
 #include "string.hpp"
-#include "option.hpp"
-#include "result.hpp"
 
 namespace my::net {
 

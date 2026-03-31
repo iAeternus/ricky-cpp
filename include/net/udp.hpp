@@ -8,8 +8,6 @@
 #define NET_UDP_HPP
 
 #include "net.hpp"
-#include "option.hpp"
-#include "memory"
 
 namespace my::net {
 

@@ -8,9 +8,6 @@
 #define NET_TCP_HPP
 
 #include "net.hpp"
-#include "vec.hpp"
-#include "option.hpp"
-#include "memory"
 
 namespace my::net {
 
