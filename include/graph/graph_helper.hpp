@@ -15,7 +15,7 @@ namespace my::graph {
 /**
  * @brief 默认ID类型
  */
-using DefaultIdx = u64;
+using DefaultIdx = usize;
 
 /**
  * @brief 边

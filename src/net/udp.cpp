@@ -16,11 +16,12 @@ UdpSocket UdpSocket::bind(u16 port) {
     return UdpSocket(str::StringView("0.0.0.0"), port);
 }
 
-UdpSocket::UdpSocket(str::StringView ip, u16 port) : handle_(nullptr, plat::net::close) {
+UdpSocket::UdpSocket(str::StringView ip, u16 port) : handle_(nullptr, plat::net::close), local_ip_(""), local_port_(0) {
     plat::net::startup();
     auto* h = plat::net::create(plat::net::SocketFamily::Ipv4, plat::net::SocketType::Datagram);
     handle_.reset(h);
     plat::net::bind(handle_.get(), ip, port);
+    plat::net::get_local_addr(handle_.get(), local_ip_, local_port_);
 }
 
 str::String<> UdpSocket::local_ip() const {

@@ -124,7 +124,7 @@ void should_bfs() {
 
     // When
     g.register_algo("bfs", graph::bfs<>);
-    g.call_algo("bfs", 0ULL, callback);
+    g.call_algo("bfs", 0uz, callback);
 
     // Then
     Assertions::assertEquals("[0,1,2,3,4,5,6]"_cs, vis_order.to_string());
@@ -159,7 +159,7 @@ void should_dfs() {
 
     // When
     g.register_algo("dfs", graph::dfs<>);
-    g.call_algo("dfs", 0ULL, callback);
+    g.call_algo("dfs", 0uz, callback);
 
     // Then
     Assertions::assertEquals("[0,1,4,6,2,5,3]"_cs, vis_order.to_string());
@@ -211,11 +211,11 @@ void test_can_reach() {
     g.register_algo("can_reach_dfs", graph::can_reach_dfs<>);
     g.register_algo("can_reach_bfs", graph::can_reach_bfs<>);
 
-    bool res_dfs = g.call_algo<bool>("can_reach_dfs", 0ULL, 5ULL);
-    bool res_dfs2 = g.call_algo<bool>("can_reach_dfs", 5ULL, 6ULL);
+    bool res_dfs = g.call_algo<bool>("can_reach_dfs", 0uz, 5uz);
+    bool res_dfs2 = g.call_algo<bool>("can_reach_dfs", 5uz, 6uz);
 
-    bool res_bfs = g.call_algo<bool>("can_reach_bfs", 0ULL, 5ULL);
-    bool res_bfs2 = g.call_algo<bool>("can_reach_bfs", 5ULL, 6ULL);
+    bool res_bfs = g.call_algo<bool>("can_reach_bfs", 0uz, 5uz);
+    bool res_bfs2 = g.call_algo<bool>("can_reach_bfs", 5uz, 6uz);
 
     // Then
     Assertions::assertTrue(res_dfs);
@@ -245,7 +245,7 @@ void should_get_all_paths() {
 
     // When
     g.register_algo("get_all_paths", graph::get_all_paths<>);
-    auto paths = g.call_algo<util::Vec<graph::SimplePath<>>>("get_all_paths", 0ULL, 5ULL);
+    auto paths = g.call_algo<util::Vec<graph::SimplePath<>>>("get_all_paths", 0uz, 5uz);
 
     // Then
     Assertions::assertEquals("[[0,1,3,4,5],[0,1,3,5],[0,2,3,4,5],[0,2,3,5],[0,3,4,5],[0,3,5]]"_cs, paths.to_string());
@@ -331,7 +331,7 @@ void test_dijkstra() {
 
     // When
     g.register_algo("dijkstra", graph::dijkstra<char>);
-    auto dis = g.call_algo<util::Vec<f64>>("dijkstra", 0ULL);
+    auto dis = g.call_algo<util::Vec<f64>>("dijkstra", 0uz);
 
     // Then
     Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.to_string());
