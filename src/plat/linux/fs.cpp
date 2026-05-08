@@ -1,4 +1,4 @@
-﻿#include "my_config.hpp"
+﻿#include "sys.hpp"
 
 #if RICKY_LINUX
 
