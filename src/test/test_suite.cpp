@@ -9,6 +9,7 @@
 namespace my::test {
 
 static io::ColorPrinter g_passed{stdout, color::Color::GREEN};
+static io::ColorPrinter g_warning{stdout, color::Color::YELLOW};
 static io::ColorPrinter g_failed{stdout, color::Color::RED};
 static io::ColorPrinter g_info{stdout, color::Color::AQUA};
 
@@ -65,7 +66,8 @@ int run_all() {
         }
     }
 
-    io::println(std::format("[TEST] Total: {}, Failures: {}", cases.len(), failed));
+    auto msg = std::format("[TEST] Total: {}, Failures: {}", cases.len(), failed);
+    failed == 0 ? io::println(msg) : g_warning(msg);
     return failed == 0 ? 0 : 1;
 }
 
