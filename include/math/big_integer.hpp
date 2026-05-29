@@ -190,10 +190,6 @@ public:
         while (ans.num_.len() <= n) {
             ans.num_.push(0);
         }
-        // ans.num_[n] = 1;
-        // while (bit_shift--) {
-        //     ans.num_[n] *= 10;
-        // }
         ans.num_[n] = pow10(bit_shift); // TODO 这个优化是正确的吗，需要测试
         return ans * (*this);
     }
@@ -208,13 +204,13 @@ public:
         return *this / TEN.pow(n);
     }
 
-    constexpr Self abs() const noexcept {
+    Self abs() const noexcept {
         Self ans{*this};
         ans.sign_ = true;
         return ans;
     }
 
-    constexpr Self operator+() const noexcept {
+    Self operator+() const noexcept {
         return *this;
     }
 
@@ -325,9 +321,9 @@ public:
         Self ans;
         ans.sign_ = a.sign_ == b.sign_ || (res.len() == 1 && res[0] == 0);
         ans.num_.clear();
-        const auto resSize = res.len();
+        const auto res_size = res.len();
         i64 carry = 0;
-        for (usize i = 0; i < resSize; ++i) {
+        for (usize i = 0; i < res_size; ++i) {
             const i64 tmp = res[i];
             ans.num_.push((tmp + carry) % BASE);
             carry = (tmp + carry) / BASE;

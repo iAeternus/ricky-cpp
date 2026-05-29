@@ -7,7 +7,9 @@
 #ifndef RIO_HPP
 #define RIO_HPP
 
+#include "sys.hpp"
 #include <cstddef>
+#if RICKY_LINUX
 #include <sys/types.h>
 
 namespace my::sys {
@@ -24,5 +26,7 @@ ssize_t rio_writen(int fd, void* usebuf, size_t n);
 // TODO
 
 } // namespace my::sys
+
+#endif // RICKY_LINUX
 
 #endif // RIO_HPP

@@ -1,7 +1,6 @@
-#include "sys.hpp"
-#if RICKY_LINUX
-
 #include "rio.hpp"
+
+#if RICKY_LINUX
 
 namespace my::sys {
 
