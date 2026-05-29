@@ -1,7 +1,7 @@
 /**
  * @brief 测试入口
  */
-#include "ricky_test.hpp"
+#include "test_suite.hpp"
 
 #include <cstring>
 
