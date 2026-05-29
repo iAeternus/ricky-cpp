@@ -7,7 +7,6 @@
 #ifndef ALLOC_HPP
 #define ALLOC_HPP
 
-#include <cstddef>
 #include <new>
 #include <memory>
 #include <type_traits>

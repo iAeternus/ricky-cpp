@@ -35,6 +35,7 @@ enum class ExceptionType {
     // 计算
     ArithmeticException,
     OverflowException,
+    TensorException,
     // 状态
     StateException,
     UninitializedException,
@@ -118,6 +119,7 @@ public:
         case ExceptionType::MemoryException: return "MemoryException";
         case ExceptionType::ArithmeticException: return "ArithmeticException";
         case ExceptionType::OverflowException: return "OverflowException";
+        case ExceptionType::TensorException: return "TensorException";
         case ExceptionType::StateException: return "StateException";
         case ExceptionType::UninitializedException: return "UninitializedException";
         case ExceptionType::AssertionFailedException: return "AssertionFailedException";
@@ -223,6 +225,7 @@ DEFINE_EXCEPTION_FACTORY(memory, ExceptionType::MemoryException)                
 DEFINE_EXCEPTION_FACTORY(arithmetic, ExceptionType::ArithmeticException)                // 算术异常
 DEFINE_EXCEPTION_FACTORY(overflow, ExceptionType::OverflowException)                    // 溢出异常
 DEFINE_EXCEPTION_FACTORY(state, ExceptionType::StateException)                          // 状态异常
+DEFINE_EXCEPTION_FACTORY(tensor, ExceptionType::TensorException)                        // Tensor异常
 DEFINE_EXCEPTION_FACTORY(uninitialized, ExceptionType::UninitializedException)          // 未初始化异常
 DEFINE_EXCEPTION_FACTORY(assertion_failed, ExceptionType::AssertionFailedException)     // 断言失败异常
 DEFINE_EXCEPTION_FACTORY(system, ExceptionType::SystemException)                        // 系统异常
