@@ -9,13 +9,13 @@
 
 #include "my_types.hpp"
 
-namespace my::ai {
+namespace my::nn {
 
 enum class Device : u8 {
     Cpu,
     Cuda,
 };
 
-} // namespace my::ai
+} // namespace my::nn
 
 #endif // DEVICE_HPP

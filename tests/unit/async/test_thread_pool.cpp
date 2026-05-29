@@ -77,10 +77,9 @@ void should_wait() {
 }
 
 GROUP_NAME("test_thread_pool")
-REGISTER_UNIT_TESTS(
-    UNIT_TEST_ITEM(should_push),
-    UNIT_TEST_ITEM(should_push_tasks),
-    UNIT_TEST_ITEM(should_push_tasks_with_exception),
-    UNIT_TEST_ITEM(should_wait))
+REGISTER_UNIT_TESTS(UNIT_TEST_ITEM(should_push),
+                    UNIT_TEST_ITEM(should_push_tasks),
+                    UNIT_TEST_ITEM(should_push_tasks_with_exception),
+                    UNIT_TEST_ITEM(should_wait))
 
 } // namespace my::test::test_thread_pool

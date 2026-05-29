@@ -115,6 +115,30 @@ struct is_valid_dtype {
 template <typename dtype>
 constexpr bool is_valid_dtype_v = is_valid_dtype<dtype>::value;
 
+/**
+ * @brief 去除 cv/ref
+ */
+template <typename T>
+using RawType = std::remove_cvref_t<T>;
+
+/**
+ * @brief 去除引用
+ */
+template <typename T>
+using RemoveRef = std::remove_reference_t<T>;
+
+/**
+ * @brief 去除 const/volatile
+ */
+template <typename T>
+using RemoveCV = std::remove_cv_t<T>;
+
+/**
+ * @brief 去除指针
+ */
+template <typename T>
+using RemovePtr = std::remove_pointer_t<T>;
+
 }; // namespace my
 
 #endif // MY_TRAITS_HPP

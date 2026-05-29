@@ -286,10 +286,17 @@ public:
      * @tparam Args 可转发类型
      * @param idx 插入位置，从0开始
      * @param args 要插入的元素
+     * @exception Exception 若idx > 容器长度，则抛出 index_out_of_bounds_exception
      */
     template <typename... Args>
     void insert(usize idx, Args&&... args) {
-        if (idx > len_) return;
+        if (idx == len_) {
+            push(std::forward<Args>(args)...);
+            return;
+        }
+        if (idx > len_) {
+            throw index_out_of_bounds_exception("Index {} out of bounds [0..{}]", idx, sizeof(Args)...);
+        }
         try_expand();
         for (usize i = len_; i > idx; --i) {
             if (i == len_) {

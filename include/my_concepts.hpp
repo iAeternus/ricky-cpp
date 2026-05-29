@@ -10,6 +10,7 @@
 #include "my_traits.hpp"
 
 #include <concepts>
+#include <format>
 #include <string>
 
 namespace my {
@@ -24,9 +25,7 @@ concept ConvertibleToCstr = std::convertible_to<S, const char*>;
  * @brief 可直接用标准库输出的类型
  */
 template <typename T>
-concept StdPrintable = std::is_pointer_v<T> ||
-                       is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long,
-                               unsigned long long, float, double, long double, std::nullptr_t, const char*, std::string>;
+concept StdPrintable = std::is_pointer_v<T> || is_same<T, bool, char, char*, short, unsigned short, int, unsigned int, long, unsigned long, long long, unsigned long long, float, double, long double, std::nullptr_t, const char*, std::string>;
 
 /**
  * @brief 支持 to_string 协议的类型
@@ -128,6 +127,17 @@ concept DType = is_valid_dtype_v<T>;
 template <typename C>
 concept AllocatorAware = requires {
     typename C::allocator_type;
+};
+
+/**
+ * @brief 可格式化类型
+ */
+template <typename T, typename CharT = char>
+concept Formattable = requires {
+    typename std::formatter<RawType<T>, CharT>;
+} && requires(std::formatter<RawType<T>, CharT> f, std::basic_format_parse_context<CharT>& pc, T v, std::basic_format_context<std::back_insert_iterator<std::string>, CharT> fc) {
+    f.parse(pc);
+    f.format(v, fc);
 };
 
 } // namespace my

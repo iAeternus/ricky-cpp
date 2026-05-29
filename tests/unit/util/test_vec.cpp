@@ -8,10 +8,10 @@ void it_works() {
     util::Vec<i32> d(10, 0);
     util::Vec<util::Vec<i32>> d2(3, util::Vec<i32>(3, 0));
     util::Vec<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.to_string());
-    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.to_string());
-    Assertions::assertEquals(1, d3.first());
-    Assertions::assertEquals(10, d3.last());
+    Assertions::assert_equals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.to_string());
+    Assertions::assert_equals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.to_string());
+    Assertions::assert_equals(1, d3.first());
+    Assertions::assert_equals(10, d3.last());
 }
 
 void should_append() {
@@ -25,26 +25,29 @@ void should_append() {
     }
 
     // Then
-    Assertions::assertEquals(usize(n), d.len());
-    Assertions::assertEquals(cstr(n - 1), d.at(d.len() - 1));
+    Assertions::assert_equals(usize(n), d.len());
+    Assertions::assert_equals(cstr(n - 1), d.at(d.len() - 1));
 
     i32 num = 0;
     for (const auto& it : d) {
-        Assertions::assertEquals(cstr(num++), it);
+        Assertions::assert_equals(cstr(num++), it);
     }
 }
 
 void should_insert() {
     // Given
-    util::Vec<i32> d = {1, 2, 3, 4, 5};
+    util::Vec<i32> d = {1, 2, 3, 4};
 
     // When
+    d.insert(4, 200);
     d.insert(0, 100);
 
     // Then
-    Assertions::assertEquals(6, d.len());
-    Assertions::assertEquals(100, *d.begin());
-    Assertions::assertEquals(1, d.find(1));
+    Assertions::assert_equals(6, d.len());
+    Assertions::assert_equals(100, *d.begin());
+    Assertions::assert_equals(200, d[d.len() - 1]);
+    Assertions::assert_equals(0, d.find(100));
+    Assertions::assert_equals(5, d.find(200));
 }
 
 void should_pop() {
@@ -55,15 +58,15 @@ void should_pop() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(4, d.len());
-    Assertions::assertEquals(4, d.at(d.len() - 1));
+    Assertions::assert_equals(4, d.len());
+    Assertions::assert_equals(4, d.at(d.len() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    Assertions::assertEquals(3, d.len());
-    Assertions::assertEquals(2, d.at(0));
+    Assertions::assert_equals(3, d.len());
+    Assertions::assert_equals(2, d.at(0));
 }
 
 void should_pop2() {
@@ -74,9 +77,9 @@ void should_pop2() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(0, d.len());
-    Assertions::assertTrue(d.is_empty());
-    Assertions::assertEquals(d.begin(), d.end());
+    Assertions::assert_equals(0, d.len());
+    Assertions::assert_true(d.is_empty());
+    Assertions::assert_equals(d.begin(), d.end());
 }
 
 void should_clear() {
@@ -87,15 +90,15 @@ void should_clear() {
     d.clear();
 
     // Then
-    Assertions::assertTrue(d.is_empty());
+    Assertions::assert_true(d.is_empty());
 
     // When
     d.clear();
 
     // Then
-    Assertions::assertEquals(0, d.len());
-    Assertions::assertTrue(d.is_empty());
-    Assertions::assertEquals(d.begin(), d.end());
+    Assertions::assert_equals(0, d.len());
+    Assertions::assert_true(d.is_empty());
+    Assertions::assert_equals(d.begin(), d.end());
 }
 
 void should_swap() {
@@ -107,8 +110,8 @@ void should_swap() {
     d.swap(d2);
 
     // Then
-    Assertions::assertEquals("[ccc,bbb,aaa]"_cs, d.to_string());
-    Assertions::assertEquals("[aaa,bbb,ccc]"_cs, d2.to_string());
+    Assertions::assert_equals("[ccc,bbb,aaa]"_cs, d.to_string());
+    Assertions::assert_equals("[aaa,bbb,ccc]"_cs, d2.to_string());
 }
 
 void should_to_array() {
@@ -119,9 +122,9 @@ void should_to_array() {
     auto arr = d.to_array();
 
     // Then
-    Assertions::assertEquals(5, i32(arr.len()));
-    Assertions::assertEquals(5, arr.at(arr.len() - 1));
-    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.to_string());
+    Assertions::assert_equals(5, i32(arr.len()));
+    Assertions::assert_equals(5, arr.at(arr.len() - 1));
+    Assertions::assert_equals("[1,2,3,4,5]"_cs, arr.to_string());
 }
 
 void should_slice() {
@@ -134,10 +137,10 @@ void should_slice() {
     auto res3 = v.slice(1ULL, -1LL);
 
     // Then
-    Assertions::assertEquals(1ULL, res.len());
-    Assertions::assertEquals("[2]"_cs, res.to_string());
-    Assertions::assertEquals("[4,5,6]"_cs, res2.to_string());
-    Assertions::assertEquals("[2,3,4,5]"_cs, res3.to_string());
+    Assertions::assert_equals(1ULL, res.len());
+    Assertions::assert_equals("[2]"_cs, res.to_string());
+    Assertions::assert_equals("[4,5,6]"_cs, res2.to_string());
+    Assertions::assert_equals("[2,3,4,5]"_cs, res3.to_string());
 }
 
 void should_extend() {
@@ -149,8 +152,8 @@ void should_extend() {
     d = d + util::Vec<i32>{8, 9, 10};
 
     // Then
-    Assertions::assertEquals(10, d.len());
-    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.to_string());
+    Assertions::assert_equals(10, d.len());
+    Assertions::assert_equals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.to_string());
 }
 
 void should_at() {
@@ -163,9 +166,9 @@ void should_at() {
     auto res3 = d.at(2);
 
     // Then
-    Assertions::assertEquals('a', res);
-    Assertions::assertEquals('b', res2);
-    Assertions::assertEquals('c', res3);
+    Assertions::assert_equals('a', res);
+    Assertions::assert_equals('b', res2);
+    Assertions::assert_equals('c', res3);
 }
 
 void should_find() {
@@ -177,8 +180,8 @@ void should_find() {
     auto res2 = d.find("ddd"_cs);
 
     // Then
-    Assertions::assertEquals(0, res);
-    Assertions::assertEquals(d.len(), res2);
+    Assertions::assert_equals(0, res);
+    Assertions::assert_equals(d.len(), res2);
 }
 
 void should_sort() {
@@ -189,7 +192,7 @@ void should_sort() {
     std::sort(d.begin(), d.end()); // TODO 说明
 
     // Then
-    Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.to_string());
+    Assertions::assert_equals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.to_string());
 }
 
 void test_opt() {
@@ -200,7 +203,7 @@ void test_opt() {
     auto res = util::opt<i32>(v, 2);
 
     // Then
-    Assertions::assertEquals(7, res);
+    Assertions::assert_equals(7, res);
 }
 
 void should_fail_to_opt_if_index_out_of_bounds() {
@@ -208,7 +211,7 @@ void should_fail_to_opt_if_index_out_of_bounds() {
     util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
     // When & Then
-    Assertions::assertThrows("Index 10 out of bounds [0..10] in opt function.", [&]() {
+    Assertions::assert_throws<Exception>("Index 10 out of bounds [0..10] in opt function.", [&]() {
         util::opt<i32>(v, 10);
     });
 }
@@ -218,7 +221,7 @@ void should_fail_to_opt_if_type_mismatch() {
     util::Vec<i32> v = {6, 5, 7, 4, 8, 3, 9, 2, 0, 1};
 
     // When & Then
-    Assertions::assertThrows("type mismatch in opt function: expected[d], got[i]", [&]() {
+    Assertions::assert_throws<Exception>("type mismatch in opt function: expected[d], got[i]", [&]() {
         util::opt<f64>(v, 9);
     });
 }

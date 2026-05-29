@@ -11,7 +11,18 @@
 
 namespace my::test {
 
+// TODO 处理历史代码
 class Assertions {
+private:
+    template <typename T>
+    static std::string to_debug_string(const T& value) {
+        if constexpr (Formattable<T>) {
+            return std::format("{}", value);
+        } else {
+            return std::format("<{}>", typeid(T).name());
+        }
+    }
+
 public:
     static auto fail2(std::string_view message, std::source_location loc = SRC_LOC) -> void {
         throw assertion_failed_exception("{}\n  at {}:{}:{}\n  function: {}",
@@ -59,7 +70,7 @@ public:
         requires requires(T a, U b) { a == b; }
     static void assert_equals(const T& expected, const U& actual, std::source_location loc = std::source_location::current()) {
         if (!(expected == actual)) {
-            fail2(std::format("Assertion failed: expected {} but got {}", expected, actual), loc);
+            fail2(std::format("Assertion failed: expected {} but got {}", to_debug_string(expected), to_debug_string(actual)), loc);
         }
     }
 
@@ -67,7 +78,7 @@ public:
         requires requires(T a, U b) { a != b; }
     static void assert_not_equals(const T& unexpected, const U& actual, std::source_location loc = std::source_location::current()) {
         if (unexpected == actual) {
-            fail2(std::format("Assertion failed: expected value != {}", unexpected), loc);
+            fail2(std::format("Assertion failed: expected value != {}", to_debug_string(unexpected)), loc);
         }
     }
 
@@ -413,4 +424,3 @@ private:
 } // namespace my::test
 
 #endif // ASSERTIONS_HPP
-
