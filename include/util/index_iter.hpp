@@ -30,11 +30,12 @@ public:
 
     using container_t = std::conditional_t<IsConst, const C, C>;
     using iterator_category = std::random_access_iterator_tag;
-    using value_type = std::conditional_t<IsConst, const V, V>;
+    using iterator_concept = std::random_access_iterator_tag;
+    using value_type = V;
     using difference_type = std::ptrdiff_t;
-    using pointer = value_type*;
+    using pointer = std::conditional_t<IsConst, const V*, V*>;
     using const_pointer = const value_type*;
-    using reference = value_type&;
+    using reference = std::conditional_t<IsConst, const V&, V&>;
     using const_reference = const value_type&;
 
     IndexIterator(container_t* container = nullptr, const usize index = 0) :
@@ -52,16 +53,12 @@ public:
     /**
      * @brief 解引用
      */
-    reference operator*() const noexcept
-        requires(!IsConst || std::is_const_v<container_t>)
-    {
-        return container_->operator[](index_);
+    reference operator*() const noexcept {
+        return (*container_)[index_];
     }
 
-    pointer operator->() const noexcept
-        requires(!IsConst || std::is_const_v<container_t>)
-    {
-        return &container_->operator[](index_);
+    pointer operator->() const noexcept {
+        return &(*container_)[index_];
     }
 
     /**
@@ -114,7 +111,7 @@ public:
     }
 
     difference_type operator-(const Self& other) const noexcept {
-        return static_cast<difference_type>(index_ - other.index_);
+        return static_cast<difference_type>(index_) - static_cast<difference_type>(other.index_);
     }
 
     /**
@@ -140,4 +137,3 @@ private:
 } // namespace my::util
 
 #endif // INDEX_ITERATOR_HPP
-

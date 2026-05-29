@@ -21,8 +21,9 @@ static void setup_once() {
     g_k = 100;
     g_nums.reserve(g_n);
     g_strs.reserve(g_n);
+    auto& rng = util::Random::thread_local_rng();
     for (usize i = 0; i < g_n; ++i) {
-        g_nums.push_back(util::Random::instance().next<i32>(0, g_k));
+        g_nums.push_back(rng.gen_range(0, g_k));
         g_strs.push_back(std::to_string(i));
     }
 }

@@ -26,18 +26,18 @@ public:
     using Super = Object<Sequence<D, value_t, Alloc>>;
     using allocator_type = Alloc;
 
-    using iterator = IndexIterator<false, Self, value_t, typename Alloc::template rebind<value_t>::other>;
-    using const_iterator = IndexIterator<true, Self, value_t, typename Alloc::template rebind<value_t>::other>;
+    using iterator = IndexIterator<false, D, value_t, typename Alloc::template rebind<value_t>::other>;
+    using const_iterator = IndexIterator<true, D, value_t, typename Alloc::template rebind<value_t>::other>;
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     /**
      * @brief 迭代器接口
      */
-    iterator begin() { return iterator(this, 0); }
-    iterator end() { return iterator(this, len()); }
-    const_iterator begin() const { return const_iterator(this, 0); }
-    const_iterator end() const { return const_iterator(this, len()); }
+    iterator begin() { return iterator(static_cast<D*>(this), 0); }
+    iterator end() { return iterator(static_cast<D*>(this), len()); }
+    const_iterator begin() const { return const_iterator(static_cast<const D*>(this), 0); }
+    const_iterator end() const { return const_iterator(static_cast<const D*>(this), len()); }
     const_iterator cbegin() const { return begin(); }
     const_iterator cend() const { return end(); }
 

@@ -33,7 +33,7 @@ concept FloatingPointType = std::is_floating_point_v<T>;
  * @brief 检查类型是否为数值类型的约束
  */
 template <typename T>
-concept NumberType = IntegerType<T> || FloatingPointType<T>;
+concept NumericType = IntegerType<T> || FloatingPointType<T>;
 
 } // namespace my::math
 

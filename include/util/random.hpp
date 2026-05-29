@@ -7,133 +7,159 @@
 #ifndef RANDOM_HPP
 #define RANDOM_HPP
 
+#include "marker.hpp"
 #include "vec.hpp"
+#include "math_concepts.hpp"
 
 #include <random>
-#include <mutex>
 
 namespace my::util {
 
-/**
- * @class Random
- * @brief 随机数类
- * @details 单例类，支持生成多种不同类型的随机数
- */
-class Random final : public Object<Random> {
+class Random final : public Object<Random>, public NoCopy {
 public:
     using Self = Random;
-    using Super = Object<Self>;
-
-    static Random& instance() {
-        static std::once_flag once;
-        std::call_once(once, [] {
-            instance_ = new Random(std::random_device{}());
-        });
-        return *instance_;
-    }
-
-    Random(const Random&) = delete;
-    Random& operator=(const Random&) = delete;
+    using Engine = std::mt19937_64;
 
     /**
-     * @brief 生成随机数
-     * @param min 区间下界，包含
-     * @param max 区间上界，若为整数则包含，若为浮点数则不包含
+     * @brief 使用随机种子构造
+     */
+    Random();
+
+    /**
+     * @brief 使用指定种子构造
+     * @param seed 随机种子
+     */
+    explicit Random(u64 seed);
+
+    ~Random() = default;
+
+    /**
+     * @brief 获取线程局部随机数生成器
+     * @return 随机数生成器
+     */
+    static Random& thread_local_rng();
+
+    /**
+     * @brief 设置随机种子
+     * @param seed 随机种子
+     */
+    void seed(u64 seed);
+
+    /**
+     * @brief 生成随机值
+     * @return 随机值
+     *
+     * 整数：
+     * 在类型完整范围内均匀分布
+     *
+     * 浮点：
+     * 在[0,1)内均匀分布
+     */
+    template <math::NumericType T>
+    T gen();
+
+    /**
+     * @brief 生成指定范围随机值
+     * @param min 下界，包含
+     * @param max 上界，不包含
+     * @return 随机值
+     *
+     * 整数：
+     * [min,max)
+     *
+     * 浮点：
+     * [min,max)
+     */
+    template <math::NumericType T>
+    T gen_range(T min, T max);
+
+    /**
+     * @brief 生成正态分布随机数
+     * @param mean 均值
+     * @param stddev 标准差
      * @return 随机数
      */
-    template <typename T>
-    T next(T min = std::numeric_limits<T>::min(), T max = std::numeric_limits<T>::max()) {
-        static_assert(std::is_integral_v<T> || std::is_floating_point_v<T>,
-                      "next() only supports integral and floating-point types");
-
-        if constexpr (std::is_integral_v<T>) {
-            std::uniform_int_distribution<T> distribution(min, max);
-            return distribution(generator_);
-        } else {
-            std::uniform_real_distribution<T> distribution(min, max);
-            return distribution(generator_);
-        }
-    }
+    template <math::FloatingPointType T>
+    T normal(T mean = static_cast<T>(0), T stddev = static_cast<T>(1));
 
     /**
-     * @brief 生成指定长度的随机字符串，只包含a-z A-Z 0-9
+     * @brief 生成伯努利分布随机数
+     * @param p 为true的概率
+     * @return 随机布尔值
+     */
+    bool bernoulli(f64 p);
+
+    /**
+     * @brief 生成随机字符串
      * @param len 字符串长度
      * @return 随机字符串
+     *
+     * 字符集：
+     * a-z A-Z 0-9
      */
-    CString next_str(const usize len) {
-        static const auto characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"_cs;
-        CString result(len);
-        std::uniform_int_distribution<usize> distribution(0, characters.size() - 1);
-
-        for (usize i = 0; i < len; ++i) {
-            result[i] = characters[distribution(generator_)];
-        }
-
-        return result;
-    }
+    CString string(usize len);
 
     /**
-     * @brief 生成n个和为定值sum的均匀分布非负整数
-     * TODO n 与 sum 接近时存在死循环bug
+     * @brief 打乱序列
+     * @param begin 起始迭代器
+     * @param end 结束迭代器
      */
-    Vec<i32> generate_uniform_sum_numbers(const i32 n, i32 sum) {
-        Vec<i32> numbers;
-        if (n <= 0 || sum < 0) {
-            return numbers;
-        }
+    template <typename Iter>
+    void shuffle(Iter begin, Iter end);
 
-        if (sum == 0) {
-            numbers.resize(n);
-            return numbers;
-        }
-        if (n == 1) {
-            numbers.push(sum);
-            return numbers;
-        }
-
-        // 总元素数为 sum + n - 1（包括隔板和球）
-        const i32 total_elements = sum + n - 1;
-        Vec<i32> elements;
-
-        // 创建数组 [1, 2, ..., total_elements]
-        for (i32 i = 1; i <= total_elements; ++i) {
-            elements.push(i);
-        }
-
-        std::shuffle(elements.begin(), elements.end(), generator_);
-
-        // 选择前 n-1 个元素作为隔板位置
-        Vec<i32> partitions;
-        for (i32 i = 0; i < n - 1; ++i) {
-            partitions.push(elements[i]);
-        }
-
-        // 排序隔板位置
-        std::sort(partitions.begin(), partitions.end());
-
-        // 添加前导0和后导sum + n
-        Vec<i32> board = {0};
-        board.extend(partitions);
-        board.push(sum + n);
-
-        // 计算相邻元素的差值，并减去1得到最终结果
-        for (usize i = 1; i < board.len(); ++i) {
-            const i32 diff = board[i] - board[i - 1];
-            numbers.push(diff - 1);
-        }
-
-        return numbers;
-    }
+    /**
+     * @brief 随机生成n个和为sum的非负整数
+     * @param n 整数个数
+     * @param sum 总和
+     * @return 随机整数数组
+     *
+     * 结果满足：
+     *
+     * result[i] >= 0
+     * Σ(result[i]) == sum
+     */
+    util::Vec<i32> partition_nonnegative(i32 n, i32 sum);
 
 private:
-    explicit Random(const u32 seed) :
-            generator_(seed) {}
-
-    std::mt19937 generator_;
-    static Random* instance_;
+    Engine engine_;
 };
 
-inline Random* Random::instance_ = nullptr;
+template <math::NumericType T>
+T Random::gen() {
+    if constexpr (math::IntegerType<T>) {
+        std::uniform_int_distribution<T> dist(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+        return dist(engine_);
+    } else {
+        std::uniform_real_distribution<T> dist(static_cast<T>(0), static_cast<T>(1));
+        return dist(engine_);
+    }
+}
+
+template <math::NumericType T>
+T Random::gen_range(T min, T max) {
+    if (min >= max) {
+        throw argument_exception("Random::gen_range requires min < max, but given min: {} max: {}", min, max);
+    }
+
+    if constexpr (math::IntegerType<T>) {
+        std::uniform_int_distribution<T> dist(min, max - 1);
+        return dist(engine_);
+    } else {
+        std::uniform_real_distribution<T> dist(min, max);
+        return dist(engine_);
+    }
+}
+
+template <math::FloatingPointType T>
+T Random::normal(T mean, T stddev) {
+    std::normal_distribution<T> dist(mean, stddev);
+    return dist(engine_);
+}
+
+template <typename Iter>
+void Random::shuffle(Iter begin, Iter end) {
+    std::shuffle(begin, end, engine_);
+}
 
 } // namespace my::util
 

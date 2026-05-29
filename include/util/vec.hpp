@@ -556,5 +556,29 @@ constexpr bool is_vec_v = is_vec<T>::value;
 
 } // namespace my::util
 
-#endif // VEC_HPP
+namespace std {
 
+template <typename T, typename Alloc>
+struct formatter<my::util::Vec<T, Alloc>, char> {
+    constexpr auto parse(format_parse_context& ctx) {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const my::util::Vec<T, Alloc>& vec, FormatContext& ctx) const {
+        auto out = ctx.out();
+        out = format_to(out, "[");
+        for (my::usize i = 0; i < vec.len(); ++i) {
+            if (i != 0) {
+                out = format_to(out, ", ");
+            }
+            out = format_to(out, "{}", vec[i]);
+        }
+        out = format_to(out, "]");
+        return out;
+    }
+};
+
+} // namespace std
+
+#endif // VEC_HPP
