@@ -276,7 +276,7 @@ public:
             throw tensor_exception("Tensor::view requires contiguous tensor");
         }
 
-        if (calc_numel(shape) != numel()) {
+        if (calc_numel(shape) != numel_) {
             throw tensor_exception("Tensor::view numel mismatch");
         }
 
@@ -298,7 +298,7 @@ public:
      * 若内存不连续则复制数据
      */
     [[nodiscard]] Self reshape(const Shape& shape) const {
-        if (calc_numel(shape) != numel()) {
+        if (calc_numel(shape) != numel_) {
             throw tensor_exception("Tensor::reshape numel mismatch");
         }
 
@@ -330,7 +330,7 @@ public:
     }
 
     /**
-     * @brief 重排维度 TODO
+     * @brief 重排维度
      * @param dims 新维度顺序
      * @return view张量
      * @exception Exception 若给定dims长度与原张量ndim不匹配，则抛出 tensor_exception
@@ -391,7 +391,7 @@ public:
      * @return view张量
      */
     [[nodiscard]] Self flatten() const {
-        return reshape(Shape{numel()});
+        return reshape(Shape{numel_});
     }
 
     /**
@@ -462,8 +462,7 @@ public:
 
         Self result(shape_);
         Shape indices(shape_.len(), 0);
-        auto limit = numel();
-        for (usize i = 0; i < limit; ++i) {
+        for (usize i = 0; i < numel_; ++i) {
             usize src_offset = offset_;
             for (usize d = 0; d < shape_.len(); ++d) {
                 src_offset += indices[d] * stride_[d];
@@ -487,59 +486,251 @@ public:
      * @param rhs 右操作数
      * @return 结果张量
      */
-    [[nodiscard]] Self operator+(const Self& rhs) const;
+    [[nodiscard]] Self operator+(const Self& rhs) const {
+        return elementwise(*this, rhs, [](const T& a, const T& b) {
+            return a + b;
+        });
+    }
 
     /**
      * @brief 张量减法
      * @param rhs 右操作数
      * @return 结果张量
      */
-    [[nodiscard]] Self operator-(const Self& rhs) const;
+    [[nodiscard]] Self operator-(const Self& rhs) const {
+        return elementwise(*this, rhs, [](const T& a, const T& b) {
+            return a - b;
+        });
+    }
 
     /**
      * @brief 张量乘法
      * @param rhs 右操作数
      * @return 结果张量
      */
-    [[nodiscard]] Self operator*(const Self& rhs) const;
+    [[nodiscard]] Self operator*(const Self& rhs) const {
+        return elementwise(*this, rhs, [](const T& a, const T& b) {
+            return a * b;
+        });
+    }
 
     /**
      * @brief 张量除法
      * @param rhs 右操作数
      * @return 结果张量
+     * @exception tensor_exception 除以零时抛出
      */
-    [[nodiscard]] Self operator/(const Self& rhs) const;
+    [[nodiscard]] Self operator/(const Self& rhs) const {
+        return elementwise(*this, rhs, [](const T& a, const T& b) {
+            if constexpr (std::is_floating_point_v<T>) {
+                if (b == static_cast<T>(0)) {
+                    throw tensor_exception("Tensor division by zero");
+                }
+            } else {
+                if (b == static_cast<T>(0)) {
+                    throw tensor_exception("Tensor division by zero");
+                }
+            }
+            return a / b;
+        });
+    }
+
+    /**
+     * @brief 广播加法
+     * @param rhs 右操作数
+     * @return 结果张量
+     */
+    [[nodiscard]] Self broadcast_add(const Self& rhs) const {
+        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+            return a + b;
+        });
+    }
+
+    /**
+     * @brief 广播减法
+     * @param rhs 右操作数
+     * @return 结果张量
+     */
+    [[nodiscard]] Self broadcast_sub(const Self& rhs) const {
+        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+            return a - b;
+        });
+    }
+
+    /**
+     * @brief 广播乘法
+     * @param rhs 右操作数
+     * @return 结果张量
+     */
+    [[nodiscard]] Self broadcast_mul(const Self& rhs) const {
+        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+            return a * b;
+        });
+    }
+
+    /**
+     * @brief 广播除法
+     * @param rhs 右操作数
+     * @return 结果张量
+     */
+    [[nodiscard]] Self broadcast_div(const Self& rhs) const {
+        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+            if constexpr (std::is_floating_point_v<T>) {
+                if (b == static_cast<T>(0)) {
+                    throw tensor_exception("Tensor division by zero");
+                }
+            } else {
+                if (b == static_cast<T>(0)) {
+                    throw tensor_exception("Tensor division by zero");
+                }
+            }
+            return a / b;
+        });
+    }
 
     /**
      * @brief 矩阵乘法
      * @param rhs 右操作数
      * @return 结果张量
      */
-    [[nodiscard]] Self matmul(const Self& rhs) const;
+    // [[nodiscard]] Self matmul(const Self& rhs) const {
+    //     if (ndim() < 1 || rhs.ndim() < 1) {
+    //         throw tensor_exception("matmul requires at least 1D tensors");
+    //     }
+
+    //     usize a_nd = ndim();
+    //     usize b_nd = rhs.ndim();
+
+    //     usize M = shape_[a_nd - 2];
+    //     usize K = shape_[a_nd - 1];
+    //     usize K2 = rhs.shape_[b_nd - 2];
+    //     usize N = rhs.shape_[b_nd - 1];
+
+    //     if (K != K2) {
+    //         throw tensor_exception("matmul shape mismatch on K dimension");
+    //     }
+
+    //     // broadcast batch shape
+    //     Shape a_batch(shape_.begin(), shape_.end() - 2);
+    //     Shape b_batch(rhs.shape_.begin(), rhs.shape_.end() - 2);
+
+    //     Shape out_batch = broadcast_shape(a_batch, b_batch);
+
+    //     Shape out_shape = out_batch;
+    //     out_shape.push(M);
+    //     out_shape.push(N);
+
+    //     Self result(out_shape);
+
+    //     usize batch_size = calc_numel(out_batch);
+
+    //     Shape batch_idx(out_batch.len(), 0);
+
+    //     auto advance = [&](Shape& idx, const Shape& shape) {
+    //         for (isize i = (isize)shape.len() - 1; i >= 0; --i) {
+    //             idx[i]++;
+    //             if (idx[i] < shape[i]) return;
+    //             idx[i] = 0;
+    //         }
+    //     };
+
+    //     for (usize b = 0; b < batch_size; ++b) {
+    //         usize a_base = offset_;
+    //         usize b_base = rhs.offset_;
+
+    //         // map batch index -> offset
+    //         for (usize i = 0; i < out_batch.len(); ++i) {
+    //             usize ai = (i < a_batch.len()) ? batch_idx[i] : 0;
+    //             usize bi = (i < b_batch.len()) ? batch_idx[i] : 0;
+
+    //             if (i < a_batch.len())
+    //                 a_base += ai * stride_[i];
+
+    //             if (i < b_batch.len())
+    //                 b_base += bi * rhs.stride_[i];
+    //         }
+
+    //         // matrix multiply
+    //         for (usize i = 0; i < M; ++i) {
+    //             for (usize j = 0; j < N; ++j) {
+    //                 T sum = T{0};
+
+    //                 for (usize k = 0; k < K; ++k) {
+    //                     sum += (*data_)[a_base + i * stride_[a_nd - 2] + k * stride_[a_nd - 1]]
+    //                            * (*rhs.data_)[b_base + k * rhs.stride_[b_nd - 2] + j * rhs.stride_[b_nd - 1]];
+    //                 }
+
+    //                 result(batch_idx, i, j) = sum;
+    //             }
+    //         }
+
+    //         advance(batch_idx, out_batch);
+    //     }
+
+    //     return result;
+    // }
 
     /**
      * @brief 求和
      * @return 标量
      */
-    [[nodiscard]] T sum() const;
+    [[nodiscard]] T sum() const {
+        auto t = contiguous();
+        T acc = 0;
+
+        for (usize i = 0; i < numel_; ++i) {
+            acc += (*t.data_)[i];
+        }
+        return acc;
+    }
 
     /**
      * @brief 求均值
      * @return 标量
      */
-    [[nodiscard]] T mean() const;
+    [[nodiscard]] T mean() const {
+        if (numel_ == 0) {
+            throw tensor_exception("mean of empty tensor");
+        }
+
+        return sum() / static_cast<T>(numel_);
+    }
 
     /**
      * @brief 求最大值
      * @return 标量
      */
-    [[nodiscard]] T max() const;
+    [[nodiscard]] T max() const {
+        auto t = contiguous();
+
+        if (numel_ == 0) {
+            throw tensor_exception("max of empty tensor");
+        }
+
+        T m = (*t.data_)[0];
+        for (usize i = 1; i < numel_; ++i) {
+            m = std::max(m, (*t.data_)[i]);
+        }
+        return m;
+    }
 
     /**
      * @brief 求最小值
      * @return 标量
      */
-    [[nodiscard]] T min() const;
+    [[nodiscard]] T min() const {
+        auto t = contiguous();
+
+        if (numel_ == 0) {
+            throw tensor_exception("min of empty tensor");
+        }
+
+        T m = (*t.data_)[0];
+        for (usize i = 1; i < numel_; ++i) {
+            m = std::min(m, (*t.data_)[i]);
+        }
+        return m;
+    }
 
     /**
      * @brief 比较两个张量
@@ -741,6 +932,151 @@ private:
             off += idx[i] * stride_[i];
         }
         return off;
+    }
+
+    struct BroadcastInfo {
+        Shape shape;    // broadcast后的shape
+        Shape stride_a; // A在broadcast空间的stride
+        Shape stride_b; // B在broadcast空间的stride
+    };
+
+    /**
+     * @brief 计算两个shape的广播结果
+     * @details 从右对齐维度，缺失补1；每维必须相等或其中一个为1，否则抛出 tensor_exception
+     * @param a 左shape
+     * @param b 右shape
+     * @return 广播后的shape
+     * @exception tensor_exception 不可广播时抛出
+     */
+    static Shape broadcast_shape(const Shape& a, const Shape& b) {
+        usize na = a.len();
+        usize nb = b.len();
+        usize n = std::max(na, nb);
+
+        Shape result(n);
+
+        for (isize i = 1; i <= (isize)n; ++i) {
+            usize ai = (i <= na) ? a[na - i] : 1;
+            usize bi = (i <= nb) ? b[nb - i] : 1;
+
+            if (ai != bi && ai != 1 && bi != 1) {
+                throw tensor_exception("broadcast shape mismatch");
+            }
+
+            result[n - i] = std::max(ai, bi);
+        }
+
+        return result;
+    }
+
+    /**
+     * @brief 计算广播后的stride映射
+     *
+     * @details 对齐target_shape：
+     * - size==1的维度stride置0
+     * - 缺失维度stride置0
+     * - 其余维度保持原stride
+     *
+     * @param shape 原shape
+     * @param target_shape 广播目标shape
+     * @param stride 原stride
+     * @return 广播后的stride
+     */
+    static Shape broadcast_stride(const Shape& shape, const Shape& target_shape, const Shape& stride) {
+        usize n = target_shape.len();
+        Shape new_stride(n);
+
+        usize offset = n - shape.len();
+
+        for (usize i = 0; i < n; ++i) {
+            if (i < offset) {
+                new_stride[i] = 0;
+            } else {
+                if (shape[i - offset] == 1) {
+                    new_stride[i] = 0;
+                } else {
+                    new_stride[i] = stride[i - offset];
+                }
+            }
+        }
+
+        return new_stride;
+    }
+
+    /**
+     * @brief 逐元素二元广播操作
+     * @param lhs 左操作数
+     * @param rhs 右操作数
+     * @param op 操作逻辑
+     * @return 结果张量
+     */
+    template <typename F>
+    static Self elementwise_with_boradcase(const Self& lhs, const Self& rhs, F&& op) {
+        auto out_shape = broadcast_shape(lhs.shape_, rhs.shape_);
+        Self result(out_shape);
+        auto lhs_stride = broadcast_stride(lhs.shape_, out_shape, lhs.stride_);
+        auto rhs_stride = broadcast_stride(rhs.shape_, out_shape, rhs.stride_);
+        auto ndim = out_shape.len();
+        auto total = calc_numel(out_shape);
+        Shape idx(ndim, 0);
+
+        for (usize i = 0; i < total; ++i) {
+            usize a_off = lhs.offset_;
+            usize b_off = rhs.offset_;
+
+            for (usize d = 0; d < ndim; ++d) {
+                a_off += idx[d] * lhs_stride[d];
+                b_off += idx[d] * rhs_stride[d];
+            }
+
+            (*result.data_)[i] = op((*lhs.data_)[a_off], (*rhs.data_)[b_off]);
+
+            for (isize d = (isize)ndim - 1; d >= 0; --d) {
+                if (++idx[d] < out_shape[d]) break;
+                idx[d] = 0;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * @brief 逐元素二元操作
+     * @param lhs 左操作数
+     * @param rhs 右操作数
+     * @param op 操作逻辑
+     * @return 结果张量
+     * @exception Exception 若左右操作数shape不匹配，则抛出 tensor_exception
+     */
+    template <typename F>
+    static Self elementwise(const Self& lhs, const Self& rhs, F&& op) {
+        if (lhs.shape_ != rhs.shape_) {
+            throw tensor_exception("Tensor shape mismatch in elementwise op");
+        }
+
+        Self result(lhs.shape_);
+        Shape idx(lhs.ndim(), 0);
+        auto lhs_ndim = lhs.ndim();
+        for (usize i = 0; i < lhs.numel_; ++i) {
+            usize a_off = lhs.offset_;
+            usize b_off = rhs.offset_;
+
+            for (usize d = 0; d < lhs_ndim; ++d) {
+                a_off += idx[d] * lhs.stride_[d];
+                b_off += idx[d] * rhs.stride_[d];
+            }
+
+            (*result.data_)[i] = op((*lhs.data_)[a_off], (*rhs.data_)[b_off]);
+
+            // advance multi-index
+            for (isize d = (isize)lhs_ndim - 1; d >= 0; --d) {
+                idx[d]++;
+                if (idx[d] < lhs.shape_[d]) break;
+                idx[d] = 0;
+            }
+        }
+
+        return result;
     }
 
 private:

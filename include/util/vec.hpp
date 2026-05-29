@@ -76,6 +76,14 @@ public:
         }
     }
 
+    template <typename It>
+        requires std::input_iterator<It>
+    Vec(It first, It last, const Alloc& alloc = Alloc{}) {
+        for (; first != last; ++first) {
+            push(*first);
+        }
+    }
+
     /**
      * @brief 拷贝构造函数
      * @param other 被拷贝的向量

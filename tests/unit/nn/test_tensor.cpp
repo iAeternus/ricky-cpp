@@ -82,6 +82,24 @@ void should_throw_when_arange_step_is_zero() {
     });
 }
 
+void should_arange_with_step_and_negative() {
+    auto t = Tensor::arange(5, 0, -1);
+
+    Assertions::assert_equals(5, t(0));
+    Assertions::assert_equals(4, t(1));
+    Assertions::assert_equals(1, t(4));
+}
+
+void should_arange_empty_case_positive() {
+    auto t = Tensor::arange(10, 0, 1);
+    Assertions::assert_equals(0, t.numel());
+}
+
+void should_arange_empty_case_negative() {
+    auto t = Tensor::arange(0, 10, -1);
+    Assertions::assert_equals(0, t.numel());
+}
+
 void should_access_element() {
     // Given
     Tensor tensor({2, 3});
@@ -200,6 +218,30 @@ void should_permute() {
     Assertions::assert_false(permuted.is_contiguous());
 }
 
+void should_throw_when_permute_dim_mismatch() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.permute({0}); // ndim mismatch
+    });
+}
+
+void should_throw_when_permute_invalid_dim() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.permute({0, 2}); // 2 out of range
+    });
+}
+
+void should_throw_when_permute_duplicate_dim() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.permute({0, 0});
+    });
+}
+
 void should_slice() {
     // Given
     auto tensor = Tensor::arange(0, 12).view({3, 4});
@@ -214,6 +256,26 @@ void should_slice() {
     Assertions::assert_equals(4, slice(0, 0));
     Assertions::assert_equals(5, slice(0, 1));
     Assertions::assert_equals(11, slice(1, 3));
+}
+
+void should_throw_when_slice_dim_out_of_range() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.slice(2, 0, 1);
+    });
+}
+
+void should_throw_when_slice_invalid_range() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.slice(0, 2, 1);
+    });
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.slice(0, 0, 10);
+    });
 }
 
 void should_flatten() {
@@ -249,6 +311,14 @@ void should_unsqueeze() {
     Assertions::assert_equals(5, unsqueezed(1, 0, 2));
 }
 
+void should_throw_when_unsqueeze_dim_invalid() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.unsqueeze(10);
+    });
+}
+
 void should_squeeze() {
     // Given
     auto tensor = Tensor::arange(0, 6).view({2, 1, 3});
@@ -263,6 +333,22 @@ void should_squeeze() {
     Assertions::assert_equals(static_cast<usize>(3), squeezed.shape()[1]);
 
     Assertions::assert_equals(5, squeezed(1, 2));
+}
+
+void should_throw_when_squeeze_not_one() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.squeeze(0);
+    });
+}
+
+void should_throw_when_squeeze_dim_out_of_range() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.squeeze(5);
+    });
 }
 
 void should_squeeze_all() {
@@ -311,6 +397,13 @@ void should_detect_contiguous() {
     Assertions::assert_false(transposed.is_contiguous());
 }
 
+void should_contiguous_false_for_transposed() {
+    auto t = Tensor::arange(0, 6).view({2, 3});
+    auto tr = t.transpose(0, 1);
+
+    Assertions::assert_false(tr.is_contiguous());
+}
+
 void should_share_storage_in_view() {
     // Given
     auto tensor = Tensor::arange(0, 6).view({2, 3});
@@ -337,31 +430,133 @@ void should_copy_storage_in_contiguous() {
     Assertions::assert_equals(999, contiguous(0, 0));
 }
 
-GROUP_NAME("test_tensor")
+void should_throw_when_broadcast_shape_mismatch() {
+    Tensor a({2, 3});
+    Tensor b({3, 2});
 
-REGISTER_UNIT_TESTS(
-    UNIT_TEST_ITEM(should_construct),
-    UNIT_TEST_ITEM(should_construct_scalar),
-    UNIT_TEST_ITEM(should_construct_with_value),
-    UNIT_TEST_ITEM(should_create_zeros),
-    UNIT_TEST_ITEM(should_create_ones),
-    UNIT_TEST_ITEM(should_create_arange),
-    UNIT_TEST_ITEM(should_throw_when_arange_step_is_zero),
-    UNIT_TEST_ITEM(should_access_element),
-    UNIT_TEST_ITEM(should_throw_when_index_out_of_range),
-    UNIT_TEST_ITEM(should_view_tensor),
-    UNIT_TEST_ITEM(should_throw_when_view_non_contiguous),
-    UNIT_TEST_ITEM(should_reshape_non_contiguous),
-    UNIT_TEST_ITEM(should_transpose),
-    UNIT_TEST_ITEM(should_permute),
-    UNIT_TEST_ITEM(should_slice),
-    UNIT_TEST_ITEM(should_flatten),
-    UNIT_TEST_ITEM(should_unsqueeze),
-    UNIT_TEST_ITEM(should_squeeze),
-    UNIT_TEST_ITEM(should_squeeze_all),
-    UNIT_TEST_ITEM(should_contiguous),
-    UNIT_TEST_ITEM(should_detect_contiguous),
-    UNIT_TEST_ITEM(should_share_storage_in_view),
-    UNIT_TEST_ITEM(should_copy_storage_in_contiguous))
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = a.broadcast_add(b);
+    });
+}
+
+void should_broadcast_add_scalar() {
+    auto a = Tensor::arange(0, 6).view({2, 3});
+    Tensor b(Tensor::Shape{}, 10);
+
+    auto c = a.broadcast_add(b);
+
+    Assertions::assert_equals(10, c(0, 0));
+    Assertions::assert_equals(11, c(0, 1));
+}
+
+void should_throw_on_div_zero() {
+    auto a = Tensor::ones({2, 2});
+    auto b = Tensor::zeros({2, 2});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = a / b;
+    });
+}
+
+// void should_matmul_basic_2d() {
+//     Tensor a = Tensor::arange(0, 6).view({2, 3}); // [[0,1,2],[3,4,5]]
+//     Tensor b = Tensor::ones({3, 2});
+
+//     auto c = a.matmul(b);
+
+//     Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+//     Assertions::assert_equals(static_cast<usize>(2), c.shape()[1]);
+// }
+
+// void should_throw_matmul_shape_mismatch() {
+//     Tensor a({2, 3});
+//     Tensor b({4, 2});
+
+//     Assertions::assert_throws<Exception>([&] {
+//         auto _ = a.matmul(b);
+//     });
+// }
+
+// void should_matmul_batch() {
+//     Tensor a = Tensor::arange(0, 12).view({2, 2, 3});
+//     Tensor b = Tensor::ones({2, 3, 2});
+
+//     auto c = a.matmul(b);
+
+//     Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+//     Assertions::assert_equals(static_cast<usize>(2), c.shape()[1]);
+//     Assertions::assert_equals(static_cast<usize>(2), c.shape()[2]);
+// }
+
+void should_throw_mean_empty() {
+    Tensor t(Tensor::Shape{0});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.mean();
+    });
+}
+
+void should_throw_max_empty() {
+    Tensor t(Tensor::Shape{0});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = t.max();
+    });
+}
+
+void should_elementwise_shape_mismatch() {
+    Tensor a({2, 3});
+    Tensor b({2, 2});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = a + b;
+    });
+}
+
+GROUP_NAME("test_tensor")
+REGISTER_UNIT_TESTS(UNIT_TEST_ITEM(should_construct),
+                    UNIT_TEST_ITEM(should_construct_scalar),
+                    UNIT_TEST_ITEM(should_construct_with_value),
+                    UNIT_TEST_ITEM(should_create_zeros),
+                    UNIT_TEST_ITEM(should_create_ones),
+                    UNIT_TEST_ITEM(should_create_arange),
+                    UNIT_TEST_ITEM(should_throw_when_arange_step_is_zero),
+                    UNIT_TEST_ITEM(should_arange_with_step_and_negative),
+                    UNIT_TEST_ITEM(should_arange_empty_case_positive),
+                    UNIT_TEST_ITEM(should_arange_empty_case_negative),
+                    UNIT_TEST_ITEM(should_access_element),
+                    UNIT_TEST_ITEM(should_throw_when_index_out_of_range),
+                    UNIT_TEST_ITEM(should_view_tensor),
+                    UNIT_TEST_ITEM(should_throw_when_view_non_contiguous),
+                    UNIT_TEST_ITEM(should_reshape_non_contiguous),
+                    UNIT_TEST_ITEM(should_transpose),
+                    UNIT_TEST_ITEM(should_permute),
+                    UNIT_TEST_ITEM(should_throw_when_permute_dim_mismatch),
+                    UNIT_TEST_ITEM(should_throw_when_permute_invalid_dim),
+                    UNIT_TEST_ITEM(should_throw_when_permute_duplicate_dim),
+                    UNIT_TEST_ITEM(should_slice),
+                    UNIT_TEST_ITEM(should_throw_when_slice_dim_out_of_range),
+                    UNIT_TEST_ITEM(should_throw_when_slice_invalid_range),
+                    UNIT_TEST_ITEM(should_flatten),
+                    UNIT_TEST_ITEM(should_unsqueeze),
+                    UNIT_TEST_ITEM(should_throw_when_unsqueeze_dim_invalid),
+                    UNIT_TEST_ITEM(should_squeeze),
+                    UNIT_TEST_ITEM(should_throw_when_squeeze_not_one),
+                    UNIT_TEST_ITEM(should_throw_when_squeeze_dim_out_of_range),
+                    UNIT_TEST_ITEM(should_squeeze_all),
+                    UNIT_TEST_ITEM(should_contiguous),
+                    UNIT_TEST_ITEM(should_detect_contiguous),
+                    UNIT_TEST_ITEM(should_contiguous_false_for_transposed),
+                    UNIT_TEST_ITEM(should_share_storage_in_view),
+                    UNIT_TEST_ITEM(should_copy_storage_in_contiguous),
+                    UNIT_TEST_ITEM(should_throw_when_broadcast_shape_mismatch),
+                    UNIT_TEST_ITEM(should_broadcast_add_scalar),
+                    UNIT_TEST_ITEM(should_throw_on_div_zero),
+                    // UNIT_TEST_ITEM(should_matmul_basic_2d),
+                    // UNIT_TEST_ITEM(should_throw_matmul_shape_mismatch),
+                    // UNIT_TEST_ITEM(should_matmul_batch),
+                    UNIT_TEST_ITEM(should_throw_mean_empty),
+                    UNIT_TEST_ITEM(should_throw_max_empty),
+                    UNIT_TEST_ITEM(should_elementwise_shape_mismatch))
 
 } // namespace my::test::test_tensor
