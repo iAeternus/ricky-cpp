@@ -14,6 +14,7 @@ void should_construct() {
     Tensor tensor(shape);
 
     // Then
+    Assertions::assert_false(tensor.is_empty());
     Assertions::assert_equals(static_cast<usize>(3), tensor.ndim());
     Assertions::assert_equals(static_cast<usize>(24), tensor.numel());
 
@@ -28,12 +29,21 @@ void should_construct() {
     Assertions::assert_true(tensor.is_contiguous());
 }
 
+void should_construct_empty_tensor() {
+    Tensor tensor;
+
+    Assertions::assert_equals(static_cast<usize>(0), tensor.ndim());
+    Assertions::assert_equals(static_cast<usize>(0), tensor.numel());
+    Assertions::assert_true(tensor.is_empty());
+    Assertions::assert_true(tensor.is_contiguous());
+}
+
 void should_construct_scalar() {
-    Tensor tensor(Tensor::Shape{});
+    auto tensor = Tensor::scalar(42);
 
     Assertions::assert_equals(static_cast<usize>(0), tensor.ndim());
     Assertions::assert_equals(static_cast<usize>(1), tensor.numel());
-    Assertions::assert_true(tensor.is_contiguous());
+    Assertions::assert_equals(42, tensor.data()[0]);
 }
 
 void should_construct_with_value() {
@@ -515,6 +525,7 @@ void should_elementwise_shape_mismatch() {
 
 GROUP_NAME("test_tensor")
 REGISTER_UNIT_TESTS(UNIT_TEST_ITEM(should_construct),
+                    UNIT_TEST_ITEM(should_construct_empty_tensor),
                     UNIT_TEST_ITEM(should_construct_scalar),
                     UNIT_TEST_ITEM(should_construct_with_value),
                     UNIT_TEST_ITEM(should_create_zeros),

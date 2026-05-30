@@ -4,6 +4,7 @@
 namespace my::test::test_tensor {
 
 void should_construct();
+void should_construct_empty_tensor();
 void should_construct_scalar();
 void should_construct_with_value();
 

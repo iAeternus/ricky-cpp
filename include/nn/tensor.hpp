@@ -24,7 +24,7 @@ public:
      * @brief 构造空张量
      */
     Tensor() :
-            data_(std::make_shared<Storage>()) {}
+            data_(std::make_shared<Storage>()), numel_(0) {}
 
     /**
      * @brief 构造连续张量
@@ -76,6 +76,16 @@ public:
      */
     static Self ones(const Shape& shape) {
         return Tensor(shape, static_cast<T>(1));
+    }
+
+    /**
+     * @brief 创建标量
+     * @param value 标量值
+     * @return 张量
+     */
+    template <typename V>
+    static Self scalar(V&& value) {
+        return Tensor(Shape{}, static_cast<T>(std::forward<V>(value)));
     }
 
     /**
@@ -184,7 +194,7 @@ public:
      * @return 是否为空
      */
     [[nodiscard]] bool is_empty() const noexcept {
-        return data_->is_empty();
+        return numel_ == 0;
     }
 
     /**
