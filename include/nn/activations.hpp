@@ -62,10 +62,11 @@ public:
 
     /**
      * @brief 前向传播: ReLU(x) = max(0, x)
+     *
+     * 缓存输入到成员变量，确保 GradFn 中存储的原始指针在 backward() 完成前有效。
      */
     TensorT forward(const TensorT& input) override {
         if (inplace_) {
-            // 暂不支持原地操作，抛出异常
             throw tensor_exception("ReLU inplace not supported yet");
         }
 
@@ -75,14 +76,18 @@ public:
             result.data()[i] = std::max(inp.data()[i], static_cast<T>(0));
         }
 
+        cached_input_ = input;
         if (input.requires_grad()) {
-            result._set_grad_fn(std::make_shared<ReluBackward<T, Alloc>>(input));
+            result._set_grad_fn(std::make_shared<ReluBackward<T, Alloc>>(cached_input_));
         }
         return result;
     }
 
     /** @brief 是否原地操作 */
     bool inplace_ = false;
+
+private:
+    TensorT cached_input_;
 };
 
 // ==================== Sigmoid 反向传播 ====================
@@ -129,6 +134,7 @@ public:
      * @brief 前向传播: Sigmoid(x) = 1 / (1 + exp(-x))
      *
      * 对正值使用 1/(1+exp(-x))，对负值使用 exp(x)/(1+exp(x)) 避免溢出。
+     * 缓存输入和输出到成员变量，确保 GradFn 指针有效。
      */
     TensorT forward(const TensorT& input) override {
         TensorT result(input.shape());
@@ -143,11 +149,17 @@ public:
             }
         }
 
+        cached_input_ = input;
+        cached_output_ = result;
         if (input.requires_grad()) {
-            result._set_grad_fn(std::make_shared<SigmoidBackward<T, Alloc>>(input, result));
+            result._set_grad_fn(std::make_shared<SigmoidBackward<T, Alloc>>(cached_input_, cached_output_));
         }
         return result;
     }
+
+private:
+    TensorT cached_input_;
+    TensorT cached_output_;
 };
 
 // ==================== Softmax 反向传播 ====================
@@ -206,6 +218,8 @@ public:
      * @brief 前向传播
      * @param input 输入张量
      * @return softmax 后的张量
+     *
+     * 缓存输入和输出到成员变量，确保 GradFn 指针有效。
      */
     TensorT forward(const TensorT& input) override {
         isize actual_dim = dim_;
@@ -213,29 +227,27 @@ public:
             actual_dim += static_cast<isize>(input.ndim());
         }
 
-        // 数值稳定性：减去最大值
         T max_val = input.max();
         TensorT shifted = input.broadcast_sub(TensorT::scalar(max_val));
 
-        // exp(x - max)
         TensorT exp_result(shifted.shape());
         auto inp = shifted.contiguous();
         for (usize i = 0; i < inp.numel(); ++i) {
             exp_result.data()[i] = std::exp(inp.data()[i]);
         }
 
-        // sum(exp)
         T sum_exp = exp_result.sum();
 
-        // softmax = exp / sum
         TensorT result(exp_result.shape());
         for (usize i = 0; i < exp_result.numel(); ++i) {
             result.data()[i] = exp_result.data()[i] / sum_exp;
         }
 
+        cached_input_ = input;
+        cached_output_ = result;
         if (input.requires_grad()) {
             result._set_grad_fn(
-                std::make_shared<SoftmaxBackward<T, Alloc>>(input, result, actual_dim)
+                std::make_shared<SoftmaxBackward<T, Alloc>>(cached_input_, cached_output_, actual_dim)
             );
         }
         return result;
@@ -243,6 +255,10 @@ public:
 
     /** @brief 计算维度 */
     isize dim_;
+
+private:
+    TensorT cached_input_;
+    TensorT cached_output_;
 };
 
 } // namespace my::nn

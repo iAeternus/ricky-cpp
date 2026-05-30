@@ -58,21 +58,21 @@ public:
      * @brief 前向传播
      * @param input 输入张量，形状 (*, in_features)
      * @return 输出张量，形状 (*, out_features)
+     *
+     * 权重转置和中间结果缓存为成员变量，确保 GradFn 中存储的
+     * 原始指针在 backward() 完成前始终有效。
+     * backward() 必须在下次 forward() 前调用。
      */
     TensorT forward(const TensorT& input) override {
-        // y = x @ W^T + b
-        TensorT w_t = weight_.transpose(0, 1); // (in_features, out_features)
-        TensorT out = autograd_matmul(input, w_t);
+        cached_input_ = input;
+        w_t_ = weight_.transpose(0, 1);
+        matmul_out_ = autograd_matmul(cached_input_, w_t_);
         if (!bias_.is_empty()) {
-            out = autograd_add(out, bias_);
+            return autograd_add(matmul_out_, bias_);
         }
-        return out;
+        return matmul_out_;
     }
 
-    /**
-     * @brief 获取参数
-     * @return 参数指针列表
-     */
     util::Vec<TensorT*> parameters() override {
         util::Vec<TensorT*> params;
         params.push(&weight_);
@@ -82,14 +82,15 @@ public:
         return params;
     }
 
-    /** @brief 权重张量 (out_features, in_features) */
     TensorT weight_;
-    /** @brief 偏置张量 (out_features,) */
     TensorT bias_;
 
 private:
     usize in_features_;
     usize out_features_;
+    TensorT cached_input_;
+    TensorT w_t_;
+    TensorT matmul_out_;
 };
 
 } // namespace my::nn

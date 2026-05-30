@@ -169,6 +169,7 @@ public:
         usize b_ndim = other.ndim();
         usize g_ndim = grad_output.ndim();
 
+
         if (self.ndim() == 1 && other.ndim() == 1) {
             // 1D @ 1D: 标量结果
             self_ptr_->_add_grad(grad_output.broadcast_mul(other));
