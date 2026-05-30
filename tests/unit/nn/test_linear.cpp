@@ -4,7 +4,8 @@
 
 namespace my::test::test_linear {
 
-using Tensor = nn::Tensor<f32>;
+using Tensor = nn::Tensor<i32>;
+using FTensor = nn::Tensor<f32>;
 using Shape = typename Tensor::Shape;
 
 void should_construct_linear() {
@@ -25,8 +26,8 @@ void should_construct_linear() {
 void should_linear_forward() {
     nn::Linear<f32> linear(4, 2);
 
-    Tensor input = Tensor::ones(Shape{3, 4});
-    Tensor output = linear.forward(input);
+    FTensor input = FTensor::ones(Shape{3, 4});
+    FTensor output = linear.forward(input);
 
     // output shape: (3, 2)
     Assertions::assert_equals(static_cast<usize>(2), output.ndim());

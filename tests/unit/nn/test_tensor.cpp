@@ -6,10 +6,11 @@ namespace my::test::test_tensor {
 
 using Tensor = nn::Tensor<i32>;
 using FTensor = nn::Tensor<f32>;
+using Shape = typename Tensor::Shape;
 
 void should_construct() {
     // Given
-    typename Tensor::Shape shape{2, 3, 4};
+    Shape shape{2, 3, 4};
 
     // When
     Tensor tensor(shape);

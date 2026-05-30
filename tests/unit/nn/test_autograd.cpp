@@ -4,11 +4,12 @@
 
 namespace my::test::test_autograd {
 
-using Tensor = nn::Tensor<f32>;
-using namespace nn;
+using Tensor = nn::Tensor<i32>;
+using FTensor = nn::Tensor<f32>;
+using Shape = typename Tensor::Shape;
 
 void should_track_gradients() {
-    Tensor a = Tensor::scalar(2.0f);
+    FTensor a = FTensor::scalar(2.0f);
     a.set_requires_grad(true);
 
     Assertions::assert_true(a.requires_grad());
@@ -20,10 +21,10 @@ void should_track_gradients() {
 }
 
 void should_backward_simple_add() {
-    Tensor a = Tensor::scalar(2.0f).set_requires_grad(true);
-    Tensor b = Tensor::scalar(3.0f).set_requires_grad(true);
+    FTensor a = FTensor::scalar(2.0f).set_requires_grad(true);
+    FTensor b = FTensor::scalar(3.0f).set_requires_grad(true);
 
-    Tensor c = autograd_add(a, b);  // c = 5
+    FTensor c = autograd_add(a, b);  // c = 5
 
     Assertions::assert_false(c.grad_fn() == nullptr);
 
@@ -34,14 +35,14 @@ void should_backward_simple_add() {
 }
 
 void should_backward_chain() {
-    Tensor a = Tensor::scalar(2.0f).set_requires_grad(true);
-    Tensor b = Tensor::scalar(3.0f).set_requires_grad(true);
+    FTensor a = FTensor::scalar(2.0f).set_requires_grad(true);
+    FTensor b = FTensor::scalar(3.0f).set_requires_grad(true);
 
     // c = a + b = 5
-    Tensor c = autograd_add(a, b);
+    FTensor c = autograd_add(a, b);
 
     // d = c * a = 5 * 2 = 10
-    Tensor d = autograd_mul(c, a);
+    FTensor d = autograd_mul(c, a);
 
     d.backward();
 
@@ -52,13 +53,13 @@ void should_backward_chain() {
 }
 
 void should_detach() {
-    Tensor a = Tensor::scalar(2.0f).set_requires_grad(true);
-    Tensor b = Tensor::scalar(3.0f).set_requires_grad(true);
+    FTensor a = FTensor::scalar(2.0f).set_requires_grad(true);
+    FTensor b = FTensor::scalar(3.0f).set_requires_grad(true);
 
-    Tensor c = autograd_add(a, b);  // c = 5
-    Tensor d = c.detach();           // detached, no grad tracking
+    FTensor c = autograd_add(a, b);  // c = 5
+    FTensor d = c.detach();           // detached, no grad tracking
 
-    Tensor e = autograd_mul(d, a);
+    FTensor e = autograd_mul(d, a);
 
     Assertions::assert_true(c.grad_fn() != nullptr);
     Assertions::assert_true(d.grad_fn() == nullptr);
@@ -66,10 +67,10 @@ void should_detach() {
 }
 
 void should_zero_grad() {
-    Tensor a = Tensor::scalar(2.0f).set_requires_grad(true);
-    Tensor b = Tensor::scalar(3.0f).set_requires_grad(true);
+    FTensor a = FTensor::scalar(2.0f).set_requires_grad(true);
+    FTensor b = FTensor::scalar(3.0f).set_requires_grad(true);
 
-    Tensor c = autograd_add(a, b);
+    FTensor c = autograd_add(a, b);
     c.backward();
 
     Assertions::assert_false(a.grad().is_empty());

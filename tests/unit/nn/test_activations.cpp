@@ -4,15 +4,16 @@
 
 namespace my::test::test_activations {
 
-using Tensor = nn::Tensor<f32>;
+using Tensor = nn::Tensor<i32>;
+using FTensor = nn::Tensor<f32>;
 using Shape = typename Tensor::Shape;
 
 void should_relu_forward() {
     nn::ReLU<f32> relu;
 
     // [-2, -1, 0, 1, 2]
-    Tensor input = Tensor::arange(-2, 3).view(Shape{5});
-    Tensor output = relu.forward(input);
+    FTensor input = FTensor::arange(-2, 3).view(Shape{5});
+    FTensor output = relu.forward(input);
 
     Assertions::assert_equals(static_cast<f32>(0), output(0));
     Assertions::assert_equals(static_cast<f32>(0), output(1));
@@ -24,8 +25,8 @@ void should_relu_forward() {
 void should_sigmoid_forward() {
     nn::Sigmoid<f32> sigmoid;
 
-    Tensor input = Tensor::scalar(0.0f);
-    Tensor output = sigmoid.forward(input);
+    FTensor input = FTensor::scalar(0.0f);
+    FTensor output = sigmoid.forward(input);
 
     // sigmoid(0) = 0.5
     Assertions::assert_equals(static_cast<f32>(0.5f), output.data()[0]);
@@ -35,8 +36,8 @@ void should_softmax_forward() {
     nn::Softmax<f32> softmax;
 
     // [1, 2, 3]
-    Tensor input = Tensor::arange(1, 4).view(Shape{3});
-    Tensor output = softmax.forward(input);
+    FTensor input = FTensor::arange(1, 4).view(Shape{3});
+    FTensor output = softmax.forward(input);
 
     // sum of softmax outputs = 1
     f32 sum = 0;
