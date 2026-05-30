@@ -21,8 +21,8 @@ class MSELossBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    MSELossBackward(const TensorT& input, const TensorT& target, const CString& reduction)
-        : input_ptr_(&input), target_ptr_(&target), reduction_(reduction) {}
+    MSELossBackward(const TensorT& input, const TensorT& target, const CString& reduction) :
+            input_ptr_(&input), target_ptr_(&target), reduction_(reduction) {}
 
     void backward(const TensorT& grad_output) override {
         TensorT diff = input_ptr_->broadcast_sub(*target_ptr_);
@@ -58,8 +58,8 @@ public:
     using TensorT = Tensor<T, Alloc>;
     using Shape = typename TensorT::Shape;
 
-    explicit MSELoss(const CString& reduction = "mean", T weight_decay = static_cast<T>(0))
-        : reduction_(reduction), weight_decay_(weight_decay) {}
+    explicit MSELoss(const CString& reduction = "mean", T weight_decay = static_cast<T>(0)) :
+            reduction_(reduction), weight_decay_(weight_decay) {}
 
     void set_params(const util::Vec<TensorT*>& params) {
         params_ = params;
@@ -74,8 +74,7 @@ public:
             loss = autograd_sum(squared);
         } else {
             loss = autograd_sum(squared).broadcast_div(
-                TensorT::scalar(static_cast<T>(squared.numel()))
-            );
+                TensorT::scalar(static_cast<T>(squared.numel())));
         }
 
         if (weight_decay_ > static_cast<T>(0) && params_.len() > 0) {
@@ -113,8 +112,8 @@ class CrossEntropyBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    CrossEntropyBackward(const TensorT& input, const TensorT& target, const TensorT& softmax_out)
-        : input_ptr_(&input), target_ptr_(&target), softmax_out_ptr_(&softmax_out) {}
+    CrossEntropyBackward(const TensorT& input, const TensorT& target, const TensorT& softmax_out) :
+            input_ptr_(&input), target_ptr_(&target), softmax_out_ptr_(&softmax_out) {}
 
     void backward(const TensorT& grad_output) override {
         // grad = softmax_out - one_hot(target) / batch_size
@@ -166,8 +165,8 @@ public:
     using TensorT = Tensor<T, Alloc>;
     using Shape = typename TensorT::Shape;
 
-    explicit CrossEntropyLoss(T weight_decay = static_cast<T>(0))
-        : weight_decay_(weight_decay) {}
+    explicit CrossEntropyLoss(T weight_decay = static_cast<T>(0)) :
+            weight_decay_(weight_decay) {}
 
     void set_params(const util::Vec<TensorT*>& params) {
         params_ = params;
@@ -232,8 +231,7 @@ public:
 
         if (cached_inp_.requires_grad()) {
             result._set_grad_fn(
-                std::make_shared<CrossEntropyBackward<T, Alloc>>(cached_inp_, cached_tgt_, cached_softmax_out_)
-            );
+                std::make_shared<CrossEntropyBackward<T, Alloc>>(cached_inp_, cached_tgt_, cached_softmax_out_));
         }
         return result;
     }

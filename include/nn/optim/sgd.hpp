@@ -43,11 +43,8 @@ public:
     SGD(util::Vec<TensorT*> params, T lr,
         T momentum = static_cast<T>(0),
         T weight_decay = static_cast<T>(0),
-        bool nesterov = false)
-        : Base(std::move(params))
-        , lr_(lr), momentum_(momentum)
-        , weight_decay_(weight_decay), nesterov_(nesterov) {
-
+        bool nesterov = false) :
+            Base(std::move(params)), lr_(lr), momentum_(momentum), weight_decay_(weight_decay), nesterov_(nesterov) {
         if (momentum_ != static_cast<T>(0)) {
             for (usize i = 0; i < Base::params_.len(); ++i) {
                 auto* p = Base::params_[i];
@@ -78,7 +75,7 @@ public:
                 auto& v = momentum_bufs_[i];
                 // v = momentum * v + grad
                 v = v.broadcast_mul(TensorT::scalar(momentum_))
-                      .broadcast_add(grad);
+                        .broadcast_add(grad);
 
                 if (nesterov_) {
                     // w = w - lr * (grad + momentum * v)

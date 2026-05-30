@@ -36,9 +36,8 @@ public:
      * weight 使用均匀分布 U(-sqrt(1/in_features), sqrt(1/in_features)) 初始化
      * bias 初始化为 0
      */
-    Linear(usize in_features, usize out_features, bool use_bias = true)
-        : in_features_(in_features), out_features_(out_features) {
-
+    Linear(usize in_features, usize out_features, bool use_bias = true) :
+            in_features_(in_features), out_features_(out_features) {
         // weight: (out_features, in_features)
         T bound = static_cast<T>(1) / std::sqrt(static_cast<T>(in_features));
         weight_ = TensorT::rand(Shape{out_features, in_features});

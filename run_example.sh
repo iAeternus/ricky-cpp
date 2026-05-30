@@ -1,22 +1,32 @@
 #!/bin/bash
+# 运行已构建的 example（不执行构建）。
+#
+# 用法:
+#   ./run_example.sh                         列出可用 example
+#   ./run_example.sh regression_mlp -t       运行指定 example 并传参
+#
+set -e
 
-if [ -z "$1" ]; then
-    echo "Usage: $0 [example_name]"
-    echo "Example: $0 tcp_server"
+cd "$(dirname "$0")"
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 <example_name> [args...]"
     echo ""
     echo "Available examples:"
-    ls -1 build/bin/examples/*  2>/dev/null | xargs -n1 basename || echo "No examples found"
-    exit 1
+    for f in build/bin/examples/*; do
+        [ -f "$f" ] && [ -x "$f" ] && basename "$f"
+    done | sort
+    exit 0
 fi
 
 EXAMPLE="$1"
-EXAMPLE_DIR="build/bin/examples"
+shift
 
-if [ ! -f "$EXAMPLE_DIR/$EXAMPLE" ]; then
-    echo "Error: Example '$EXAMPLE' not found"
-    echo "Available examples:"
-    ls -1 "$EXAMPLE_DIR" 2>/dev/null | xargs -n1 basename || echo "No examples found"
+EXE="./build/bin/examples/$EXAMPLE"
+if [ ! -f "$EXE" ]; then
+    echo "Error: '$EXAMPLE' not found (build/bin/examples/$EXAMPLE missing)"
+    echo "Run 'cmake --build build --target $EXAMPLE' first, or build the project."
     exit 1
 fi
 
-"$EXAMPLE_DIR/$EXAMPLE"
+exec "$EXE" "$@"

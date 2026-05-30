@@ -670,16 +670,16 @@ public:
 
         // 1D @ 2D: 前置1再squeeze
         if (a_ndim == 1 && b_ndim == 2) {
-            auto a2d = a.unsqueeze(0);                       // (1, n)
-            auto tmp = a2d.matmul(b);                        // (1, m)
-            return tmp.squeeze(0);                            // (m,)
+            auto a2d = a.unsqueeze(0); // (1, n)
+            auto tmp = a2d.matmul(b);  // (1, m)
+            return tmp.squeeze(0);     // (m,)
         }
 
         // 2D @ 1D: 后置1再squeeze
         if (a_ndim == 2 && b_ndim == 1) {
-            auto b2d = b.unsqueeze(1);                       // (n, 1)
-            auto tmp = a.matmul(b2d);                        // (m, 1)
-            return tmp.squeeze(1);                            // (m,)
+            auto b2d = b.unsqueeze(1); // (n, 1)
+            auto tmp = a.matmul(b2d);  // (m, 1)
+            return tmp.squeeze(1);     // (m,)
         }
 
         // ND @ ND: 批量矩阵乘法
@@ -732,7 +732,7 @@ public:
                     T acc = T{0};
                     for (usize k = 0; k < K1; ++k) {
                         acc += a_data[a_boff + i * a.stride_[a_ndim - 2] + k * a.stride_[a_ndim - 1]]
-                             * b_data[b_boff + k * b.stride_[b_ndim - 2] + j * b.stride_[b_ndim - 1]];
+                               * b_data[b_boff + k * b.stride_[b_ndim - 2] + j * b.stride_[b_ndim - 1]];
                     }
                     r_data[r_base + i * N + j] = acc;
                 }

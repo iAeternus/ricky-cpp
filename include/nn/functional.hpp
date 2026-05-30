@@ -58,7 +58,7 @@ Tensor<T, Alloc> softmax(const Tensor<T, Alloc>& input, isize dim = -1) {
  */
 template <typename T, typename Alloc = mem::Allocator<T>>
 Tensor<T, Alloc> mse_loss(const Tensor<T, Alloc>& input, const Tensor<T, Alloc>& target,
-                           const CString& reduction = "mean") {
+                          const CString& reduction = "mean") {
     MSELoss<T, Alloc> loss(reduction);
     return loss.forward(input, target);
 }
@@ -84,7 +84,7 @@ Tensor<T, Alloc> cross_entropy(const Tensor<T, Alloc>& input, const Tensor<T, Al
  */
 template <typename T, typename Alloc = mem::Allocator<T>>
 Tensor<T, Alloc> linear(const Tensor<T, Alloc>& input, const Tensor<T, Alloc>& weight,
-                         const Tensor<T, Alloc>& bias = Tensor<T, Alloc>()) {
+                        const Tensor<T, Alloc>& bias = Tensor<T, Alloc>()) {
     Tensor<T, Alloc> w_t = weight.transpose(0, 1);
     Tensor<T, Alloc> out = autograd_matmul(input, w_t);
     if (!bias.is_empty()) {

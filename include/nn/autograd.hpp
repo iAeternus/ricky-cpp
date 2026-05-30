@@ -25,7 +25,7 @@ namespace detail {
  */
 template <typename T, typename Alloc = mem::Allocator<T>>
 Tensor<T, Alloc> _reduce_grad(const Tensor<T, Alloc>& grad,
-                               const typename Tensor<T, Alloc>::Shape& target_shape) {
+                              const typename Tensor<T, Alloc>::Shape& target_shape) {
     using TensorT = Tensor<T, Alloc>;
     using Shape = typename TensorT::Shape;
 
@@ -112,8 +112,8 @@ class AddBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    AddBackward(const TensorT& self, const TensorT& other)
-        : self_ptr_(&self), other_ptr_(&other) {}
+    AddBackward(const TensorT& self, const TensorT& other) :
+            self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
         self_ptr_->_add_grad(
@@ -139,8 +139,8 @@ class SubBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    SubBackward(const TensorT& self, const TensorT& other)
-        : self_ptr_(&self), other_ptr_(&other) {}
+    SubBackward(const TensorT& self, const TensorT& other) :
+            self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
         self_ptr_->_add_grad(
@@ -166,8 +166,8 @@ class MulBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    MulBackward(const TensorT& self, const TensorT& other)
-        : self_ptr_(&self), other_ptr_(&other) {}
+    MulBackward(const TensorT& self, const TensorT& other) :
+            self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
         self_ptr_->_add_grad(
@@ -195,8 +195,8 @@ class DivBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    DivBackward(const TensorT& self, const TensorT& other)
-        : self_ptr_(&self), other_ptr_(&other) {}
+    DivBackward(const TensorT& self, const TensorT& other) :
+            self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
         TensorT inv_other = other_ptr_->broadcast_pow(-1);
@@ -226,8 +226,8 @@ class MatMulBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    MatMulBackward(const TensorT& self, const TensorT& other)
-        : self_ptr_(&self), other_ptr_(&other) {}
+    MatMulBackward(const TensorT& self, const TensorT& other) :
+            self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
         // grad_self = grad_output @ other.T
@@ -237,18 +237,17 @@ public:
         usize b_ndim = other.ndim();
         usize g_ndim = grad_output.ndim();
 
-
         if (self.ndim() == 1 && other.ndim() == 1) {
             // 1D @ 1D: 标量结果
             self_ptr_->_add_grad(grad_output.broadcast_mul(other));
             other_ptr_->_add_grad(grad_output.broadcast_mul(self));
         } else if (self.ndim() == 1) {
             // 1D @ 2D: 向量×矩阵 → 1D
-            auto g2d = grad_output.unsqueeze(0); // (1, m)
+            auto g2d = grad_output.unsqueeze(0);                // (1, m)
             auto o_t = other.transpose(b_ndim - 2, b_ndim - 1); // (p, n)
             self_ptr_->_add_grad(g2d.matmul(o_t).squeeze(0));
             // other grad: unsqueeze(0) -> matmul -> squeeze
-            auto s1 = self.unsqueeze(0); // (1, n)
+            auto s1 = self.unsqueeze(0);            // (1, n)
             auto g_unsq = grad_output.unsqueeze(1); // (m, 1)
             other_ptr_->_add_grad(s1.transpose(0, 1).matmul(g_unsq).squeeze(1));
         } else if (other.ndim() == 1) {
@@ -283,8 +282,8 @@ class NegBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    explicit NegBackward(const TensorT& self)
-        : self_ptr_(&self) {}
+    explicit NegBackward(const TensorT& self) :
+            self_ptr_(&self) {}
 
     void backward(const TensorT& grad_output) override {
         self_ptr_->_add_grad(-grad_output);
@@ -306,8 +305,8 @@ class SumBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    explicit SumBackward(const TensorT& input)
-        : input_shape_(input.shape()), input_ptr_(&input) {}
+    explicit SumBackward(const TensorT& input) :
+            input_shape_(input.shape()), input_ptr_(&input) {}
 
     void backward(const TensorT& grad_output) override {
         // 将标量梯度广播回输入形状
@@ -343,15 +342,13 @@ class PowBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    PowBackward(const TensorT& self, T exp)
-        : self_ptr_(&self), exp_(exp) {}
+    PowBackward(const TensorT& self, T exp) :
+            self_ptr_(&self), exp_(exp) {}
 
     void backward(const TensorT& grad_output) override {
         // dx = exp * x^(exp-1) * grad_output
         T exp_minus_1 = (exp_ == static_cast<T>(0)) ? static_cast<T>(0) : exp_ - static_cast<T>(1);
-        TensorT grad = self_ptr_->broadcast_pow(exp_minus_1).broadcast_mul(
-            TensorT::scalar(exp_)
-        ).broadcast_mul(grad_output);
+        TensorT grad = self_ptr_->broadcast_pow(exp_minus_1).broadcast_mul(TensorT::scalar(exp_)).broadcast_mul(grad_output);
         self_ptr_->_add_grad(grad);
     }
 
@@ -372,8 +369,8 @@ class TransposeBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    TransposeBackward(const TensorT& input, usize dim0, usize dim1)
-        : input_ptr_(&input), dim0_(dim0), dim1_(dim1) {}
+    TransposeBackward(const TensorT& input, usize dim0, usize dim1) :
+            input_ptr_(&input), dim0_(dim0), dim1_(dim1) {}
 
     void backward(const TensorT& grad_output) override {
         // 将梯度转置回输入的形状

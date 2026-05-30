@@ -27,8 +27,8 @@ public:
 
     TensorDataset() = default;
 
-    explicit TensorDataset(const util::Vec<Pair<TensorT, TensorT>>& samples)
-        : samples_(samples) {}
+    explicit TensorDataset(const util::Vec<Pair<TensorT, TensorT>>& samples) :
+            samples_(samples) {}
 
     TensorDataset(const TensorT& x, const TensorT& y) {
         usize n = x.shape()[0];
@@ -83,8 +83,8 @@ public:
     using Shape = typename TensorT::Shape;
 
     CSVDataset(const CString& csv_path, usize num_features,
-               f32 val_ratio = 0.15, f32 test_ratio = 0.15)
-        : num_features_(num_features) {
+               f32 val_ratio = 0.15, f32 test_ratio = 0.15) :
+            num_features_(num_features) {
         auto file = fs::File::open(csv_path);
         auto content = file.read_all();
         auto data_cstr = content.as_cstr();

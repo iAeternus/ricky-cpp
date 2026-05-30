@@ -45,12 +45,8 @@ public:
          T beta1 = static_cast<T>(0.9),
          T beta2 = static_cast<T>(0.999),
          T eps = static_cast<T>(1e-8),
-         T weight_decay = static_cast<T>(0))
-        : Base(std::move(params))
-        , lr_(lr), beta1_(beta1), beta2_(beta2)
-        , eps_(eps), weight_decay_(weight_decay)
-        , step_count_(0) {
-
+         T weight_decay = static_cast<T>(0)) :
+            Base(std::move(params)), lr_(lr), beta1_(beta1), beta2_(beta2), eps_(eps), weight_decay_(weight_decay), step_count_(0) {
         for (usize i = 0; i < Base::params_.len(); ++i) {
             auto* p = Base::params_[i];
             m_bufs_.push(TensorT::zeros(p->shape()));
@@ -82,13 +78,10 @@ public:
             }
 
             // 更新一阶矩: m = beta1 * m + (1 - beta1) * grad
-            m_bufs_[i] = m_bufs_[i].broadcast_mul(TensorT::scalar(beta1_))
-                            .broadcast_add(grad.broadcast_mul(TensorT::scalar(static_cast<T>(1) - beta1_)));
+            m_bufs_[i] = m_bufs_[i].broadcast_mul(TensorT::scalar(beta1_)).broadcast_add(grad.broadcast_mul(TensorT::scalar(static_cast<T>(1) - beta1_)));
 
             // 更新二阶矩: v = beta2 * v + (1 - beta2) * grad^2
-            v_bufs_[i] = v_bufs_[i].broadcast_mul(TensorT::scalar(beta2_))
-                            .broadcast_add(grad.broadcast_mul(grad).broadcast_mul(
-                                TensorT::scalar(static_cast<T>(1) - beta2_)));
+            v_bufs_[i] = v_bufs_[i].broadcast_mul(TensorT::scalar(beta2_)).broadcast_add(grad.broadcast_mul(grad).broadcast_mul(TensorT::scalar(static_cast<T>(1) - beta2_)));
 
             // 偏差矫正
             TensorT m_hat = m_bufs_[i].broadcast_div(TensorT::scalar(bias_correction1));
@@ -98,7 +91,7 @@ public:
             TensorT denom = v_hat.broadcast_pow(static_cast<T>(0.5))
                                 .broadcast_add(TensorT::scalar(eps_));
             TensorT update = m_hat.broadcast_div(denom)
-                                .broadcast_mul(TensorT::scalar(lr_));
+                                 .broadcast_mul(TensorT::scalar(lr_));
 
             *p = p->broadcast_sub(update);
             p->set_requires_grad(true);
@@ -112,8 +105,8 @@ private:
     T eps_;
     T weight_decay_;
     usize step_count_;
-    util::Vec<TensorT> m_bufs_;  // 一阶矩
-    util::Vec<TensorT> v_bufs_;  // 二阶矩
+    util::Vec<TensorT> m_bufs_; // 一阶矩
+    util::Vec<TensorT> v_bufs_; // 二阶矩
 };
 
 } // namespace my::nn::optim

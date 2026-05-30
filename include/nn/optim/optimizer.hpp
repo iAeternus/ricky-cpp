@@ -28,8 +28,8 @@ public:
      * @brief 构造优化器
      * @param params 待优化的参数指针列表
      */
-    explicit Optimizer(util::Vec<TensorT*> params)
-        : params_(std::move(params)) {}
+    explicit Optimizer(util::Vec<TensorT*> params) :
+            params_(std::move(params)) {}
 
     virtual ~Optimizer() = default;
 

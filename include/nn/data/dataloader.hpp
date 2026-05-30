@@ -12,8 +12,8 @@ public:
     using TensorT = Tensor<T, Alloc>;
     using Shape = typename TensorT::Shape;
 
-    DataLoader(const Dataset<T, Alloc>& dataset, usize batch_size, bool shuffle = true)
-        : dataset_(&dataset), batch_size_(batch_size), shuffle_(shuffle) {
+    DataLoader(const Dataset<T, Alloc>& dataset, usize batch_size, bool shuffle = true) :
+            dataset_(&dataset), batch_size_(batch_size), shuffle_(shuffle) {
         reset();
     }
 

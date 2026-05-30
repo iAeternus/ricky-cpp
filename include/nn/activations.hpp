@@ -12,8 +12,6 @@
 
 namespace my::nn {
 
-// ==================== ReLU 反向传播 ====================
-
 /**
  * @brief ReLU 反向传播
  */
@@ -22,8 +20,8 @@ class ReluBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    explicit ReluBackward(const TensorT& input)
-        : input_ptr_(&input) {}
+    explicit ReluBackward(const TensorT& input) :
+            input_ptr_(&input) {}
 
     void backward(const TensorT& grad_output) override {
         // dx = dy * (x > 0)
@@ -31,8 +29,7 @@ public:
         auto mask = input_.contiguous();
         TensorT grad(input_.shape());
         for (usize i = 0; i < mask.numel(); ++i) {
-            grad.data()[i] = (mask.data()[i] > static_cast<T>(0))
-                ? static_cast<T>(1) : static_cast<T>(0);
+            grad.data()[i] = (mask.data()[i] > static_cast<T>(0)) ? static_cast<T>(1) : static_cast<T>(0);
         }
         input_ptr_->_add_grad(grad_output.broadcast_mul(grad));
     }
@@ -58,7 +55,8 @@ public:
      * @brief 构造 ReLU 层
      * @param inplace 是否原地操作（暂不支持）
      */
-    explicit ReLU(bool inplace = false) : inplace_(inplace) {}
+    explicit ReLU(bool inplace = false) :
+            inplace_(inplace) {}
 
     /**
      * @brief 前向传播: ReLU(x) = max(0, x)
@@ -90,8 +88,6 @@ private:
     TensorT cached_input_;
 };
 
-// ==================== Sigmoid 反向传播 ====================
-
 /**
  * @brief Sigmoid 反向传播
  * dsigmoid/dx = sigmoid(x) * (1 - sigmoid(x))
@@ -101,15 +97,14 @@ class SigmoidBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    SigmoidBackward(const TensorT& input, const TensorT& output)
-        : input_ptr_(&input), output_ptr_(&output) {}
+    SigmoidBackward(const TensorT& input, const TensorT& output) :
+            input_ptr_(&input), output_ptr_(&output) {}
 
     void backward(const TensorT& grad_output) override {
         // dx = dy * y * (1 - y)
         auto one = TensorT::scalar(static_cast<T>(1));
         input_ptr_->_add_grad(
-            grad_output.broadcast_mul(*output_ptr_).broadcast_mul(one.broadcast_sub(*output_ptr_))
-        );
+            grad_output.broadcast_mul(*output_ptr_).broadcast_mul(one.broadcast_sub(*output_ptr_)));
     }
 
     [[nodiscard]] CString to_string() const {
@@ -162,8 +157,6 @@ private:
     TensorT cached_output_;
 };
 
-// ==================== Softmax 反向传播 ====================
-
 /**
  * @brief Softmax 反向传播
  */
@@ -172,8 +165,8 @@ class SoftmaxBackward : public GradFn<T, Alloc> {
 public:
     using TensorT = Tensor<T, Alloc>;
 
-    SoftmaxBackward(const TensorT& input, const TensorT& output, isize dim)
-        : input_ptr_(&input), output_ptr_(&output), dim_(dim) {}
+    SoftmaxBackward(const TensorT& input, const TensorT& output, isize dim) :
+            input_ptr_(&input), output_ptr_(&output), dim_(dim) {}
 
     void backward(const TensorT& grad_output) override {
         // dx = y * (dy - sum(y * dy, dim))
@@ -212,7 +205,8 @@ public:
      * @brief 构造 Softmax
      * @param dim 计算维度，默认 -1（最后一维）
      */
-    explicit Softmax(isize dim = -1) : dim_(dim) {}
+    explicit Softmax(isize dim = -1) :
+            dim_(dim) {}
 
     /**
      * @brief 前向传播
@@ -246,9 +240,7 @@ public:
         cached_input_ = input;
         cached_output_ = result;
         if (input.requires_grad()) {
-            result._set_grad_fn(
-                std::make_shared<SoftmaxBackward<T, Alloc>>(cached_input_, cached_output_, actual_dim)
-            );
+            result._set_grad_fn(std::make_shared<SoftmaxBackward<T, Alloc>>(cached_input_, cached_output_, actual_dim));
         }
         return result;
     }
