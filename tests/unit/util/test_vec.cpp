@@ -226,6 +226,115 @@ void should_fail_to_opt_if_type_mismatch() {
     });
 }
 
+// === Vec 回归测试：迭代器构造函数 ===
+// 修复：Vec(It first, It last) 之前未初始化 data_/len_/capacity_，
+// 导致 push() 调用 try_expand() 时使用垃圾值，造成堆损坏。
+// 修复后：len_(0), capacity_(0), data_(nullptr)，由 try_expand 按需分配。
+
+void should_construct_from_iterator_range() {
+    i32 arr[] = {10, 20, 30, 40, 50};
+    util::Vec<i32> v(std::begin(arr), std::end(arr));
+
+    Assertions::assert_equals(5, v.len());
+    Assertions::assert_equals("[10,20,30,40,50]"_cs, v.to_string());
+    Assertions::assert_equals(10, v[0]);
+    Assertions::assert_equals(50, v[4]);
+}
+
+void should_push_after_iterator_construction() {
+    i32 arr[] = {1, 2, 3};
+    util::Vec<i32> v(std::begin(arr), std::end(arr));
+
+    v.push(4);
+    v.push(5);
+
+    Assertions::assert_equals(5, v.len());
+    Assertions::assert_equals("[1,2,3,4,5]"_cs, v.to_string());
+}
+
+void should_construct_from_empty_iterator_range() {
+    i32 arr[] = {1, 2, 3};
+    util::Vec<i32> v(std::begin(arr), std::begin(arr));
+
+    Assertions::assert_true(v.is_empty());
+    Assertions::assert_equals(0, v.len());
+
+    v.push(42);
+    Assertions::assert_equals(1, v.len());
+    Assertions::assert_equals(42, v[0]);
+}
+
+void should_push_large_after_iterator_construction() {
+    i32 arr[] = {1, 2, 3};
+    util::Vec<i32> v(std::begin(arr), std::end(arr));
+
+    for (i32 i = 0; i < 100; ++i) {
+        v.push(i);
+    }
+
+    Assertions::assert_equals(103, v.len());
+    Assertions::assert_equals(99, v.last());
+    Assertions::assert_equals(1, v[0]);
+    Assertions::assert_equals(2, v[1]);
+    Assertions::assert_equals(3, v[2]);
+}
+
+void should_construct_from_iterator_range_with_nontrivial_type() {
+    util::Vec<CString> src = {cstr("hello"), cstr("world"), cstr("vec")};
+    util::Vec<CString> v(src.begin(), src.end());
+
+    Assertions::assert_equals(3, v.len());
+    Assertions::assert_equals("hello"_cs, v[0]);
+    Assertions::assert_equals("world"_cs, v[1]);
+    Assertions::assert_equals("vec"_cs, v[2]);
+
+    v.push(cstr("regression"));
+    Assertions::assert_equals(4, v.len());
+    Assertions::assert_equals("regression"_cs, v[3]);
+}
+
+// === Vec 回归测试：resize ===
+// 修复：resize 改用 alloc_.construct/destroy 替代 placement new + 手动析构，
+// 且增加 data_ 空指针保护，确保 data_ 为 null 时跳过 memcpy/construct。
+
+void should_resize_up_with_non_trivial_types() {
+    util::Vec<CString> v = {cstr("a"), cstr("b"), cstr("c")};
+
+    v.resize(10);
+
+    Assertions::assert_equals(3, v.len());
+    Assertions::assert_equals("a"_cs, v[0]);
+    Assertions::assert_equals("b"_cs, v[1]);
+    Assertions::assert_equals("c"_cs, v[2]);
+    Assertions::assert_equals(10, v.capacity());
+}
+
+void should_resize_down_preserves_content() {
+    util::Vec<i32> v = {1, 2, 3, 4, 5};
+
+    v.resize(3);
+
+    Assertions::assert_equals(3, v.len());
+    Assertions::assert_equals("[1,2,3]"_cs, v.to_string());
+    Assertions::assert_equals(3, v.capacity());
+}
+
+void should_handle_multiple_resizes() {
+    util::Vec<i32> v = {1, 2, 3};
+
+    v.resize(10);
+    v.resize(5);
+    v.resize(20);
+
+    Assertions::assert_equals(3, v.len());
+    Assertions::assert_equals("[1,2,3]"_cs, v.to_string());
+    Assertions::assert_equals(20, v.capacity());
+
+    v.push(4);
+    Assertions::assert_equals(4, v.len());
+    Assertions::assert_equals("[1,2,3,4]"_cs, v.to_string());
+}
+
 GROUP_NAME("test_vec")
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(it_works),
@@ -243,6 +352,15 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(should_sort),
     UNIT_TEST_ITEM(test_opt),
     UNIT_TEST_ITEM(should_fail_to_opt_if_index_out_of_bounds),
-    UNIT_TEST_ITEM(should_fail_to_opt_if_type_mismatch))
+    UNIT_TEST_ITEM(should_fail_to_opt_if_type_mismatch),
+    // 回归测试
+    UNIT_TEST_ITEM(should_construct_from_iterator_range),
+    UNIT_TEST_ITEM(should_push_after_iterator_construction),
+    UNIT_TEST_ITEM(should_construct_from_empty_iterator_range),
+    UNIT_TEST_ITEM(should_push_large_after_iterator_construction),
+    UNIT_TEST_ITEM(should_construct_from_iterator_range_with_nontrivial_type),
+    UNIT_TEST_ITEM(should_resize_up_with_non_trivial_types),
+    UNIT_TEST_ITEM(should_resize_down_preserves_content),
+    UNIT_TEST_ITEM(should_handle_multiple_resizes))
 
 } // namespace my::test::test_vec

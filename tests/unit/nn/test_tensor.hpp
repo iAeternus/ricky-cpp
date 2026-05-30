@@ -58,9 +58,14 @@ void should_broadcast_add_scalar();
 
 void should_throw_on_div_zero();
 
-// void should_matmul_basic_2d();
-// void should_throw_matmul_shape_mismatch();
-// void should_matmul_batch();
+// matmul tests
+void should_matmul_1d_dot();
+void should_matmul_2d();
+void should_matmul_1d_2d();
+void should_matmul_2d_1d();
+void should_matmul_batch();
+void should_throw_matmul_shape_mismatch();
+void should_matmul_broadcast_batch();
 
 void should_throw_mean_empty();
 void should_throw_max_empty();

@@ -78,7 +78,8 @@ public:
 
     template <typename It>
         requires std::input_iterator<It>
-    Vec(It first, It last, const Alloc& alloc = Alloc{}) {
+    Vec(It first, It last, const Alloc& alloc = Alloc{}) :
+            alloc_(alloc), len_(0), capacity_(0), data_(nullptr) {
         for (; first != last; ++first) {
             push(*first);
         }
@@ -468,18 +469,23 @@ public:
         value_t* ptr = alloc_.allocate(new_cap);
         const usize min_size = std::min(len_, new_cap);
 
-        if constexpr (std::is_trivially_copyable_v<value_t>) {
-            std::memcpy(ptr, data_, min_size * sizeof(value_t));
-        } else {
-            for (usize i = 0; i < min_size; ++i) {
-                new (ptr + i) value_t(std::move(data_[i]));
-                data_[i].~value_t();
+        if (data_) {
+            if constexpr (std::is_trivially_copyable_v<value_t>) {
+                std::memcpy(ptr, data_, min_size * sizeof(value_t));
+            } else {
+                for (usize i = 0; i < min_size; ++i) {
+                    alloc_.construct(ptr + i, std::move(data_[i]));
+                    alloc_.destroy(data_ + i);
+                }
             }
         }
 
-        alloc_.deallocate(data_, capacity_);
+        if (data_) {
+            alloc_.deallocate(data_, capacity_);
+        }
         data_ = ptr;
         capacity_ = new_cap;
+        len_ = min_size;
     }
 
     /**
@@ -522,7 +528,7 @@ public:
 private:
     auto try_expand() {
         if (len_ == capacity_) {
-            resize(capacity_ << 1);
+            resize(capacity_ == 0 ? DEFAULT_CAPACITY : capacity_ << 1);
         }
     }
 

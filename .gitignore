@@ -42,3 +42,5 @@ vcpkg/*
 
 # Others
 *.log
+
+doc/

@@ -10,7 +10,12 @@
 #include "math_concepts.hpp"
 #include "random.hpp"
 
+#include <memory>
+
 namespace my::nn {
+
+template <typename T, typename Alloc>
+class GradFn;
 
 template <typename T, typename Alloc = mem::Allocator<T>>
 class Tensor : public Object<Tensor<T, Alloc>> {
@@ -600,86 +605,134 @@ public:
     }
 
     /**
-     * @brief 矩阵乘法
-     * @param rhs 右操作数
+     * @brief 逐元素幂运算（支持广播）
+     * @param exp 指数
      * @return 结果张量
      */
-    // [[nodiscard]] Self matmul(const Self& rhs) const {
-    //     if (ndim() < 1 || rhs.ndim() < 1) {
-    //         throw tensor_exception("matmul requires at least 1D tensors");
-    //     }
+    [[nodiscard]] Self broadcast_pow(T exp) const {
+        auto result = Self(shape_);
+        auto t = contiguous();
+        for (usize i = 0; i < numel_; ++i) {
+            result.data()[i] = std::pow(t.data()[i], exp);
+        }
+        return result;
+    }
 
-    //     usize a_nd = ndim();
-    //     usize b_nd = rhs.ndim();
+    /**
+     * @brief 矩阵乘法（与PyTorch torch.matmul行为一致）
+     * @param rhs 右操作数
+     * @return 结果张量
+     *
+     * 支持：
+     * - 1D @ 1D：点积，返回标量
+     * - 2D @ 1D：矩阵乘向量，返回1D
+     * - 1D @ 2D：向量乘矩阵，返回1D
+     * - 2D @ 2D：标准矩阵乘法
+     * - ND @ ND：批量矩阵乘法，最后两维做矩阵乘，前面维度广播
+     */
+    [[nodiscard]] Self matmul(const Self& rhs) const {
+        auto a = this->contiguous();
+        auto b = rhs.contiguous();
 
-    //     usize M = shape_[a_nd - 2];
-    //     usize K = shape_[a_nd - 1];
-    //     usize K2 = rhs.shape_[b_nd - 2];
-    //     usize N = rhs.shape_[b_nd - 1];
+        usize a_ndim = a.ndim();
+        usize b_ndim = b.ndim();
 
-    //     if (K != K2) {
-    //         throw tensor_exception("matmul shape mismatch on K dimension");
-    //     }
+        if (a_ndim == 0 || b_ndim == 0) {
+            throw tensor_exception("Tensor::matmul does not support scalar tensors");
+        }
 
-    //     // broadcast batch shape
-    //     Shape a_batch(shape_.begin(), shape_.end() - 2);
-    //     Shape b_batch(rhs.shape_.begin(), rhs.shape_.end() - 2);
+        // 1D @ 1D: 点积
+        if (a_ndim == 1 && b_ndim == 1) {
+            if (a.shape_[0] != b.shape_[0]) {
+                throw tensor_exception("Tensor::matmul shape mismatch on inner dimension");
+            }
+            T dot = T{0};
+            for (usize i = 0; i < a.numel_; ++i) {
+                dot += (*a.data_)[i] * (*b.data_)[i];
+            }
+            return Self::scalar(dot);
+        }
 
-    //     Shape out_batch = broadcast_shape(a_batch, b_batch);
+        // 1D @ 2D: 前置1再squeeze
+        if (a_ndim == 1 && b_ndim == 2) {
+            auto a2d = a.unsqueeze(0);                       // (1, n)
+            auto tmp = a2d.matmul(b);                        // (1, m)
+            return tmp.squeeze(0);                            // (m,)
+        }
 
-    //     Shape out_shape = out_batch;
-    //     out_shape.push(M);
-    //     out_shape.push(N);
+        // 2D @ 1D: 后置1再squeeze
+        if (a_ndim == 2 && b_ndim == 1) {
+            auto b2d = b.unsqueeze(1);                       // (n, 1)
+            auto tmp = a.matmul(b2d);                        // (m, 1)
+            return tmp.squeeze(1);                            // (m,)
+        }
 
-    //     Self result(out_shape);
+        // ND @ ND: 批量矩阵乘法
+        usize K1 = a.shape_[a_ndim - 1];
+        usize K2 = b.shape_[b_ndim - 2];
+        if (K1 != K2) {
+            throw tensor_exception("Tensor::matmul shape mismatch on K dimension");
+        }
 
-    //     usize batch_size = calc_numel(out_batch);
+        usize M = a.shape_[a_ndim - 2];
+        usize N = b.shape_[b_ndim - 1];
 
-    //     Shape batch_idx(out_batch.len(), 0);
+        // 提取batch shape
+        Shape a_batch(a.shape_.begin(), a.shape_.end() - 2);
+        Shape b_batch(b.shape_.begin(), b.shape_.end() - 2);
+        Shape out_batch = broadcast_shape(a_batch, b_batch);
 
-    //     auto advance = [&](Shape& idx, const Shape& shape) {
-    //         for (isize i = (isize)shape.len() - 1; i >= 0; --i) {
-    //             idx[i]++;
-    //             if (idx[i] < shape[i]) return;
-    //             idx[i] = 0;
-    //         }
-    //     };
+        Shape out_shape = out_batch;
+        out_shape.push(M);
+        out_shape.push(N);
 
-    //     for (usize b = 0; b < batch_size; ++b) {
-    //         usize a_base = offset_;
-    //         usize b_base = rhs.offset_;
+        Self result(out_shape);
+        usize batch_size = calc_numel(out_batch);
 
-    //         // map batch index -> offset
-    //         for (usize i = 0; i < out_batch.len(); ++i) {
-    //             usize ai = (i < a_batch.len()) ? batch_idx[i] : 0;
-    //             usize bi = (i < b_batch.len()) ? batch_idx[i] : 0;
+        // 计算batch stride映射
+        Shape a_batch_stride = broadcast_stride(a_batch, out_batch, a.stride_);
+        Shape b_batch_stride = broadcast_stride(b_batch, out_batch, b.stride_);
+        auto out_ndim = out_batch.len();
 
-    //             if (i < a_batch.len())
-    //                 a_base += ai * stride_[i];
+        // 批量矩阵乘
+        auto* a_data = a.data_->data();
+        auto* b_data = b.data_->data();
+        auto* r_data = result.data_->data();
 
-    //             if (i < b_batch.len())
-    //                 b_base += bi * rhs.stride_[i];
-    //         }
+        Shape batch_idx(out_batch.len(), 0);
 
-    //         // matrix multiply
-    //         for (usize i = 0; i < M; ++i) {
-    //             for (usize j = 0; j < N; ++j) {
-    //                 T sum = T{0};
+        for (usize batch = 0; batch < batch_size; ++batch) {
+            // batch offset in a, b
+            usize a_boff = a.offset_;
+            usize b_boff = b.offset_;
+            for (usize d = 0; d < out_ndim; ++d) {
+                a_boff += batch_idx[d] * a_batch_stride[d];
+                b_boff += batch_idx[d] * b_batch_stride[d];
+            }
 
-    //                 for (usize k = 0; k < K; ++k) {
-    //                     sum += (*data_)[a_base + i * stride_[a_nd - 2] + k * stride_[a_nd - 1]]
-    //                            * (*rhs.data_)[b_base + k * rhs.stride_[b_nd - 2] + j * rhs.stride_[b_nd - 1]];
-    //                 }
+            // 2D矩阵乘：C = A * B
+            usize r_base = batch * M * N;
+            for (usize i = 0; i < M; ++i) {
+                for (usize j = 0; j < N; ++j) {
+                    T acc = T{0};
+                    for (usize k = 0; k < K1; ++k) {
+                        acc += a_data[a_boff + i * a.stride_[a_ndim - 2] + k * a.stride_[a_ndim - 1]]
+                             * b_data[b_boff + k * b.stride_[b_ndim - 2] + j * b.stride_[b_ndim - 1]];
+                    }
+                    r_data[r_base + i * N + j] = acc;
+                }
+            }
 
-    //                 result(batch_idx, i, j) = sum;
-    //             }
-    //         }
+            // advance batch index
+            for (isize d = static_cast<isize>(out_ndim) - 1; d >= 0; --d) {
+                batch_idx[static_cast<usize>(d)]++;
+                if (batch_idx[static_cast<usize>(d)] < out_batch[static_cast<usize>(d)]) break;
+                batch_idx[static_cast<usize>(d)] = 0;
+            }
+        }
 
-    //         advance(batch_idx, out_batch);
-    //     }
-
-    //     return result;
-    // }
+        return result;
+    }
 
     /**
      * @brief 求和
@@ -741,6 +794,162 @@ public:
             m = std::min(m, (*t.data_)[i]);
         }
         return m;
+    }
+
+    // ==================== 自动微分接口 ====================
+
+    /**
+     * @brief 设置是否需要梯度
+     * @param val 是否梯度
+     * @return 自身引用
+     */
+    Self& set_requires_grad(bool val) {
+        requires_grad_ = val;
+        return *this;
+    }
+
+    /**
+     * @brief 判断是否需要梯度
+     * @return 是否需要梯度
+     */
+    [[nodiscard]] bool requires_grad() const noexcept {
+        return requires_grad_;
+    }
+
+    /**
+     * @brief 获取梯度（常量版本）
+     * @return 梯度张量（常量引用），若为空则返回空Tensor
+     */
+    [[nodiscard]] const Self& grad() const noexcept {
+        static const Self empty_grad;
+        return grad_ ? *grad_ : empty_grad;
+    }
+
+    /**
+     * @brief 获取梯度
+     * @return 梯度张量引用，若为空则返回空Tensor
+     */
+    [[nodiscard]] Self& grad() noexcept {
+        if (!grad_) {
+            grad_ = std::make_shared<Self>();
+        }
+        return *grad_;
+    }
+
+    /**
+     * @brief 获取梯度函数节点
+     * @return 梯度函数节点指针
+     */
+    [[nodiscard]] const std::shared_ptr<GradFn<T, Alloc>>& grad_fn() const noexcept {
+        return grad_fn_;
+    }
+
+    /**
+     * @brief 反向传播
+     * @param grad_output 初始梯度，默认为1
+     *
+     * 从当前张量出发，沿着计算图反向传播梯度，
+     * 将所有叶子张量的梯度累加到其grad_字段中。
+     */
+    void backward(const Self& grad_output = Self::scalar(static_cast<T>(1))) const {
+        _backward_impl(grad_output);
+    }
+
+    /**
+     * @brief 从计算图中分离
+     * @return 与当前张量共享数据但不追踪梯度的新张量
+     */
+    [[nodiscard]] Self detach() const {
+        Self result = *this;
+        result.grad_fn_.reset();
+        result.requires_grad_ = false;
+        result.grad_.reset();
+        return result;
+    }
+
+    /**
+     * @brief 清零梯度
+     */
+    void zero_grad() {
+        grad_.reset();
+    }
+
+    /**
+     * @brief 取负
+     * @return 逐元素取负的结果
+     */
+    [[nodiscard]] Self neg() const {
+        Self result(shape_);
+        auto t = contiguous();
+        for (usize i = 0; i < numel_; ++i) {
+            (*result.data_)[i] = -(*t.data_)[i];
+        }
+        return result;
+    }
+
+    /**
+     * @brief 一元负号
+     */
+    [[nodiscard]] Self operator-() const {
+        return neg();
+    }
+
+    /**
+     * @brief 返回张量（支持通过grad_fn追踪的sum）
+     * @return 标量张量
+     */
+    [[nodiscard]] Self sum_tensor() const {
+        auto t = contiguous();
+        T acc = 0;
+        for (usize i = 0; i < numel_; ++i) {
+            acc += (*t.data_)[i];
+        }
+        return Self::scalar(acc);
+    }
+
+    /**
+     * @brief 返回张量（支持通过grad_fn追踪的mean）
+     * @return 标量张量
+     */
+    [[nodiscard]] Self mean_tensor() const {
+        if (numel_ == 0) {
+            throw tensor_exception("mean of empty tensor");
+        }
+        auto t = sum_tensor();
+        (*t.data_)[0] /= static_cast<T>(numel_);
+        return t;
+    }
+
+    // ==================== 梯度函数注册（供GradFn子类调用） ====================
+
+    /**
+     * @brief 设置梯度函数节点
+     * @param fn 梯度函数节点
+     */
+    void _set_grad_fn(std::shared_ptr<GradFn<T, Alloc>> fn) {
+        grad_fn_ = std::move(fn);
+        if (grad_fn_) {
+            requires_grad_ = true;
+        }
+    }
+
+    /**
+     * @brief 累加梯度并反向传播
+     * @param g 待累加的梯度张量
+     *
+     * 将梯度累加到grad_字段，若当前张量有grad_fn_，
+     * 则将梯度继续向计算图上游传播。
+     */
+    void _add_grad(const Self& g) const {
+        if (!grad_) {
+            grad_ = std::make_shared<Self>(g);
+        } else {
+            *grad_ = grad_->broadcast_add(g);
+        }
+
+        if (grad_fn_) {
+            grad_fn_->backward(g);
+        }
     }
 
     /**
@@ -1052,6 +1261,17 @@ private:
     }
 
     /**
+     * @brief 反向传播实现
+     * @param grad_output 初始梯度
+     *
+     * 递归遍历计算图，将梯度沿每个GradFn节点传播到叶子张量。
+     * 每个节点backward计算各输入梯度，通过_add_grad累加。
+     */
+    void _backward_impl(const Self& grad_output) const {
+        _add_grad(grad_output);
+    }
+
+    /**
      * @brief 逐元素二元操作
      * @param lhs 左操作数
      * @param rhs 右操作数
@@ -1096,6 +1316,11 @@ private:
     Shape stride_;
     usize offset_ = 0;
     usize numel_ = 1;
+
+    // 自动微分字段（mutable 以允许 const backward 修改梯度）
+    bool requires_grad_ = false;
+    mutable std::shared_ptr<Self> grad_;
+    mutable std::shared_ptr<GradFn<T, Alloc>> grad_fn_;
 };
 
 } // namespace my::nn

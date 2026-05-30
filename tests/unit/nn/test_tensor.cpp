@@ -5,10 +5,11 @@
 namespace my::test::test_tensor {
 
 using Tensor = nn::Tensor<i32>;
+using FTensor = nn::Tensor<f32>;
 
 void should_construct() {
     // Given
-    Tensor::Shape shape{2, 3, 4};
+    typename Tensor::Shape shape{2, 3, 4};
 
     // When
     Tensor tensor(shape);
@@ -523,6 +524,112 @@ void should_elementwise_shape_mismatch() {
     });
 }
 
+// ==================== matmul tests ====================
+
+void should_matmul_1d_dot() {
+    FTensor a = FTensor::arange(1, 4);  // [1, 2, 3]
+    FTensor b = FTensor::arange(4, 7);  // [4, 5, 6]
+
+    FTensor c = a.matmul(b);  // 1*4 + 2*5 + 3*6 = 32
+
+    Assertions::assert_equals(static_cast<usize>(0), c.ndim());
+    Assertions::assert_equals(static_cast<f32>(32), c.data()[0]);
+}
+
+void should_matmul_2d() {
+    // [[1, 2], [3, 4]] @ [[5, 6], [7, 8]]
+    FTensor a = FTensor::arange(1, 5).view({2, 2});
+    FTensor b = FTensor::arange(5, 9).view({2, 2});
+
+    FTensor c = a.matmul(b);
+
+    Assertions::assert_equals(static_cast<usize>(2), c.ndim());
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[1]);
+
+    // [[1*5+2*7=19, 1*6+2*8=22], [3*5+4*7=43, 3*6+4*8=50]]
+    Assertions::assert_equals(static_cast<f32>(19), c(0, 0));
+    Assertions::assert_equals(static_cast<f32>(22), c(0, 1));
+    Assertions::assert_equals(static_cast<f32>(43), c(1, 0));
+    Assertions::assert_equals(static_cast<f32>(50), c(1, 1));
+}
+
+void should_matmul_1d_2d() {
+    // [1, 2, 3] @ [[4, 5], [6, 7], [8, 9]]
+    FTensor a = FTensor::arange(1, 4);       // (3,)
+    FTensor b = FTensor::arange(4, 10).view({3, 2});  // (3, 2)
+
+    FTensor c = a.matmul(b);  // (2,)
+
+    Assertions::assert_equals(static_cast<usize>(1), c.ndim());
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+
+    // [1*4+2*6+3*8=40, 1*5+2*7+3*9=46]
+    Assertions::assert_equals(static_cast<f32>(40), c(0));
+    Assertions::assert_equals(static_cast<f32>(46), c(1));
+}
+
+void should_matmul_2d_1d() {
+    // [[1, 2, 3], [4, 5, 6]] @ [7, 8, 9]
+    FTensor a = FTensor::arange(1, 7).view({2, 3});  // (2, 3)
+    FTensor b = FTensor::arange(7, 10);               // (3,)
+
+    FTensor c = a.matmul(b);  // (2,)
+
+    Assertions::assert_equals(static_cast<usize>(1), c.ndim());
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+
+    // [1*7+2*8+3*9=50, 4*7+5*8+6*9=122]
+    Assertions::assert_equals(static_cast<f32>(50), c(0));
+    Assertions::assert_equals(static_cast<f32>(122), c(1));
+}
+
+void should_throw_matmul_shape_mismatch() {
+    FTensor a({2, 3});
+    FTensor b({4, 2});
+
+    Assertions::assert_throws<Exception>([&] {
+        auto _ = a.matmul(b);
+    });
+}
+
+void should_matmul_batch() {
+    // (2, 2, 3) @ (2, 3, 2)
+    FTensor a = FTensor::arange(0, 12).view({2, 2, 3});
+    FTensor b = FTensor::ones({2, 3, 2});
+
+    FTensor c = a.matmul(b);
+
+    Assertions::assert_equals(static_cast<usize>(3), c.ndim());
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[1]);
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[2]);
+
+    // batch 0: [[0,1,2],[3,4,5]] @ [[1,1],[1,1],[1,1]] = [[3,3],[12,12]]
+    Assertions::assert_equals(static_cast<f32>(3), c(0, 0, 0));
+    Assertions::assert_equals(static_cast<f32>(3), c(0, 0, 1));
+    Assertions::assert_equals(static_cast<f32>(12), c(0, 1, 0));
+    Assertions::assert_equals(static_cast<f32>(12), c(0, 1, 1));
+
+    // batch 1: [[6,7,8],[9,10,11]] @ [[1,1],[1,1],[1,1]] = [[21,21],[30,30]]
+    Assertions::assert_equals(static_cast<f32>(21), c(1, 0, 0));
+    Assertions::assert_equals(static_cast<f32>(30), c(1, 1, 0));
+}
+
+void should_matmul_broadcast_batch() {
+    // (1, 2, 3) @ (3, 4) -> (1, 2, 4)  -- a 广播
+    // (2, 3) @ (1, 3, 4) -> (1, 2, 4)  -- b 广播
+    // 对简单情况，用 (2, 3) @ (3, 2) 复用已有测试
+    FTensor a = FTensor::arange(0, 6).view({2, 3});
+    FTensor b = FTensor::ones({3, 2});
+
+    FTensor c = a.matmul(b);
+
+    Assertions::assert_equals(static_cast<usize>(2), c.ndim());
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[0]);
+    Assertions::assert_equals(static_cast<usize>(2), c.shape()[1]);
+}
+
 GROUP_NAME("test_tensor")
 REGISTER_UNIT_TESTS(UNIT_TEST_ITEM(should_construct),
                     UNIT_TEST_ITEM(should_construct_empty_tensor),
@@ -563,9 +670,13 @@ REGISTER_UNIT_TESTS(UNIT_TEST_ITEM(should_construct),
                     UNIT_TEST_ITEM(should_throw_when_broadcast_shape_mismatch),
                     UNIT_TEST_ITEM(should_broadcast_add_scalar),
                     UNIT_TEST_ITEM(should_throw_on_div_zero),
-                    // UNIT_TEST_ITEM(should_matmul_basic_2d),
-                    // UNIT_TEST_ITEM(should_throw_matmul_shape_mismatch),
-                    // UNIT_TEST_ITEM(should_matmul_batch),
+                    UNIT_TEST_ITEM(should_matmul_1d_dot),
+                    UNIT_TEST_ITEM(should_matmul_2d),
+                    UNIT_TEST_ITEM(should_matmul_1d_2d),
+                    UNIT_TEST_ITEM(should_matmul_2d_1d),
+                    UNIT_TEST_ITEM(should_throw_matmul_shape_mismatch),
+                    UNIT_TEST_ITEM(should_matmul_batch),
+                    UNIT_TEST_ITEM(should_matmul_broadcast_batch),
                     UNIT_TEST_ITEM(should_throw_mean_empty),
                     UNIT_TEST_ITEM(should_throw_max_empty),
                     UNIT_TEST_ITEM(should_elementwise_shape_mismatch))
