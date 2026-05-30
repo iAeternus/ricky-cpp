@@ -23,7 +23,8 @@ public:
     /**
      * @brief 构造空张量
      */
-    Tensor() = default;
+    Tensor() :
+            data_(std::make_shared<Storage>()) {}
 
     /**
      * @brief 构造连续张量
