@@ -65,7 +65,7 @@ public:
      */
     TensorT forward(const TensorT& input) override {
         cached_input_ = input;
-        w_t_ = weight_.transpose(0, 1);
+        w_t_ = autograd_transpose(weight_, static_cast<usize>(0), static_cast<usize>(1));
         matmul_out_ = autograd_matmul(cached_input_, w_t_);
         if (!bias_.is_empty()) {
             return autograd_add(matmul_out_, bias_);

@@ -8,6 +8,7 @@
 #define MODULE_HPP
 
 #include "tensor.hpp"
+#include "fs/file.hpp"
 
 namespace my::nn {
 
@@ -94,6 +95,76 @@ public:
      */
     [[nodiscard]] bool is_training() const noexcept {
         return training_;
+    }
+
+    /**
+     * @brief 保存模型参数到二进制文件
+     * @param path 文件路径
+     *
+     * 格式: magic(4B "MODL") + [ndim(8B) + shape(8B*ndim) + data(numel*sizeof(T))] × N
+     */
+    void save_params(const CString& path) const {
+        auto params = const_cast<Self*>(this)->parameters();
+        auto file = fs::File::create(path);
+
+        i32 magic = 0x4D4F444C;
+        file.write(reinterpret_cast<const char*>(&magic), sizeof(magic));
+
+        for (usize i = 0; i < params.len(); ++i) {
+            const auto& p = *params[i];
+            auto shape = p.shape();
+            usize ndim = shape.len();
+            usize numel = p.numel();
+
+            file.write(reinterpret_cast<const char*>(&ndim), sizeof(ndim));
+            for (usize d = 0; d < ndim; ++d) {
+                usize dim = shape[d];
+                file.write(reinterpret_cast<const char*>(&dim), sizeof(dim));
+            }
+            file.write(reinterpret_cast<const char*>(p.data()), numel * sizeof(T));
+        }
+        file.flush();
+    }
+
+    /**
+     * @brief 从二进制文件加载模型参数
+     * @param path 文件路径
+     *
+     * 读取 save_params 写入的格式，按顺序填充各参数。
+     * 调用前需确保模型结构（参数数量、形状）与保存时一致。
+     */
+    void load_params(const CString& path) {
+        auto file = fs::File::open(path);
+        auto content = file.read_all();
+        const u8* bytes = content.as_bytes();
+        usize remaining = content.len();
+
+        auto read_usize = [&]() -> usize {
+            usize val;
+            std::memcpy(&val, bytes, sizeof(usize));
+            bytes += sizeof(usize);
+            remaining -= sizeof(usize);
+            return val;
+        };
+
+        i32 magic;
+        std::memcpy(&magic, bytes, sizeof(i32));
+        bytes += sizeof(i32);
+        remaining -= sizeof(i32);
+
+        auto params = parameters();
+        for (usize i = 0; i < params.len(); ++i) {
+            auto& p = *params[i];
+            usize ndim = read_usize();
+            typename TensorT::Shape shape;
+            for (usize d = 0; d < ndim; ++d) {
+                shape.push(read_usize());
+            }
+            usize numel = p.numel();
+            std::memcpy(p.data(), bytes, numel * sizeof(T));
+            bytes += numel * sizeof(T);
+            remaining -= numel * sizeof(T);
+        }
     }
 
 protected:

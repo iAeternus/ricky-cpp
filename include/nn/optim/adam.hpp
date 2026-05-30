@@ -101,6 +101,7 @@ public:
                                 .broadcast_mul(TensorT::scalar(lr_));
 
             *p = p->broadcast_sub(update);
+            p->set_requires_grad(true);
         }
     }
 

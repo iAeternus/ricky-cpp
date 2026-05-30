@@ -3,6 +3,10 @@
 # ===================================================================
 cmake_minimum_required(VERSION 3.20)
 
+# 创建数据与模型目录
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/data)
+file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/examples/models)
+
 # -------------------------------------------------------------------
 # 目标配置
 # -------------------------------------------------------------------

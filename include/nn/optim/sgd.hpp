@@ -86,15 +86,18 @@ public:
                         v.broadcast_mul(TensorT::scalar(momentum_)));
                     *p = p->broadcast_sub(
                         update.broadcast_mul(TensorT::scalar(lr_)));
+                    p->set_requires_grad(true);
                 } else {
                     // w = w - lr * v
                     *p = p->broadcast_sub(
                         v.broadcast_mul(TensorT::scalar(lr_)));
+                    p->set_requires_grad(true);
                 }
             } else {
                 // w = w - lr * grad
                 *p = p->broadcast_sub(
                     grad.broadcast_mul(TensorT::scalar(lr_)));
+                p->set_requires_grad(true);
             }
         }
     }

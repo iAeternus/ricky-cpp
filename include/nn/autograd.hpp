@@ -11,6 +11,61 @@
 
 namespace my::nn {
 
+namespace detail {
+
+/**
+ * @brief 将梯度沿广播维度求和，还原为 target_shape 的形状
+ * @tparam T 张量元素类型
+ * @tparam Alloc 内存分配器
+ * @param grad 上游梯度，形状为广播后的 shape
+ * @param target_shape 目标张量的 shape（广播前的 shape）
+ * @return 求和后的梯度，形状为 target_shape
+ *
+ * 当 y = x + b 且 b 的 shape 小于 y 时，db = sum(dy, dims_where_b_was_broadcast)。
+ */
+template <typename T, typename Alloc = mem::Allocator<T>>
+Tensor<T, Alloc> _reduce_grad(const Tensor<T, Alloc>& grad,
+                               const typename Tensor<T, Alloc>::Shape& target_shape) {
+    using TensorT = Tensor<T, Alloc>;
+    using Shape = typename TensorT::Shape;
+
+    if (grad.shape() == target_shape) {
+        return grad;
+    }
+
+    TensorT result(target_shape, static_cast<T>(0));
+
+    auto g_shape = grad.shape();
+    usize g_ndim = g_shape.len();
+    usize t_ndim = target_shape.len();
+    auto r_stride = result.stride();
+
+    for (usize linear_idx = 0; linear_idx < grad.numel(); ++linear_idx) {
+        usize tmp = linear_idx;
+        usize result_offset = 0;
+
+        for (usize d = 0; d < g_ndim; ++d) {
+            usize g_idx = g_ndim - 1 - d;
+            usize g_size = g_shape[g_idx];
+            usize g_i = tmp % g_size;
+            tmp /= g_size;
+
+            if (d < t_ndim) {
+                usize t_idx = t_ndim - 1 - d;
+                if (target_shape[t_idx] > static_cast<usize>(1)) {
+                    result_offset += g_i * r_stride[t_idx];
+                }
+            }
+        }
+
+        result.data()[result_offset] += grad.data()[linear_idx];
+    }
+
+    return result;
+}
+
+} // namespace detail
+
 /**
  * @class GradFn
  * @brief 梯度函数基类
@@ -61,8 +116,10 @@ public:
         : self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
-        self_ptr_->_add_grad(grad_output);
-        other_ptr_->_add_grad(grad_output);
+        self_ptr_->_add_grad(
+            detail::_reduce_grad(grad_output, self_ptr_->shape()));
+        other_ptr_->_add_grad(
+            detail::_reduce_grad(grad_output, other_ptr_->shape()));
     }
 
     [[nodiscard]] CString to_string() const {
@@ -86,8 +143,10 @@ public:
         : self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
-        self_ptr_->_add_grad(grad_output);
-        other_ptr_->_add_grad(-grad_output);
+        self_ptr_->_add_grad(
+            detail::_reduce_grad(grad_output, self_ptr_->shape()));
+        other_ptr_->_add_grad(
+            detail::_reduce_grad(-grad_output, other_ptr_->shape()));
     }
 
     [[nodiscard]] CString to_string() const {
@@ -111,8 +170,12 @@ public:
         : self_ptr_(&self), other_ptr_(&other) {}
 
     void backward(const TensorT& grad_output) override {
-        self_ptr_->_add_grad(grad_output.broadcast_mul(*other_ptr_));
-        other_ptr_->_add_grad(grad_output.broadcast_mul(*self_ptr_));
+        self_ptr_->_add_grad(
+            detail::_reduce_grad(grad_output.broadcast_mul(*other_ptr_),
+                                 self_ptr_->shape()));
+        other_ptr_->_add_grad(
+            detail::_reduce_grad(grad_output.broadcast_mul(*self_ptr_),
+                                 other_ptr_->shape()));
     }
 
     [[nodiscard]] CString to_string() const {
@@ -137,8 +200,13 @@ public:
 
     void backward(const TensorT& grad_output) override {
         TensorT inv_other = other_ptr_->broadcast_pow(-1);
-        self_ptr_->_add_grad(grad_output.broadcast_mul(inv_other));
-        other_ptr_->_add_grad(-grad_output.broadcast_mul(*self_ptr_).broadcast_mul(inv_other).broadcast_mul(inv_other));
+        self_ptr_->_add_grad(
+            detail::_reduce_grad(grad_output.broadcast_mul(inv_other),
+                                 self_ptr_->shape()));
+        other_ptr_->_add_grad(
+            detail::_reduce_grad(
+                -grad_output.broadcast_mul(*self_ptr_).broadcast_mul(inv_other).broadcast_mul(inv_other),
+                other_ptr_->shape()));
     }
 
     [[nodiscard]] CString to_string() const {
@@ -296,6 +364,31 @@ private:
     T exp_;
 };
 
+/**
+ * @brief 转置反向传播: y = x.transpose(d0, d1) → dx = dy.transpose(d0, d1)
+ */
+template <typename T, typename Alloc = mem::Allocator<T>>
+class TransposeBackward : public GradFn<T, Alloc> {
+public:
+    using TensorT = Tensor<T, Alloc>;
+
+    TransposeBackward(const TensorT& input, usize dim0, usize dim1)
+        : input_ptr_(&input), dim0_(dim0), dim1_(dim1) {}
+
+    void backward(const TensorT& grad_output) override {
+        // 将梯度转置回输入的形状
+        input_ptr_->_add_grad(grad_output.transpose(dim0_, dim1_));
+    }
+
+    [[nodiscard]] CString to_string() const {
+        return CString{"TransposeBackward"};
+    }
+
+private:
+    const TensorT* input_ptr_;
+    usize dim0_, dim1_;
+};
+
 // ==================== 自动微分包装函数 ====================
 
 /**
@@ -388,6 +481,18 @@ Tensor<T, Alloc> autograd_neg(const Tensor<T, Alloc>& a) {
     auto result = a.neg();
     if (a.requires_grad()) {
         result._set_grad_fn(std::make_shared<NegBackward<T, Alloc>>(a));
+    }
+    return result;
+}
+
+/**
+ * @brief 自动微分转置
+ */
+template <typename T, typename Alloc = mem::Allocator<T>>
+Tensor<T, Alloc> autograd_transpose(const Tensor<T, Alloc>& a, usize dim0, usize dim1) {
+    auto result = a.transpose(dim0, dim1);
+    if (a.requires_grad()) {
+        result._set_grad_fn(std::make_shared<TransposeBackward<T, Alloc>>(a, dim0, dim1));
     }
     return result;
 }

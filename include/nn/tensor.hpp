@@ -25,6 +25,17 @@ public:
     using Storage = util::Vec<T, Alloc>;
     using Shape = util::Vec<usize, UsizeAlloc>;
 
+    struct TensorAccessor {
+        template <typename... Args>
+        static usize calc_offset(const Tensor& t, Args&&... args) {
+            return t.calc_offset(std::forward<Args>(args)...);
+        }
+
+        static const Storage& data_ref(const Tensor& t) {
+            return *t.data_;
+        }
+    };
+
     /**
      * @brief 构造空张量
      */
@@ -338,6 +349,10 @@ public:
         }
 
         Self result = *this;
+
+        // 转置视图不共享梯度/grad_fn，通过 autograd_transpose 正确处理梯度传播
+        result.grad_.reset();
+        result.grad_fn_.reset();
 
         std::swap(result.shape_[dim0], result.shape_[dim1]);
         std::swap(result.stride_[dim0], result.stride_[dim1]);

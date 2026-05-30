@@ -32,7 +32,6 @@ public:
             grad = grad.broadcast_div(TensorT::scalar(static_cast<T>(input_ptr_->numel())));
         }
 
-        // grad_output 是标量（上游梯度），广播到 diff 形状
         input_ptr_->_add_grad(grad.broadcast_mul(grad_output));
     }
 
@@ -57,20 +56,15 @@ template <typename T, typename Alloc = mem::Allocator<T>>
 class MSELoss : public Object<MSELoss<T, Alloc>> {
 public:
     using TensorT = Tensor<T, Alloc>;
+    using Shape = typename TensorT::Shape;
 
-    /**
-     * @brief 构造 MSELoss
-     * @param reduction 归约方式，"mean" 或 "sum"
-     */
-    explicit MSELoss(const CString& reduction = "mean")
-        : reduction_(reduction) {}
+    explicit MSELoss(const CString& reduction = "mean", T weight_decay = static_cast<T>(0))
+        : reduction_(reduction), weight_decay_(weight_decay) {}
 
-    /**
-     * @brief 计算损失
-     * @param input 预测值
-     * @param target 目标值
-     * @return 损失值（标量张量）
-     */
+    void set_params(const util::Vec<TensorT*>& params) {
+        params_ = params;
+    }
+
     TensorT forward(const TensorT& input, const TensorT& target) {
         TensorT diff = input.broadcast_sub(target);
         TensorT squared = diff.broadcast_mul(diff);
@@ -79,10 +73,22 @@ public:
         if (reduction_ == "sum") {
             loss = autograd_sum(squared);
         } else {
-            // "mean"
             loss = autograd_sum(squared).broadcast_div(
                 TensorT::scalar(static_cast<T>(squared.numel()))
             );
+        }
+
+        if (weight_decay_ > static_cast<T>(0) && params_.len() > 0) {
+            T reg = static_cast<T>(0);
+            for (usize i = 0; i < params_.len(); ++i) {
+                auto& p = *params_[i];
+                for (usize j = 0; j < p.numel(); ++j) {
+                    T val = p.data()[j];
+                    reg += val * val;
+                }
+            }
+            reg *= weight_decay_ / static_cast<T>(2);
+            loss = TensorT::scalar(loss.data()[0] + reg);
         }
 
         if (input.requires_grad() || target.requires_grad()) {
@@ -91,8 +97,9 @@ public:
         return loss;
     }
 
-    /** @brief 归约方式 */
     CString reduction_;
+    T weight_decay_ = static_cast<T>(0);
+    util::Vec<TensorT*> params_;
 };
 
 // ==================== CrossEntropyLoss ====================
@@ -157,20 +164,15 @@ template <typename T, typename Alloc = mem::Allocator<T>>
 class CrossEntropyLoss : public Object<CrossEntropyLoss<T, Alloc>> {
 public:
     using TensorT = Tensor<T, Alloc>;
+    using Shape = typename TensorT::Shape;
 
-    /**
-     * @brief 构造交叉熵损失
-     */
-    CrossEntropyLoss() = default;
+    explicit CrossEntropyLoss(T weight_decay = static_cast<T>(0))
+        : weight_decay_(weight_decay) {}
 
-    /**
-     * @brief 计算损失
-     * @param input 原始 logits，形状 (batch, num_classes)
-     * @param target 目标类别索引，形状 (batch,)
-     * @return 损失值（标量张量）
-     *
-     * 缓存中间张量到成员变量，确保 GradFn 中存储的原始指针在 backward() 完成前有效。
-     */
+    void set_params(const util::Vec<TensorT*>& params) {
+        params_ = params;
+    }
+
     TensorT forward(const TensorT& input, const TensorT& target) {
         cached_inp_ = input.contiguous();
         cached_tgt_ = target.contiguous();
@@ -178,29 +180,55 @@ public:
         usize batch = cached_inp_.shape()[0];
         usize num_classes = cached_inp_.shape()[1];
 
-        // 数值稳定的 log_softmax: log_softmax = x - max - log(sum(exp(x - max)))
-        T max_val = cached_inp_.max();
-        T sum_exp = static_cast<T>(0);
-        for (usize i = 0; i < cached_inp_.numel(); ++i) {
-            sum_exp += std::exp(cached_inp_.data()[i] - max_val);
-        }
-        T log_sum_exp = max_val + std::log(sum_exp);
-
-        // NLL: -log(softmax(x)[target])
+        // 逐样本计算 log-sum-exp（数值稳定的 softmax）
+        cached_softmax_out_ = TensorT(cached_inp_.shape());
         T loss_val = static_cast<T>(0);
+
         for (usize b = 0; b < batch; ++b) {
+            usize base = b * num_classes;
+
+            // 找当前样本的最大 logit
+            T max_val = cached_inp_.data()[base];
+            for (usize c = 1; c < num_classes; ++c) {
+                if (cached_inp_.data()[base + c] > max_val) {
+                    max_val = cached_inp_.data()[base + c];
+                }
+            }
+
+            // 逐样本 softmax + log-sum-exp
+            T sum_exp = static_cast<T>(0);
+            for (usize c = 0; c < num_classes; ++c) {
+                T e = std::exp(cached_inp_.data()[base + c] - max_val);
+                cached_softmax_out_.data()[base + c] = e;
+                sum_exp += e;
+            }
+
+            // 归一化 softmax
+            for (usize c = 0; c < num_classes; ++c) {
+                cached_softmax_out_.data()[base + c] /= sum_exp;
+            }
+
+            T log_sum_exp = max_val + std::log(sum_exp);
             isize label = static_cast<isize>(cached_tgt_.data()[b]);
-            loss_val += -(cached_inp_.data()[b * num_classes + label] - log_sum_exp);
+            loss_val += -(cached_inp_.data()[base + label] - log_sum_exp);
         }
+
         loss_val /= static_cast<T>(batch);
 
-        TensorT result = TensorT::scalar(loss_val);
-
-        // 计算 softmax 输出（用于反向传播）
-        cached_softmax_out_ = TensorT(cached_inp_.shape());
-        for (usize i = 0; i < cached_inp_.numel(); ++i) {
-            cached_softmax_out_.data()[i] = std::exp(cached_inp_.data()[i] - log_sum_exp);
+        if (weight_decay_ > static_cast<T>(0) && params_.len() > 0) {
+            T reg = static_cast<T>(0);
+            for (usize i = 0; i < params_.len(); ++i) {
+                auto& p = *params_[i];
+                for (usize j = 0; j < p.numel(); ++j) {
+                    T val = p.data()[j];
+                    reg += val * val;
+                }
+            }
+            reg *= weight_decay_ / static_cast<T>(2);
+            loss_val += reg;
         }
+
+        TensorT result = TensorT::scalar(loss_val);
 
         if (cached_inp_.requires_grad()) {
             result._set_grad_fn(
@@ -209,6 +237,9 @@ public:
         }
         return result;
     }
+
+    T weight_decay_ = static_cast<T>(0);
+    util::Vec<TensorT*> params_;
 
 private:
     TensorT cached_inp_;
