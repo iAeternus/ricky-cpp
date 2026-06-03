@@ -10,14 +10,11 @@
 #ifndef FUNCTIONAL_HPP
 #define FUNCTIONAL_HPP
 
-#include "autograd.hpp"
 #include "activations.hpp"
 #include "loss.hpp"
 #include "linear.hpp"
 
 namespace my::nn::F {
-
-// ==================== 激活函数 ====================
 
 /**
  * @brief ReLU 函数: max(0, x)
@@ -48,8 +45,6 @@ Tensor<T, Alloc> softmax(const Tensor<T, Alloc>& input, isize dim = -1) {
     return act.forward(input);
 }
 
-// ==================== 损失函数 ====================
-
 /**
  * @brief MSE 损失
  * @param input 预测值
@@ -72,25 +67,6 @@ template <typename T, typename Alloc = mem::Allocator<T>>
 Tensor<T, Alloc> cross_entropy(const Tensor<T, Alloc>& input, const Tensor<T, Alloc>& target) {
     CrossEntropyLoss<T, Alloc> loss;
     return loss.forward(input, target);
-}
-
-// ==================== 线性层 ====================
-
-/**
- * @brief 线性变换: y = x @ W^T + b
- * @param input 输入张量
- * @param weight 权重张量
- * @param bias 偏置张量（可选）
- */
-template <typename T, typename Alloc = mem::Allocator<T>>
-Tensor<T, Alloc> linear(const Tensor<T, Alloc>& input, const Tensor<T, Alloc>& weight,
-                        const Tensor<T, Alloc>& bias = Tensor<T, Alloc>()) {
-    Tensor<T, Alloc> w_t = weight.transpose(0, 1);
-    Tensor<T, Alloc> out = autograd_matmul(input, w_t);
-    if (!bias.is_empty()) {
-        out = autograd_add(out, bias);
-    }
-    return out;
 }
 
 } // namespace my::nn::F

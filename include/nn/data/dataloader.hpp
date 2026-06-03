@@ -1,8 +1,8 @@
 #ifndef NN_DATALOADER_HPP
 #define NN_DATALOADER_HPP
 
-#include "nn/data/dataset.hpp"
-#include "util/random.hpp"
+#include "dataset.hpp"
+#include "random.hpp"
 
 namespace my::nn::data {
 

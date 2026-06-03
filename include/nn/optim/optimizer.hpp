@@ -7,7 +7,7 @@
 #ifndef OPTIMIZER_HPP
 #define OPTIMIZER_HPP
 
-#include "../module.hpp"
+#include "tensor.hpp"
 
 namespace my::nn::optim {
 

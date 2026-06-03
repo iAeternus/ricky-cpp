@@ -1,12 +1,10 @@
 #ifndef NN_DATASET_HPP
 #define NN_DATASET_HPP
 
-#include "nn/tensor.hpp"
-#include "util/random.hpp"
-#include "fs/file.hpp"
+#include "tensor.hpp"
+#include "random.hpp"
+#include "file.hpp"
 #include "my_pair.hpp"
-
-#include <sstream>
 
 namespace my::nn::data {
 

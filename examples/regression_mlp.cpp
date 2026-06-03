@@ -24,19 +24,26 @@ constexpr usize n_features = 1;
 
 class RegModel : public nn::Module<f32> {
 public:
-    nn::Linear<f32> fc1{1, 16}, fc2{16, 16}, fc3{16, 1};
+    nn::Linear<f32> fc1;
+    nn::Linear<f32> fc2;
+    nn::Linear<f32> fc3;
     nn::ReLU<f32> relu1, relu2;
 
-    RegModel() {
+    RegModel() :
+            fc1(nn::linear<f32>(1, 16)),
+            fc2(nn::linear<f32>(16, 16)),
+            fc3(nn::linear<f32>(16, 1)) {
         register_module(&fc1);
         register_module(&fc2);
         register_module(&fc3);
     }
 
     Tensor forward(const Tensor& x) override {
-        auto h = relu1.forward(fc1.forward(x));
-        h = relu2.forward(fc2.forward(h));
-        return fc3.forward(h);
+        auto z1 = fc1.forward(x);
+        auto a1 = relu1.forward(z1);
+        auto z2 = fc2.forward(a1);
+        auto a2 = relu2.forward(z2);
+        return fc3.forward(a2);
     }
 };
 
@@ -74,6 +81,25 @@ static Pair<f32, f32> evaluate(RegModel& model,
     return {avg, 0};
 }
 
+static void train_and_save(RegModel& model,
+                           nn::data::CSVDataset<f32>& dataset,
+                           nn::MSELoss<f32>& loss_fn) {
+    loss_fn.set_params(model.parameters());
+    nn::optim::Adam<f32> optimizer(model.parameters(), config::lr);
+    auto train_loader = nn::data::DataLoader<f32>(dataset.train_set(), config::batch_size, true);
+    auto val_loader = nn::data::DataLoader<f32>(dataset.val_set(), config::batch_size, false);
+
+    for (i32 epoch = 0; epoch < config::epochs; ++epoch) {
+        auto train_loss = train_one_epoch(model, optimizer, train_loader, loss_fn);
+        if (epoch % 50 == 0 || epoch == config::epochs - 1) {
+            auto [val_loss, _] = evaluate(model, val_loader, loss_fn);
+            io::println("Epoch ", epoch, " | Train loss: ", train_loss, " | Val loss: ", val_loss);
+        }
+    }
+
+    model.save_params(config::model_path);
+}
+
 int main(int argc, char* argv[]) {
     bool train = argc > 1 && std::strcmp(argv[1], "-t") == 0;
 
@@ -82,24 +108,11 @@ int main(int argc, char* argv[]) {
     nn::MSELoss<f32> loss_fn("mean", config::weight_decay);
 
     if (train) {
-        io::println("=== MLP Regression: y = sin(2pi*x) + noise ===");
-        loss_fn.set_params(model.parameters());
-        nn::optim::Adam<f32> optimizer(model.parameters(), config::lr);
-        auto train_loader = nn::data::DataLoader<f32>(dataset.train_set(), config::batch_size, true);
-        auto val_loader = nn::data::DataLoader<f32>(dataset.val_set(), config::batch_size, false);
-
-        for (i32 epoch = 0; epoch < config::epochs; ++epoch) {
-            auto train_loss = train_one_epoch(model, optimizer, train_loader, loss_fn);
-            if (epoch % 50 == 0 || epoch == config::epochs - 1) {
-                auto [val_loss, _] = evaluate(model, val_loader, loss_fn);
-                io::println("Epoch ", epoch, " | Train loss: ", train_loss, " | Val loss: ", val_loss);
-            }
-        }
-
-        model.save_params(config::model_path);
+        io::println("MLP Regression: y = sin(2pi*x) + noise");
+        train_and_save(model, dataset, loss_fn);
         io::println("Model saved to ", config::model_path);
     } else {
-        io::println("=== MLP Regression: Inference ===");
+        io::println("MLP Regression: Inference");
         model.load_params(config::model_path);
         auto test_loader = nn::data::DataLoader<f32>(dataset.test_set(), config::batch_size, false);
         auto [test_loss, _] = evaluate(model, test_loader, loss_fn);

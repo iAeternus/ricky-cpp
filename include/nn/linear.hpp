@@ -92,6 +92,22 @@ private:
     TensorT matmul_out_;
 };
 
+/**
+ * @brief 创建带 bias 的线性层
+ */
+template <typename T, typename Alloc = mem::Allocator<T>>
+Linear<T, Alloc> linear(usize in_features, usize out_features) {
+    return Linear<T, Alloc>(in_features, out_features, true);
+}
+
+/**
+ * @brief 创建不带 bias 的线性层
+ */
+template <typename T, typename Alloc = mem::Allocator<T>>
+Linear<T, Alloc> linear_no_bias(usize in_features, usize out_features) {
+    return Linear<T, Alloc>(in_features, out_features, false);
+}
+
 } // namespace my::nn
 
 #endif // LINEAR_HPP
