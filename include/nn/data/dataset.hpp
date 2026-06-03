@@ -80,7 +80,7 @@ public:
     using TensorT = Tensor<T, Alloc>;
     using Shape = typename TensorT::Shape;
 
-    CSVDataset(const CString& csv_path, usize num_features,
+    CSVDataset(const fs::PathBuf& csv_path, usize num_features,
                f32 val_ratio = 0.15, f32 test_ratio = 0.15) :
             num_features_(num_features) {
         auto file = fs::File::open(csv_path);

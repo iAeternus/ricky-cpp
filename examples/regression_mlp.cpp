@@ -1,23 +1,23 @@
-#include "nn/linear.hpp"
-#include "nn/activations.hpp"
-#include "nn/loss.hpp"
-#include "nn/optim/adam.hpp"
-#include "nn/data/dataset.hpp"
-#include "nn/data/dataloader.hpp"
-#include "io/printer.hpp"
-#include <cstring>
+#include "linear.hpp"
+#include "activations.hpp"
+#include "loss.hpp"
+#include "adam.hpp"
+#include "dataset.hpp"
+#include "dataloader.hpp"
+#include "printer.hpp"
 
 using namespace my;
 using Tensor = nn::Tensor<f32>;
 
 namespace config {
 
+fs::PathBuf data_path = fs::PathBuf("examples/data/regression.csv");
+fs::PathBuf model_path = fs::PathBuf("examples/models/regression_model.bin");
+
 constexpr i32 epochs = 500;
 constexpr i32 batch_size = 32;
 constexpr f32 lr = 0.01f;
 constexpr f32 weight_decay = 1e-4f;
-constexpr const char* data_path = "examples/data/regression.csv";
-constexpr const char* model_path = "examples/models/regression_model.bin";
 constexpr usize n_features = 1;
 
 } // namespace config

@@ -8,7 +8,7 @@
 #define MODULE_HPP
 
 #include "tensor.hpp"
-#include "fs/file.hpp"
+#include "file.hpp"
 
 namespace my::nn {
 
@@ -103,7 +103,7 @@ public:
      *
      * 格式: magic(4B "MODL") + [ndim(8B) + shape(8B*ndim) + data(numel*sizeof(T))] × N
      */
-    void save_params(const CString& path) const {
+    void save_params(const fs::PathBuf& path) const {
         auto params = const_cast<Self*>(this)->parameters();
         auto file = fs::File::create(path);
 
@@ -133,7 +133,7 @@ public:
      * 读取 save_params 写入的格式，按顺序填充各参数。
      * 调用前需确保模型结构（参数数量、形状）与保存时一致。
      */
-    void load_params(const CString& path) {
+    void load_params(const fs::PathBuf& path) {
         auto file = fs::File::open(path);
         auto content = file.read_all();
         const u8* bytes = content.as_bytes();

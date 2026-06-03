@@ -47,6 +47,8 @@ public:
     const str::String<>& as_string() const;
     CString as_cstr() const;
 
+    [[nodiscard]] CString to_string() const;
+
 private:
     str::String<> path_{};
 };

@@ -218,4 +218,8 @@ CString PathBuf::as_cstr() const {
     return CString(reinterpret_cast<const char*>(path_.as_bytes()), path_.len());
 }
 
+[[nodiscard]] CString PathBuf::to_string() const {
+    return as_cstr();
+}
+
 } // namespace my::fs

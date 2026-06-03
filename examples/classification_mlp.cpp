@@ -11,12 +11,13 @@ using Tensor = nn::Tensor<f32>;
 
 namespace config {
 
+fs::PathBuf data_path = fs::PathBuf("examples/data/classification.csv");
+fs::PathBuf model_path = fs::PathBuf("examples/models/classification_model.bin");
+
 constexpr i32 epochs = 300;
 constexpr i32 batch_size = 16;
 constexpr f32 lr = 0.01f;
 constexpr f32 weight_decay = 1e-4f;
-constexpr const char* data_path = "examples/data/classification.csv";
-constexpr const char* model_path = "examples/models/classification_model.bin";
 constexpr usize n_features = 4;
 constexpr usize n_classes = 3;
 
