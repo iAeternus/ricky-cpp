@@ -17,7 +17,7 @@ const fs::PathBuf& repo_root() {
             pos = file.find(posix_suffix);
         }
         if (pos == std::string::npos) {
-            return fs::PathBuf(".");
+            return "."_pb;
         }
         return fs::PathBuf(file.substr(0, pos).c_str());
     }();

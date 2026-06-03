@@ -11,8 +11,8 @@ using Tensor = nn::Tensor<f32>;
 
 namespace config {
 
-fs::PathBuf data_path = fs::PathBuf("examples/data/regression.csv");
-fs::PathBuf model_path = fs::PathBuf("examples/models/regression_model.bin");
+auto data_path = "examples/data/regression.csv"_pb;
+auto model_path = "examples/models/regression_model.bin"_pb;
 
 constexpr i32 epochs = 500;
 constexpr i32 batch_size = 32;

@@ -55,4 +55,12 @@ private:
 
 } // namespace my::fs
 
+namespace my {
+
+inline fs::PathBuf operator""_pb(const char* str, usize len) {
+    return fs::PathBuf(str);
+}
+
+} // namespace my
+
 #endif // PATH_BUF_HPP

@@ -14,10 +14,10 @@ std::string to_std(const my::str::String<>& s) {
 } // namespace
 
 void test_is_absolute_and_relative() {
-    fs::PathBuf abs_win(R"(C:\Windows)");
-    fs::PathBuf abs_posix("/usr/bin");
-    fs::PathBuf rel("usr/bin");
-    fs::PathBuf empty("");
+    auto abs_win = R"(C:\Windows)"_pb;
+    auto abs_posix = "/usr/bin"_pb;
+    auto rel = "usr/bin"_pb;
+    auto empty = ""_pb;
 
     Assertions::assert_true(abs_win.is_absolute());
     Assertions::assert_true(abs_posix.is_absolute());
@@ -26,7 +26,7 @@ void test_is_absolute_and_relative() {
 }
 
 void test_join_push_pop_parent() {
-    fs::PathBuf base("a/b");
+    auto base = "a/b"_pb;
     auto joined = base.join("c.txt");
     Assertions::assert_equals(std::string("c.txt"), to_std(joined.file_name()));
 
@@ -36,27 +36,27 @@ void test_join_push_pop_parent() {
     base.pop();
     Assertions::assert_equals(std::string("b"), to_std(base.file_name()));
 
-    auto parent = fs::PathBuf("a/b/c").parent();
+    auto parent = "a/b/c"_pb.parent();
     Assertions::assert_equals(std::string("b"), to_std(parent.file_name()));
 }
 
 void test_file_name_stem_extension() {
-    fs::PathBuf p("dir/file.tar.gz");
+    auto p = "dir/file.tar.gz"_pb;
     Assertions::assert_equals(std::string("file.tar.gz"), to_std(p.file_name()));
     Assertions::assert_equals(std::string("file.tar"), to_std(p.file_stem()));
     Assertions::assert_equals(std::string("gz"), to_std(p.extension()));
 }
 
 void test_set_extension() {
-    fs::PathBuf p1("dir/file.tar.gz");
+    auto p1 = "dir/file.tar.gz"_pb;
     Assertions::assert_true(p1.set_extension("txt"));
     Assertions::assert_equals(std::string("file.tar.txt"), to_std(p1.file_name()));
 
-    fs::PathBuf p2("dir/file.tar.gz");
+    auto p2 = "dir/file.tar.gz"_pb;
     Assertions::assert_true(p2.set_extension(""));
     Assertions::assert_equals(std::string("file.tar"), to_std(p2.file_name()));
 
-    fs::PathBuf p3("dir/file.tar.gz");
+    auto p3 = "dir/file.tar.gz"_pb;
     Assertions::assert_true(p3.set_extension(".log"));
     Assertions::assert_equals(std::string("file.tar.log"), to_std(p3.file_name()));
 }
@@ -65,7 +65,7 @@ void test_pop_edge_cases() {
     fs::PathBuf empty;
     Assertions::assert_false(empty.pop());
 
-    fs::PathBuf root("/");
+    auto root = "/"_pb;
     Assertions::assert_true(root.pop());
     Assertions::assert_true(root.is_empty());
 }
