@@ -91,8 +91,7 @@ protected:
         }
     }
 
-    template <typename T>
-        requires std::is_pointer_v<T>
+    template <Pointer T>
     auto __print__(const T obj) const -> void {
         std::fprintf(output_file_, "0x%p", static_cast<void*>(obj));
     }

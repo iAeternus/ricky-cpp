@@ -111,6 +111,12 @@ template <typename T>
 concept Assertable = Comparable<T> && MyPrintable<T>;
 
 /**
+ * @brief 指针类型
+ */
+template <typename T>
+concept Pointer = std::is_pointer_v<T>;
+
+/**
  * @brief 非类类型
  */
 template <typename T>

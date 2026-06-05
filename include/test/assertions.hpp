@@ -42,16 +42,14 @@ public:
         }
     }
 
-    template <typename T>
-        requires std::is_pointer_v<T>
+    template <Pointer T>
     static void assert_null(T ptr, std::source_location loc = SRC_LOC) {
         if (ptr != nullptr) {
             fail("Assertion failed: expected nullptr but got non-null pointer", loc);
         }
     }
 
-    template <typename T>
-        requires std::is_pointer_v<T>
+    template <Pointer T>
     static void assert_not_null(T ptr, std::source_location loc = SRC_LOC) {
         if (ptr == nullptr) {
             fail("Assertion failed: expected non-null pointer but got nullptr", loc);
