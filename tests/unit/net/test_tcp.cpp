@@ -25,7 +25,7 @@ void should_tcp_listener_accept() {
 
     auto client = net::TcpStream::connect(str::StringView("127.0.0.1"), port);
     auto server = listener.accept();
-    Assertions::assertTrue(server != nullptr);
+    Assertions::assert_true(server != nullptr);
 
     client.close();
     server->close();

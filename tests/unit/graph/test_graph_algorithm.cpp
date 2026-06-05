@@ -1,4 +1,4 @@
-﻿#include "test_graph_algorithm.hpp"
+#include "test_graph_algorithm.hpp"
 #include "graph_algorithm.hpp"
 #include "ricky_test.hpp"
 
@@ -34,7 +34,7 @@ void test_adj2matrix() {
     auto res = g.call_algo<math::Matrix<f64>>("adj2matrix");
 
     // Then
-    Assertions::assertEquals(math::Matrix<f64>{
+    Assertions::assert_equals(math::Matrix<f64>{
                                  {0, 15, 2, 12, INF, INF, INF},
                                  {INF, 0, INF, INF, 6, INF, INF},
                                  {INF, INF, 0, INF, 8, 4, INF},
@@ -91,8 +91,8 @@ void test_is_exist_el() {
     auto res2 = g2.call_algo<bool>("is_exist_el");
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_bfs() {
@@ -127,7 +127,7 @@ void should_bfs() {
     g.call_algo("bfs", 0uz, callback);
 
     // Then
-    Assertions::assertEquals("[0,1,2,3,4,5,6]"_cs, vis_order.to_string());
+    Assertions::assert_equals("[0,1,2,3,4,5,6]"_cs, vis_order.to_string());
 }
 
 void should_dfs() {
@@ -162,7 +162,7 @@ void should_dfs() {
     g.call_algo("dfs", 0uz, callback);
 
     // Then
-    Assertions::assertEquals("[0,1,4,6,2,5,3]"_cs, vis_order.to_string());
+    Assertions::assert_equals("[0,1,4,6,2,5,3]"_cs, vis_order.to_string());
 }
 
 void test_is_tree() {
@@ -187,7 +187,7 @@ void test_is_tree() {
     bool res = g.call_algo<bool>("is_tree");
 
     // Then
-    Assertions::assertTrue(res);
+    Assertions::assert_true(res);
 }
 
 void test_can_reach() {
@@ -218,11 +218,11 @@ void test_can_reach() {
     bool res_bfs2 = g.call_algo<bool>("can_reach_bfs", 5uz, 6uz);
 
     // Then
-    Assertions::assertTrue(res_dfs);
-    Assertions::assertFalse(res_dfs2);
+    Assertions::assert_true(res_dfs);
+    Assertions::assert_false(res_dfs2);
 
-    Assertions::assertTrue(res_bfs);
-    Assertions::assertFalse(res_bfs2);
+    Assertions::assert_true(res_bfs);
+    Assertions::assert_false(res_bfs2);
 }
 
 void should_get_all_paths() {
@@ -248,7 +248,7 @@ void should_get_all_paths() {
     auto paths = g.call_algo<util::Vec<graph::SimplePath<>>>("get_all_paths", 0uz, 5uz);
 
     // Then
-    Assertions::assertEquals("[[0,1,3,4,5],[0,1,3,5],[0,2,3,4,5],[0,2,3,5],[0,3,4,5],[0,3,5]]"_cs, paths.to_string());
+    Assertions::assert_equals("[[0,1,3,4,5],[0,1,3,5],[0,2,3,4,5],[0,2,3,5],[0,3,4,5],[0,3,5]]"_cs, paths.to_string());
 }
 
 void test_prim() {
@@ -280,29 +280,29 @@ void test_prim() {
     // auto t3 = g.call_algo<graph::Tree<char>>("kruskal");
 
     // Then
-    Assertions::assertEquals(6, t.node_cnt());
-    Assertions::assertEquals(5, t.edge_cnt() / 2);
-    Assertions::assertTrue(t.has_edge(0, 2));
-    Assertions::assertTrue(t.has_edge(1, 2));
-    Assertions::assertTrue(t.has_edge(1, 4));
-    Assertions::assertTrue(t.has_edge(2, 5));
-    Assertions::assertTrue(t.has_edge(3, 5));
+    Assertions::assert_equals(6, t.node_cnt());
+    Assertions::assert_equals(5, t.edge_cnt() / 2);
+    Assertions::assert_true(t.has_edge(0, 2));
+    Assertions::assert_true(t.has_edge(1, 2));
+    Assertions::assert_true(t.has_edge(1, 4));
+    Assertions::assert_true(t.has_edge(2, 5));
+    Assertions::assert_true(t.has_edge(3, 5));
 
-    Assertions::assertEquals(6, t2.node_cnt());
-    Assertions::assertEquals(5, t2.edge_cnt() / 2);
-    Assertions::assertTrue(t2.has_edge(0, 2));
-    Assertions::assertTrue(t2.has_edge(1, 2));
-    Assertions::assertTrue(t2.has_edge(1, 4));
-    Assertions::assertTrue(t2.has_edge(2, 5));
-    Assertions::assertTrue(t2.has_edge(3, 5));
+    Assertions::assert_equals(6, t2.node_cnt());
+    Assertions::assert_equals(5, t2.edge_cnt() / 2);
+    Assertions::assert_true(t2.has_edge(0, 2));
+    Assertions::assert_true(t2.has_edge(1, 2));
+    Assertions::assert_true(t2.has_edge(1, 4));
+    Assertions::assert_true(t2.has_edge(2, 5));
+    Assertions::assert_true(t2.has_edge(3, 5));
 
-    // Assertions::assertEquals(6, t3.node_cnt());
-    // Assertions::assertEquals(5, t3.edge_cnt() / 2);
-    // Assertions::assertTrue(t3.has_edge(0, 2));
-    // Assertions::assertTrue(t3.has_edge(1, 2));
-    // Assertions::assertTrue(t3.has_edge(1, 4));
-    // Assertions::assertTrue(t3.has_edge(2, 5));
-    // Assertions::assertTrue(t3.has_edge(3, 5));
+    // Assertions::assert_equals(6, t3.node_cnt());
+    // Assertions::assert_equals(5, t3.edge_cnt() / 2);
+    // Assertions::assert_true(t3.has_edge(0, 2));
+    // Assertions::assert_true(t3.has_edge(1, 2));
+    // Assertions::assert_true(t3.has_edge(1, 4));
+    // Assertions::assert_true(t3.has_edge(2, 5));
+    // Assertions::assert_true(t3.has_edge(3, 5));
 }
 
 void test_dijkstra() {
@@ -334,7 +334,7 @@ void test_dijkstra() {
     auto dis = g.call_algo<util::Vec<f64>>("dijkstra", 0uz);
 
     // Then
-    Assertions::assertEquals("[0,12,22,22,18,16,14]"_cs, dis.to_string());
+    Assertions::assert_equals("[0,12,22,22,18,16,14]"_cs, dis.to_string());
 }
 
 void test_floyd() {
@@ -355,7 +355,7 @@ void test_floyd() {
     auto res = g.call_algo<math::Matrix<f64>>("floyd");
 
     // Then
-    Assertions::assertEquals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.to_string());
+    Assertions::assert_equals("[[0,6,10],[9,0,4],[5,11,0]]"_cs, res.to_string());
 }
 
 GROUP_NAME("test_graph_algorithm")

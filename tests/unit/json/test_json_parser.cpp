@@ -1,4 +1,4 @@
-﻿#include "test_json_parser.hpp"
+#include "test_json_parser.hpp"
 #include "printer.hpp"
 #include "json_parser.hpp"
 #include "ricky_test.hpp"
@@ -13,28 +13,28 @@ void should_parse() {
     auto json = json::parse_json(s);
 
     // Then
-    Assertions::assertTrue(json.contains("array"));
-    Assertions::assertTrue(json.contains("other"));
-    Assertions::assertTrue(json.contains("bool"));
-    Assertions::assertEquals(7ULL, json["array"].size());
-    Assertions::assertTrue(json["other"].is_null());
-    Assertions::assertTrue(json["bool"].into<bool>());
+    Assertions::assert_true(json.contains("array"));
+    Assertions::assert_true(json.contains("other"));
+    Assertions::assert_true(json.contains("bool"));
+    Assertions::assert_equals(7ULL, json["array"].size());
+    Assertions::assert_true(json["other"].is_null());
+    Assertions::assert_true(json["bool"].into<bool>());
 
     // When
     auto json_str = json.dump();
     auto json2 = json::parse_json(json_str);
 
     // Then
-    Assertions::assertEquals(7ULL, json2["array"].size());
-    Assertions::assertTrue(json2["other"].is_null());
-    Assertions::assertTrue(json2["bool"].into<bool>());
+    Assertions::assert_equals(7ULL, json2["array"].size());
+    Assertions::assert_true(json2["other"].is_null());
+    Assertions::assert_true(json2["bool"].into<bool>());
 }
 
 void should_fail_to_parse_if_json_str_is_empty() {
     // Given
     str::String<> s("   ");
 
-    Assertions::assertThrows("Empty json input", [&]() {
+    Assertions::assert_throws("Empty json input", [&]() {
         json::parse_json(s);
     });
 }
@@ -60,46 +60,46 @@ void should_parse_numbers() {
     auto json4 = json::parse_json("1e3");
     auto json5 = json::parse_json("-2.5E-2");
 
-    Assertions::assertEquals(123LL, json1.into<i64>());
-    Assertions::assertEquals(-42LL, json2.into<i64>());
-    Assertions::assertTrue(json3.is<f64>());
-    Assertions::assertTrue(json4.is<f64>());
-    Assertions::assertTrue(json5.is<f64>());
+    Assertions::assert_equals(123LL, json1.into<i64>());
+    Assertions::assert_equals(-42LL, json2.into<i64>());
+    Assertions::assert_true(json3.is<f64>());
+    Assertions::assert_true(json4.is<f64>());
+    Assertions::assert_true(json5.is<f64>());
 }
 
 void should_parse_string_escapes() {
     auto json1 = json::parse_json(R"("a\"b\\c\/d\b\f\n\r\t")");
     auto s = json1.into<str::String<>>();
-    Assertions::assertTrue(s.find(str::StringView("\"")).is_some());
-    Assertions::assertTrue(s.find(str::StringView("\\")).is_some());
+    Assertions::assert_true(s.find(str::StringView("\"")).is_some());
+    Assertions::assert_true(s.find(str::StringView("\\")).is_some());
 }
 
 void should_parse_unicode_escape() {
     auto json1 = json::parse_json(R"("\u4F60\u597D")");
-    Assertions::assertEquals(str::String<>("你好"), json1.into<str::String<>>());
+    Assertions::assert_equals(str::String<>("你好"), json1.into<str::String<>>());
 }
 
 void should_parse_nested() {
     str::String<> s(R"({"a":[{"b":1}, {"c":[true, false, null]}], "d":{"e":"x"}})");
     auto json = json::parse_json(s);
-    Assertions::assertEquals(2ULL, json["a"].size());
-    Assertions::assertEquals(1LL, json["a"][0]["b"].into<i64>());
-    Assertions::assertTrue(json["a"][1]["c"][0].into<bool>());
-    Assertions::assertTrue(json["a"][1]["c"][2].is<json::JsonType::JsonNull>());
-    Assertions::assertEquals(str::String<>("x"), json["d"]["e"].into<str::String<>>());
+    Assertions::assert_equals(2ULL, json["a"].size());
+    Assertions::assert_equals(1LL, json["a"][0]["b"].into<i64>());
+    Assertions::assert_true(json["a"][1]["c"][0].into<bool>());
+    Assertions::assert_true(json["a"][1]["c"][2].is<json::JsonType::JsonNull>());
+    Assertions::assert_equals(str::String<>("x"), json["d"]["e"].into<str::String<>>());
 }
 
 void should_fail_invalid_json() {
-    Assertions::assertThrows("Invalid json value", [&]() {
+    Assertions::assert_throws("Invalid json value", [&]() {
         json::parse_json("@");
     });
-    Assertions::assertThrows("Expected ',' or ']' in array", [&]() {
+    Assertions::assert_throws("Expected ',' or ']' in array", [&]() {
         json::parse_json("[1 2]");
     });
-    Assertions::assertThrows("Expected comma or object end", [&]() {
+    Assertions::assert_throws("Expected comma or object end", [&]() {
         json::parse_json(R"({"a":1 "b":2})");
     });
-    Assertions::assertThrows("Unterminated string", [&]() {
+    Assertions::assert_throws("Unterminated string", [&]() {
         json::parse_json("\"abc");
     });
 }

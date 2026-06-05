@@ -6,28 +6,28 @@ namespace my::test::test_queue {
 
 void it_works() {
     util::Queue<i32> q;
-    Assertions::assertTrue(q.empty());
+    Assertions::assert_true(q.empty());
 
     q.push(1), q.push(2), q.push(3), q.push(4);
-    Assertions::assertFalse(q.empty());
-    Assertions::assertEquals(4, q.size());
-    Assertions::assertEquals(1, q.front());
-    Assertions::assertEquals(4, q.tail());
+    Assertions::assert_false(q.empty());
+    Assertions::assert_equals(4, q.size());
+    Assertions::assert_equals(1, q.front());
+    Assertions::assert_equals(4, q.tail());
 
     q.pop();
-    Assertions::assertEquals(3, q.size());
-    Assertions::assertEquals(2, q.front());
+    Assertions::assert_equals(3, q.size());
+    Assertions::assert_equals(2, q.front());
 
     q.pop();
-    Assertions::assertEquals(2, q.size());
-    Assertions::assertEquals(3, q.front());
+    Assertions::assert_equals(2, q.size());
+    Assertions::assert_equals(3, q.front());
 
     q.pop();
-    Assertions::assertEquals(1, q.size());
-    Assertions::assertEquals(4, q.front());
+    Assertions::assert_equals(1, q.size());
+    Assertions::assert_equals(4, q.front());
 
     q.pop();
-    Assertions::assertEquals(0, q.size());
+    Assertions::assert_equals(0, q.size());
 }
 
 void should_fail_to_pop_if_queue_is_empty() {
@@ -35,7 +35,7 @@ void should_fail_to_pop_if_queue_is_empty() {
     util::Queue<i32> q;
 
     // When & Then
-    Assertions::assertThrows("Queue is is_empty.", [&]() {
+    Assertions::assert_throws("Queue is is_empty.", [&]() {
         q.pop();
     });
 }
@@ -45,7 +45,7 @@ void should_fail_to_get_front_if_queue_is_empty() {
     util::Queue<i32> q;
 
     // When & Then
-    Assertions::assertThrows("Queue is is_empty.", [&]() {
+    Assertions::assert_throws("Queue is is_empty.", [&]() {
         q.front();
     });
 }
@@ -55,7 +55,7 @@ void should_fail_to_get_tail_if_queue_is_empty() {
     util::Queue<i32> q;
 
     // When & Then
-    Assertions::assertThrows("Queue is is_empty.", [&]() {
+    Assertions::assert_throws("Queue is is_empty.", [&]() {
         q.tail();
     });
 }

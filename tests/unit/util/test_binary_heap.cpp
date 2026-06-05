@@ -1,4 +1,4 @@
-﻿#include "test_binary_heap.hpp"
+#include "test_binary_heap.hpp"
 #include "binary_heap.hpp"
 #include "ricky_test.hpp"
 
@@ -15,16 +15,16 @@ void it_works() {
     bh.push(2);
 
     // Then
-    Assertions::assertEquals(4, bh.size());
-    Assertions::assertFalse(bh.is_empty());
-    Assertions::assertEquals(1, bh.top());
+    Assertions::assert_equals(4, bh.size());
+    Assertions::assert_false(bh.is_empty());
+    Assertions::assert_equals(1, bh.top());
 
     // When
     bh.pop();
 
     // Then
-    Assertions::assertEquals(3, bh.size());
-    Assertions::assertEquals(2, bh.top());
+    Assertions::assert_equals(3, bh.size());
+    Assertions::assert_equals(2, bh.top());
 }
 
 void it_works2() {
@@ -38,16 +38,16 @@ void it_works2() {
     bh.push(2);
 
     // Then
-    Assertions::assertEquals(4, bh.size());
-    Assertions::assertFalse(bh.is_empty());
-    Assertions::assertEquals(4, bh.top());
+    Assertions::assert_equals(4, bh.size());
+    Assertions::assert_false(bh.is_empty());
+    Assertions::assert_equals(4, bh.top());
 
     // When
     bh.pop();
 
     // Then
-    Assertions::assertEquals(3, bh.size());
-    Assertions::assertEquals(3, bh.top());
+    Assertions::assert_equals(3, bh.size());
+    Assertions::assert_equals(3, bh.top());
 }
 
 void should_heapify() {
@@ -58,7 +58,7 @@ void should_heapify() {
     util::BinaryHeap<i32, std::greater<i32>> bh{v};
 
     // Then
-    Assertions::assertEquals("[8,6,7,4,1,3,5]"_cs, bh.to_string());
+    Assertions::assert_equals("[8,6,7,4,1,3,5]"_cs, bh.to_string());
 }
 
 GROUP_NAME("test_binary_heap")

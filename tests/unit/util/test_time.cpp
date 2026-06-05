@@ -1,4 +1,4 @@
-﻿#include "test_time.hpp"
+#include "test_time.hpp"
 #include "date_time.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -9,24 +9,24 @@ void should_construct() {
     auto t = util::Time::of(20);
     auto t2 = util::Time::of(12, 34, 56, 789);
 
-    Assertions::assertEquals("20:00:00.000000000"_cs, t.to_string());
-    Assertions::assertEquals("12:34:56.000000789"_cs, t2.to_string());
+    Assertions::assert_equals("20:00:00.000000000"_cs, t.to_string());
+    Assertions::assert_equals("12:34:56.000000789"_cs, t2.to_string());
 }
 
 void should_fail_to_construct_by_hour_minute_and_second_if_args_invalid() {
-    Assertions::assertThrows("hour out of range", []() { util::Time::of(-1); });
-    Assertions::assertThrows("hour out of range", []() { util::Time::of(25); });
-    Assertions::assertThrows("minute out of range", []() { util::Time::of(12, -1); });
-    Assertions::assertThrows("minute out of range", []() { util::Time::of(12, 61); });
-    Assertions::assertThrows("second out of range", []() { util::Time::of(12, 30, -1); });
-    Assertions::assertThrows("second out of range", []() { util::Time::of(12, 30, 61); });
-    Assertions::assertThrows("nano out of range", []() { util::Time::of(12, 30, 30, -1); });
-    Assertions::assertThrows("nano out of range", []() { util::Time::of(12, 30, 30, 1000000000); });
+    Assertions::assert_throws("hour out of range", []() { util::Time::of(-1); });
+    Assertions::assert_throws("hour out of range", []() { util::Time::of(25); });
+    Assertions::assert_throws("minute out of range", []() { util::Time::of(12, -1); });
+    Assertions::assert_throws("minute out of range", []() { util::Time::of(12, 61); });
+    Assertions::assert_throws("second out of range", []() { util::Time::of(12, 30, -1); });
+    Assertions::assert_throws("second out of range", []() { util::Time::of(12, 30, 61); });
+    Assertions::assert_throws("nano out of range", []() { util::Time::of(12, 30, 30, -1); });
+    Assertions::assert_throws("nano out of range", []() { util::Time::of(12, 30, 30, 1000000000); });
 }
 
 void should_fail_to_construct_by_second_of_day_if_args_invalid() {
-    Assertions::assertThrows("second of day out of range", []() { util::Time::ofSecondOfDay(-1); });
-    Assertions::assertThrows("second of day out of range", []() { util::Time::ofSecondOfDay(86401); });
+    Assertions::assert_throws("second of day out of range", []() { util::Time::ofSecondOfDay(-1); });
+    Assertions::assert_throws("second of day out of range", []() { util::Time::ofSecondOfDay(86401); });
 }
 
 void should_parse() {
@@ -37,14 +37,14 @@ void should_parse() {
     auto t = util::Time::parse(str);
 
     // Then
-    Assertions::assertEquals(20, t.hour());
-    Assertions::assertEquals(32, t.minute());
-    Assertions::assertEquals(6, t.second());
+    Assertions::assert_equals(20, t.hour());
+    Assertions::assert_equals(32, t.minute());
+    Assertions::assert_equals(6, t.second());
 }
 
 void should_fail_to_parse_if_format_invalid() {
-    Assertions::assertThrows("invalid date time format", []() { util::Time::parse("12:30:31:1000"); });
-    Assertions::assertThrows("invalid date time format", []() { util::Time::parse("12:30"); });
+    Assertions::assert_throws("invalid date time format", []() { util::Time::parse("12:30:31:1000"); });
+    Assertions::assert_throws("invalid date time format", []() { util::Time::parse("12:30"); });
 }
 
 void should_fetch_now() {
@@ -65,9 +65,9 @@ void should_calc_second_of_day() {
     auto res3 = util::Time::ofSecondOfDay(t3.toSecondOfDay());
 
     // Then
-    Assertions::assertEquals(t, res);
-    Assertions::assertEquals(t2, res2);
-    Assertions::assertEquals(t3, res3);
+    Assertions::assert_equals(t, res);
+    Assertions::assert_equals(t2, res2);
+    Assertions::assert_equals(t3, res3);
 }
 
 void should_calc_nanos_of_day() {
@@ -82,9 +82,9 @@ void should_calc_nanos_of_day() {
     auto res3 = util::Time::ofNanoOfDay(t3.toNanoOfDay());
 
     // Then
-    Assertions::assertEquals(t, res);
-    Assertions::assertEquals(t2, res2);
-    Assertions::assertEquals(t3, res3);
+    Assertions::assert_equals(t, res);
+    Assertions::assert_equals(t2, res2);
+    Assertions::assert_equals(t3, res3);
 }
 
 void should_plus() {
@@ -97,7 +97,7 @@ void should_plus() {
     auto t4 = t3.plusSeconds(61); // 8:02:01
 
     // Then
-    Assertions::assertEquals("08:02:01.000000000"_cs, t4.to_string());
+    Assertions::assert_equals("08:02:01.000000000"_cs, t4.to_string());
 }
 
 void should_minus() {
@@ -110,7 +110,7 @@ void should_minus() {
     auto t4 = t3.minusSeconds(61); // 15:57:59
 
     // Then
-    Assertions::assertEquals("15:57:59.000000000"_cs, t4.to_string());
+    Assertions::assert_equals("15:57:59.000000000"_cs, t4.to_string());
 }
 
 void should_subtract() {
@@ -124,8 +124,8 @@ void should_subtract() {
     auto res2 = t - t3;
 
     // Then
-    Assertions::assertEquals("PT2H20M20.000000020S"_cs, res.to_string());
-    Assertions::assertEquals("PT-1H-39M-40.000000020S"_cs, res2.to_string());
+    Assertions::assert_equals("PT2H20M20.000000020S"_cs, res.to_string());
+    Assertions::assert_equals("PT-1H-39M-40.000000020S"_cs, res2.to_string());
 }
 
 GROUP_NAME("test_time")

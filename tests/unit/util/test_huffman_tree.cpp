@@ -35,7 +35,7 @@ void it_works() {
     auto encode_res = h.encode();
 
     // Then
-    Assertions::assertTrue(!encode_res.is_empty());
+    Assertions::assert_true(!encode_res.is_empty());
 
     // When
     auto decode_res = h.decode();

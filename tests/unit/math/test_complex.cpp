@@ -1,4 +1,4 @@
-﻿#include "test_complex.hpp"
+#include "test_complex.hpp"
 #include "complex.hpp"
 #include "ricky_test.hpp"
 
@@ -14,19 +14,19 @@ void should_construct() {
     math::Complex c7 = "0";
     math::Complex c8 = "1 + i";
     math::Complex c9 = "i";
-    Assertions::assertEquals("1+2i"_cs, c.to_string());
-    Assertions::assertEquals("2"_cs, c2.to_string());
-    Assertions::assertEquals("2i"_cs, c3.to_string());
-    Assertions::assertEquals("-1+2i"_cs, c4.to_string());
-    Assertions::assertEquals("-1-2i"_cs, c5.to_string());
-    Assertions::assertEquals("1+2i"_cs, c6.to_string());
-    Assertions::assertEquals("0"_cs, c7.to_string());
-    Assertions::assertEquals("1+i"_cs, c8.to_string());
-    Assertions::assertEquals("i"_cs, c9.to_string());
+    Assertions::assert_equals("1+2i"_cs, c.to_string());
+    Assertions::assert_equals("2"_cs, c2.to_string());
+    Assertions::assert_equals("2i"_cs, c3.to_string());
+    Assertions::assert_equals("-1+2i"_cs, c4.to_string());
+    Assertions::assert_equals("-1-2i"_cs, c5.to_string());
+    Assertions::assert_equals("1+2i"_cs, c6.to_string());
+    Assertions::assert_equals("0"_cs, c7.to_string());
+    Assertions::assert_equals("1+i"_cs, c8.to_string());
+    Assertions::assert_equals("i"_cs, c9.to_string());
 }
 
 void should_fail_to_parse_if_invalid_format() {
-    Assertions::assertThrows("Invalid complex number format", []() {
+    Assertions::assert_throws("Invalid complex number format", []() {
         math::Complex _ = "-1a + 2i";
     });
 }
@@ -39,7 +39,7 @@ void should_calc_modulus() {
     f64 res = a.modulus();
 
     // Then
-    Assertions::assertEquals(5.0, res);
+    Assertions::assert_equals(5.0, res);
 }
 
 void should_calc_arg() {
@@ -50,7 +50,7 @@ void should_calc_arg() {
     f64 res = a.angle();
 
     // Then
-    Assertions::assertEquals(0.9272952180016122, res);
+    Assertions::assert_equals(0.9272952180016122, res);
 }
 
 void should_add() {
@@ -62,8 +62,8 @@ void should_add() {
     a += b;
 
     // Then
-    Assertions::assertEquals("2"_cs, res.to_string());
-    Assertions::assertEquals(res.to_string(), a.to_string());
+    Assertions::assert_equals("2"_cs, res.to_string());
+    Assertions::assert_equals(res.to_string(), a.to_string());
 }
 
 void should_subtract() {
@@ -75,8 +75,8 @@ void should_subtract() {
     a -= b;
 
     // Then
-    Assertions::assertEquals("4i"_cs, res.to_string());
-    Assertions::assertEquals(res.to_string(), a.to_string());
+    Assertions::assert_equals("4i"_cs, res.to_string());
+    Assertions::assert_equals(res.to_string(), a.to_string());
 }
 
 void should_multiply() {
@@ -88,8 +88,8 @@ void should_multiply() {
     a *= b;
 
     // Then
-    Assertions::assertEquals("5"_cs, res.to_string());
-    Assertions::assertEquals(res.to_string(), a.to_string());
+    Assertions::assert_equals("5"_cs, res.to_string());
+    Assertions::assert_equals(res.to_string(), a.to_string());
 }
 
 void should_divide() {
@@ -101,8 +101,8 @@ void should_divide() {
     a /= b;
 
     // Then
-    Assertions::assertEquals("-0.6+0.8i"_cs, res.to_string());
-    Assertions::assertEquals(res.to_string(), a.to_string());
+    Assertions::assert_equals("-0.6+0.8i"_cs, res.to_string());
+    Assertions::assert_equals(res.to_string(), a.to_string());
 }
 
 GROUP_NAME("test_complex")

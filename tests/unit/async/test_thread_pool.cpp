@@ -22,7 +22,7 @@ void should_push() {
     auto future = tp.push(add, 2, 3);
 
     // Then
-    Assertions::assertEquals(5, future.get());
+    Assertions::assert_equals(5, future.get());
 }
 
 void should_push_tasks() {
@@ -34,8 +34,8 @@ void should_push_tasks() {
     auto future2 = tp.push(add, 4, 5);
 
     // Then
-    Assertions::assertEquals(5, future.get());
-    Assertions::assertEquals(9, future2.get());
+    Assertions::assert_equals(5, future.get());
+    Assertions::assert_equals(9, future2.get());
 }
 
 void should_push_tasks_with_exception() {
@@ -49,11 +49,11 @@ void should_push_tasks_with_exception() {
     });
 
     // Then
-    Assertions::assertThrows("wa", [&]() {
+    Assertions::assert_throws("wa", [&]() {
         future.get();
     });
 
-    Assertions::assertThrows("wa2", [&]() {
+    Assertions::assert_throws("wa2", [&]() {
         future2.get();
     });
 }
@@ -72,7 +72,7 @@ void should_wait() {
 
     // Then
     for (usize i = 0; i < n; ++i) {
-        Assertions::assertEquals(i * 2, static_cast<usize>(futures[i]));
+        Assertions::assert_equals(i * 2, static_cast<usize>(futures[i]));
     }
 }
 

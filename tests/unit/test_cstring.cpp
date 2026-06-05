@@ -1,4 +1,4 @@
-﻿#include "test_cstring.hpp"
+#include "test_cstring.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_cstring {
@@ -8,11 +8,11 @@ void should_construct() {
     CString str = "abc";
 
     // When & Then
-    Assertions::assertEquals(3, i32(str.size()));
-    Assertions::assertFalse(str.empty());
-    Assertions::assertEquals('a', str[0]);
-    Assertions::assertEquals('b', str[1]);
-    Assertions::assertEquals('c', str[2]);
+    Assertions::assert_equals(3, i32(str.size()));
+    Assertions::assert_false(str.empty());
+    Assertions::assert_equals('a', str[0]);
+    Assertions::assert_equals('b', str[1]);
+    Assertions::assert_equals('c', str[2]);
 }
 
 void should_hash() {
@@ -25,7 +25,7 @@ void should_hash() {
     auto hash2 = str2.hash();
 
     // Then
-    Assertions::assertNotEquals(hash1, hash2);
+    Assertions::assert_not_equals(hash1, hash2);
 }
 
 void should_compare() {
@@ -36,12 +36,12 @@ void should_compare() {
     CString str4 = "aaab";
 
     // When & Then
-    Assertions::assertTrue(str1.cmp(str2) < 0);
-    Assertions::assertTrue(str2.cmp(str3) < 0);
-    Assertions::assertTrue(str3.cmp(str4) == 0);
+    Assertions::assert_true(str1.cmp(str2) < 0);
+    Assertions::assert_true(str2.cmp(str3) < 0);
+    Assertions::assert_true(str3.cmp(str4) == 0);
 
-    Assertions::assertEquals(str3, str4);
-    Assertions::assertNotEquals(str2, str4);
+    Assertions::assert_equals(str3, str4);
+    Assertions::assert_not_equals(str2, str4);
 }
 
 void should_slice() {
@@ -54,10 +54,10 @@ void should_slice() {
     auto res3 = s.slice(1, -1);
 
     // Then
-    Assertions::assertEquals(1ULL, res.length());
-    Assertions::assertEquals("b"_cs, res.to_string());
-    Assertions::assertEquals("def"_cs, res2.to_string());
-    Assertions::assertEquals("bcde"_cs, res3.to_string());
+    Assertions::assert_equals(1ULL, res.length());
+    Assertions::assert_equals("b"_cs, res.to_string());
+    Assertions::assert_equals("def"_cs, res2.to_string());
+    Assertions::assert_equals("bcde"_cs, res3.to_string());
 }
 
 void should_find() {
@@ -73,11 +73,11 @@ void should_find() {
     auto pos5 = s2.find("");
 
     // Then
-    Assertions::assertEquals(3ULL, pos);
-    Assertions::assertEquals(5ULL, pos2);
-    Assertions::assertEquals(npos, pos3);
-    Assertions::assertEquals(7ULL, pos4);
-    Assertions::assertEquals(npos, pos5);
+    Assertions::assert_equals(3ULL, pos);
+    Assertions::assert_equals(5ULL, pos2);
+    Assertions::assert_equals(npos, pos3);
+    Assertions::assert_equals(7ULL, pos4);
+    Assertions::assert_equals(npos, pos5);
 }
 
 void should_find_all() {
@@ -88,9 +88,9 @@ void should_find_all() {
     auto poss = s.find_all("abc");
 
     // Then
-    Assertions::assertEquals(2ULL, poss.size());
-    Assertions::assertEquals(0ULL, poss[0]);
-    Assertions::assertEquals(6ULL, poss[1]);
+    Assertions::assert_equals(2ULL, poss.size());
+    Assertions::assert_equals(0ULL, poss[0]);
+    Assertions::assert_equals(6ULL, poss[1]);
 }
 
 void should_judge_starts_with() {
@@ -102,8 +102,8 @@ void should_judge_starts_with() {
     bool res2 = s.starts_with("abd");
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_judge_ends_with() {
@@ -115,8 +115,8 @@ void should_judge_ends_with() {
     bool res2 = s.ends_with("deg");
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_get_upper() {
@@ -127,7 +127,7 @@ void should_get_upper() {
     auto res = s.upper();
 
     // Then
-    Assertions::assertEquals("ABCDEF"_cs, res);
+    Assertions::assert_equals("ABCDEF"_cs, res);
 }
 
 void should_get_lower() {
@@ -138,7 +138,7 @@ void should_get_lower() {
     auto res = s.lower();
 
     // Then
-    Assertions::assertEquals("abcdef"_cs, res);
+    Assertions::assert_equals("abcdef"_cs, res);
 }
 
 void should_trim() {
@@ -149,7 +149,7 @@ void should_trim() {
     auto res = s.trim();
 
     // Then
-    Assertions::assertEquals("abcdef"_cs, res.to_string());
+    Assertions::assert_equals("abcdef"_cs, res.to_string());
 }
 
 void should_remove_all() {
@@ -163,8 +163,8 @@ void should_remove_all() {
     });
 
     // Then
-    Assertions::assertEquals("abc"_cs, res);
-    Assertions::assertEquals("abc"_cs, res2);
+    Assertions::assert_equals("abc"_cs, res);
+    Assertions::assert_equals("abc"_cs, res2);
 }
 
 void should_add() {
@@ -176,7 +176,7 @@ void should_add() {
     auto res = str + str2;
 
     // Then
-    Assertions::assertEquals("aaabbb"_cs, res);
+    Assertions::assert_equals("aaabbb"_cs, res);
 }
 
 void should_iterate() {
@@ -193,8 +193,8 @@ void should_iterate() {
     }
 
     // Then
-    Assertions::assertEquals("bcdefgh"_cs, str.to_string());
-    Assertions::assertEquals("[b,c,d,e,f,g,h]"_cs, chs.to_string());
+    Assertions::assert_equals("bcdefgh"_cs, str.to_string());
+    Assertions::assert_equals("[b,c,d,e,f,g,h]"_cs, chs.to_string());
 }
 
 void test_cstring_view() {
@@ -209,10 +209,10 @@ void test_cstring_view() {
     }
 
     // Then
-    Assertions::assertEquals("bcdef"_cs, sv.to_string());
-    Assertions::assertEquals('b', sv[0]);
-    Assertions::assertEquals('f', sv[sv.length() - 1]);
-    Assertions::assertEquals("[b,c,d,e,f]"_cs, chs.to_string());
+    Assertions::assert_equals("bcdef"_cs, sv.to_string());
+    Assertions::assert_equals('b', sv[0]);
+    Assertions::assert_equals('f', sv[sv.length() - 1]);
+    Assertions::assert_equals("[b,c,d,e,f]"_cs, chs.to_string());
 }
 
 GROUP_NAME("test_cstring")

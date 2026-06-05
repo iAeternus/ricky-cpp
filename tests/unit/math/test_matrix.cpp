@@ -1,4 +1,4 @@
-﻿#include "test_matrix.hpp"
+#include "test_matrix.hpp"
 #include "matrix.hpp"
 #include "ricky_test.hpp"
 
@@ -13,25 +13,25 @@ void should_construct() {
     };
     math::Matrix<f64> m3;
 
-    Assertions::assertEquals(3, m.rows());
-    Assertions::assertEquals(4, m.cols());
-    Assertions::assertEquals("[[1,1,1,1],[1,1,1,1],[1,1,1,1]]"_cs, m.to_string());
+    Assertions::assert_equals(3, m.rows());
+    Assertions::assert_equals(4, m.cols());
+    Assertions::assert_equals("[[1,1,1,1],[1,1,1,1],[1,1,1,1]]"_cs, m.to_string());
 
-    Assertions::assertEquals(3, m2.rows());
-    Assertions::assertEquals(3, m2.cols());
-    Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, m2.to_string());
+    Assertions::assert_equals(3, m2.rows());
+    Assertions::assert_equals(3, m2.cols());
+    Assertions::assert_equals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, m2.to_string());
 
-    Assertions::assertEquals(1, m3.rows());
-    Assertions::assertEquals(1, m3.cols());
-    Assertions::assertEquals("[[0]]"_cs, m3.to_string());
+    Assertions::assert_equals(1, m3.rows());
+    Assertions::assert_equals(1, m3.cols());
+    Assertions::assert_equals("[[0]]"_cs, m3.to_string());
 }
 
 void should_at() {
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
-    Assertions::assertEquals(0.0, m.at(0, 0));
-    Assertions::assertEquals(m[0][0], m.at(0, 0));
-    Assertions::assertEquals(8.0, m.at(2, 2));
-    Assertions::assertEquals(m[2][2], m.at(2, 2));
+    Assertions::assert_equals(0.0, m.at(0, 0));
+    Assertions::assert_equals(m[0][0], m.at(0, 0));
+    Assertions::assert_equals(8.0, m.at(2, 2));
+    Assertions::assert_equals(m[2][2], m.at(2, 2));
 }
 
 void should_fail_to_get_if_index_out_of_bounds() {
@@ -39,11 +39,11 @@ void should_fail_to_get_if_index_out_of_bounds() {
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When & Then
-    Assertions::assertThrows("Index [2, 3] out of bounds [0..3, 0..3]", [&]() {
+    Assertions::assert_throws("Index [2, 3] out of bounds [0..3, 0..3]", [&]() {
         m.at(2, 3);
     });
 
-    Assertions::assertThrows("Column index 3 out of bounds [0..3]", [&]() {
+    Assertions::assert_throws("Column index 3 out of bounds [0..3]", [&]() {
         m[2][3];
     });
 }
@@ -56,8 +56,8 @@ void should_get_sub_mat() {
     auto res = m.sub_mat(1, 1, 2, 2);
 
     // Then
-    Assertions::assertEquals(res.to_string(), res.to_matrix().to_string());
-    Assertions::assertEquals("[[4,5],[7,8]]"_cs, res.to_matrix().to_string());
+    Assertions::assert_equals(res.to_string(), res.to_matrix().to_string());
+    Assertions::assert_equals("[[4,5],[7,8]]"_cs, res.to_matrix().to_string());
 }
 
 void should_fail_to_get_sub_mat_if_index_invalid() {
@@ -65,11 +65,11 @@ void should_fail_to_get_sub_mat_if_index_invalid() {
     math::Matrix<f64> m = {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
 
     // When & Then
-    Assertions::assertThrows("cannot get submatrix [2..1] x [2..1] of a (3x3) matrix.", [&]() {
+    Assertions::assert_throws("cannot get submatrix [2..1] x [2..1] of a (3x3) matrix.", [&]() {
         m.sub_mat(2, 2, 1, 1);
     });
 
-    Assertions::assertThrows("cannot get submatrix [0..3] x [0..3] of a (3x3) matrix.", [&]() {
+    Assertions::assert_throws("cannot get submatrix [0..3] x [0..3] of a (3x3) matrix.", [&]() {
         m.sub_mat(0, 0, 3, 3);
     });
 }
@@ -82,7 +82,7 @@ void should_fill() {
     m.fill(1);
 
     // Then
-    Assertions::assertEquals("[[1,1,1],[1,1,1],[1,1,1]]"_cs, m.to_string());
+    Assertions::assert_equals("[[1,1,1],[1,1,1],[1,1,1]]"_cs, m.to_string());
 }
 
 void should_add() {
@@ -95,8 +95,8 @@ void should_add() {
     m += m2;
 
     // Then
-    Assertions::assertEquals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, res.to_string());
-    Assertions::assertEquals(res, m);
+    Assertions::assert_equals("[[1,2,3],[4,5,6],[7,8,9]]"_cs, res.to_string());
+    Assertions::assert_equals(res, m);
 }
 
 void should_fail_to_add_if_matrix_not_match() {
@@ -105,11 +105,11 @@ void should_fail_to_add_if_matrix_not_match() {
     math::Matrix<f64> m2(3, 2);
 
     // When & Then
-    Assertions::assertThrows("cannot add a (3x3) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot add a (3x3) matrix and a (3x2) matrix.", [&]() {
         m + m2;
     });
 
-    Assertions::assertThrows("cannot add a (3x3) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot add a (3x3) matrix and a (3x2) matrix.", [&]() {
         m += m2;
     });
 }
@@ -124,8 +124,8 @@ void should_subtract() {
     m -= m2;
 
     // Then
-    Assertions::assertEquals("[[0,1,2],[3,4,5],[6,7,8]]"_cs, res.to_string());
-    Assertions::assertEquals(res, m);
+    Assertions::assert_equals("[[0,1,2],[3,4,5],[6,7,8]]"_cs, res.to_string());
+    Assertions::assert_equals(res, m);
 }
 
 void should_fail_to_subtract_if_matrix_not_match() {
@@ -134,11 +134,11 @@ void should_fail_to_subtract_if_matrix_not_match() {
     math::Matrix<f64> m2(3, 2);
 
     // When & Then
-    Assertions::assertThrows("cannot substract a (3x3) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot substract a (3x3) matrix and a (3x2) matrix.", [&]() {
         m - m2;
     });
 
-    Assertions::assertThrows("cannot substract a (3x3) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot substract a (3x3) matrix and a (3x2) matrix.", [&]() {
         m -= m2;
     });
 }
@@ -153,8 +153,8 @@ void should_multiply() {
     m *= m2;
 
     // Then
-    Assertions::assertEquals("[[19,22],[43,50]]"_cs, res.to_string());
-    Assertions::assertEquals(res, m);
+    Assertions::assert_equals("[[19,22],[43,50]]"_cs, res.to_string());
+    Assertions::assert_equals(res, m);
 }
 
 void should_fail_to_multiply_if_matrix_not_match() {
@@ -163,11 +163,11 @@ void should_fail_to_multiply_if_matrix_not_match() {
     math::Matrix<f64> m2(3, 2);
 
     // When & Then
-    Assertions::assertThrows("cannot multiply a (3x2) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot multiply a (3x2) matrix and a (3x2) matrix.", [&]() {
         m* m2;
     });
 
-    Assertions::assertThrows("cannot multiply a (3x2) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot multiply a (3x2) matrix and a (3x2) matrix.", [&]() {
         m *= m2;
     });
 }
@@ -183,8 +183,8 @@ void should_dot() {
     auto res2 = m.dot(n);
 
     // Then
-    Assertions::assertEquals("[[5,12],[21,32]]"_cs, res.to_string());
-    Assertions::assertEquals("[[2,4],[6,8]]"_cs, res2.to_string());
+    Assertions::assert_equals("[[5,12],[21,32]]"_cs, res.to_string());
+    Assertions::assert_equals("[[2,4],[6,8]]"_cs, res2.to_string());
 }
 
 void should_fail_to_dot_if_matrix_not_match() {
@@ -193,7 +193,7 @@ void should_fail_to_dot_if_matrix_not_match() {
     math::Matrix<f64> m2(3, 2);
 
     // When & Then
-    Assertions::assertThrows("cannot dot a (3x3) matrix and a (3x2) matrix.", [&]() {
+    Assertions::assert_throws("cannot dot a (3x3) matrix and a (3x2) matrix.", [&]() {
         m.dot(m2);
     });
 }
@@ -206,7 +206,7 @@ void should_transpose() {
     auto res = m.t();
 
     // Then
-    Assertions::assertEquals("[[1,4],[2,5],[3,6]]"_cs, res.to_string());
+    Assertions::assert_equals("[[1,4],[2,5],[3,6]]"_cs, res.to_string());
 }
 
 void should_calculate_inverse() {
@@ -217,7 +217,7 @@ void should_calculate_inverse() {
     auto res = m.inv();
 
     // Then
-    Assertions::assertEquals("[[0.2,0.2,0],[-0.2,0.3,1],[0.2,-0.3,0]]"_cs, res.to_string());
+    Assertions::assert_equals("[[0.2,0.2,0],[-0.2,0.3,1],[0.2,-0.3,0]]"_cs, res.to_string());
 }
 
 void should_fail_to_calc_inv_if_matrix_not_square() {
@@ -225,7 +225,7 @@ void should_fail_to_calc_inv_if_matrix_not_square() {
     math::Matrix<f64> m(3, 2);
 
     // When & Then
-    Assertions::assertThrows("only square matrices have inverse matrices.", [&]() {
+    Assertions::assert_throws("only square matrices have inverse matrices.", [&]() {
         m.inv();
     });
 }
@@ -238,7 +238,7 @@ void should_calculate_det() {
     auto res = m.det();
 
     // Then
-    Assertions::assertEquals(57.0, res);
+    Assertions::assert_equals(57.0, res);
 }
 
 void should_fail_to_calc_det_if_matrix_not_square() {
@@ -246,7 +246,7 @@ void should_fail_to_calc_det_if_matrix_not_square() {
     math::Matrix<f64> m(3, 2);
 
     // When & Then
-    Assertions::assertThrows("only square matrices can have their determinants calculated.", [&]() {
+    Assertions::assert_throws("only square matrices can have their determinants calculated.", [&]() {
         m.det();
     });
 }
@@ -259,7 +259,7 @@ void should_calculate_rank() {
     auto res = m.rank();
 
     // Then
-    Assertions::assertEquals(1, res);
+    Assertions::assert_equals(1, res);
 }
 
 void should_lu_decomposition() {
@@ -270,8 +270,8 @@ void should_lu_decomposition() {
     auto [L, U] = m.lu();
 
     // Then
-    Assertions::assertEquals("[[1,0,0],[-2,1,0],[4,-3.66667,1]]"_cs, L.to_string());
-    Assertions::assertEquals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.to_string());
+    Assertions::assert_equals("[[1,0,0],[-2,1,0],[4,-3.66667,1]]"_cs, L.to_string());
+    Assertions::assert_equals("[[1,5,-3],[0,3,-3],[0,0,7]]"_cs, U.to_string());
 }
 
 void should_fail_to_lu_decomposition_if_matrix_not_square() {
@@ -279,7 +279,7 @@ void should_fail_to_lu_decomposition_if_matrix_not_square() {
     math::Matrix<f64> m(3, 2);
 
     // When & Then
-    Assertions::assertThrows("only square matrices are LU decomposition.", [&]() {
+    Assertions::assert_throws("only square matrices are LU decomposition.", [&]() {
         m.lu();
     });
 }
@@ -295,8 +295,8 @@ void should_cmp() {
     auto res2 = m.cmp(m3);
 
     // Then
-    Assertions::assertEquals(-1, res);
-    Assertions::assertEquals(0, res2);
+    Assertions::assert_equals(-1, res);
+    Assertions::assert_equals(0, res2);
 }
 
 void should_fail_to_cmp_if_matrix_not_match() {
@@ -305,7 +305,7 @@ void should_fail_to_cmp_if_matrix_not_match() {
     math::Matrix<f64> m2(3, 2);
 
     // When & Then
-    Assertions::assertThrows("only matrices of the same dimension are comparable", [&]() {
+    Assertions::assert_throws("only matrices of the same dimension are comparable", [&]() {
         auto _ = m.cmp(m2);
     });
 }
@@ -319,10 +319,10 @@ void test_matrix_view() {
     auto v2 = v.sub_view(1, 1, 1, 1);
 
     // Then
-    Assertions::assertEquals("[[5,6],[8,9]]"_cs, v.to_string());
-    Assertions::assertEquals("[[9]]"_cs, v2.to_string());
-    Assertions::assertEquals(8, v.at(1, 0));
-    Assertions::assertEquals(8, v.at_abs(2, 1));
+    Assertions::assert_equals("[[5,6],[8,9]]"_cs, v.to_string());
+    Assertions::assert_equals("[[9]]"_cs, v2.to_string());
+    Assertions::assert_equals(8, v.at(1, 0));
+    Assertions::assert_equals(8, v.at_abs(2, 1));
 }
 
 GROUP_NAME("test_matrix")

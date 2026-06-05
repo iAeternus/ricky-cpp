@@ -26,7 +26,7 @@ void should_udp_send_to_and_recv_from() {
     auto client = net::UdpSocket::bind(str::StringView("127.0.0.1"), 0);
 
     auto sent = client.send_to(str::StringView("127.0.0.1"), server_port, str::StringView("Hello UDP"));
-    Assertions::assertTrue(sent > 0);
+    Assertions::assert_true(sent > 0);
 
     server.close();
     client.close();

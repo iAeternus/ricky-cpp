@@ -1,4 +1,4 @@
-﻿#include "test_dynarray.hpp"
+#include "test_dynarray.hpp"
 #include "dyn_array.hpp"
 #include "ricky_test.hpp"
 
@@ -8,10 +8,10 @@ void it_works() {
     util::DynArray<i32> d(10, 0);
     util::DynArray<util::DynArray<i32>> d2(3, util::DynArray<i32>(3, 0));
     util::DynArray<i32> d3 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    Assertions::assertEquals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.to_string());
-    Assertions::assertEquals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.to_string());
-    Assertions::assertEquals(1, d3.front());
-    Assertions::assertEquals(10, d3.back());
+    Assertions::assert_equals("[0,0,0,0,0,0,0,0,0,0]"_cs, d.to_string());
+    Assertions::assert_equals("[[0,0,0],[0,0,0],[0,0,0]]"_cs, d2.to_string());
+    Assertions::assert_equals(1, d3.front());
+    Assertions::assert_equals(10, d3.back());
 }
 
 void should_append() {
@@ -25,12 +25,12 @@ void should_append() {
     }
 
     // Then
-    Assertions::assertEquals(n, d.len());
-    Assertions::assertEquals(cstr(n - 1), d.at(d.len() - 1));
+    Assertions::assert_equals(n, d.len());
+    Assertions::assert_equals(cstr(n - 1), d.at(d.len() - 1));
 
     i32 num = 0;
     for (const auto& it : d) {
-        Assertions::assertEquals(cstr(num++), it);
+        Assertions::assert_equals(cstr(num++), it);
     }
 }
 
@@ -42,9 +42,9 @@ void should_insert() {
     d.insert(0, 100);
 
     // Then
-    Assertions::assertEquals(6ULL, d.len());
-    Assertions::assertEquals(100, *d.begin());
-    Assertions::assertEquals(1ULL, d.find(1));
+    Assertions::assert_equals(6ULL, d.len());
+    Assertions::assert_equals(100, *d.begin());
+    Assertions::assert_equals(1ULL, d.find(1));
 }
 
 void should_pop() {
@@ -55,15 +55,15 @@ void should_pop() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(4ULL, d.len());
-    Assertions::assertEquals(4, d.at(d.len() - 1));
+    Assertions::assert_equals(4ULL, d.len());
+    Assertions::assert_equals(4, d.at(d.len() - 1));
 
     // When
     d.pop(0);
 
     // Then
-    Assertions::assertEquals(3ULL, d.len());
-    Assertions::assertEquals(2, d.at(0));
+    Assertions::assert_equals(3ULL, d.len());
+    Assertions::assert_equals(2, d.at(0));
 }
 
 void should_pop2() {
@@ -74,9 +74,9 @@ void should_pop2() {
     d.pop();
 
     // Then
-    Assertions::assertEquals(0ULL, d.len());
-    Assertions::assertTrue(d.empty());
-    Assertions::assertEquals(d.begin(), d.end());
+    Assertions::assert_equals(0ULL, d.len());
+    Assertions::assert_true(d.empty());
+    Assertions::assert_equals(d.begin(), d.end());
 }
 
 void should_clear() {
@@ -87,15 +87,15 @@ void should_clear() {
     d.clear();
 
     // Then
-    Assertions::assertTrue(d.empty());
+    Assertions::assert_true(d.empty());
 
     // When
     d.clear();
 
     // Then
-    Assertions::assertEquals(0ULL, d.len());
-    Assertions::assertTrue(d.empty());
-    Assertions::assertEquals(d.begin(), d.end());
+    Assertions::assert_equals(0ULL, d.len());
+    Assertions::assert_true(d.empty());
+    Assertions::assert_equals(d.begin(), d.end());
 }
 
 void should_to_array() {
@@ -106,9 +106,9 @@ void should_to_array() {
     auto arr = d.to_array();
 
     // Then
-    Assertions::assertEquals(5ULL, arr.len());
-    Assertions::assertEquals(5, arr.at(arr.len() - 1));
-    Assertions::assertEquals("[1,2,3,4,5]"_cs, arr.to_string());
+    Assertions::assert_equals(5ULL, arr.len());
+    Assertions::assert_equals(5, arr.at(arr.len() - 1));
+    Assertions::assert_equals("[1,2,3,4,5]"_cs, arr.to_string());
 }
 
 void should_extend() {
@@ -120,8 +120,8 @@ void should_extend() {
     d = d + util::DynArray<i32>{8, 9, 10};
 
     // Then
-    Assertions::assertEquals(10ULL, d.len());
-    Assertions::assertEquals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.to_string());
+    Assertions::assert_equals(10ULL, d.len());
+    Assertions::assert_equals("[1,2,3,4,5,6,7,8,9,10]"_cs, d.to_string());
 }
 
 void should_at() {
@@ -134,9 +134,9 @@ void should_at() {
     auto res3 = d.at(2);
 
     // Then
-    Assertions::assertEquals('a', res);
-    Assertions::assertEquals('b', res2);
-    Assertions::assertEquals('c', res3);
+    Assertions::assert_equals('a', res);
+    Assertions::assert_equals('b', res2);
+    Assertions::assert_equals('c', res3);
 }
 
 void should_find() {
@@ -148,8 +148,8 @@ void should_find() {
     auto res2 = d.find("ddd"_cs);
 
     // Then
-    Assertions::assertEquals(0ULL, res);
-    Assertions::assertEquals(d.len(), res2);
+    Assertions::assert_equals(0ULL, res);
+    Assertions::assert_equals(d.len(), res2);
 }
 
 // auto should_sort = []() {
@@ -161,7 +161,7 @@ void should_find() {
 
 //     // Then
 //     io::println(d);
-//     Assertions::assertEquals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.to_string());
+//     Assertions::assert_equals("[0,1,2,3,4,5,6,7,8,9]"_cs, d.to_string());
 // };
 
 GROUP_NAME("test_dynarray")

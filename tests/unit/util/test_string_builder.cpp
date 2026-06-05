@@ -12,8 +12,8 @@ void it_works() {
     sb.append("aaa"_s).append("bbb").append("ccc").append("你好呀"_s).append('R');
 
     // Then
-    Assertions::assertEquals("aaabbbccc你好呀R"_s, sb.build());
-    Assertions::assertEquals("aaabbbccc你好呀R"_s, sb.build_move());
+    Assertions::assert_equals("aaabbbccc你好呀R"_s, sb.build());
+    Assertions::assert_equals("aaabbbccc你好呀R"_s, sb.build_move());
 }
 
 void should_append_format_string() {
@@ -24,7 +24,7 @@ void should_append_format_string() {
     sb.append_format("Case {}#: ", 1).append_format("{}+{}={}", 1, 1, 2);
 
     // Then
-    Assertions::assertEquals("Case 1#: 1+1=2"_s, sb.build());
+    Assertions::assert_equals("Case 1#: 1+1=2"_s, sb.build());
 }
 
 void should_append_n() {
@@ -35,7 +35,7 @@ void should_append_n() {
     sb.append_n(util::CodePoint{"我"}, 10);
 
     // Then
-    Assertions::assertEquals("我我我我我我我我我我"_s, sb.build());
+    Assertions::assert_equals("我我我我我我我我我我"_s, sb.build());
 }
 
 void should_append_array() {
@@ -47,7 +47,7 @@ void should_append_array() {
     sb.append_array(cps, std::size(cps));
 
     // Then
-    Assertions::assertEquals("a我bc"_s, sb.build());
+    Assertions::assert_equals("a我bc"_s, sb.build());
 }
 
 void should_find() {
@@ -59,7 +59,7 @@ void should_find() {
     auto pos = sb.find("\r\n\r\r"_s);
 
     // Then
-    Assertions::assertEquals(6ull, pos);
+    Assertions::assert_equals(6ull, pos);
 }
 
 GROUP_NAME("test_string_builder")

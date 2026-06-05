@@ -1,4 +1,4 @@
-﻿#include "test_pair.hpp"
+#include "test_pair.hpp"
 #include "my_pair.hpp"
 #include "ricky_test.hpp"
 
@@ -15,16 +15,16 @@ void should_construct() {
     Pair<i32, CString> p2{a, c};
 
     // Then
-    Assertions::assertEquals("(10, 3.14)"_cs, p.to_string());
-    Assertions::assertEquals("(10, \"abc\")"_cs, p2.to_string());
+    Assertions::assert_equals("(10, 3.14)"_cs, p.to_string());
+    Assertions::assert_equals("(10, \"abc\")"_cs, p2.to_string());
 
     // When
     Pair<i32, CString> p3{p2};
     Pair<i32, CString> p4 = p3;
 
     // Then
-    Assertions::assertEquals("(10, \"abc\")"_cs, p3.to_string());
-    Assertions::assertEquals("(10, \"abc\")"_cs, p4.to_string());
+    Assertions::assert_equals("(10, \"abc\")"_cs, p3.to_string());
+    Assertions::assert_equals("(10, \"abc\")"_cs, p4.to_string());
 }
 
 void should_structured_binding() {
@@ -35,8 +35,8 @@ void should_structured_binding() {
     auto [x, y] = p;
 
     // Then
-    Assertions::assertEquals(1, x);
-    Assertions::assertEquals(2, y);
+    Assertions::assert_equals(1, x);
+    Assertions::assert_equals(2, y);
 }
 
 void should_copy_and_move() {
@@ -44,14 +44,14 @@ void should_copy_and_move() {
     Pair<i32, CString> p2{p1};
     Pair<i32, CString> p3 = p2;
 
-    Assertions::assertEquals("(1, \"abc\")"_cs, p2.to_string());
-    Assertions::assertEquals("(1, \"abc\")"_cs, p3.to_string());
+    Assertions::assert_equals("(1, \"abc\")"_cs, p2.to_string());
+    Assertions::assert_equals("(1, \"abc\")"_cs, p3.to_string());
 
     Pair<i32, CString> p4{std::move(p3)};
     Pair<i32, CString> p5;
     p5 = std::move(p4);
 
-    Assertions::assertEquals("(1, \"abc\")"_cs, p5.to_string());
+    Assertions::assert_equals("(1, \"abc\")"_cs, p5.to_string());
 }
 
 void should_cmp() {
@@ -59,24 +59,24 @@ void should_cmp() {
     Pair<i32, i32> p2{1, 3};
     Pair<i32, i32> p3{2, 0};
 
-    Assertions::assertTrue(p1.cmp(p2) < 0);
-    Assertions::assertTrue(p2.cmp(p1) > 0);
-    Assertions::assertTrue(p1.cmp(p1) == 0);
-    Assertions::assertTrue(p3.cmp(p1) > 0);
+    Assertions::assert_true(p1.cmp(p2) < 0);
+    Assertions::assert_true(p2.cmp(p1) > 0);
+    Assertions::assert_true(p1.cmp(p1) == 0);
+    Assertions::assert_true(p3.cmp(p1) > 0);
 }
 
 void should_get() {
     Pair<i32, i32> p{4, 5};
-    Assertions::assertEquals(4, p.get<0>());
-    Assertions::assertEquals(5, p.get<1>());
+    Assertions::assert_equals(4, p.get<0>());
+    Assertions::assert_equals(5, p.get<1>());
 
     auto& a = my::get<0>(p);
     auto& b = my::get<1>(p);
     a = 7;
     b = 8;
 
-    Assertions::assertEquals(7, p.first());
-    Assertions::assertEquals(8, p.second());
+    Assertions::assert_equals(7, p.first());
+    Assertions::assert_equals(8, p.second());
 }
 
 GROUP_NAME("test_pair")

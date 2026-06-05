@@ -1,4 +1,4 @@
-﻿#include "test_big_integer.hpp"
+#include "test_big_integer.hpp"
 #include "big_integer.hpp"
 #include "ricky_test.hpp"
 
@@ -16,12 +16,12 @@ void should_construct_with_i64() {
     math::BigInteger bi3 = num3;
 
     // Then
-    Assertions::assertEquals("123456789"_cs, bi.to_string());
-    Assertions::assertEquals(9, bi.size());
-    Assertions::assertEquals("0"_cs, bi2.to_string());
-    Assertions::assertEquals(1, bi2.size());
-    Assertions::assertEquals("-123456789"_cs, bi3.to_string());
-    Assertions::assertEquals(9, bi3.size());
+    Assertions::assert_equals("123456789"_cs, bi.to_string());
+    Assertions::assert_equals(9, bi.size());
+    Assertions::assert_equals("0"_cs, bi2.to_string());
+    Assertions::assert_equals(1, bi2.size());
+    Assertions::assert_equals("-123456789"_cs, bi3.to_string());
+    Assertions::assert_equals(9, bi3.size());
 }
 
 void should_construct_with_c_string() {
@@ -38,24 +38,24 @@ void should_construct_with_c_string() {
     math::BigInteger bi4 = num4;
 
     // Then
-    Assertions::assertEquals("123456789012345678901234567890"_cs, bi.to_string());
-    Assertions::assertEquals(30, bi.size());
-    Assertions::assertEquals("0"_cs, bi2.to_string());
-    Assertions::assertEquals(1, bi2.size());
-    Assertions::assertEquals("-123456789012345678901234567890"_cs, bi3.to_string());
-    Assertions::assertEquals(30, bi3.size());
-    Assertions::assertEquals("-123456789012345678901234567890"_cs, bi4.to_string());
-    Assertions::assertEquals(30, bi4.size());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, bi.to_string());
+    Assertions::assert_equals(30, bi.size());
+    Assertions::assert_equals("0"_cs, bi2.to_string());
+    Assertions::assert_equals(1, bi2.size());
+    Assertions::assert_equals("-123456789012345678901234567890"_cs, bi3.to_string());
+    Assertions::assert_equals(30, bi3.size());
+    Assertions::assert_equals("-123456789012345678901234567890"_cs, bi4.to_string());
+    Assertions::assert_equals(30, bi4.size());
 }
 
 void should_fail_to_construct_if_str_invalid() {
-    Assertions::assertThrows("Invalid string", []() {
+    Assertions::assert_throws("Invalid string", []() {
         math::BigInteger bi = nullptr;
     });
 }
 
 void should_fail_to_construct_if_invalid_char_in_str() {
-    Assertions::assertThrows("Invalid character in string", []() {
+    Assertions::assert_throws("Invalid character in string", []() {
         math::BigInteger bi = "123a456";
     });
 }
@@ -72,9 +72,9 @@ void should_judge_odd() {
     bool res3 = bi3.is_odd();
 
     // Then
-    Assertions::assertFalse(res);
-    Assertions::assertTrue(res2);
-    Assertions::assertFalse(res3);
+    Assertions::assert_false(res);
+    Assertions::assert_true(res2);
+    Assertions::assert_false(res3);
 }
 
 void should_left_shift() {
@@ -86,8 +86,8 @@ void should_left_shift() {
     auto res2 = bi.left_shift(0);
 
     // Then
-    Assertions::assertEquals("1234567890123456789012345678900000000000"_cs, res.to_string());
-    Assertions::assertEquals("123456789012345678901234567890"_cs, res2.to_string());
+    Assertions::assert_equals("1234567890123456789012345678900000000000"_cs, res.to_string());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, res2.to_string());
 }
 
 void should_right_shift() {
@@ -102,10 +102,10 @@ void should_right_shift() {
     auto res4 = bi2.right_shift(30);
 
     // Then
-    Assertions::assertEquals("12345678901234567890"_cs, res.to_string());
-    Assertions::assertEquals(math::BigInteger::ZERO, res2);
-    Assertions::assertEquals(math::BigInteger::ZERO, res3);
-    Assertions::assertEquals(math::BigInteger::ZERO, res4);
+    Assertions::assert_equals("12345678901234567890"_cs, res.to_string());
+    Assertions::assert_equals(math::BigInteger::ZERO, res2);
+    Assertions::assert_equals(math::BigInteger::ZERO, res3);
+    Assertions::assert_equals(math::BigInteger::ZERO, res4);
 }
 
 void should_add() {
@@ -117,27 +117,27 @@ void should_add() {
     auto res = bi + bi2;
 
     // Then
-    Assertions::assertEquals("1111111110111111111011111111100"_cs, res.to_string());
+    Assertions::assert_equals("1111111110111111111011111111100"_cs, res.to_string());
 
     // When
     bi2 += bi;
 
     // Then
-    Assertions::assertEquals(res, bi2);
+    Assertions::assert_equals(res, bi2);
 
     // When
     auto res2 = +bi;
 
     // Then
-    Assertions::assertEquals("123456789012345678901234567890"_cs, res2.to_string());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, res2.to_string());
 
     // When
     auto res3 = bi++;
     auto res4 = ++bi;
 
     // Then
-    Assertions::assertEquals("123456789012345678901234567890"_cs, res3.to_string());
-    Assertions::assertEquals("123456789012345678901234567892"_cs, res4.to_string());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, res3.to_string());
+    Assertions::assert_equals("123456789012345678901234567892"_cs, res4.to_string());
 }
 
 void should_subtract() {
@@ -149,27 +149,27 @@ void should_subtract() {
     auto res = bi - bi2;
 
     // Then
-    Assertions::assertEquals("-864197532086419753208641975320"_cs, res.to_string());
+    Assertions::assert_equals("-864197532086419753208641975320"_cs, res.to_string());
 
     // When
     bi2 -= bi;
 
     // Then
-    Assertions::assertEquals("864197532086419753208641975320"_cs, bi2.to_string());
+    Assertions::assert_equals("864197532086419753208641975320"_cs, bi2.to_string());
 
     // When
     auto res2 = -bi;
 
     // Then
-    Assertions::assertEquals("-123456789012345678901234567890"_cs, res2.to_string());
+    Assertions::assert_equals("-123456789012345678901234567890"_cs, res2.to_string());
 
     // When
     auto res3 = bi--;
     auto res4 = --bi;
 
     // Then
-    Assertions::assertEquals("123456789012345678901234567890"_cs, res3.to_string());
-    Assertions::assertEquals("123456789012345678901234567888"_cs, res4.to_string());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, res3.to_string());
+    Assertions::assert_equals("123456789012345678901234567888"_cs, res4.to_string());
 }
 
 void should_multiply() {
@@ -182,8 +182,8 @@ void should_multiply() {
     bi *= bi2;
 
     // Then
-    Assertions::assertEquals("121932631137021795226185032733622923332237463801111263526900"_cs, res.to_string());
-    Assertions::assertEquals(res, bi);
+    Assertions::assert_equals("121932631137021795226185032733622923332237463801111263526900"_cs, res.to_string());
+    Assertions::assert_equals(res, bi);
 }
 
 void should_divide() {
@@ -198,14 +198,14 @@ void should_divide() {
     bi2 /= 2;
 
     // Then
-    Assertions::assertEquals("8"_cs, res.to_string());
-    Assertions::assertEquals("123"_cs, res2.to_string());
-    Assertions::assertEquals(math::BigInteger::ZERO, bi);
-    Assertions::assertEquals("493827160549382716054938271605"_cs, bi2.to_string());
+    Assertions::assert_equals("8"_cs, res.to_string());
+    Assertions::assert_equals("123"_cs, res2.to_string());
+    Assertions::assert_equals(math::BigInteger::ZERO, bi);
+    Assertions::assert_equals("493827160549382716054938271605"_cs, bi2.to_string());
 }
 
 void should_fail_to_divide_if_divide_by_zero() {
-    Assertions::assertThrows("/ by zero", []() {
+    Assertions::assert_throws("/ by zero", []() {
         math::BigInteger(123) / math::BigInteger::ZERO;
     });
 }
@@ -220,8 +220,8 @@ void should_modulus() {
     bi2 %= bi;
 
     // Then
-    Assertions::assertEquals("123456789012345678901234567890"_cs, res.to_string());
-    Assertions::assertEquals("9000000000900000000090"_cs, bi2.to_string());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, res.to_string());
+    Assertions::assert_equals("9000000000900000000090"_cs, bi2.to_string());
 }
 
 void should_power() {
@@ -235,10 +235,10 @@ void should_power() {
     auto res4 = base.pow(0);
 
     // Then
-    Assertions::assertEquals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res.to_string());
-    Assertions::assertEquals(math::BigInteger::ONE, res2);
-    Assertions::assertEquals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res3.to_string());
-    Assertions::assertEquals(math::BigInteger::ONE, res4);
+    Assertions::assert_equals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res.to_string());
+    Assertions::assert_equals(math::BigInteger::ONE, res2);
+    Assertions::assert_equals("822526259969628839104253165869933624624768975718986341753117113191672345101686635234711078432787527087114699126238380568851450669625883238384735536304145587136095844229774592556217075848515269880288897142287955821529180675549369033497201746908666410370342866279796500763077997366010000000000"_cs, res3.to_string());
+    Assertions::assert_equals(math::BigInteger::ONE, res4);
 }
 
 void should_slice() {
@@ -258,14 +258,14 @@ void should_slice() {
     auto res8 = bi2.slice(11);
 
     // Then
-    Assertions::assertEquals("0"_cs, res.to_string());
-    Assertions::assertEquals("1234567890"_cs, res2.to_string());
-    Assertions::assertEquals("123456789012345678901234567890"_cs, res3.to_string());
-    Assertions::assertEquals("12345678901234567890"_cs, res4.to_string());
-    Assertions::assertEquals("0"_cs, res5.to_string());
-    Assertions::assertEquals("-1234567890"_cs, res6.to_string());
-    Assertions::assertEquals("-123456789012345678901234567890"_cs, res7.to_string());
-    Assertions::assertEquals("-12345678901234567890"_cs, res8.to_string());
+    Assertions::assert_equals("0"_cs, res.to_string());
+    Assertions::assert_equals("1234567890"_cs, res2.to_string());
+    Assertions::assert_equals("123456789012345678901234567890"_cs, res3.to_string());
+    Assertions::assert_equals("12345678901234567890"_cs, res4.to_string());
+    Assertions::assert_equals("0"_cs, res5.to_string());
+    Assertions::assert_equals("-1234567890"_cs, res6.to_string());
+    Assertions::assert_equals("-123456789012345678901234567890"_cs, res7.to_string());
+    Assertions::assert_equals("-12345678901234567890"_cs, res8.to_string());
 }
 
 void should_logical() {
@@ -282,12 +282,12 @@ void should_logical() {
     bool res6 = !math::BigInteger::ZERO;
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
-    Assertions::assertTrue(res3);
-    Assertions::assertTrue(res4);
-    Assertions::assertFalse(res5);
-    Assertions::assertTrue(res6);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
+    Assertions::assert_true(res3);
+    Assertions::assert_true(res4);
+    Assertions::assert_false(res5);
+    Assertions::assert_true(res6);
 }
 
 void should_compare() {
@@ -304,12 +304,12 @@ void should_compare() {
     bool res6 = bi != bi2;
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertTrue(res2);
-    Assertions::assertFalse(res3);
-    Assertions::assertFalse(res4);
-    Assertions::assertFalse(res5);
-    Assertions::assertTrue(res6);
+    Assertions::assert_true(res);
+    Assertions::assert_true(res2);
+    Assertions::assert_false(res3);
+    Assertions::assert_false(res4);
+    Assertions::assert_false(res5);
+    Assertions::assert_true(res6);
 }
 
 GROUP_NAME("test_big_integer")

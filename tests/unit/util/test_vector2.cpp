@@ -21,11 +21,11 @@ void it_works() {
     v *= 2;
     v *= 0.5;
 
-    Assertions::assertEquals(math::Vector2{2, 0}, res);
-    Assertions::assertEquals(math::Vector2{0, -2}, res2);
-    Assertions::assertEquals(math::Vector2{2, -2}, res3);
-    Assertions::assertEquals(math::Vector2{2, -2}, res4);
-    Assertions::assertEquals(v, res5);
+    Assertions::assert_equals(math::Vector2{2, 0}, res);
+    Assertions::assert_equals(math::Vector2{0, -2}, res2);
+    Assertions::assert_equals(math::Vector2{2, -2}, res3);
+    Assertions::assert_equals(math::Vector2{2, -2}, res4);
+    Assertions::assert_equals(v, res5);
 }
 
 void should_calc_pa() {
@@ -42,10 +42,10 @@ void should_calc_pa() {
     auto res4 = v4.pa();
 
     // Then
-    Assertions::assertEquals(0, res);
-    Assertions::assertEquals(math::PI / 4, res2);
-    Assertions::assertEquals(math::PI / 2, res3);
-    Assertions::assertEquals(math::PI, res4);
+    Assertions::assert_equals(0, res);
+    Assertions::assert_equals(math::PI / 4, res2);
+    Assertions::assert_equals(math::PI / 2, res3);
+    Assertions::assert_equals(math::PI, res4);
 }
 
 void should_calc_length() {
@@ -58,8 +58,8 @@ void should_calc_length() {
     auto res2 = v2.length();
 
     // Then
-    Assertions::assertEquals(1, res);
-    Assertions::assertEquals(0, res2);
+    Assertions::assert_equals(1, res);
+    Assertions::assert_equals(0, res2);
 }
 
 void should_rotate() {
@@ -71,7 +71,7 @@ void should_rotate() {
     auto res = v.rotate(rad);
 
     // Then
-    Assertions::assertEquals(math::Vector2{0, 1}, res);
+    Assertions::assert_equals(math::Vector2{0, 1}, res);
 }
 
 void should_calc_unit() {
@@ -82,7 +82,7 @@ void should_calc_unit() {
     auto res = v.unit();
 
     // Then
-    Assertions::assertEquals(math::Vector2{1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
+    Assertions::assert_equals(math::Vector2{1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
 }
 
 void should_calc_norm() {
@@ -93,7 +93,7 @@ void should_calc_norm() {
     auto res = v.norm();
 
     // Then
-    Assertions::assertEquals(math::Vector2{-1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
+    Assertions::assert_equals(math::Vector2{-1.0 / sqrt(2), 1.0 / sqrt(2)}, res);
 }
 
 GROUP_NAME("test_vector2")

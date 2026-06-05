@@ -10,24 +10,24 @@ void it_works() {
 
     // When
     auto res = match(v, [](const std::string& s) {
-        Assertions::assertEquals("abc", s);
+        Assertions::assert_equals("abc", s);
         return s; }, [](float d) {
-        Assertions::assertEquals(0.1f, d);
+        Assertions::assert_equals(0.1f, d);
         return std::to_string(d); });
 
     // Then
-    Assertions::assertEquals("0.100000", res);
+    Assertions::assert_equals("0.100000", res);
 
     // When
     v = "abc";
     auto res2 = match(v, [](const std::string& s) {
-        Assertions::assertEquals("abc", s);
+        Assertions::assert_equals("abc", s);
         return s; }, [](float d) {
-        Assertions::assertEquals(0.1f, d);
+        Assertions::assert_equals(0.1f, d);
         return std::to_string(d); });
 
     // Then
-    Assertions::assertEquals("abc", res2);
+    Assertions::assert_equals("abc", res2);
 }
 
 GROUP_NAME("test_match")

@@ -12,7 +12,7 @@ void should_cal_lowbit() {
     auto res = util::lowbit(x);
 
     // Then
-    Assertions::assertEquals(0b10U, res);
+    Assertions::assert_equals(0b10U, res);
 }
 
 void should_cal_lowbit_index() {
@@ -23,7 +23,7 @@ void should_cal_lowbit_index() {
     auto res = util::lowbit_idx(x);
 
     // Then
-    Assertions::assertEquals(1U, res);
+    Assertions::assert_equals(1U, res);
 }
 
 void should_cal_highbit_index() {
@@ -34,7 +34,7 @@ void should_cal_highbit_index() {
     auto res = util::highbit_idx(x);
 
     // Then
-    Assertions::assertEquals(7U, res);
+    Assertions::assert_equals(7U, res);
 }
 
 void should_cal_highbit() {
@@ -45,7 +45,7 @@ void should_cal_highbit() {
     auto res = util::highbit(x);
 
     // Then
-    Assertions::assertEquals(0b10000000U, res);
+    Assertions::assert_equals(0b10000000U, res);
 }
 
 void should_judge_all_one() {
@@ -58,8 +58,8 @@ void should_judge_all_one() {
     auto res2 = util::all_one(x2);
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_judge_only_one() {
@@ -72,8 +72,8 @@ void should_judge_only_one() {
     auto res2 = util::only_one(x2);
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_roundup2() {
@@ -88,9 +88,9 @@ void should_roundup2() {
     auto res3 = util::roundup2(x3);
 
     // Then
-    Assertions::assertEquals(0ULL, res);
-    Assertions::assertEquals(4ULL, res2);
-    Assertions::assertEquals(4ULL, res3);
+    Assertions::assert_equals(0ULL, res);
+    Assertions::assert_equals(4ULL, res2);
+    Assertions::assert_equals(4ULL, res3);
 }
 
 GROUP_NAME("test_binary_utils")

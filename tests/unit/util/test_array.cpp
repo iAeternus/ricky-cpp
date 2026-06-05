@@ -1,4 +1,4 @@
-﻿#include "test_array.hpp"
+#include "test_array.hpp"
 #include "array.hpp"
 #include "ricky_test.hpp"
 
@@ -6,19 +6,19 @@ namespace my::test::test_array {
 
 void it_works() {
     util::Array<CString> arr(5);
-    Assertions::assertFalse(arr.empty());
+    Assertions::assert_false(arr.empty());
 
     arr[0] = "aaa", arr[1] = "bbb", arr[2] = "ccc";
-    Assertions::assertEquals(5, arr.len());
-    Assertions::assertEquals("[aaa,bbb,ccc,,]"_cs, arr.to_string());
+    Assertions::assert_equals(5, arr.len());
+    Assertions::assert_equals("[aaa,bbb,ccc,,]"_cs, arr.to_string());
 
     arr.resize(2);
-    Assertions::assertEquals(2, arr.len());
-    Assertions::assertEquals("[,]"_cs, arr.to_string());
+    Assertions::assert_equals(2, arr.len());
+    Assertions::assert_equals("[,]"_cs, arr.to_string());
 
     arr.resize(0);
-    Assertions::assertTrue(arr.empty());
-    Assertions::assertEquals("[]"_cs, arr.to_string());
+    Assertions::assert_true(arr.empty());
+    Assertions::assert_equals("[]"_cs, arr.to_string());
 }
 
 void should_at() {
@@ -29,13 +29,13 @@ void should_at() {
     auto res = arr.at(0);
 
     // Then
-    Assertions::assertEquals('a', res);
+    Assertions::assert_equals('a', res);
 
     // When
     arr.at(0) = arr.at(1);
 
     // Then
-    Assertions::assertEquals("[b,b,c]"_cs, arr.to_string());
+    Assertions::assert_equals("[b,b,c]"_cs, arr.to_string());
 }
 
 GROUP_NAME("test_array")

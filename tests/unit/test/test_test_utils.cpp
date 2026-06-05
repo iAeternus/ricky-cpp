@@ -20,8 +20,8 @@ void should_failed() {
 }
 
 void should_throws() {
-    Assertions::assertThrows("wa"_cs, should_failed);
-    Assertions::assertThrows("This is an IO exception message.", []() {
+    Assertions::assert_throws("wa"_cs, should_failed);
+    Assertions::assert_throws("This is an IO exception message.", []() {
         throw io_exception("This is an {} message.", "IO exception");
     });
 }

@@ -1,4 +1,4 @@
-﻿#include "test_disjoint_set.hpp"
+#include "test_disjoint_set.hpp"
 #include "disjoint_set.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -24,9 +24,9 @@ void should_merge_and_find() {
     ds.merge(1, 5);
     io::println(ds.to_string());
 
-    Assertions::assertTrue(ds.same_group(1, 5));
-    Assertions::assertTrue(ds.same_group(1, 6));
-    Assertions::assertFalse(ds.same_group(1, 8));
+    Assertions::assert_true(ds.same_group(1, 5));
+    Assertions::assert_true(ds.same_group(1, 6));
+    Assertions::assert_false(ds.same_group(1, 8));
 
     for (usize i = 1; i <= 10; ++i) {
         io::print(ds.rank(i));

@@ -15,10 +15,10 @@ void should_cal_gcd() {
     i32 res4 = math::gcd(a, math::gcd(b, c));
 
     // Then
-    Assertions::assertEquals(2, res);
-    Assertions::assertEquals(1, res2);
-    Assertions::assertEquals(2, res3);
-    Assertions::assertEquals(1, res4);
+    Assertions::assert_equals(2, res);
+    Assertions::assert_equals(1, res2);
+    Assertions::assert_equals(2, res3);
+    Assertions::assert_equals(1, res4);
 }
 
 void should_cal_lcm() {
@@ -32,10 +32,10 @@ void should_cal_lcm() {
     i32 res4 = math::lcm(a, math::lcm(b, c));
 
     // Then
-    Assertions::assertEquals(4, res);
-    Assertions::assertEquals(10, res2);
-    Assertions::assertEquals(2, res3);
-    Assertions::assertEquals(20, res4);
+    Assertions::assert_equals(4, res);
+    Assertions::assert_equals(10, res2);
+    Assertions::assert_equals(2, res3);
+    Assertions::assert_equals(20, res4);
 }
 
 void should_judge_is_prime() {
@@ -49,10 +49,10 @@ void should_judge_is_prime() {
     bool res4 = math::isprime(d);
 
     // Then
-    Assertions::assertFalse(res);
-    Assertions::assertTrue(res2);
-    Assertions::assertTrue(res3);
-    Assertions::assertFalse(res4);
+    Assertions::assert_false(res);
+    Assertions::assert_true(res2);
+    Assertions::assert_true(res3);
+    Assertions::assert_false(res4);
 }
 
 void should_cal_pow() {
@@ -64,8 +64,8 @@ void should_cal_pow() {
     i32 res2 = math::pow_mod(a, n2);
 
     // Then
-    Assertions::assertEquals(1024, res);
-    Assertions::assertEquals(1, res2);
+    Assertions::assert_equals(1024, res);
+    Assertions::assert_equals(1, res2);
 }
 
 void should_compare() {
@@ -84,11 +84,11 @@ void should_compare() {
     i32 res5 = math::fcmp(a, f);
 
     // Then
-    Assertions::assertEquals(0, res);
-    Assertions::assertEquals(-1, res2);
-    Assertions::assertEquals(1, res3);
-    Assertions::assertEquals(0, res4);
-    Assertions::assertEquals(0, res5);
+    Assertions::assert_equals(0, res);
+    Assertions::assert_equals(-1, res2);
+    Assertions::assert_equals(1, res3);
+    Assertions::assert_equals(0, res4);
+    Assertions::assert_equals(0, res5);
 }
 
 GROUP_NAME("test_math_utils")

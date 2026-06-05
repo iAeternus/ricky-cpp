@@ -260,7 +260,7 @@ void test_exception_safety() {
 
     try {
         alloc.construct_n(p, N);
-        Assertions::fail2("Expected exception not thrown");
+        Assertions::fail("Expected exception not thrown");
     } catch (const std::runtime_error&) {
         Assertions::assert_equals(2, ThrowingConstructor::constructed);
         Assertions::assert_equals(0, ThrowingConstructor::alive);
@@ -313,7 +313,7 @@ void test_list_integration() {
     // 验证元素
     i32 i = 0;
     for (const auto& val : lst) {
-        Assertions::assertEquals(i * 1.5, val); // TODO 为 assert_equals 增加浮点支持
+        Assertions::assert_equals(i * 1.5, val); // TODO 为 assert_equals 增加浮点支持
         ++i;
     }
 }

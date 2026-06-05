@@ -18,10 +18,10 @@ void should_construct() {
     auto res4 = bd4.to_string();
 
     // Then
-    Assertions::assertEquals("0.123456789012345678901234567890"_cs, res);
-    Assertions::assertEquals("-100.123456789012345678901234567890"_cs, res2);
-    Assertions::assertEquals("0"_cs, res3);
-    Assertions::assertEquals("-3"_cs, res4);
+    Assertions::assert_equals("0.123456789012345678901234567890"_cs, res);
+    Assertions::assert_equals("-100.123456789012345678901234567890"_cs, res2);
+    Assertions::assert_equals("0"_cs, res3);
+    Assertions::assert_equals("-3"_cs, res4);
 }
 
 void test_abs() {
@@ -34,8 +34,8 @@ void test_abs() {
     auto res2 = bd2.abs();
 
     // Then
-    Assertions::assertEquals("3.14159265358979"_cs, res.to_string());
-    Assertions::assertEquals("0"_cs, res2.to_string());
+    Assertions::assert_equals("3.14159265358979"_cs, res.to_string());
+    Assertions::assert_equals("0"_cs, res2.to_string());
 }
 
 void test_add() {
@@ -48,8 +48,8 @@ void test_add() {
     bd += bd2;
 
     // Then
-    Assertions::assertEquals("103.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170779"_cs, res.to_string());
-    Assertions::assertEquals(res, bd);
+    Assertions::assert_equals("103.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170779"_cs, res.to_string());
+    Assertions::assert_equals(res, bd);
 }
 
 void test_sub() {
@@ -62,8 +62,8 @@ void test_sub() {
     bd -= bd2;
 
     // Then
-    Assertions::assertEquals("-96.8584073464102067615373566167204971158028306006248941790250554076921835937137910013719651746578829421"_cs, res.to_string());
-    Assertions::assertEquals(res, bd);
+    Assertions::assert_equals("-96.8584073464102067615373566167204971158028306006248941790250554076921835937137910013719651746578829421"_cs, res.to_string());
+    Assertions::assert_equals(res, bd);
 }
 
 void test_mul() {
@@ -78,9 +78,9 @@ void test_mul() {
     bd *= bd2;
 
     // Then
-    Assertions::assertEquals("0.031415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"_cs, res.to_string());
-    Assertions::assertEquals("31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"_cs, res2.to_string());
-    Assertions::assertEquals(res, bd);
+    Assertions::assert_equals("0.031415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679"_cs, res.to_string());
+    Assertions::assert_equals("31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"_cs, res2.to_string());
+    Assertions::assert_equals(res, bd);
 }
 
 void test_div() {
@@ -97,10 +97,10 @@ void test_div() {
     auto res4 = math::BigDecimal::ONE / bd4.scale(16, math::RoundingMode::HALF_UP);
 
     // Then
-    Assertions::assertEquals("-1.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"_cs, res.to_string());
-    Assertions::assertEquals("15.7079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853395"_cs, res2.to_string());
-    Assertions::assertEquals("15.70"_cs, res3.to_string());
-    Assertions::assertEquals("0.1666666666666667"_cs, res4.to_string());
+    Assertions::assert_equals("-1.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"_cs, res.to_string());
+    Assertions::assert_equals("15.7079632679489661923132169163975144209858469968755291048747229615390820314310449931401741267105853395"_cs, res2.to_string());
+    Assertions::assert_equals("15.70"_cs, res3.to_string());
+    Assertions::assert_equals("0.1666666666666667"_cs, res4.to_string());
 }
 
 void test_scale() {
@@ -108,31 +108,31 @@ void test_scale() {
     math::BigDecimal bd("123.456789");
 
     // When & Then
-    Assertions::assertEquals("123.456789000"_cs, bd.scale(9, math::RoundingMode::HALF_UP).to_string());
-    Assertions::assertEquals("123.457"_cs, bd.scale(3, math::RoundingMode::HALF_UP).to_string());
-    Assertions::assertEquals("123.456"_cs, bd.scale(3, math::RoundingMode::DOWN).to_string());
-    Assertions::assertEquals("123"_cs, bd.scale(0, math::RoundingMode::HALF_UP).to_string());
-    Assertions::assertEquals("123"_cs, bd.scale(0, math::RoundingMode::DOWN).to_string());
+    Assertions::assert_equals("123.456789000"_cs, bd.scale(9, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123.457"_cs, bd.scale(3, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123.456"_cs, bd.scale(3, math::RoundingMode::DOWN).to_string());
+    Assertions::assert_equals("123"_cs, bd.scale(0, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123"_cs, bd.scale(0, math::RoundingMode::DOWN).to_string());
 }
 
 void test_round() {
     math::BigDecimal bd("123.456789");
 
     // 测试有效数字舍入
-    Assertions::assertEquals("123.000000"_cs, bd.round(3, math::RoundingMode::HALF_UP).to_string());
-    Assertions::assertEquals("123.500000"_cs, bd.round(4, math::RoundingMode::HALF_UP).to_string());
-    Assertions::assertEquals("123.460000"_cs, bd.round(5, math::RoundingMode::HALF_UP).to_string());
-    Assertions::assertEquals("123.457000"_cs, bd.round(6, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123.000000"_cs, bd.round(3, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123.500000"_cs, bd.round(4, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123.460000"_cs, bd.round(5, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("123.457000"_cs, bd.round(6, math::RoundingMode::HALF_UP).to_string());
 
     // 说明
     math::BigDecimal bd2("0.5");
-    Assertions::assertEquals("0.5"_cs, bd2.round(1, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("0.5"_cs, bd2.round(1, math::RoundingMode::HALF_UP).to_string());
 
     math::BigDecimal bd3("-0.5");
-    Assertions::assertEquals("-0.5"_cs, bd3.round(1, math::RoundingMode::HALF_UP).to_string());
+    Assertions::assert_equals("-0.5"_cs, bd3.round(1, math::RoundingMode::HALF_UP).to_string());
 
     math::BigDecimal bd4("999.9");
-    Assertions::assertEquals("1000.0"_cs, bd4.round(3, math::RoundingMode::HALF_UP).to_string()); // TODO 1.00E+3
+    Assertions::assert_equals("1000.0"_cs, bd4.round(3, math::RoundingMode::HALF_UP).to_string()); // TODO 1.00E+3
 }
 
 void test_rounding_mode() {
@@ -145,15 +145,15 @@ void test_move_point() {
     math::BigDecimal bd("123.456789");
 
     // When & Then
-    Assertions::assertEquals("12345.6789"_cs, bd.move_point_right(2).to_string());
-    Assertions::assertEquals("1.23456789"_cs, bd.move_point_left(2).to_string());
-    Assertions::assertEquals("123456789"_cs, bd.move_point_right(6).to_string());
-    Assertions::assertEquals("0.123456789"_cs, bd.move_point_left(3).to_string());
+    Assertions::assert_equals("12345.6789"_cs, bd.move_point_right(2).to_string());
+    Assertions::assert_equals("1.23456789"_cs, bd.move_point_left(2).to_string());
+    Assertions::assert_equals("123456789"_cs, bd.move_point_right(6).to_string());
+    Assertions::assert_equals("0.123456789"_cs, bd.move_point_left(3).to_string());
 
     // 测试负数
     math::BigDecimal neg_bd("-123.456789");
-    Assertions::assertEquals("-12345.6789"_cs, neg_bd.move_point_right(2).to_string());
-    Assertions::assertEquals("-0.123456789"_cs, neg_bd.move_point_left(3).to_string());
+    Assertions::assert_equals("-12345.6789"_cs, neg_bd.move_point_right(2).to_string());
+    Assertions::assert_equals("-0.123456789"_cs, neg_bd.move_point_left(3).to_string());
 }
 
 void test_strip_trailing_zeros() {
@@ -164,10 +164,10 @@ void test_strip_trailing_zeros() {
     math::BigDecimal bd4("0.0");
 
     // When & Then
-    Assertions::assertEquals("123.456"_cs, bd.strip_trailing_zeros().to_string());
-    Assertions::assertEquals("123"_cs, bd2.strip_trailing_zeros().to_string());
-    Assertions::assertEquals("123"_cs, bd3.strip_trailing_zeros().to_string());
-    Assertions::assertEquals("0"_cs, bd4.strip_trailing_zeros().to_string());
+    Assertions::assert_equals("123.456"_cs, bd.strip_trailing_zeros().to_string());
+    Assertions::assert_equals("123"_cs, bd2.strip_trailing_zeros().to_string());
+    Assertions::assert_equals("123"_cs, bd3.strip_trailing_zeros().to_string());
+    Assertions::assert_equals("0"_cs, bd4.strip_trailing_zeros().to_string());
 }
 
 void test_sqrt() {
@@ -177,15 +177,15 @@ void test_sqrt() {
     math::BigDecimal bd3("100");
 
     // When & Then
-    Assertions::assertEquals("1.4142135624"_cs, bd.sqrt(10).to_string());
-    Assertions::assertEquals("0.5"_cs, bd2.sqrt(1).to_string());
-    Assertions::assertEquals("10"_cs, bd3.sqrt(0).to_string());
+    Assertions::assert_equals("1.4142135624"_cs, bd.sqrt(10).to_string());
+    Assertions::assert_equals("0.5"_cs, bd2.sqrt(1).to_string());
+    Assertions::assert_equals("10"_cs, bd3.sqrt(0).to_string());
 
     // 测试精度控制
-    Assertions::assertEquals("1.41421356237309504880"_cs, bd.sqrt(20).to_string());
+    Assertions::assert_equals("1.41421356237309504880"_cs, bd.sqrt(20).to_string());
 
     // 测试负数
-    Assertions::assertThrows("Cannot calculate square root of negative number", []() {
+    Assertions::assert_throws("Cannot calculate square root of negative number", []() {
         math::BigDecimal(-1).sqrt();
     });
 }
@@ -197,9 +197,9 @@ void test_precision() {
     math::BigDecimal bd3("100.00");
 
     // When & Then
-    Assertions::assertEquals(9u, bd.precision());
-    Assertions::assertEquals(9u, bd2.precision());
-    Assertions::assertEquals(3u, bd3.precision());
+    Assertions::assert_equals(9u, bd.precision());
+    Assertions::assert_equals(9u, bd2.precision());
+    Assertions::assert_equals(3u, bd3.precision());
 }
 
 GROUP_NAME("test_big_decimal")

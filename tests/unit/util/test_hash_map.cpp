@@ -15,16 +15,16 @@ void should_insert() {
     d.insert("ccc"_cs, 2);
 
     // Then
-    Assertions::assertEquals(3ULL, d.size());
-    Assertions::assertTrue(d.contains("aaa"_cs));
-    Assertions::assertFalse(d.contains("ddd"_cs));
+    Assertions::assert_equals(3ULL, d.size());
+    Assertions::assert_true(d.contains("aaa"_cs));
+    Assertions::assert_false(d.contains("ddd"_cs));
 
     // When
     d.insert("ccc"_cs, 0);
 
     // Then
-    Assertions::assertEquals(3ULL, d.size());
-    Assertions::assertEquals(0, d.get("ccc"_cs));
+    Assertions::assert_equals(3ULL, d.size());
+    Assertions::assert_equals(0, d.get("ccc"_cs));
 }
 
 void should_get_or_default() {
@@ -37,9 +37,9 @@ void should_get_or_default() {
     auto& res3 = d.get_or_default(6, 0); // TODO [should_get_or_default] Test failed! Exception: Assertion Failed: Expected 0, but got 1998353488
 
     // Then
-    Assertions::assertEquals(1, res1);
-    Assertions::assertEquals(1, res2);
-    Assertions::assertEquals(0, res3);
+    Assertions::assert_equals(1, res1);
+    Assertions::assert_equals(1, res2);
+    Assertions::assert_equals(0, res3);
 }
 
 void should_fail_to_get_if_key_not_found() {
@@ -47,7 +47,7 @@ void should_fail_to_get_if_key_not_found() {
     util::HashMap<i32, i32> d = {{1, 1}, {2, 1}, {3, 1}, {4, 1}, {5, 1}};
 
     // When & Then
-    Assertions::assertThrows("key '6' not found in hash_map", [d]() {
+    Assertions::assert_throws("key '6' not found in hash_map", [d]() {
         d.get(6);
     });
 }
@@ -60,13 +60,13 @@ void should_set_default() {
     d.set_default(1, 1);
 
     // Then
-    Assertions::assertEquals(1, d.get(1));
+    Assertions::assert_equals(1, d.get(1));
 
     // When
     d.set_default(1, 2);
 
     // Then
-    Assertions::assertEquals(1, d.get(1));
+    Assertions::assert_equals(1, d.get(1));
 }
 
 void should_update() {
@@ -77,7 +77,7 @@ void should_update() {
     d.update({{4, 1}, {5, 1}});
 
     // Then
-    Assertions::assertEquals(5ULL, d.size());
+    Assertions::assert_equals(5ULL, d.size());
 }
 
 void should_remove() {
@@ -88,8 +88,8 @@ void should_remove() {
     d.remove(1);
 
     // Then
-    Assertions::assertEquals(2ULL, d.size());
-    Assertions::assertFalse(d.contains(1));
+    Assertions::assert_equals(2ULL, d.size());
+    Assertions::assert_false(d.contains(1));
 }
 
 void should_operator() {
@@ -104,10 +104,10 @@ void should_operator() {
     auto res4 = d - d2; // 差集
 
     // Then
-    Assertions::assertEquals(2, i32(res.size()));
-    Assertions::assertEquals(8, i32(res2.size()));
-    Assertions::assertEquals(6, i32(res3.size()));
-    Assertions::assertEquals(3, i32(res4.size()));
+    Assertions::assert_equals(2, i32(res.size()));
+    Assertions::assert_equals(8, i32(res2.size()));
+    Assertions::assert_equals(6, i32(res3.size()));
+    Assertions::assert_equals(3, i32(res4.size()));
 }
 
 void should_to_string() {
@@ -123,8 +123,8 @@ void should_to_string() {
     CString s2 = d2.to_string();
 
     // Then
-    Assertions::assertEquals("{1:1,2:1,3:1}"_cs, s);
-    Assertions::assertEquals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
+    Assertions::assert_equals("{1:1,2:1,3:1}"_cs, s);
+    Assertions::assert_equals("{\"aaa\":1,\"bbb\":3,\"ccc\":2}"_cs, s2);
 }
 
 GROUP_NAME("test_hash_map")

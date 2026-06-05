@@ -1,4 +1,4 @@
-﻿#include "test_duration.hpp"
+#include "test_duration.hpp"
 #include "duration.hpp"
 #include "ricky_test.hpp"
 
@@ -14,20 +14,20 @@ void should_construct() {
     auto d7 = util::Duration::ZERO;
     auto d8 = util::Duration::ofDays(2);
 
-    Assertions::assertEquals(4, d.toDays());
-    Assertions::assertEquals(96, d.toHours());
-    Assertions::assertEquals(5760, d.toMinutes());
-    Assertions::assertEquals(345600, d.getSeconds());
-    Assertions::assertEquals(0, d.getNanos());
+    Assertions::assert_equals(4, d.toDays());
+    Assertions::assert_equals(96, d.toHours());
+    Assertions::assert_equals(5760, d.toMinutes());
+    Assertions::assert_equals(345600, d.getSeconds());
+    Assertions::assert_equals(0, d.getNanos());
 
-    Assertions::assertEquals("PT4D"_cs, d.to_string());
-    Assertions::assertEquals("PT4H"_cs, d2.to_string());
-    Assertions::assertEquals("PT4M"_cs, d3.to_string());
-    Assertions::assertEquals("PT4S"_cs, d4.to_string());
-    Assertions::assertEquals("PT0.004000000S"_cs, d5.to_string());
-    Assertions::assertEquals("PT0.000000004S"_cs, d6.to_string());
-    Assertions::assertEquals("PT0.0S"_cs, d7.to_string());
-    Assertions::assertEquals("PT2D1H1S"_cs, (d8 + util::Duration::ofSeconds(3601)).to_string());
+    Assertions::assert_equals("PT4D"_cs, d.to_string());
+    Assertions::assert_equals("PT4H"_cs, d2.to_string());
+    Assertions::assert_equals("PT4M"_cs, d3.to_string());
+    Assertions::assert_equals("PT4S"_cs, d4.to_string());
+    Assertions::assert_equals("PT0.004000000S"_cs, d5.to_string());
+    Assertions::assert_equals("PT0.000000004S"_cs, d6.to_string());
+    Assertions::assert_equals("PT0.0S"_cs, d7.to_string());
+    Assertions::assert_equals("PT2D1H1S"_cs, (d8 + util::Duration::ofSeconds(3601)).to_string());
 }
 
 void should_add() {
@@ -39,7 +39,7 @@ void should_add() {
     auto res = d + d2;
 
     // Then
-    Assertions::assertEquals(49, res.toHours());
+    Assertions::assert_equals(49, res.toHours());
 }
 
 void should_subtract() {
@@ -51,7 +51,7 @@ void should_subtract() {
     auto res = d - d2;
 
     // Then
-    Assertions::assertEquals(1, res.toHours());
+    Assertions::assert_equals(1, res.toHours());
 }
 
 void should_multiply() {
@@ -63,7 +63,7 @@ void should_multiply() {
     auto res = d * scalar;
 
     // Then
-    Assertions::assertEquals(30, res.toMinutes());
+    Assertions::assert_equals(30, res.toMinutes());
 }
 
 GROUP_NAME("test_duration")

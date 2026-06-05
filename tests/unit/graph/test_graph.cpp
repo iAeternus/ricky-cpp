@@ -28,11 +28,11 @@ void should_create_graph() {
     g.add_edge(5, 6, 20);
 
     // Then
-    Assertions::assertTrue(g.is_directed());
-    Assertions::assertEquals(6, g.node_cnt());
-    Assertions::assertEquals(10, g.edge_cnt());
-    Assertions::assertEquals(2, g.edge_cnt(1));
-    Assertions::assertEquals(npos, g.edge_cnt(7));
+    Assertions::assert_true(g.is_directed());
+    Assertions::assert_equals(6, g.node_cnt());
+    Assertions::assert_equals(10, g.edge_cnt());
+    Assertions::assert_equals(2, g.edge_cnt(1));
+    Assertions::assert_equals(npos, g.edge_cnt(7));
     io::println(g);
 }
 
@@ -43,7 +43,7 @@ void should_fail_to_add_edge_if_node_not_found() {
     g.add_node(1);
 
     // When & Then
-    Assertions::assertThrows("node from[1] or to[2] does not exist.", [&]() {
+    Assertions::assert_throws("node from[1] or to[2] does not exist.", [&]() {
         g.add_edge(1, 2);
     });
 }
@@ -78,7 +78,7 @@ void should_register() {
     auto res = g.call_algo<usize>("edge_cnt");
 
     // Then
-    Assertions::assertEquals(10ULL, res);
+    Assertions::assert_equals(10ULL, res);
 }
 
 void should_fail_to_call_algo_if_algorithm_is_not_found() {
@@ -87,7 +87,7 @@ void should_fail_to_call_algo_if_algorithm_is_not_found() {
     g.register_algo("noop", [](const auto&, auto&&) {});
 
     // When & Then
-    Assertions::assertThrows("algorithm[dij] not found.", [&g]() {
+    Assertions::assert_throws("algorithm[dij] not found.", [&g]() {
         g.call_algo("dij", 1, 100);
     });
 }

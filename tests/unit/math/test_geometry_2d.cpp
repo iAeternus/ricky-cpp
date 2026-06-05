@@ -13,7 +13,7 @@ void should_calc_dot() {
     auto res = math::dot(a, b);
 
     // Then
-    Assertions::assertEquals(0, res);
+    Assertions::assert_equals(0, res);
 }
 
 void should_calc_the_cos_of_vec() {
@@ -25,7 +25,7 @@ void should_calc_the_cos_of_vec() {
     auto res = math::cos(a, b);
 
     // Then
-    Assertions::assertEquals(1.0 / sqrt(2), res);
+    Assertions::assert_equals(1.0 / sqrt(2), res);
 }
 
 void should_calc_the_angle_between_two_vectors() {
@@ -36,7 +36,7 @@ void should_calc_the_angle_between_two_vectors() {
     auto res = math::angle(a, b);
 
     // Then
-    Assertions::assertEquals(math::PI / 2, res);
+    Assertions::assert_equals(math::PI / 2, res);
 }
 
 void should_calc_cross() {
@@ -47,7 +47,7 @@ void should_calc_cross() {
     auto res = math::cross(a, b);
 
     // Then
-    Assertions::assertEquals(1, res);
+    Assertions::assert_equals(1, res);
 }
 
 void should_calc_area_of_triangle() {
@@ -58,7 +58,7 @@ void should_calc_area_of_triangle() {
     auto res = math::area(a, b, c);
 
     // Then
-    Assertions::assertEquals(0.5, res);
+    Assertions::assert_equals(0.5, res);
 }
 
 void should_calc_line_intersection() {
@@ -70,7 +70,7 @@ void should_calc_line_intersection() {
     auto res = math::line_intersection(a, b);
 
     // Then
-    Assertions::assertEquals(math::Point2{1, 1}, res);
+    Assertions::assert_equals(math::Point2{1, 1}, res);
 }
 
 void should_calc_distance() {
@@ -81,7 +81,7 @@ void should_calc_distance() {
     auto res = math::distance(p, a, b);
 
     // Then
-    Assertions::assertEquals(1, res);
+    Assertions::assert_equals(1, res);
 }
 
 void should_calc_distance_to_seg() {
@@ -95,9 +95,9 @@ void should_calc_distance_to_seg() {
     auto res3 = math::distance_to_seg(p3, a, b);
 
     // Then
-    Assertions::assertEquals(1, res);
-    Assertions::assertEquals(std::sqrt(2), res2);
-    Assertions::assertEquals(std::sqrt(2), res3);
+    Assertions::assert_equals(1, res);
+    Assertions::assert_equals(std::sqrt(2), res2);
+    Assertions::assert_equals(std::sqrt(2), res3);
 }
 
 void should_calc_projection() {
@@ -110,8 +110,8 @@ void should_calc_projection() {
     auto res2 = math::projection(p2, a, b);
 
     // Then
-    Assertions::assertEquals(math::Point2{1, 2}, res);
-    Assertions::assertEquals(math::Point2{1, -1}, res2);
+    Assertions::assert_equals(math::Point2{1, 2}, res);
+    Assertions::assert_equals(math::Point2{1, -1}, res2);
 }
 
 GROUP_NAME("test_geometry_2d")

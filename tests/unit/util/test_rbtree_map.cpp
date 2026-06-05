@@ -23,7 +23,7 @@ void it_works() {
 
 void it_works2() {
     util::RBTreeMap<util::String, i32> t = {{"hello", 1}, {"world", 1}, {"你好", 2}, {"世界", 2}};
-    Assertions::assertEquals("{hello:1,world:1,世界:2,你好:2}"_cs, t.to_string()); // TODO String前置声明，to_string
+    Assertions::assert_equals("{hello:1,world:1,世界:2,你好:2}"_cs, t.to_string()); // TODO String前置声明，to_string
 }
 
 void should_insert() {
@@ -33,9 +33,9 @@ void should_insert() {
     i32 idx = 1;
 
     // Then
-    Assertions::assertEquals("{}"_cs, t.to_string());
-    Assertions::assertEquals(0, t.size());
-    Assertions::assertTrue(t.empty());
+    Assertions::assert_equals("{}"_cs, t.to_string());
+    Assertions::assert_equals(0, t.size());
+    Assertions::assert_true(t.empty());
 
     // When
     for (const auto& key : keys) {
@@ -43,9 +43,9 @@ void should_insert() {
     }
 
     // Then
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
-    Assertions::assertEquals(11, t.size());
-    Assertions::assertFalse(t.empty());
+    Assertions::assert_equals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
+    Assertions::assert_equals(11, t.size());
+    Assertions::assert_false(t.empty());
 }
 
 void should_insert_rev() {
@@ -60,9 +60,9 @@ void should_insert_rev() {
     }
 
     // Then
-    Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t.to_string());
-    Assertions::assertEquals(11, t.size());
-    Assertions::assertFalse(t.empty());
+    Assertions::assert_equals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t.to_string());
+    Assertions::assert_equals(11, t.size());
+    Assertions::assert_false(t.empty());
 }
 
 void should_construct_by_initializer_list() {
@@ -71,13 +71,13 @@ void should_construct_by_initializer_list() {
     util::RBTreeMap<i32, i32, std::greater<>> t2 = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
 
     // When & Then
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
-    Assertions::assertEquals(11, t.size());
-    Assertions::assertFalse(t.empty());
+    Assertions::assert_equals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
+    Assertions::assert_equals(11, t.size());
+    Assertions::assert_false(t.empty());
 
-    Assertions::assertEquals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t2.to_string());
-    Assertions::assertEquals(11, t2.size());
-    Assertions::assertFalse(t2.empty());
+    Assertions::assert_equals("{34:4,27:5,25:11,23:3,18:2,17:1,15:6,9:7,8:9,6:8,5:10}"_cs, t2.to_string());
+    Assertions::assert_equals(11, t2.size());
+    Assertions::assert_false(t2.empty());
 }
 
 void should_clone() {
@@ -91,9 +91,9 @@ void should_clone() {
     res2 = t;
 
     // Then
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res.to_string());
-    Assertions::assertEquals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res2.to_string());
+    Assertions::assert_equals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, t.to_string());
+    Assertions::assert_equals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res.to_string());
+    Assertions::assert_equals("{5:10,6:8,8:9,9:7,15:6,17:1,18:2,23:3,25:11,27:5,34:4}"_cs, res2.to_string());
 }
 
 void should_for_each() {
@@ -111,8 +111,8 @@ void should_for_each() {
     });
 
     // Then
-    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, res.to_string());
-    Assertions::assertEquals("[34,27,25,23,18,17,15,9,8,6,5]"_cs, res2.to_string());
+    Assertions::assert_equals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, res.to_string());
+    Assertions::assert_equals("[34,27,25,23,18,17,15,9,8,6,5]"_cs, res2.to_string());
 }
 
 void should_get() {
@@ -125,9 +125,9 @@ void should_get() {
     auto res3 = t.get(34);
 
     // Then
-    Assertions::assertEquals(6, res);
-    Assertions::assertEquals(8, res2);
-    Assertions::assertEquals(4, res3);
+    Assertions::assert_equals(6, res);
+    Assertions::assert_equals(8, res2);
+    Assertions::assert_equals(4, res3);
 }
 
 void should_fail_to_get_if_key_not_found() {
@@ -135,11 +135,11 @@ void should_fail_to_get_if_key_not_found() {
     util::RBTreeMap<i32, i32> t = {{17, 1}, {18, 2}, {23, 3}, {34, 4}, {27, 5}, {15, 6}, {9, 7}, {6, 8}, {8, 9}, {5, 10}, {25, 11}};
 
     // When & Then
-    Assertions::assertThrows("key '99' not found in red-black-tree", [&]() {
+    Assertions::assert_throws("key '99' not found in red-black-tree", [&]() {
         t.get(99);
     });
 
-    Assertions::assertThrows("key '0' not found in red-black-tree", [&]() {
+    Assertions::assert_throws("key '0' not found in red-black-tree", [&]() {
         t.get(0);
     });
 }
@@ -153,8 +153,8 @@ void should_get_or_default() {
     auto res2 = t.get_or_default(99, 10);
 
     // Then
-    Assertions::assertEquals(6, res);
-    Assertions::assertEquals(10, res2);
+    Assertions::assert_equals(6, res);
+    Assertions::assert_equals(10, res2);
 }
 
 void should_count() {
@@ -168,7 +168,7 @@ void should_count() {
     }
 
     // Then
-    Assertions::assertEquals("{1:3,2:2,3:1,4:4}"_cs, t.to_string());
+    Assertions::assert_equals("{1:3,2:2,3:1,4:4}"_cs, t.to_string());
 }
 
 void should_set_default() {
@@ -179,8 +179,8 @@ void should_set_default() {
     t.set_default(17, 0).set_default(99, 0);
 
     // Then
-    Assertions::assertEquals(1, t[17]);
-    Assertions::assertEquals(0, t[99]);
+    Assertions::assert_equals(1, t[17]);
+    Assertions::assert_equals(0, t[99]);
 }
 
 void should_remove() {
@@ -196,8 +196,8 @@ void should_remove() {
     }
 
     // Then
-    Assertions::assertEquals(0, t.size());
-    Assertions::assertTrue(t.empty());
+    Assertions::assert_equals(0, t.size());
+    Assertions::assert_true(t.empty());
 }
 
 void should_iterable() {
@@ -212,8 +212,8 @@ void should_iterable() {
     }
 
     // Then
-    Assertions::assertEquals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, keys.to_string());
-    Assertions::assertEquals("[10,8,9,7,6,1,2,3,11,5,4]"_cs, values.to_string());
+    Assertions::assert_equals("[5,6,8,9,15,17,18,23,25,27,34]"_cs, keys.to_string());
+    Assertions::assert_equals("[10,8,9,7,6,1,2,3,11,5,4]"_cs, values.to_string());
 }
 
 void should_operator() {
@@ -228,10 +228,10 @@ void should_operator() {
     auto res4 = t - t2; // 说明
 
     // Then
-    Assertions::assertEquals(2, i32(res.size()));
-    Assertions::assertEquals(8, i32(res2.size()));
-    Assertions::assertEquals(6, i32(res3.size()));
-    Assertions::assertEquals(3, i32(res4.size()));
+    Assertions::assert_equals(2, i32(res.size()));
+    Assertions::assert_equals(8, i32(res2.size()));
+    Assertions::assert_equals(6, i32(res3.size()));
+    Assertions::assert_equals(3, i32(res4.size()));
 }
 
 void should_cmp() {
@@ -248,10 +248,10 @@ void should_cmp() {
     auto res4 = t3.cmp(t4);
 
     // Then
-    Assertions::assertEquals(0, res);
-    Assertions::assertEquals(1, res2);
-    Assertions::assertEquals(-1, res3);
-    Assertions::assertEquals(TYPE_MAX(cmp_t), res4);
+    Assertions::assert_equals(0, res);
+    Assertions::assert_equals(1, res2);
+    Assertions::assert_equals(-1, res3);
+    Assertions::assert_equals(TYPE_MAX(cmp_t), res4);
 }
 
 void should_equals() {
@@ -265,8 +265,8 @@ void should_equals() {
     auto res2 = t.eq(t3);
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 GROUP_NAME("test_rbtree_map")

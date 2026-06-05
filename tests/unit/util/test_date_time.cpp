@@ -1,4 +1,4 @@
-﻿#include "test_date_time.hpp"
+#include "test_date_time.hpp"
 #include "date_time.hpp"
 #include "printer.hpp"
 #include "ricky_test.hpp"
@@ -9,15 +9,15 @@ void should_construct() {
     auto dt = util::DateTime::of(2025, 2, 5, 20, 20, 20, 20);
     auto dt2 = util::DateTime::of(util::Date::of(2025, 2, 5), util::Time::of(23, 59, 59));
 
-    Assertions::assertEquals(2025, dt.year());
-    Assertions::assertEquals(2, dt.month());
-    Assertions::assertEquals(5, dt.day());
-    Assertions::assertEquals(20, dt.hour());
-    Assertions::assertEquals(20, dt.minute());
-    Assertions::assertEquals(20, dt.second());
-    Assertions::assertEquals(20, dt.nano());
-    Assertions::assertEquals("2025-02-05T20:20:20.000000020Z"_cs, dt.to_string());
-    Assertions::assertEquals("2025-02-05T23:59:59.000000000Z"_cs, dt2.to_string());
+    Assertions::assert_equals(2025, dt.year());
+    Assertions::assert_equals(2, dt.month());
+    Assertions::assert_equals(5, dt.day());
+    Assertions::assert_equals(20, dt.hour());
+    Assertions::assert_equals(20, dt.minute());
+    Assertions::assert_equals(20, dt.second());
+    Assertions::assert_equals(20, dt.nano());
+    Assertions::assert_equals("2025-02-05T20:20:20.000000020Z"_cs, dt.to_string());
+    Assertions::assert_equals("2025-02-05T23:59:59.000000000Z"_cs, dt2.to_string());
 }
 
 void should_parse() {
@@ -28,14 +28,14 @@ void should_parse() {
     auto dt = util::DateTime::parse(str);
 
     // Then
-    Assertions::assertEquals("2025-02-05T20:20:20.000000000Z"_cs, dt.to_string());
+    Assertions::assert_equals("2025-02-05T20:20:20.000000000Z"_cs, dt.to_string());
 }
 
 void should_fail_to_parse_if_format_invalid() {
-    Assertions::assertThrows("invalid date time format", []() { util::Date::parse("2025-1-1-1 12:30:31"); });
-    Assertions::assertThrows("invalid date time format", []() { util::Date::parse("2025-1 12:30:31"); });
-    Assertions::assertThrows("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30:31:1000"); });
-    Assertions::assertThrows("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30"); });
+    Assertions::assert_throws("invalid date time format", []() { util::Date::parse("2025-1-1-1 12:30:31"); });
+    Assertions::assert_throws("invalid date time format", []() { util::Date::parse("2025-1 12:30:31"); });
+    Assertions::assert_throws("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30:31:1000"); });
+    Assertions::assert_throws("invalid date time format", []() { util::DateTime::parse("2025-6-22 12:30"); });
 }
 
 void should_fetch_now() {
@@ -52,7 +52,7 @@ void should_construct_by_epoch_second() {
     auto dt = util::DateTime::ofEpochSecond(epochSecond);
 
     // Then
-    Assertions::assertEquals("2025-02-05T10:45:08.000000000Z"_cs, dt.to_string());
+    Assertions::assert_equals("2025-02-05T10:45:08.000000000Z"_cs, dt.to_string());
 }
 
 void should_plus() {
@@ -70,7 +70,7 @@ void should_plus() {
     auto dt9 = dt8.plusNanos(1);   // 2026-3-13 21:01:01.000000001
 
     // Then
-    Assertions::assertEquals("2026-03-13T21:01:01.000000001Z"_cs, dt9.to_string());
+    Assertions::assert_equals("2026-03-13T21:01:01.000000001Z"_cs, dt9.to_string());
 }
 
 void should_minus() {
@@ -88,7 +88,7 @@ void should_minus() {
     auto dt9 = dt8.minusNanos(1);   // 2023-12-28 18:58:58.999999999
 
     // Then
-    Assertions::assertEquals("2023-12-28T18:58:58.999999999Z"_cs, dt9.to_string());
+    Assertions::assert_equals("2023-12-28T18:58:58.999999999Z"_cs, dt9.to_string());
 }
 
 void should_subtract() {
@@ -102,8 +102,8 @@ void should_subtract() {
     auto res2 = dt - dt3;
 
     // Then
-    Assertions::assertEquals("PT10H"_cs, res.to_string());
-    Assertions::assertEquals("PT-10H"_cs, res2.to_string());
+    Assertions::assert_equals("PT10H"_cs, res.to_string());
+    Assertions::assert_equals("PT-10H"_cs, res2.to_string());
 }
 
 GROUP_NAME("test_date_time")

@@ -1,4 +1,4 @@
-﻿#include "test_string.hpp"
+#include "test_string.hpp"
 #include "str.hpp"
 #include "array.hpp"
 #include "vec.hpp"
@@ -8,7 +8,7 @@ namespace my::test::test_string {
 
 void should_construct() {
     util::String s = "abc";
-    Assertions::assertEquals("abc"_cs, s.to_string());
+    Assertions::assert_equals("abc"_cs, s.to_string());
 }
 
 void should_add() {
@@ -22,9 +22,9 @@ void should_add() {
     s += cs;
 
     // Then
-    Assertions::assertEquals(9ULL, s.len());
-    Assertions::assertEquals(util::CodePoint{'b'}, s[3]);
-    Assertions::assertEquals("abcbcdcde"_s, s);
+    Assertions::assert_equals(9ULL, s.len());
+    Assertions::assert_equals(util::CodePoint{'b'}, s[3]);
+    Assertions::assert_equals("abcbcdcde"_s, s);
 }
 
 void should_mul() {
@@ -35,8 +35,8 @@ void should_mul() {
     s = s * 2;
 
     // Then
-    Assertions::assertEquals(6ULL, s.len());
-    Assertions::assertEquals(util::CodePoint{'a'}, s[3]);
+    Assertions::assert_equals(6ULL, s.len());
+    Assertions::assert_equals(util::CodePoint{'a'}, s[3]);
 }
 
 void should_slice() {
@@ -49,10 +49,10 @@ void should_slice() {
     auto res3 = s.slice(1, -1);
 
     // Then
-    Assertions::assertEquals(1ULL, res.len());
-    Assertions::assertEquals("b"_s, res);
-    Assertions::assertEquals("def"_s, res2);
-    Assertions::assertEquals("bcde"_s, res3);
+    Assertions::assert_equals(1ULL, res.len());
+    Assertions::assert_equals("b"_s, res);
+    Assertions::assert_equals("def"_s, res2);
+    Assertions::assert_equals("bcde"_s, res3);
 }
 
 void should_find() {
@@ -68,11 +68,11 @@ void should_find() {
     auto pos5 = s2.find(""_s);
 
     // Then
-    Assertions::assertEquals(3ULL, pos);
-    Assertions::assertEquals(5ULL, pos2);
-    Assertions::assertEquals(npos, pos3);
-    Assertions::assertEquals(7ULL, pos4);
-    Assertions::assertEquals(npos, pos5);
+    Assertions::assert_equals(3ULL, pos);
+    Assertions::assert_equals(5ULL, pos2);
+    Assertions::assert_equals(npos, pos3);
+    Assertions::assert_equals(7ULL, pos4);
+    Assertions::assert_equals(npos, pos5);
 }
 
 void should_find_all() {
@@ -83,8 +83,8 @@ void should_find_all() {
     auto poss = s.find_all("abc"_s);
 
     // Then
-    Assertions::assertEquals(2ULL, poss.len());
-    Assertions::assertEquals("[0,6]"_cs, poss.to_string());
+    Assertions::assert_equals(2ULL, poss.len());
+    Assertions::assert_equals("[0,6]"_cs, poss.to_string());
 }
 
 void should_judge_starts_with() {
@@ -96,8 +96,8 @@ void should_judge_starts_with() {
     bool res2 = s.starts_with("abd"_s);
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_judge_ends_with() {
@@ -109,8 +109,8 @@ void should_judge_ends_with() {
     bool res2 = s.ends_with("deg"_s);
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 void should_get_upper() {
@@ -121,7 +121,7 @@ void should_get_upper() {
     auto res = s.upper();
 
     // Then
-    Assertions::assertEquals("ABCDEF"_s, res);
+    Assertions::assert_equals("ABCDEF"_s, res);
 }
 
 void should_get_lower() {
@@ -132,7 +132,7 @@ void should_get_lower() {
     auto res = s.lower();
 
     // Then
-    Assertions::assertEquals("abcdef"_s, res);
+    Assertions::assert_equals("abcdef"_s, res);
 }
 
 void should_trim() {
@@ -143,7 +143,7 @@ void should_trim() {
     auto res = s.trim();
 
     // Then
-    Assertions::assertEquals("abcdef"_s, res);
+    Assertions::assert_equals("abcdef"_s, res);
 }
 
 void should_replace() {
@@ -154,7 +154,7 @@ void should_replace() {
     auto res = s.replace("abc"_s, "def"_s);
 
     // Then
-    Assertions::assertEquals("defdefdef"_s, res);
+    Assertions::assert_equals("defdefdef"_s, res);
 }
 
 void should_maintain_encoding() {
@@ -166,23 +166,23 @@ void should_maintain_encoding() {
     util::String s3 = s2.slice(0);
 
     // Then
-    Assertions::assertEquals(s, s2);
-    Assertions::assertEquals(s2, s3);
+    Assertions::assert_equals(s, s2);
+    Assertions::assert_equals(s2, s3);
 
     // When
     s3[1] = 'a';
 
     // Then
-    Assertions::assertEquals("你好世界"_s, s);
-    Assertions::assertEquals("你好世界"_s, s2);
-    Assertions::assertEquals("你a世界"_s, s3);
-    Assertions::assertEquals("你好世界"_s, s.slice(0, s.len()));
+    Assertions::assert_equals("你好世界"_s, s);
+    Assertions::assert_equals("你好世界"_s, s2);
+    Assertions::assert_equals("你a世界"_s, s3);
+    Assertions::assert_equals("你好世界"_s, s.slice(0, s.len()));
 
     // When
     auto res = s.replace("你"_s, "你们"_s);
 
     // Then
-    Assertions::assertEquals("你们好世界"_s, res);
+    Assertions::assert_equals("你们好世界"_s, res);
 }
 
 void should_join_iterator() {
@@ -195,8 +195,8 @@ void should_join_iterator() {
     auto res2 = ", "_s.join(vec);
 
     // Then
-    Assertions::assertEquals("1, 2, 3, 4, 5"_s, res);
-    Assertions::assertEquals("aaa, bbb, ccc"_s, res2);
+    Assertions::assert_equals("1, 2, 3, 4, 5"_s, res);
+    Assertions::assert_equals("aaa, bbb, ccc"_s, res2);
 }
 
 void should_match_parentheses() {
@@ -210,14 +210,14 @@ void should_match_parentheses() {
     auto res3 = s2.match('[', ']');
 
     // Then
-    Assertions::assertEquals("{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}"_s, res);
-    Assertions::assertEquals("[1, 2, 3]"_s, res2);
-    Assertions::assertEquals(""_s, res3);
+    Assertions::assert_equals("{a, b, c, d, [1, 2, 3], {x: 1, y: 2}}"_s, res);
+    Assertions::assert_equals("[1, 2, 3]"_s, res2);
+    Assertions::assert_equals(""_s, res3);
 }
 
 void should_fail_match_if_str_invalid() {
     util::String s = "{a, b";
-    Assertions::assertThrows("Unmatched parentheses, too many left parentheses", [&]() {
+    Assertions::assert_throws("Unmatched parentheses, too many left parentheses", [&]() {
         auto _ = s.match('{', '}');
     });
 }
@@ -232,10 +232,10 @@ void should_split() {
     auto parts = s.split(pat);
 
     // Then
-    Assertions::assertEquals(3ULL, parts.len());
-    Assertions::assertEquals("a"_s, parts[0]);
-    Assertions::assertEquals("b"_s, parts[1]);
-    Assertions::assertEquals("c"_s, parts[2]);
+    Assertions::assert_equals(3ULL, parts.len());
+    Assertions::assert_equals("a"_s, parts[0]);
+    Assertions::assert_equals("b"_s, parts[1]);
+    Assertions::assert_equals("c"_s, parts[2]);
 }
 
 void should_compare() {
@@ -243,8 +243,8 @@ void should_compare() {
     util::String b = "abc";
     util::String c = "abd";
 
-    Assertions::assertEquals(0, a.cmp(b));
-    Assertions::assertTrue(a.cmp(c) < 0);
+    Assertions::assert_equals(0, a.cmp(b));
+    Assertions::assert_true(a.cmp(c) < 0);
 }
 
 void should_remove_all() {
@@ -252,16 +252,16 @@ void should_remove_all() {
     auto res = s.remove_all('a');
     auto res2 = s.remove_all([](const auto& cp) { return cp == 'b'; });
 
-    Assertions::assertEquals("bb"_s, res);
-    Assertions::assertEquals("aaa"_s, res2);
+    Assertions::assert_equals("bb"_s, res);
+    Assertions::assert_equals("aaa"_s, res2);
 }
 
 void test_string_view() {
     util::String s = "abcdef";
     util::StringView sv(s, 1, 3);
 
-    Assertions::assertEquals(3ULL, sv.len());
-    Assertions::assertEquals("bcd"_s, sv.to_string());
+    Assertions::assert_equals(3ULL, sv.len());
+    Assertions::assert_equals("bcd"_s, sv.to_string());
 }
 
 void should_string_view_compare() {
@@ -270,8 +270,8 @@ void should_string_view_compare() {
     util::StringView v1(s1);
     util::StringView v2(s2);
 
-    Assertions::assertTrue(v1.cmp(v2) < 0);
-    Assertions::assertTrue(v1.eq(util::StringView(s1)));
+    Assertions::assert_true(v1.cmp(v2) < 0);
+    Assertions::assert_true(v1.eq(util::StringView(s1)));
 }
 
 GROUP_NAME("test_string")

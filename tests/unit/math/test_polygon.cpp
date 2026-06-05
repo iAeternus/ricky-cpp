@@ -12,7 +12,7 @@ void should_calc_area() {
     auto res = p.area();
 
     // Then
-    Assertions::assertEquals(1, res);
+    Assertions::assert_equals(1, res);
 }
 
 void should_judge_point_in_polygon() {
@@ -25,8 +25,8 @@ void should_judge_point_in_polygon() {
     auto res2 = p.is_included(b);
 
     // Then
-    Assertions::assertTrue(res);
-    Assertions::assertFalse(res2);
+    Assertions::assert_true(res);
+    Assertions::assert_false(res2);
 }
 
 GROUP_NAME("test_polygon")

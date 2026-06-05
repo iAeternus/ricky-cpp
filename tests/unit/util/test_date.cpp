@@ -9,25 +9,25 @@ void should_construct() {
     auto d = util::Date::of(1970);
     auto d2 = util::Date::of(2025, 2, 3);
 
-    Assertions::assertEquals(1970, d.year());
-    Assertions::assertEquals(1, d.month());
-    Assertions::assertEquals(1, d.day());
-    Assertions::assertEquals("1970-01-01"_cs, d.to_string());
-    Assertions::assertEquals("2025-02-03"_cs, d2.to_string());
+    Assertions::assert_equals(1970, d.year());
+    Assertions::assert_equals(1, d.month());
+    Assertions::assert_equals(1, d.day());
+    Assertions::assert_equals("1970-01-01"_cs, d.to_string());
+    Assertions::assert_equals("2025-02-03"_cs, d2.to_string());
 }
 
 void should_fail_to_construct_by_month_and_day_if_args_invalid() {
-    Assertions::assertThrows("invalid month", []() { util::Date::of(2025, 0); });
-    Assertions::assertThrows("invalid month", []() { util::Date::of(2025, 13); });
-    Assertions::assertThrows("invalid day", []() { util::Date::of(2025, 2, 0); });
-    Assertions::assertThrows("invalid day", []() { util::Date::of(2025, 2, 29); });
-    Assertions::assertThrows("year out of range", []() { util::Date::of(1000000000, 2); });
+    Assertions::assert_throws("invalid month", []() { util::Date::of(2025, 0); });
+    Assertions::assert_throws("invalid month", []() { util::Date::of(2025, 13); });
+    Assertions::assert_throws("invalid day", []() { util::Date::of(2025, 2, 0); });
+    Assertions::assert_throws("invalid day", []() { util::Date::of(2025, 2, 29); });
+    Assertions::assert_throws("year out of range", []() { util::Date::of(1000000000, 2); });
 }
 
 void should_fail_to_construct_by_day_of_year_if_args_invalid() {
-    Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2025, 0); });
-    Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2025, 366); });
-    Assertions::assertThrows("Day of year out of range", []() { util::Date::ofYearDay(2024, 367); });
+    Assertions::assert_throws("Day of year out of range", []() { util::Date::ofYearDay(2025, 0); });
+    Assertions::assert_throws("Day of year out of range", []() { util::Date::ofYearDay(2025, 366); });
+    Assertions::assert_throws("Day of year out of range", []() { util::Date::ofYearDay(2024, 367); });
 }
 
 void should_parse() {
@@ -38,14 +38,14 @@ void should_parse() {
     auto d = util::Date::parse(str);
 
     // Then
-    Assertions::assertEquals(2025, d.year());
-    Assertions::assertEquals(2, d.month());
-    Assertions::assertEquals(4, d.day());
+    Assertions::assert_equals(2025, d.year());
+    Assertions::assert_equals(2, d.month());
+    Assertions::assert_equals(4, d.day());
 }
 
 void should_fail_to_parse_if_format_invalid() {
-    Assertions::assertThrows("invalid date format", []() { util::Date::parse("2025-1-1-1"); });
-    Assertions::assertThrows("invalid date format", []() { util::Date::parse("2025-1"); });
+    Assertions::assert_throws("invalid date format", []() { util::Date::parse("2025-1-1-1"); });
+    Assertions::assert_throws("invalid date format", []() { util::Date::parse("2025-1"); });
 }
 
 void should_fetch_now() {
@@ -68,10 +68,10 @@ void should_calc_day_of_year() {
     auto res4 = util::Date::ofYearDay(d4.year(), d4.dayOfYear());
 
     // Then
-    Assertions::assertEquals(d, res);
-    Assertions::assertEquals(d2, res2);
-    Assertions::assertEquals(d3, res3);
-    Assertions::assertEquals(d4, res4);
+    Assertions::assert_equals(d, res);
+    Assertions::assert_equals(d2, res2);
+    Assertions::assert_equals(d3, res3);
+    Assertions::assert_equals(d4, res4);
 }
 
 void should_calc_day_of_week() {
@@ -86,9 +86,9 @@ void should_calc_day_of_week() {
     auto res3 = d3.dayOfWeek();
 
     // Then
-    Assertions::assertEquals(2, res);
-    Assertions::assertEquals(1, res2);
-    Assertions::assertEquals(4, res3);
+    Assertions::assert_equals(2, res);
+    Assertions::assert_equals(1, res2);
+    Assertions::assert_equals(4, res3);
 }
 
 void should_plus() {
@@ -101,7 +101,7 @@ void should_plus() {
     auto d4 = d3.plusYears(2);   // 1974-02-02
 
     // Then
-    Assertions::assertEquals("1974-02-02"_cs, d4.to_string());
+    Assertions::assert_equals("1974-02-02"_cs, d4.to_string());
 }
 
 void should_minus() {
@@ -114,7 +114,7 @@ void should_minus() {
     auto d4 = d3.minusYears(2);   // 1965-11-30
 
     // Then
-    Assertions::assertEquals("1965-11-30"_cs, d4.to_string());
+    Assertions::assert_equals("1965-11-30"_cs, d4.to_string());
 }
 
 void should_subtract() {
@@ -128,8 +128,8 @@ void should_subtract() {
     auto res2 = d - d3;
 
     // Then
-    Assertions::assertEquals("PT398D"_cs, res.to_string());
-    Assertions::assertEquals("PT-394D"_cs, res2.to_string());
+    Assertions::assert_equals("PT398D"_cs, res.to_string());
+    Assertions::assert_equals("PT-394D"_cs, res2.to_string());
 }
 
 void should_calc_epoch_day() {
@@ -146,10 +146,10 @@ void should_calc_epoch_day() {
     auto res4 = util::Date::ofEpochDay(d4.toEpochDay());
 
     // Then
-    Assertions::assertEquals(d, res);
-    Assertions::assertEquals(d2, res2);
-    Assertions::assertEquals(d3, res3);
-    Assertions::assertEquals(d4, res4);
+    Assertions::assert_equals(d, res);
+    Assertions::assert_equals(d2, res2);
+    Assertions::assert_equals(d3, res3);
+    Assertions::assert_equals(d4, res4);
 }
 
 GROUP_NAME("test_date")

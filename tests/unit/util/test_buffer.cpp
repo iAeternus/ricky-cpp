@@ -14,8 +14,8 @@ void should_get_front_and_back() {
     auto res2 = buf.last();
 
     // Then
-    Assertions::assertEquals(1, res);
-    Assertions::assertEquals(3, res2);
+    Assertions::assert_equals(1, res);
+    Assertions::assert_equals(3, res2);
 }
 
 GROUP_NAME("test_buffer")
