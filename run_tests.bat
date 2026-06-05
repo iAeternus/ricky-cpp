@@ -1,28 +1,12 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
 
-set TEST_ARTIFACTS=build/bin/tests
-set TEST_BINARY=RICKY_CPP_TESTS
-set TEST_LOG=test.log
+set root_dir=%~dp0
+set root_dir=%root_dir:~0,-1%
+set build_dir=%root_dir%\build
 
-if not exist "%TEST_ARTIFACTS%" (
-    echo Error: The directory "%TEST_ARTIFACTS%" does not exist.
-    exit /b 1
+if not exist "%build_dir%\CMakeCache.txt" (
+    call "%root_dir%build.bat"
 )
 
-if not exist "%TEST_ARTIFACTS%\%TEST_BINARY%.exe" (
-    echo Error: The executable "%TEST_ARTIFACTS%\%TEST_BINARY%.exe" was not found.
-    exit /b 1
-)
-
-set TEST_ARGS=%*
-
-echo Running tests...
-cd "%TEST_ARTIFACTS%"
-"%TEST_BINARY%.exe" %TEST_ARGS%
-if %ERRORLEVEL% NEQ 0 (
-    echo Error: Tests failed.
-    exit /b %ERRORLEVEL%
-)
-echo Tests ran successfully.
-endlocal
+"%build_dir%\bin\tests\RICKY_CPP_TESTS.exe" %*

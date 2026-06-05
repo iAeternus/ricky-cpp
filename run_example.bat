@@ -13,7 +13,7 @@ if "%~1"=="" (
     echo Usage: run_example.bat ^<example_name^> [args...]
     echo.
     echo Available examples:
-    dir /b "build\bin\examples\*" 2>nul
+    for %%f in ("build\bin\examples\*.exe") do echo %%~nf
     exit /b 0
 )
 
@@ -22,9 +22,13 @@ shift
 
 set "EXE=build\bin\examples\%EXAMPLE%"
 if not exist "%EXE%" (
-    echo Error: '%EXAMPLE%' not found (build\bin\examples\%EXAMPLE% missing)
-    echo Run 'cmake --build build --target %EXAMPLE%' first, or build the project.
-    exit /b 1
+    if exist "%EXE%.exe" (
+        set "EXE=%EXE%.exe"
+    ) else (
+        echo Error: '%EXAMPLE%' not found (build\bin\examples\%EXAMPLE% missing^)
+        echo Run 'cmake --build build --target %EXAMPLE%' first, or build the project.
+        exit /b 1
+    )
 )
 
-"%EXE%" %*
+"%EXE%" %1 %2 %3 %4 %5 %6 %7 %8 %9

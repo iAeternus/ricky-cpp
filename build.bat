@@ -1,53 +1,19 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
 
-set BUILD_DIR=build
-set CPU_CORES=16
-set GENERATOR="MinGW Makefiles"
+set root_dir=%~dp0
+set root_dir=%root_dir:~0,-1%
+set build_dir=%root_dir%\build
 
-if not exist "%BUILD_DIR%" (
-    mkdir "%BUILD_DIR%"
-    echo Created build directory: %BUILD_DIR%
+set generator=Ninja
+
+if defined BUILD_TYPE (
+    set build_type=%BUILD_TYPE%
 ) else (
-    echo Build directory already exists: %BUILD_DIR%
+    set build_type=Debug
 )
 
-cd "%BUILD_DIR%"
+cmake -S "%root_dir%" -B "%build_dir%" -G "%generator%" -DCMAKE_BUILD_TYPE="%build_type%"
+if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
 
-if exist CMakeCache.txt (
-    echo Checking existing CMake configuration...
-    setlocal
-    set "OLD_GENERATOR="
-
-    for /f "tokens=1,* delims== " %%A in ('findstr /b /c:"CMAKE_GENERATOR:INTERNAL" CMakeCache.txt') do (
-        set "OLD_GENERATOR=%%B"
-    )
-
-    endlocal & set "OLD_GENERATOR=%OLD_GENERATOR%"
-
-    if "!OLD_GENERATOR!" NEQ %GENERATOR% (
-        echo Detected different generator: [!OLD_GENERATOR%]
-        echo Cleaning old CMake configuration...
-        del CMakeCache.txt
-        rmdir /s /q CMakeFiles
-        echo Old configuration cleaned for generator switch
-    )
-)
-
-echo Configuring project with %GENERATOR%...
-cmake .. -G %GENERATOR%
-if %ERRORLEVEL% NEQ 0 (
-    echo Error: Failed to configure project.
-    exit /b %ERRORLEVEL%
-)
-echo Project configured successfully.
-
-echo Compiling project with %CPU_CORES% parallel jobs...
-cmake --build . -j %CPU_CORES%
-if %ERRORLEVEL% NEQ 0 (
-    echo Error: Compilation or linking failed.
-    exit /b %ERRORLEVEL%
-)
-echo Project compiled and linked successfully.
-
-endlocal
+cmake --build "%build_dir%" --parallel
