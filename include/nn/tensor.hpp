@@ -572,7 +572,7 @@ public:
      * @return 结果张量
      */
     [[nodiscard]] Self broadcast_add(const Self& rhs) const {
-        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+        return elementwise_with_broadcast(*this, rhs, [](const T& a, const T& b) {
             return a + b;
         });
     }
@@ -583,7 +583,7 @@ public:
      * @return 结果张量
      */
     [[nodiscard]] Self broadcast_sub(const Self& rhs) const {
-        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+        return elementwise_with_broadcast(*this, rhs, [](const T& a, const T& b) {
             return a - b;
         });
     }
@@ -594,7 +594,7 @@ public:
      * @return 结果张量
      */
     [[nodiscard]] Self broadcast_mul(const Self& rhs) const {
-        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+        return elementwise_with_broadcast(*this, rhs, [](const T& a, const T& b) {
             return a * b;
         });
     }
@@ -605,7 +605,7 @@ public:
      * @return 结果张量
      */
     [[nodiscard]] Self broadcast_div(const Self& rhs) const {
-        return elementwise_with_boradcase(*this, rhs, [](const T& a, const T& b) {
+        return elementwise_with_broadcast(*this, rhs, [](const T& a, const T& b) {
             if constexpr (std::is_floating_point_v<T>) {
                 if (b == static_cast<T>(0)) {
                     throw tensor_exception("Tensor division by zero");
@@ -1244,7 +1244,7 @@ private:
      * @return 结果张量
      */
     template <typename F>
-    static Self elementwise_with_boradcase(const Self& lhs, const Self& rhs, F&& op) {
+    static Self elementwise_with_broadcast(const Self& lhs, const Self& rhs, F&& op) {
         auto out_shape = broadcast_shape(lhs.shape_, rhs.shape_);
         Self result(out_shape);
         auto lhs_stride = broadcast_stride(lhs.shape_, out_shape, lhs.stride_);
