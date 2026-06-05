@@ -31,7 +31,7 @@ struct Edge : public Object<Edge<E>> {
             to(to), w(w) {}
 
     [[nodiscard]] cmp_t cmp(const Self& other) const {
-        if constexpr (math::FloatingPointType<E>) {
+        if constexpr (FloatingPointType<E>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<E>) {
             return this->w.cmp(other.w);
@@ -135,7 +135,7 @@ struct Node : public Object<Node<N, E>> {
     }
 
     [[nodiscard]] cmp_t cmp(const Self& other) const {
-        if constexpr (math::FloatingPointType<N>) {
+        if constexpr (FloatingPointType<N>) {
             return math::fcmp(this->w, other.w);
         } else if constexpr (Comparable<N>) {
             return this->w.cmp(other.w);

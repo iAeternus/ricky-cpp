@@ -12,6 +12,7 @@
 #include <concepts>
 #include <format>
 #include <string>
+#include <type_traits>
 
 namespace my {
 
@@ -139,6 +140,40 @@ concept Formattable = requires {
     f.parse(pc);
     f.format(v, fc);
 };
+
+// -------------------------------------------------------------------
+// 数学概念（从 math/math_concepts.hpp 提升至 core 层）
+// -------------------------------------------------------------------
+
+/**
+ * @brief 无符号整数类型
+ */
+template <typename T>
+concept UnsignedIntegerType = std::is_integral_v<RawType<T>> && !std::is_signed_v<RawType<T>>;
+
+/**
+ * @brief 有符号整数类型
+ */
+template <typename T>
+concept SignedIntegerType = std::is_integral_v<RawType<T>> && std::is_signed_v<RawType<T>>;
+
+/**
+ * @brief 整数类型
+ */
+template <typename T>
+concept IntegerType = UnsignedIntegerType<T> || SignedIntegerType<T>;
+
+/**
+ * @brief 浮点类型
+ */
+template <typename T>
+concept FloatingPointType = std::is_floating_point_v<RawType<T>>;
+
+/**
+ * @brief 数值类型（整数或浮点）
+ */
+template <typename T>
+concept NumericType = IntegerType<T> || FloatingPointType<T>;
 
 } // namespace my
 

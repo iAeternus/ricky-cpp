@@ -7,7 +7,6 @@
 #ifndef TENSOR_HPP
 #define TENSOR_HPP
 
-#include "math_concepts.hpp"
 #include "random.hpp"
 
 #include <memory>
@@ -126,7 +125,7 @@ public:
      * @return 张量
      */
     static Self randn(const Shape& shape, T mean = static_cast<T>(0), T stddev = static_cast<T>(1)) {
-        static_assert(math::FloatingPointType<T>, "Tensor::randn requires floating point type");
+        static_assert(FloatingPointType<T>, "Tensor::randn requires floating point type");
 
         auto tensor = Self(shape);
         auto& rng = util::Random::thread_local_rng();
@@ -274,7 +273,7 @@ public:
      * @param indices 多维坐标
      * @return 元素引用
      */
-    template <math::IntegerType... Args>
+    template <IntegerType... Args>
     T& operator()(Args&&... indices) {
         return (*data_)[calc_offset(std::forward<Args>(indices)...)];
     }
@@ -284,7 +283,7 @@ public:
      * @param indices 多维坐标
      * @return 元素引用
      */
-    template <math::IntegerType... Args>
+    template <IntegerType... Args>
     const T& operator()(Args&&... indices) const {
         return (*data_)[calc_offset(std::forward<Args>(indices)...)];
     }
@@ -1148,7 +1147,7 @@ private:
      *
      * offset + sum(indices[i] * stride[i])
      */
-    template <math::IntegerType... Args>
+    template <IntegerType... Args>
     [[nodiscard]] usize calc_offset(Args&&... indices) const {
         static_assert(sizeof...(Args) > 0);
         if (sizeof...(Args) != shape_.len()) {

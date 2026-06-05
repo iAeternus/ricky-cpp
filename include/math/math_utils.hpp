@@ -7,7 +7,6 @@
 #ifndef MATH_UTILS_HPP
 #define MATH_UTILS_HPP
 
-#include "math_concepts.hpp"
 #include "my_exception.hpp"
 
 #include <cmath>

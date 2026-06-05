@@ -9,7 +9,7 @@
 
 #include "marker.hpp"
 #include "vec.hpp"
-#include "math_concepts.hpp"
+#include "my_concepts.hpp"
 
 #include <random>
 
@@ -55,7 +55,7 @@ public:
      * 浮点：
      * 在[0,1)内均匀分布
      */
-    template <math::NumericType T>
+    template <NumericType T>
     T gen();
 
     /**
@@ -70,7 +70,7 @@ public:
      * 浮点：
      * [min,max)
      */
-    template <math::NumericType T>
+    template <NumericType T>
     T gen_range(T min, T max);
 
     /**
@@ -79,7 +79,7 @@ public:
      * @param stddev 标准差
      * @return 随机数
      */
-    template <math::FloatingPointType T>
+    template <FloatingPointType T>
     T normal(T mean = static_cast<T>(0), T stddev = static_cast<T>(1));
 
     /**
@@ -124,9 +124,9 @@ private:
     Engine engine_;
 };
 
-template <math::NumericType T>
+template <NumericType T>
 T Random::gen() {
-    if constexpr (math::IntegerType<T>) {
+    if constexpr (IntegerType<T>) {
         std::uniform_int_distribution<T> dist(std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
         return dist(engine_);
     } else {
@@ -135,13 +135,13 @@ T Random::gen() {
     }
 }
 
-template <math::NumericType T>
+template <NumericType T>
 T Random::gen_range(T min, T max) {
     if (min >= max) {
         throw argument_exception("Random::gen_range requires min < max, but given min: {} max: {}", min, max);
     }
 
-    if constexpr (math::IntegerType<T>) {
+    if constexpr (IntegerType<T>) {
         std::uniform_int_distribution<T> dist(min, max - 1);
         return dist(engine_);
     } else {
@@ -150,7 +150,7 @@ T Random::gen_range(T min, T max) {
     }
 }
 
-template <math::FloatingPointType T>
+template <FloatingPointType T>
 T Random::normal(T mean, T stddev) {
     std::normal_distribution<T> dist(mean, stddev);
     return dist(engine_);

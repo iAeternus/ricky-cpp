@@ -9,6 +9,8 @@
 
 #include "my_types.hpp"
 
+#include <source_location>
+
 namespace my {
 
 /**

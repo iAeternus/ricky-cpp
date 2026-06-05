@@ -7,7 +7,11 @@
 #ifndef ASSERTIONS_HPP
 #define ASSERTIONS_HPP
 
-#include "math_utils.hpp"
+#include "float_compare.hpp"
+#include "my_exception.hpp"
+#include "cstring.hpp"
+#include "my_format.hpp"
+#include "my_func.hpp"
 
 namespace my::test {
 
@@ -233,7 +237,7 @@ public:
 
     /**
      * @brief 断言两个值相等，否则抛出异常，不加用户消息
-     * @note 对于浮点数，使用math::fcmp进行比较
+     * @note 对于浮点数，使用fcmp进行比较
      * @param expected 期望的值
      * @param actual 实际的值
      * @param loc 断言发生的位置
@@ -242,7 +246,7 @@ public:
     static void assertEquals(const T& expected, const U& actual, std::source_location loc = SRC_LOC) {
         bool is_equal = false;
         if constexpr (is_same<T, f32, f64, f128>) {
-            is_equal = math::fcmp(expected, actual) == 0;
+            is_equal = fcmp(expected, actual) == 0;
         } else {
             is_equal = expected == actual;
         }
@@ -254,7 +258,7 @@ public:
 
     /**
      * @brief 断言两个值相等，否则抛出异常
-     * @note 对于浮点数，使用math::fcmp进行比较
+     * @note 对于浮点数，使用fcmp进行比较
      * @param expected 期望的值
      * @param actual 实际的值
      * @param message 断言失败时的错误信息
@@ -264,7 +268,7 @@ public:
     static void assertEquals(const T& expected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
         bool is_equal = false;
         if constexpr (is_same<T, f32, f64, f128>) {
-            is_equal = math::fcmp(expected, actual) == 0;
+            is_equal = fcmp(expected, actual) == 0;
         } else {
             is_equal = expected == actual;
         }
@@ -308,7 +312,7 @@ public:
 
     /**
      * @brief 断言两个值不相等，否则抛出异常，不加用户消息
-     * @note 对于浮点数，使用math::fcmp进行比较
+     * @note 对于浮点数，使用fcmp进行比较
      * @param unexpected 不期望的值
      * @param actual 实际的值
      * @param message 断言失败时的错误信息
@@ -318,7 +322,7 @@ public:
     static void assertNotEquals(const T& unexpected, const U& actual, std::source_location loc = SRC_LOC) {
         bool is_equal = false;
         if constexpr (is_same<T, f32, f64, f128>) {
-            is_equal = math::fcmp(unexpected, actual) == 0;
+            is_equal = fcmp(unexpected, actual) == 0;
         } else {
             is_equal = unexpected == actual;
         }
@@ -330,7 +334,7 @@ public:
 
     /**
      * @brief 断言两个值不相等，否则抛出异常
-     * @note 对于浮点数，使用math::fcmp进行比较
+     * @note 对于浮点数，使用fcmp进行比较
      * @param unexpected 不期望的值
      * @param actual 实际的值
      * @param message 断言失败时的错误信息
@@ -340,7 +344,7 @@ public:
     static void assertNotEquals(const T& unexpected, const U& actual, format_string_wrapper<Args...> fmt_w, Args... args) {
         bool is_equal = false;
         if constexpr (is_same<T, f32, f64, f128>) {
-            is_equal = math::fcmp(unexpected, actual) == 0;
+            is_equal = fcmp(unexpected, actual) == 0;
         } else {
             is_equal = unexpected == actual;
         }
