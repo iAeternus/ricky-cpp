@@ -75,7 +75,7 @@ public:
     }
 
     /**
-     * @breif 后缀递增/递减
+     * @brief 后缀递增/递减
      */
     Self operator++(i32) noexcept {
         Self tmp(*this);

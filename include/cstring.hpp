@@ -730,7 +730,7 @@ public:
         const_pointer operator->() const { return curr_; }
 
         /**
-         * @breif 前缀递增/递减
+         * @brief 前缀递增/递减
          */
         Self& operator++() {
             ++curr_;
@@ -743,7 +743,7 @@ public:
         }
 
         /**
-         * @breif 后缀递增/递减
+         * @brief 后缀递增/递减
          */
         Self operator++(i32) {
             Self tmp(*this);
@@ -758,7 +758,7 @@ public:
         }
 
         /**
-         * @breif 随机访问
+         * @brief 随机访问
          */
         Self operator+(difference_type n) const { return Self(curr_ + n); }
         Self operator-(difference_type n) const { return Self(curr_ - n); }
