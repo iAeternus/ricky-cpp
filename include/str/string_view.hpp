@@ -591,13 +591,6 @@ public:
      */
     [[nodiscard]] auto eq(const Self& other) const -> bool;
 
-    auto operator==(const Self& other) const -> bool;
-    auto operator!=(const Self& other) const -> bool;
-    auto operator<(const Self& other) const -> bool;
-    auto operator<=(const Self& other) const -> bool;
-    auto operator>(const Self& other) const -> bool;
-    auto operator>=(const Self& other) const -> bool;
-
 private:
     const u8* data_{nullptr};
     usize len_{0};

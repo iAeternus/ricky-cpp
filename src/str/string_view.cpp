@@ -116,30 +116,6 @@ void StringView::CStrDeleter::operator()(char* p) noexcept {
     alloc.deallocate(p, size);
 }
 
-auto StringView::operator==(const Self& other) const -> bool {
-    return eq(other);
-}
-
-auto StringView::operator!=(const Self& other) const -> bool {
-    return !eq(other);
-}
-
-auto StringView::operator<(const Self& other) const -> bool {
-    return cmp(other) < 0;
-}
-
-auto StringView::operator<=(const Self& other) const -> bool {
-    return cmp(other) <= 0;
-}
-
-auto StringView::operator>(const Self& other) const -> bool {
-    return cmp(other) > 0;
-}
-
-auto StringView::operator>=(const Self& other) const -> bool {
-    return cmp(other) >= 0;
-}
-
 StringView::CharsRange::Iterator::Iterator(const u8* cur, const u8* end_) :
         p(cur), end(end_), next(cur), value(0) {
     if (p < end) {
