@@ -33,7 +33,7 @@ void cleanup();
 /**
  * @brief 获取最近一次错误信息
  */
-str::String<> last_error();
+str::String last_error();
 
 /**
  * @brief 创建套接字
@@ -58,7 +58,7 @@ void bind(SocketHandle* socket, str::StringView ip, u16 port);
 /**
  * @brief 获取本地地址
  */
-void get_local_addr(SocketHandle* socket, str::String<>& ip, u16& port);
+void get_local_addr(SocketHandle* socket, str::String& ip, u16& port);
 
 /**
  * @brief 监听连接
@@ -83,7 +83,7 @@ usize send_bytes(SocketHandle* socket, str::StringView data, usize size, i32 fla
 /**
  * @brief 接收指定字节数
  */
-str::String<> recv_bytes(SocketHandle* socket, usize size, i32 flags);
+str::String recv_bytes(SocketHandle* socket, usize size, i32 flags);
 
 /**
  * @brief 设置超时（毫秒）
@@ -105,8 +105,8 @@ usize send_to(SocketHandle* socket, str::StringView data, usize size, str::Strin
  * @brief UDP接收数据（返回数据和发送方地址）
  */
 struct UdpRecvResult {
-    str::String<> data;
-    str::String<> src_ip;
+    str::String data;
+    str::String src_ip;
     u16 src_port{0};
 };
 

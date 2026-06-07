@@ -7,7 +7,7 @@ namespace my::json {
 
 class JsonParser : public Object<JsonParser> {
 public:
-    using JsonString = str::String<>;
+    using JsonString = str::String;
     using JsonStringView = str::StringView;
 
     static Json parse(const JsonStringView json_str) {
@@ -314,7 +314,7 @@ inline Json parse_json(const str::StringView json_str) {
     return JsonParser::parse(json_str);
 }
 
-inline Json parse_json(const str::String<>& json_str) {
+inline Json parse_json(const str::String& json_str) {
     return JsonParser::parse(json_str);
 }
 

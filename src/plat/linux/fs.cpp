@@ -96,7 +96,7 @@ void mkdir(str::StringView path, bool recursive, bool exist_ok) {
         return;
     }
 
-    str::String<> p = path.to_string();
+    str::String p = path.to_string();
     while (!p.is_empty() && is_sep(p.last())) {
         p.pop();
     }
@@ -149,16 +149,16 @@ void remove(str::StringView path, const bool recursive) {
     }
 }
 
-str::String<> join(str::StringView a, str::StringView b) {
+str::String join(str::StringView a, str::StringView b) {
     if (a.is_empty()) {
-        return str::String<>(b);
+        return str::String(b);
     }
     if (b.is_empty()) {
-        return str::String<>(a);
+        return str::String(a);
     }
     const char* b_cstr = b.as_cstr();
     if (b_cstr != nullptr && is_abs_path(b_cstr)) {
-        return str::String<>(b);
+        return str::String(b);
     }
 
     const auto a_len = a.len();
@@ -206,7 +206,7 @@ util::Vec<DirEntry> listdir(str::StringView path) {
         }
 
         DirEntry info{};
-        info.name = str::String<>(entry->d_name);
+        info.name = str::String(entry->d_name);
 
         auto full_path = join(path, str::StringView(entry->d_name));
         struct stat st {};
@@ -239,7 +239,7 @@ FileHandle* open(str::StringView path, const OpenMode mode) {
     return open(path, str::StringView(mode_to_cstr(mode)));
 }
 
-str::String<> read_all(FileHandle* file) {
+str::String read_all(FileHandle* file) {
     if (file == nullptr || file->fp == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
@@ -254,7 +254,7 @@ str::String<> read_all(FileHandle* file) {
     std::rewind(file->fp);
 
     if (end == 0) {
-        return str::String<>{};
+        return str::String{};
     }
 
     util::Vec<char> buf(static_cast<size_t>(end));
@@ -262,10 +262,10 @@ str::String<> read_all(FileHandle* file) {
     if (read_bytes != buf.len() && std::ferror(file->fp)) {
         throw io_exception("Failed to read file");
     }
-    return str::String<>(buf.data(), static_cast<usize>(read_bytes));
+    return str::String(buf.data(), static_cast<usize>(read_bytes));
 }
 
-str::String<> read_all(str::StringView path) {
+str::String read_all(str::StringView path) {
     auto* file = open(path, OpenMode::ReadBinary);
     try {
         auto content = read_all(file);

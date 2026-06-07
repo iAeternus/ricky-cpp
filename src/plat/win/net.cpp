@@ -72,15 +72,15 @@ void cleanup() {
     WSACleanup();
 }
 
-str::String<> last_error() {
+str::String last_error() {
     const int err = WSAGetLastError();
     char* msg = nullptr;
     const DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
     const DWORD len = FormatMessageA(flags, nullptr, err, 0, reinterpret_cast<char*>(&msg), 0, nullptr);
     if (len == 0 || msg == nullptr) {
-        return str::String<>("Unknown socket error");
+        return str::String("Unknown socket error");
     }
-    str::String<> res(msg, static_cast<usize>(len));
+    str::String res(msg, static_cast<usize>(len));
     LocalFree(msg);
     return res;
 }
@@ -122,7 +122,7 @@ void bind(SocketHandle* socket, const str::StringView ip, const u16 port) {
     }
 }
 
-void get_local_addr(SocketHandle* socket, str::String<>& ip, u16& port) {
+void get_local_addr(SocketHandle* socket, str::String& ip, u16& port) {
     if (!is_valid(socket)) {
         throw null_pointer_exception("Invalid socket");
     }
@@ -135,13 +135,13 @@ void get_local_addr(SocketHandle* socket, str::String<>& ip, u16& port) {
         char ip_str[16];
         auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
         inet_ntop(AF_INET, &a4->sin_addr, ip_str, 16);
-        ip = str::String<>(ip_str);
+        ip = str::String(ip_str);
         port = ntohs(a4->sin_port);
     } else if (addr.ss_family == AF_INET6) {
         char ip_str[46];
         auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
         inet_ntop(AF_INET6, &a6->sin6_addr, ip_str, 46);
-        ip = str::String<>(ip_str);
+        ip = str::String(ip_str);
         port = ntohs(a6->sin6_port);
     }
 }
@@ -195,12 +195,12 @@ usize send_bytes(SocketHandle* socket, const str::StringView data, const usize s
     return static_cast<usize>(sent);
 }
 
-str::String<> recv_bytes(SocketHandle* socket, const usize size, const i32 flags) {
+str::String recv_bytes(SocketHandle* socket, const usize size, const i32 flags) {
     if (!is_valid(socket)) {
         throw null_pointer_exception("Invalid socket");
     }
     if (size == 0) {
-        return str::String<>{};
+        return str::String{};
     }
     std::vector<char> buffer(size);
     const int received = ::recv(socket->socket, buffer.data(), static_cast<int>(size), flags);
@@ -208,9 +208,9 @@ str::String<> recv_bytes(SocketHandle* socket, const usize size, const i32 flags
         throw system_exception("Recv failed: {}", last_error());
     }
     if (received == 0) {
-        return str::String<>{};
+        return str::String{};
     }
-    return str::String<>(buffer.data(), static_cast<usize>(received));
+    return str::String(buffer.data(), static_cast<usize>(received));
 }
 
 void set_timeout_ms(SocketHandle* socket, const u32 timeout_ms, const bool receive) {
@@ -269,18 +269,18 @@ UdpRecvResult recv_from(SocketHandle* socket, const usize size, const i32 flags)
     if (received == 0) {
         return result;
     }
-    result.data = str::String<>(buffer.data(), static_cast<usize>(received));
+    result.data = str::String(buffer.data(), static_cast<usize>(received));
     if (addr.ss_family == AF_INET) {
         auto* a4 = reinterpret_cast<sockaddr_in*>(&addr);
         char ip_str[16];
         inet_ntop(AF_INET, &a4->sin_addr, ip_str, 16);
-        result.src_ip = str::String<>(ip_str);
+        result.src_ip = str::String(ip_str);
         result.src_port = ntohs(a4->sin_port);
     } else if (addr.ss_family == AF_INET6) {
         char ip_str[46];
         auto* a6 = reinterpret_cast<sockaddr_in6*>(&addr);
         inet_ntop(AF_INET6, &a6->sin6_addr, ip_str, 46);
-        result.src_ip = str::String<>(ip_str);
+        result.src_ip = str::String(ip_str);
         result.src_port = ntohs(a6->sin6_port);
     }
     return result;

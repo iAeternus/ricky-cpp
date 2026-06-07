@@ -15,7 +15,7 @@ concept SerializerType = requires(Json& json_mut, const T& obj, const Json& json
 class JsonSerializer : public Serializer<JsonSerializer> {
 public:
     using Self = JsonSerializer;
-    using JsonString = str::String<>;
+    using JsonString = str::String;
     using JsonStringView = str::StringView;
 
     static JsonString do_serialize(const i64 val) { return Json(val).dump(); }
@@ -151,7 +151,7 @@ inline void to_json(Json& j, const i64 value) { j = Json(value); }
 inline void to_json(Json& j, const f32 value) { j = Json(value); }
 inline void to_json(Json& j, const f64 value) { j = Json(value); }
 inline void to_json(Json& j, const bool value) { j = Json(value); }
-inline void to_json(Json& j, const str::String<>& value) { j = Json(value); }
+inline void to_json(Json& j, const str::String& value) { j = Json(value); }
 inline void to_json(Json& j, const str::StringView value) { j = Json(value); }
 inline void to_json(Json& j, const char* value) { j = Json(value); }
 inline void to_json(Json& j, const std::string_view value) { j = Json(value); }

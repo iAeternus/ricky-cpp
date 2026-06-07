@@ -16,7 +16,7 @@ public:
     PathBuf() = default;
     explicit PathBuf(const char* path);
     explicit PathBuf(const CString& path);
-    explicit PathBuf(const str::String<>& path);
+    explicit PathBuf(const str::String& path);
     PathBuf(const PathBuf& other) = default;
     PathBuf(PathBuf&& other) noexcept = default;
     PathBuf& operator=(const PathBuf& other) = default;
@@ -37,20 +37,20 @@ public:
 
     bool pop();
 
-    str::String<> file_name() const;
-    str::String<> file_stem() const;
-    str::String<> extension() const;
+    str::String file_name() const;
+    str::String file_stem() const;
+    str::String extension() const;
     bool set_extension(const char* ext);
 
     PathBuf parent() const;
 
-    const str::String<>& as_string() const;
+    const str::String& as_string() const;
     CString as_cstr() const;
 
     [[nodiscard]] CString to_string() const;
 
 private:
-    str::String<> path_{};
+    str::String path_{};
 };
 
 } // namespace my::fs

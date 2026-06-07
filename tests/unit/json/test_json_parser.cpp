@@ -7,7 +7,7 @@ namespace my::test::test_json_parser {
 
 void should_parse() {
     // Given
-    str::String<> s(R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })");
+    str::String s(R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })");
 
     // When
     auto json = json::parse_json(s);
@@ -32,7 +32,7 @@ void should_parse() {
 
 void should_fail_to_parse_if_json_str_is_empty() {
     // Given
-    str::String<> s("   ");
+    str::String s("   ");
 
     Assertions::assert_throws("Empty json input", [&]() {
         json::parse_json(s);
@@ -41,7 +41,7 @@ void should_fail_to_parse_if_json_str_is_empty() {
 
 void should_dump() {
     // Given
-    str::String<> s(R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })");
+    str::String s(R"({ "array": [1, 2, "3", 4, 5.6, ["a", "b", "c"], {"d": 1, "e": 2, "f": 3}], "other": null, "bool": true })");
 
     // When
     auto res = json::parse_json(s).dump(2);
@@ -69,24 +69,24 @@ void should_parse_numbers() {
 
 void should_parse_string_escapes() {
     auto json1 = json::parse_json(R"("a\"b\\c\/d\b\f\n\r\t")");
-    auto s = json1.into<str::String<>>();
+    auto s = json1.into<str::String>();
     Assertions::assert_true(s.find(str::StringView("\"")).is_some());
     Assertions::assert_true(s.find(str::StringView("\\")).is_some());
 }
 
 void should_parse_unicode_escape() {
     auto json1 = json::parse_json(R"("\u4F60\u597D")");
-    Assertions::assert_equals(str::String<>("你好"), json1.into<str::String<>>());
+    Assertions::assert_equals(str::String("你好"), json1.into<str::String>());
 }
 
 void should_parse_nested() {
-    str::String<> s(R"({"a":[{"b":1}, {"c":[true, false, null]}], "d":{"e":"x"}})");
+    str::String s(R"({"a":[{"b":1}, {"c":[true, false, null]}], "d":{"e":"x"}})");
     auto json = json::parse_json(s);
     Assertions::assert_equals(2ULL, json["a"].size());
     Assertions::assert_equals(1LL, json["a"][0]["b"].into<i64>());
     Assertions::assert_true(json["a"][1]["c"][0].into<bool>());
     Assertions::assert_true(json["a"][1]["c"][2].is<json::JsonType::JsonNull>());
-    Assertions::assert_equals(str::String<>("x"), json["d"]["e"].into<str::String<>>());
+    Assertions::assert_equals(str::String("x"), json["d"]["e"].into<str::String>());
 }
 
 void should_fail_invalid_json() {

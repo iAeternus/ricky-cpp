@@ -46,7 +46,7 @@ void it_works() {
 
 void should_handle_empty_string() {
     // Given
-    str::String<> text;
+    str::String text;
 
     // When
     util::HuffmanTree h(text);
@@ -66,14 +66,14 @@ void should_handle_empty_string() {
 
 void should_handle_non_ascii_character() {
     // Given
-    str::String<> text("\xE4\xBD\xA0\xE5\xA5\xBD\xE5\xA5\xBD"); // "你好好"
+    str::String text("\xE4\xBD\xA0\xE5\xA5\xBD\xE5\xA5\xBD"); // "你好好"
 
     // When
     util::HuffmanTree h(text);
     auto encode_res = h.encode();
 
     // Then
-    Assertions::assert_equals(str::String<>("011"), encode_res);
+    Assertions::assert_equals(str::String("011"), encode_res);
     Assertions::assert_equals(text, h.decode());
 }
 

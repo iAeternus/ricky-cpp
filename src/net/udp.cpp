@@ -24,7 +24,7 @@ UdpSocket::UdpSocket(str::StringView ip, u16 port) : handle_(nullptr, plat::net:
     plat::net::get_local_addr(handle_.get(), local_ip_, local_port_);
 }
 
-str::String<> UdpSocket::local_ip() const {
+str::String UdpSocket::local_ip() const {
     return local_ip_;
 }
 

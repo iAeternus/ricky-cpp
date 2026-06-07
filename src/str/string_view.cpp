@@ -391,8 +391,8 @@ StringView StringView::trim() const {
     return StringView(start, static_cast<usize>(last_non_ws_end - start));
 }
 
-String<mem::Allocator<u8>> StringView::to_string() const {
-    return String<mem::Allocator<u8>>(*this);
+String StringView::to_string() const {
+    return String(*this);
 }
 
 auto StringView::hash() const -> hash_t {
@@ -412,10 +412,10 @@ auto StringView::eq(const Self& other) const -> bool {
     return cmp(other) == 0;
 }
 
-String<mem::Allocator<u8>> StringView::replace(const StringView& from, const StringView& to) const {
+String StringView::replace(const StringView& from, const StringView& to) const {
     if (from.len() == 0) {
         util::Vec<StringView> parts = split(from);
-        String<mem::Allocator<u8>> res;
+        String res;
         for (usize i = 0; i < parts.len(); ++i) {
             if (i > 0) res.push_str(to);
             res.push_str(parts.at(i));
@@ -423,7 +423,7 @@ String<mem::Allocator<u8>> StringView::replace(const StringView& from, const Str
         return res;
     }
 
-    String<mem::Allocator<u8>> res;
+    String res;
     usize start = 0;
     for (usize i = 0; i + from.len() <= len_; ++i) {
         if (std::memcmp(data_ + i, from.data_, from.len_) == 0) {
@@ -441,8 +441,8 @@ String<mem::Allocator<u8>> StringView::replace(const StringView& from, const Str
     return res;
 }
 
-String<mem::Allocator<u8>> StringView::to_lowercase() const {
-    String<mem::Allocator<u8>> res;
+String StringView::to_lowercase() const {
+    String res;
     const u8* p = data_;
     const u8* end = data_ + len_;
     while (p < end) {
@@ -462,8 +462,8 @@ String<mem::Allocator<u8>> StringView::to_lowercase() const {
     return res;
 }
 
-String<mem::Allocator<u8>> StringView::to_uppercase() const {
-    String<mem::Allocator<u8>> res;
+String StringView::to_uppercase() const {
+    String res;
     const u8* p = data_;
     const u8* end = data_ + len_;
     while (p < end) {

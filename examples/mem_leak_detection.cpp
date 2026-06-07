@@ -283,7 +283,7 @@ void trace_queue() {
 }
 
 void trace_str_string() {
-    using TraceString = str::String<mem::TracingAllocator<u8>>;
+    using TraceString = str::BasicString<mem::TracingAllocator<u8>>;
 #if VERBOSE == 1
     mem::TracingAllocator<util::CodePoint<>>::set_verbose(true);
 #endif

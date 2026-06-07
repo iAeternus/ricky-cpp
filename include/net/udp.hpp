@@ -18,14 +18,14 @@ public:
 
     UdpSocket(str::StringView ip, u16 port);
 
-    [[nodiscard]] str::String<> local_ip() const;
+    [[nodiscard]] str::String local_ip() const;
     [[nodiscard]] u16 local_port() const;
 
     usize send_to(str::StringView ip, u16 port, str::StringView data);
 
     struct RecvResult {
-        str::String<> data;
-        str::String<> src_ip;
+        str::String data;
+        str::String src_ip;
         u16 src_port{0};
     };
 
@@ -38,7 +38,7 @@ public:
 
 private:
     std::unique_ptr<plat::net::SocketHandle, void (*)(plat::net::SocketHandle*)> handle_;
-    str::String<> local_ip_;
+    str::String local_ip_;
     u16 local_port_{0};
 
     UdpSocket() : handle_(nullptr, plat::net::close) {}

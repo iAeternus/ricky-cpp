@@ -26,7 +26,7 @@ public:
     constexpr Ipv4Addr(u8 a, u8 b, u8 c, u8 d) : octets_{a, b, c, d} {}
 
     [[nodiscard]] constexpr const u8* octets() const { return octets_; }
-    [[nodiscard]] str::String<> to_string() const;
+    [[nodiscard]] str::String to_string() const;
     [[nodiscard]] u32 to_u32() const;
 
 private:
@@ -44,7 +44,7 @@ public:
     explicit Ipv6Addr(u16 (&segments)[8]);
 
     [[nodiscard]] constexpr const u16* segments() const { return segments_; }
-    [[nodiscard]] str::String<> to_string() const;
+    [[nodiscard]] str::String to_string() const;
 
 private:
     u16 segments_[8];
@@ -65,7 +65,7 @@ public:
     [[nodiscard]] const Ipv4Addr& as_ipv4() const;
     [[nodiscard]] const Ipv6Addr& as_ipv6() const;
 
-    [[nodiscard]] str::String<> to_string() const;
+    [[nodiscard]] str::String to_string() const;
 
 private:
     IpAddrKind kind_;

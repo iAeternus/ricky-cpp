@@ -14,7 +14,7 @@ void validate_utf8(const u8* data, const usize len);
 } // namespace detail
 
 template <typename Alloc>
-class String;
+class BasicString;
 
 class StringView : public Object<StringView> {
 public:
@@ -224,10 +224,10 @@ public:
     util::Vec<StringView> lines() const;
     StringView trim() const;
 
-    String<mem::Allocator<u8>> replace(const StringView& from, const StringView& to) const;
-    String<mem::Allocator<u8>> to_lowercase() const;
-    String<mem::Allocator<u8>> to_uppercase() const;
-    String<mem::Allocator<u8>> to_string() const;
+    BasicString<mem::Allocator<u8>> replace(const StringView& from, const StringView& to) const;
+    BasicString<mem::Allocator<u8>> to_lowercase() const;
+    BasicString<mem::Allocator<u8>> to_uppercase() const;
+    BasicString<mem::Allocator<u8>> to_string() const;
     [[nodiscard]] auto hash() const -> hash_t;
     [[nodiscard]] auto cmp(const Self& other) const -> cmp_t;
     [[nodiscard]] auto eq(const Self& other) const -> bool;

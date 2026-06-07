@@ -50,14 +50,14 @@ void File::close() {
     handle_ = nullptr;
 }
 
-str::String<> File::read_all() {
+str::String File::read_all() {
     if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }
     return plat::fs::read_all(handle_);
 }
 
-str::String<> File::read_all() const {
+str::String File::read_all() const {
     if (handle_ == nullptr) {
         throw null_pointer_exception("Invalid file handle");
     }

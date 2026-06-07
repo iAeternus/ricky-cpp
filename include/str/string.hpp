@@ -13,11 +13,11 @@
 namespace my::str {
 
 template <typename Alloc = mem::Allocator<u8>>
-class String : public Object<String<Alloc>> {
+class BasicString : public Object<BasicString<Alloc>> {
 public:
     using value_type = u8;
     static constexpr usize npos = StringView::npos;
-    using Self = String<Alloc>;
+    using Self = BasicString<Alloc>;
 
     using cstr_allocator = typename Alloc::template rebind<char>::other;
     struct CStrDeleter {
@@ -31,11 +31,11 @@ public:
     };
     using CStrPtr = std::unique_ptr<char[], CStrDeleter>;
 
-    String() {
+    BasicString() {
         buf_.push(0);
     }
 
-    explicit String(const StringView& view) {
+    explicit BasicString(const StringView& view) {
         buf_.reserve(view.len() + 1);
         for (auto b : view.bytes()) {
             buf_.push(b);
@@ -43,19 +43,19 @@ public:
         buf_.push(0);
     }
 
-    explicit String(const char* s) :
-            String(StringView(s)) {}
+    explicit BasicString(const char* s) :
+            BasicString(StringView(s)) {}
 
-    String(const char* s, const usize len) :
-            String(StringView(s, len)) {}
+    BasicString(const char* s, const usize len) :
+            BasicString(StringView(s, len)) {}
 
-    String(const String& other) = default;
-    String& operator=(const String& other) = default;
+    BasicString(const BasicString& other) = default;
+    BasicString& operator=(const BasicString& other) = default;
 
-    String(String&& other) noexcept = default;
-    String& operator=(String&& other) noexcept = default;
+    BasicString(BasicString&& other) noexcept = default;
+    BasicString& operator=(BasicString&& other) noexcept = default;
 
-    ~String() = default;
+    ~BasicString() = default;
 
     [[nodiscard]] usize len() const noexcept {
         return buf_.len() > 0 ? buf_.len() - 1 : 0;
@@ -110,8 +110,8 @@ public:
         return std::string(as_cstr(), len());
     }
 
-    [[nodiscard]] String to_string() const {
-        return String(*this);
+    [[nodiscard]] Self to_string() const {
+        return Self(*this);
     }
 
     [[nodiscard]] auto hash() const -> hash_t {
@@ -268,15 +268,15 @@ public:
         return as_str().trim();
     }
 
-    String replace(const StringView& from, const StringView& to) const {
+    Self replace(const StringView& from, const StringView& to) const {
         return as_str().replace(from, to);
     }
 
-    String to_lowercase() const {
+    Self to_lowercase() const {
         return as_str().to_lowercase();
     }
 
-    String to_uppercase() const {
+    Self to_uppercase() const {
         return as_str().to_uppercase();
     }
 
@@ -296,48 +296,53 @@ private:
     util::Vec<u8, Alloc> buf_{};
 };
 
+/**
+ * @brief 字符串别名
+ */
+using String = BasicString<mem::Allocator<u8>>;
+
 template <typename AllocL, typename AllocR>
-inline bool operator==(const String<AllocL>& lhs, const String<AllocR>& rhs) {
+inline bool operator==(const BasicString<AllocL>& lhs, const BasicString<AllocR>& rhs) {
     return lhs.as_str() == rhs.as_str();
 }
 
 template <typename Alloc>
-inline bool operator==(const String<Alloc>& lhs, const StringView rhs) {
+inline bool operator==(const BasicString<Alloc>& lhs, const StringView rhs) {
     return lhs.as_str() == rhs;
 }
 
 template <typename Alloc>
-inline bool operator==(const StringView lhs, const String<Alloc>& rhs) {
+inline bool operator==(const StringView lhs, const BasicString<Alloc>& rhs) {
     return lhs == rhs.as_str();
 }
 
 template <typename Alloc>
-inline bool operator==(const String<Alloc>& lhs, const char* rhs) {
+inline bool operator==(const BasicString<Alloc>& lhs, const char* rhs) {
     return lhs.as_str() == rhs;
 }
 
 template <typename Alloc>
-inline bool operator==(const char* lhs, const String<Alloc>& rhs) {
+inline bool operator==(const char* lhs, const BasicString<Alloc>& rhs) {
     return lhs == rhs.as_str();
 }
 
 template <typename Alloc>
-inline bool operator!=(const String<Alloc>& lhs, const StringView rhs) {
+inline bool operator!=(const BasicString<Alloc>& lhs, const StringView rhs) {
     return !(lhs == rhs);
 }
 
 template <typename Alloc>
-inline bool operator!=(const StringView lhs, const String<Alloc>& rhs) {
+inline bool operator!=(const StringView lhs, const BasicString<Alloc>& rhs) {
     return !(lhs == rhs);
 }
 
 template <typename Alloc>
-inline bool operator!=(const String<Alloc>& lhs, const char* rhs) {
+inline bool operator!=(const BasicString<Alloc>& lhs, const char* rhs) {
     return !(lhs == rhs);
 }
 
 template <typename Alloc>
-inline bool operator!=(const char* lhs, const String<Alloc>& rhs) {
+inline bool operator!=(const char* lhs, const BasicString<Alloc>& rhs) {
     return !(lhs == rhs);
 }
 
@@ -347,14 +352,14 @@ namespace my {
 
 template <typename T>
 concept ToString = requires(const T& t) {
-    { to_string(t) } -> std::same_as<str::String<>>;
+    { to_string(t) } -> std::same_as<str::String>;
 };
 
 } // namespace my
 
 template <typename Alloc>
-struct std::formatter<my::str::String<Alloc>, char> : std::formatter<std::string_view, char> {
-    auto format(const my::str::String<Alloc>& value, auto& ctx) const {
+struct std::formatter<my::str::BasicString<Alloc>, char> : std::formatter<std::string_view, char> {
+    auto format(const my::str::BasicString<Alloc>& value, auto& ctx) const {
         auto view = value.as_str();
         return std::formatter<std::string_view, char>::format(
             std::string_view(reinterpret_cast<const char*>(view.as_bytes()), view.len()), ctx);

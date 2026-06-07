@@ -20,7 +20,7 @@ public:
 
     TcpListener(str::StringView ip, u16 port);
 
-    [[nodiscard]] str::String<> local_ip() const;
+    [[nodiscard]] str::String local_ip() const;
     [[nodiscard]] u16 local_port() const;
 
     std::unique_ptr<TcpStream> accept();
@@ -29,7 +29,7 @@ public:
 
 private:
     std::unique_ptr<plat::net::SocketHandle, void (*)(plat::net::SocketHandle*)> handle_;
-    str::String<> local_ip_;
+    str::String local_ip_;
     u16 local_port_{0};
 
     TcpListener() : handle_(nullptr, plat::net::close) {}
@@ -43,11 +43,11 @@ public:
 
     TcpStream(plat::net::SocketHandle* h);
 
-    [[nodiscard]] str::String<> peer_ip() const;
+    [[nodiscard]] str::String peer_ip() const;
     [[nodiscard]] u16 peer_port() const;
 
     usize write(str::StringView data);
-    str::String<> read(usize max_size = 4096);
+    str::String read(usize max_size = 4096);
 
     void set_read_timeout(u32 timeout_ms);
     void set_write_timeout(u32 timeout_ms);
@@ -57,7 +57,7 @@ public:
 
 private:
     std::unique_ptr<plat::net::SocketHandle, void (*)(plat::net::SocketHandle*)> handle_;
-    str::String<> peer_ip_;
+    str::String peer_ip_;
     u16 peer_port_{0};
 
     TcpStream() : handle_(nullptr, plat::net::close) {}

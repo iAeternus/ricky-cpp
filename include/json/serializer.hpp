@@ -19,7 +19,7 @@ template <typename D>
 class Serializer : public Object<Serializer<D>> {
 public:
     using Self = Serializer<D>;
-    using JsonString = str::String<>;
+    using JsonString = str::String;
     using JsonStringView = str::StringView;
 
     /**

@@ -21,10 +21,10 @@ Ipv4Addr Ipv4Addr::any() { return Ipv4Addr(0, 0, 0, 0); }
 Ipv4Addr Ipv4Addr::loopback() { return Ipv4Addr(127, 0, 0, 1); }
 Ipv4Addr Ipv4Addr::broadcast() { return Ipv4Addr(255, 255, 255, 255); }
 
-str::String<> Ipv4Addr::to_string() const {
+str::String Ipv4Addr::to_string() const {
     char buf[16];
     std::snprintf(buf, sizeof(buf), "%u.%u.%u.%u", octets_[0], octets_[1], octets_[2], octets_[3]);
-    return str::String<>(buf);
+    return str::String(buf);
 }
 
 u32 Ipv4Addr::to_u32() const {
@@ -181,12 +181,12 @@ Ipv6Addr::Ipv6Addr(u16 (&segments)[8]) {
     }
 }
 
-str::String<> Ipv6Addr::to_string() const {
+str::String Ipv6Addr::to_string() const {
     char buf[64];
     std::snprintf(buf, sizeof(buf), "%x:%x:%x:%x:%x:%x:%x:%x",
                   segments_[0], segments_[1], segments_[2], segments_[3],
                   segments_[4], segments_[5], segments_[6], segments_[7]);
-    return str::String<>(buf);
+    return str::String(buf);
 }
 
 IpAddr IpAddr::from_str(str::StringView s) {
@@ -213,7 +213,7 @@ bool IpAddr::is_ipv6() const { return kind_ == IpAddrKind::Ipv6; }
 const Ipv4Addr& IpAddr::as_ipv4() const { return ipv4_; }
 const Ipv6Addr& IpAddr::as_ipv6() const { return ipv6_; }
 
-str::String<> IpAddr::to_string() const {
+str::String IpAddr::to_string() const {
     if (is_ipv4()) {
         return ipv4_.to_string();
     }

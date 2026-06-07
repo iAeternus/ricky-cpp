@@ -25,7 +25,7 @@ TcpListener::TcpListener(str::StringView ip, u16 port) : handle_(nullptr, plat::
     plat::net::listen(handle_.get(), 128);
 }
 
-str::String<> TcpListener::local_ip() const {
+str::String TcpListener::local_ip() const {
     return local_ip_;
 }
 
@@ -56,7 +56,7 @@ TcpStream::TcpStream(str::StringView ip, u16 port) : handle_(nullptr, plat::net:
 
 TcpStream::TcpStream(plat::net::SocketHandle* h) : handle_(h, plat::net::close) {}
 
-str::String<> TcpStream::peer_ip() const {
+str::String TcpStream::peer_ip() const {
     return peer_ip_;
 }
 
@@ -68,7 +68,7 @@ usize TcpStream::write(str::StringView data) {
     return plat::net::send_bytes(handle_.get(), data, data.len(), 0);
 }
 
-str::String<> TcpStream::read(usize max_size) {
+str::String TcpStream::read(usize max_size) {
     return plat::net::recv_bytes(handle_.get(), max_size, 0);
 }
 

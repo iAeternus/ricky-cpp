@@ -44,7 +44,7 @@ str::StringView sv(const CString& s) {
     return str::StringView(s.data(), s.length());
 }
 
-std::string to_std(const str::String<>& s) {
+std::string to_std(const str::String& s) {
     auto view = s.as_str();
     return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
 }

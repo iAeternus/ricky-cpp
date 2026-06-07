@@ -17,7 +17,7 @@ namespace my::util {
 class HuffmanTree : public Object<HuffmanTree>, public NoCopyMove {
 public:
     using Self = HuffmanTree;
-    using String = str::String<>;
+    using String = str::String;
     static constexpr usize NIL = -1ULL;
 
     struct Node {
@@ -187,10 +187,10 @@ private:
     }
 
 private:
-    str::String<> text_;
-    str::String<> encoded_text_;
+    str::String text_;
+    str::String encoded_text_;
     Vec<Node> nodes_;
-    HashMap<u32, str::String<>> key_;
+    HashMap<u32, str::String> key_;
     HashMap<u32, u32> freqs_;
     u32 char_count_ = 0;
     usize root_idx_ = NIL;

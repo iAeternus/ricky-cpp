@@ -10,7 +10,7 @@ namespace my::plat::fs {
  * @brief 用于 listdir 结果的文件条目信息
  */
 struct DirEntry {
-    str::String<> name;
+    str::String name;
     bool is_file{false};
     bool is_dir{false};
 };
@@ -63,7 +63,7 @@ void remove(str::StringView path, bool recursive = false);
 /**
  * @brief 路径拼接
  */
-str::String<> join(str::StringView a, str::StringView b);
+str::String join(str::StringView a, str::StringView b);
 
 /**
  * @brief 列出目录项
@@ -83,12 +83,12 @@ FileHandle* open(str::StringView path, OpenMode mode);
 /**
  * @brief 读取整个文件内容
  */
-str::String<> read_all(FileHandle* file);
+str::String read_all(FileHandle* file);
 
 /**
  * @brief 读取整个文件内容（按路径）
  */
-str::String<> read_all(str::StringView path);
+str::String read_all(str::StringView path);
 
 /**
  * @brief 写入数据

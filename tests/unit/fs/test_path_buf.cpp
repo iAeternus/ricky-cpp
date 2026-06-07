@@ -6,7 +6,7 @@ namespace my::test::test_path_buf {
 
 namespace {
 
-std::string to_std(const my::str::String<>& s) {
+std::string to_std(const my::str::String& s) {
     auto view = s.as_str();
     return std::string(reinterpret_cast<const char*>(view.as_bytes()), view.len());
 }
