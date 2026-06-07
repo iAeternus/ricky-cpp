@@ -1,113 +1,32 @@
 #include "string.hpp"
+#include "string_algorithm.hpp"
+#include "string_utf8.hpp"
 
 namespace my::str {
 
-namespace {
+namespace detail {
 
-void max_suffix(const u8* x, const usize m, const bool order, usize& pos, usize& period) {
-    std::ptrdiff_t ms = -1;
-    usize j = 0;
-    usize k = 1;
-    usize p = 1;
-
-    while (j + k < m) {
-        const u8 a = x[j + k];
-        const u8 b = x[static_cast<usize>(ms + static_cast<std::ptrdiff_t>(k))];
-
-        if (a == b) {
-            if (k == p) {
-                j += p;
-                k = 1;
-            } else {
-                ++k;
-            }
-        } else if ((a > b) == order) {
-            j += k;
-            k = 1;
-            p = static_cast<usize>(static_cast<std::ptrdiff_t>(j) - ms);
-        } else {
-            ms = static_cast<std::ptrdiff_t>(j);
-            j = static_cast<usize>(ms + 1);
-            k = 1;
-            p = 1;
-        }
-    }
-
-    pos = (ms < 0) ? 0 : static_cast<usize>(ms);
-    period = p;
+bool is_ascii_whitespace(const char32_t cp) {
+    if (cp > 0x7Fu) return false;
+    return std::isspace(static_cast<unsigned char>(cp)) != 0;
 }
 
-Option<usize> twoway_find(const u8* hay, const usize hlen, const u8* pat, const usize plen) {
-    if (plen == 0) return Option<usize>::Some(0);
-    if (plen > hlen) return Option<usize>::None();
-
-    usize ms1 = 0, p1 = 0;
-    usize ms2 = 0, p2 = 0;
-    max_suffix(pat, plen, true, ms1, p1);
-    max_suffix(pat, plen, false, ms2, p2);
-
-    usize crit;
-    usize period;
-    if (ms1 > ms2) {
-        crit = ms1;
-        period = p1;
-    } else {
-        crit = ms2;
-        period = p2;
+void validate_utf8(const u8* data, const usize len) {
+    if (len == 0) return;
+    if (data == nullptr) {
+        throw runtime_exception("Invalid UTF-8: null pointer");
     }
-
-    usize pos = 0;
-    bool is_periodic = false;
-    if (period > 0 && period + crit < plen) {
-        is_periodic = (std::memcmp(pat, pat + period, crit + 1) == 0);
-    }
-    if (is_periodic) {
-        usize memory = 0;
-        while (pos + plen <= hlen) {
-            usize i = std::max(crit, memory);
-            while (i < plen && pat[i] == hay[pos + i]) {
-                ++i;
-            }
-            if (i >= plen) {
-                i = crit;
-                while (i > memory && pat[i - 1] == hay[pos + i - 1]) {
-                    --i;
-                }
-                if (i <= memory) {
-                    return Option<usize>::Some(pos);
-                }
-                pos += period;
-                memory = plen - period;
-            } else {
-                pos += (i > crit) ? (i - crit) : 1;
-                memory = 0;
-            }
-        }
-    } else {
-        while (pos + plen <= hlen) {
-            usize i = crit + 1;
-            while (i < plen && pat[i] == hay[pos + i]) {
-                ++i;
-            }
-            if (i >= plen) {
-                i = crit;
-                while (i > 0 && pat[i - 1] == hay[pos + i - 1]) {
-                    --i;
-                }
-                if (i == 0) {
-                    return Option<usize>::Some(pos);
-                }
-                pos += i + 1;
-            } else {
-                pos += i - crit;
-            }
+    const u8* p = data;
+    const u8* end = data + len;
+    char32_t cp = 0;
+    while (p < end) {
+        if (!detail::decode_next(p, end, cp)) {
+            throw runtime_exception("Invalid UTF-8");
         }
     }
-
-    return Option<usize>::None();
 }
 
-} // namespace
+} // namespace detail
 
 const u8& StringView::at(const usize idx) const {
     if (idx >= len_) {
@@ -126,6 +45,82 @@ StringView::StringView(const char* s, const usize len) :
 
 StringView::StringView(const u8* s, const usize len) :
         data_(s), len_(len), cstr_backed_(false) {}
+
+StringView StringView::from_null_terminated(const char* s, const usize len) noexcept {
+    StringView view;
+    view.data_ = reinterpret_cast<const u8*>(s);
+    view.len_ = len;
+    view.cstr_backed_ = (s != nullptr);
+    return view;
+}
+
+usize StringView::len() const noexcept {
+    return len_;
+}
+
+bool StringView::is_empty() const noexcept {
+    return len_ == 0;
+}
+
+const u8* StringView::as_bytes() const noexcept {
+    return data_;
+}
+
+StringView StringView::as_str() const noexcept {
+    return *this;
+}
+
+std::string_view StringView::to_std_string_view() const noexcept {
+    return std::string_view(reinterpret_cast<const char*>(data_), len_);
+}
+
+std::string StringView::to_std_string() const {
+    return std::string(reinterpret_cast<const char*>(data_), len_);
+}
+
+const u8& StringView::operator[](const usize idx) const noexcept {
+    return data_[idx];
+}
+
+StringView StringView::slice(const usize start, const usize end) const noexcept {
+    if (start > len_ || end > len_ || start > end) {
+        return StringView{};
+    }
+    return StringView(data_ + start, end - start);
+}
+
+StringView StringView::slice(const usize start) const noexcept {
+    return slice(start, len_);
+}
+
+void StringView::CStrDeleter::operator()(char* p) noexcept {
+    if (!p) return;
+    alloc.deallocate(p, size);
+}
+
+auto StringView::operator==(const Self& other) const -> bool {
+    return eq(other);
+}
+
+auto StringView::operator!=(const Self& other) const -> bool {
+    return !eq(other);
+}
+
+auto StringView::operator<(const Self& other) const -> bool {
+    return cmp(other) < 0;
+}
+
+auto StringView::operator<=(const Self& other) const -> bool {
+    return cmp(other) <= 0;
+}
+
+auto StringView::operator>(const Self& other) const -> bool {
+    return cmp(other) > 0;
+}
+
+auto StringView::operator>=(const Self& other) const -> bool {
+    return cmp(other) >= 0;
+}
 
 StringView::CharsRange::Iterator::Iterator(const u8* cur, const u8* end_) :
         p(cur), end(end_), next(cur), value(0) {

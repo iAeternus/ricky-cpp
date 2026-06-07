@@ -8,6 +8,7 @@
 #define STR_STRING_HPP
 
 #include "string_view.hpp"
+#include "string_utf8.hpp"
 
 namespace my::str {
 
