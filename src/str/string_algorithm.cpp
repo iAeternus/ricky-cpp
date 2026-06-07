@@ -1,8 +1,5 @@
 #include "string_algorithm.hpp"
 
-#include <cstring>
-#include <algorithm>
-
 namespace my::str {
 
 static void max_suffix(const u8* x, const usize m, const bool order, usize& pos, usize& period) {
@@ -86,7 +83,7 @@ Option<usize> twoway_find(const u8* hay, const usize hlen, const u8* pat, const 
         }
     } else {
         while (pos + plen <= hlen) {
-            usize i = crit + 1;
+            usize i = crit;
             while (i < plen && pat[i] == hay[pos + i]) {
                 ++i;
             }
@@ -98,14 +95,65 @@ Option<usize> twoway_find(const u8* hay, const usize hlen, const u8* pat, const 
                 if (i == 0) {
                     return Option<usize>::Some(pos);
                 }
-                pos += i + 1;
+                pos += i;
             } else {
-                pos += i - crit;
+                pos += i - crit + 1;
             }
         }
     }
 
     return Option<usize>::None();
+}
+
+static util::Vec<usize> kmp_next_array(const u8* pat, const usize plen) {
+    util::Vec<usize> next(plen, 0);
+    for (usize i = 1, j = 0; i < plen; ++i) {
+        // 失配，j按照next数组回跳
+        while (j > 0 && pat[i] != pat[j]) {
+            j = next[j - 1];
+        }
+        j += pat[i] == pat[j]; // 匹配，j前进
+        next[i] = j;
+    }
+    return next;
+}
+
+Option<usize> kmp_find(const u8* hay, const usize hlen, const u8* pat, const usize plen) {
+    if (pat == nullptr || plen == 0) return Option<usize>::None();
+    const auto next = kmp_next_array(pat, plen);
+
+    for (usize i = 0, j = 0; i < hlen; ++i) {
+        // 失配，j按照next数组回跳
+        while (j > 0 && hay[i] != pat[j]) {
+            j = next[j - 1];
+        }
+        j += hay[i] == pat[j]; // 匹配，j前进
+        // 模式串匹配完，返回文本串匹配起点
+        if (j == plen) {
+            return Option<usize>::Some(i - plen + 1);
+        }
+    }
+    return Option<usize>::None();
+}
+
+util::Vec<usize> kmp_find_all(const u8* hay, const usize hlen, const u8* pat, const usize plen) {
+    util::Vec<usize> res;
+    if (pat == nullptr || plen == 0) return res;
+    const auto next = kmp_next_array(pat, plen);
+
+    for (usize i = 0, j = 0; i < hlen; ++i) {
+        // 失配，j按照next数组回跳
+        while (j > 0 && hay[i] != pat[j]) {
+            j = next[j - 1];
+        }
+        j += hay[i] == pat[j]; // 匹配，j前进
+        // 模式串匹配完，返回文本串匹配起点
+        if (j == plen) {
+            res.push(i - plen + 1);
+            j = next[j - 1];
+        }
+    }
+    return res;
 }
 
 } // namespace my::str

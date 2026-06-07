@@ -519,7 +519,6 @@ StringView StringView::trim_end_matches(const StringView& pattern) const noexcep
     return StringView(data_, end);
 }
 
-// TODO: 复杂度过高！！
 util::Vec<usize> StringView::match_indices(const StringView& pat) const {
     util::Vec<usize> out;
     if (pat.len_ == 0) return out;

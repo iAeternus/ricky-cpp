@@ -672,7 +672,6 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_case_convert_non_ascii),
     UNIT_TEST_ITEM(test_into_bytes_edge_cases),
     UNIT_TEST_ITEM(test_reserve_capacity),
-
     UNIT_TEST_ITEM(test_from_numeric),
     UNIT_TEST_ITEM(test_operator_add),
     UNIT_TEST_ITEM(test_operator_mul),
