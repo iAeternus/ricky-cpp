@@ -1,5 +1,6 @@
 #include "test_str_string.hpp"
 #include "string.hpp"
+#include "vec.hpp"
 #include "ricky_test.hpp"
 
 namespace my::test::test_str_string {
@@ -305,6 +306,348 @@ void test_reserve_capacity() {
     Assertions::assert_true(s.capacity() >= 128);
 }
 
+void test_from_numeric() {
+    auto s1 = String::from_i32(42);
+    Assertions::assert_equals(std::string("42"), to_std(s1.as_str()));
+
+    auto s2 = String::from_i32(-42);
+    Assertions::assert_equals(std::string("-42"), to_std(s2.as_str()));
+
+    auto s3 = String::from_u32(42);
+    Assertions::assert_equals(std::string("42"), to_std(s3.as_str()));
+
+    auto s4 = String::from_i64(1234567890123LL);
+    Assertions::assert_equals(std::string("1234567890123"), to_std(s4.as_str()));
+
+    auto s5 = String::from_u64(1234567890123ULL);
+    Assertions::assert_equals(std::string("1234567890123"), to_std(s5.as_str()));
+
+    auto s6 = String::from_f64(3.14);
+    Assertions::assert_false(s6.is_empty());
+}
+
+void test_operator_add() {
+    String a("hello");
+    StringView b(" world");
+    auto c = a + b;
+    Assertions::assert_equals(std::string("hello world"), to_std(c.as_str()));
+
+    auto d = a + String(" world");
+    Assertions::assert_equals(std::string("hello world"), to_std(d.as_str()));
+
+    auto e = String("hello ") + "world";
+    Assertions::assert_equals(std::string("hello world"), to_std(e.as_str()));
+
+    auto f = "hello " + String("world");
+    Assertions::assert_equals(std::string("hello world"), to_std(f.as_str()));
+}
+
+void test_operator_mul() {
+    String s("ab");
+    auto r = s * 3;
+    Assertions::assert_equals(std::string("ababab"), to_std(r.as_str()));
+
+    auto r2 = s * 0;
+    Assertions::assert_true(r2.is_empty());
+
+    auto r3 = s.repeat(2);
+    Assertions::assert_equals(std::string("abab"), to_std(r3.as_str()));
+}
+
+void test_match_indices() {
+    String s("abcabcabc");
+    auto indices = s.match_indices(StringView("abc"));
+    Assertions::assert_equals(static_cast<usize>(3), indices.len());
+    Assertions::assert_equals(static_cast<usize>(0), indices.at(0));
+    Assertions::assert_equals(static_cast<usize>(3), indices.at(1));
+    Assertions::assert_equals(static_cast<usize>(6), indices.at(2));
+
+    auto indices2 = s.match_indices(StringView("xyz"));
+    Assertions::assert_equals(static_cast<usize>(0), indices2.len());
+
+    auto indices3 = s.match_indices(StringView(""));
+    Assertions::assert_equals(static_cast<usize>(0), indices3.len());
+}
+
+void test_string_trim_start_end() {
+    String s("  hello  ");
+    auto trimmed_start = s.trim_start();
+    Assertions::assert_equals(std::string("hello  "), to_std(trimmed_start));
+
+    auto trimmed_end = s.trim_end();
+    Assertions::assert_equals(std::string("  hello"), to_std(trimmed_end));
+
+    String s2("");
+    Assertions::assert_true(s2.trim_start().is_empty());
+    Assertions::assert_true(s2.trim_end().is_empty());
+
+    String s3("hello");
+    Assertions::assert_equals(std::string("hello"), to_std(s3.trim_start()));
+    Assertions::assert_equals(std::string("hello"), to_std(s3.trim_end()));
+}
+
+void test_trim_matches() {
+    String s("ababXabab");
+    auto t1 = s.trim_matches(StringView("ab"));
+    Assertions::assert_equals(std::string("X"), to_std(t1));
+
+    auto t2 = s.trim_start_matches(StringView("ab"));
+    Assertions::assert_equals(std::string("Xabab"), to_std(t2));
+
+    auto t3 = s.trim_end_matches(StringView("ab"));
+    Assertions::assert_equals(std::string("ababX"), to_std(t3));
+
+    String s2("hello");
+    auto t4 = s2.trim_matches(StringView("xyz"));
+    Assertions::assert_equals(std::string("hello"), to_std(t4));
+
+    auto t5 = s2.trim_matches(StringView(""));
+    Assertions::assert_equals(std::string("hello"), to_std(t5));
+}
+
+void test_join() {
+    String sep(", ");
+    util::Vec<String> items;
+    items.push(String("a"));
+    items.push(String("b"));
+    items.push(String("c"));
+    auto joined = sep.join(items);
+    Assertions::assert_equals(std::string("a, b, c"), to_std(joined.as_str()));
+
+    util::Vec<String> empty;
+    auto joined2 = sep.join(empty);
+    Assertions::assert_true(joined2.is_empty());
+
+    util::Vec<i32> vec;
+    vec.push(1);
+    vec.push(2);
+    vec.push(3);
+    auto joined3 = sep.join(vec);
+    Assertions::assert_equals(std::string("1, 2, 3"), to_std(joined3.as_str()));
+}
+
+void test_match_brackets() {
+    String s("{a, b, [1, 2], {x: 1}}");
+    auto m1 = s.match_brackets(U'{', U'}');
+    Assertions::assert_equals(std::string("{a, b, [1, 2], {x: 1}}"), to_std(m1.as_str()));
+
+    auto m2 = s.match_brackets(U'[', U']');
+    Assertions::assert_equals(std::string("[1, 2]"), to_std(m2.as_str()));
+
+    String s2("no brackets");
+    auto m3 = s2.match_brackets(U'{', U'}');
+    Assertions::assert_true(m3.is_empty());
+
+    String s3("{unmatched");
+    Assertions::assert_throws<Exception>("Unmatched brackets, too many left brackets", [&]() {
+        s3.match_brackets(U'{', U'}');
+    });
+}
+
+void test_remove_all() {
+    String s("aabbaa");
+    auto r1 = s.remove_all(U'a');
+    Assertions::assert_equals(std::string("bb"), to_std(r1.as_str()));
+
+    auto r2 = s.remove_all([](char32_t cp) { return cp == U'b'; });
+    Assertions::assert_equals(std::string("aaaa"), to_std(r2.as_str()));
+}
+
+void test_swap() {
+    String a("hello");
+    String b("world");
+    a.swap(b);
+    Assertions::assert_equals(std::string("world"), to_std(a.as_str()));
+    Assertions::assert_equals(std::string("hello"), to_std(b.as_str()));
+}
+
+void test_push_format() {
+    String s;
+    s.push_format("Case {}: {}+{}={}", 1, 1, 1, 2);
+    Assertions::assert_equals(std::string("Case 1: 1+1=2"), to_std(s.as_str()));
+}
+
+void test_push_n() {
+    String s;
+    s.push_n(U'a', 5);
+    Assertions::assert_equals(std::string("aaaaa"), to_std(s.as_str()));
+}
+
+void test_shrink_to_fit() {
+    String s("hello");
+    s.reserve(128);
+    Assertions::assert_true(s.capacity() >= 128);
+    s.shrink_to_fit();
+    Assertions::assert_true(s.capacity() < 128);
+}
+
+void test_slice_negative() {
+    String s("hello");
+    auto sv = s.slice(static_cast<usize>(1), static_cast<isize>(-1));
+    Assertions::assert_equals(std::string("ell"), to_std(sv));
+}
+
+void test_split_max_split() {
+    String s("a,b,c,d");
+    auto parts = s.split(StringView(","), 2);
+    Assertions::assert_equals(static_cast<usize>(3), parts.len());
+    Assertions::assert_equals(std::string("a"), to_std(parts.at(0)));
+    Assertions::assert_equals(std::string("b"), to_std(parts.at(1)));
+    Assertions::assert_equals(std::string("c,d"), to_std(parts.at(2)));
+}
+
+void test_string_iterators() {
+    String s("abc");
+    usize count = 0;
+    for (auto it = s.begin(); it != s.end(); ++it) {
+        ++count;
+    }
+    Assertions::assert_equals(static_cast<usize>(3), count);
+
+    u8 sum = 0;
+    for (auto it = s.begin(); it != s.end(); ++it) {
+        sum += *it;
+    }
+    Assertions::assert_equals(static_cast<u8>('a' + 'b' + 'c'), sum);
+}
+
+void test_at_out_of_range() {
+    String s("abc");
+    Assertions::assert_throws("Index 100 out of bounds [0..3]", [&]() {
+        volatile auto x = s.at(100);
+        (void)x;
+    });
+}
+
+void test_comparison_operators() {
+    String a("abc");
+    String b("abc");
+    String c("abd");
+
+    Assertions::assert_true(a == b);
+    Assertions::assert_false(a != b);
+    Assertions::assert_true(a != c);
+    Assertions::assert_true(a < c);
+    Assertions::assert_true(a <= b);
+    Assertions::assert_true(c > a);
+    Assertions::assert_true(c >= b);
+}
+
+void test_copy_and_move() {
+    String a("hello");
+    String b = a;
+    Assertions::assert_equals(std::string("hello"), to_std(b.as_str()));
+
+    String c = std::move(a);
+    Assertions::assert_equals(std::string("hello"), to_std(c.as_str()));
+
+    String d;
+    d = b;
+    Assertions::assert_equals(std::string("hello"), to_std(d.as_str()));
+}
+
+void test_split_pattern() {
+    String s("a,b,c");
+    auto parts = s.split(StringView(","));
+    Assertions::assert_equals(static_cast<usize>(3), parts.len());
+    Assertions::assert_equals(std::string("a"), to_std(parts.at(0)));
+    Assertions::assert_equals(std::string("b"), to_std(parts.at(1)));
+    Assertions::assert_equals(std::string("c"), to_std(parts.at(2)));
+
+    String s2("a.b.c");
+    auto parts2 = s2.split(StringView("."));
+    Assertions::assert_equals(static_cast<usize>(3), parts2.len());
+}
+
+void test_string_view_trim() {
+    StringView sv("  hello  ");
+    auto t1 = sv.trim_start();
+    Assertions::assert_equals(std::string("hello  "), to_std(t1));
+
+    auto t2 = sv.trim_end();
+    Assertions::assert_equals(std::string("  hello"), to_std(t2));
+
+    auto t3 = sv.trim();
+    Assertions::assert_equals(std::string("hello"), to_std(t3));
+
+    StringView sv2("ababXabab");
+    auto t4 = sv2.trim_matches(StringView("ab"));
+    Assertions::assert_equals(std::string("X"), to_std(t4));
+
+    auto t5 = sv2.trim_start_matches(StringView("ab"));
+    Assertions::assert_equals(std::string("Xabab"), to_std(t5));
+
+    auto t6 = sv2.trim_end_matches(StringView("ab"));
+    Assertions::assert_equals(std::string("ababX"), to_std(t6));
+}
+
+void test_string_view_match_indices() {
+    StringView sv("abcabcabc");
+    auto indices = sv.match_indices(StringView("abc"));
+    Assertions::assert_equals(static_cast<usize>(3), indices.len());
+    Assertions::assert_equals(static_cast<usize>(0), indices.at(0));
+    Assertions::assert_equals(static_cast<usize>(3), indices.at(1));
+    Assertions::assert_equals(static_cast<usize>(6), indices.at(2));
+}
+
+void test_string_view_split_max() {
+    StringView sv("a,b,c,d");
+    auto parts = sv.split(StringView(","), 2);
+    Assertions::assert_equals(static_cast<usize>(3), parts.len());
+    Assertions::assert_equals(std::string("a"), to_std(parts.at(0)));
+    Assertions::assert_equals(std::string("b"), to_std(parts.at(1)));
+    Assertions::assert_equals(std::string("c,d"), to_std(parts.at(2)));
+}
+
+void test_string_view_iterators() {
+    StringView sv("abc");
+    usize count = 0;
+    for (auto it = sv.begin(); it != sv.end(); ++it) {
+        ++count;
+    }
+    Assertions::assert_equals(static_cast<usize>(3), count);
+
+    u8 sum = 0;
+    for (auto it = sv.begin(); it != sv.end(); ++it) {
+        sum += *it;
+    }
+    Assertions::assert_equals(static_cast<u8>('a' + 'b' + 'c'), sum);
+}
+
+void test_string_view_to_numeric() {
+    StringView sv("42");
+    Assertions::assert_equals(static_cast<i64>(42), sv.to_i64());
+    Assertions::assert_equals(static_cast<f64>(42.0), sv.to_f64());
+
+    StringView sv2("3.14");
+    auto f = sv2.to_f64();
+    Assertions::assert_true(f > 3.0 && f < 4.0);
+
+    StringView sv3("");
+    Assertions::assert_equals(static_cast<i64>(0), sv3.to_i64());
+
+    StringView sv4("abc");
+    Assertions::assert_equals(static_cast<i64>(0), sv4.to_i64());
+}
+
+void test_retain() {
+    String s("a1b2c3");
+    s.retain([](char32_t cp) { return cp >= U'a' && cp <= U'z'; });
+    Assertions::assert_equals(std::string("abc"), to_std(s.as_str()));
+}
+
+void test_string_trim_no_whitespace() {
+    String s("hello");
+    auto t = s.trim();
+    Assertions::assert_equals(std::string("hello"), to_std(t));
+
+    auto ts = s.trim_start();
+    Assertions::assert_equals(std::string("hello"), to_std(ts));
+
+    auto te = s.trim_end();
+    Assertions::assert_equals(std::string("hello"), to_std(te));
+}
+
 GROUP_NAME("test_str_string");
 REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_basic_len_and_bytes),
@@ -328,6 +671,34 @@ REGISTER_UNIT_TESTS(
     UNIT_TEST_ITEM(test_case_convert_and_into_bytes),
     UNIT_TEST_ITEM(test_case_convert_non_ascii),
     UNIT_TEST_ITEM(test_into_bytes_edge_cases),
-    UNIT_TEST_ITEM(test_reserve_capacity));
+    UNIT_TEST_ITEM(test_reserve_capacity),
+
+    UNIT_TEST_ITEM(test_from_numeric),
+    UNIT_TEST_ITEM(test_operator_add),
+    UNIT_TEST_ITEM(test_operator_mul),
+    UNIT_TEST_ITEM(test_match_indices),
+    UNIT_TEST_ITEM(test_string_trim_start_end),
+    UNIT_TEST_ITEM(test_trim_matches),
+    UNIT_TEST_ITEM(test_join),
+    UNIT_TEST_ITEM(test_match_brackets),
+    UNIT_TEST_ITEM(test_remove_all),
+    UNIT_TEST_ITEM(test_swap),
+    UNIT_TEST_ITEM(test_push_format),
+    UNIT_TEST_ITEM(test_push_n),
+    UNIT_TEST_ITEM(test_shrink_to_fit),
+    UNIT_TEST_ITEM(test_slice_negative),
+    UNIT_TEST_ITEM(test_split_max_split),
+    UNIT_TEST_ITEM(test_string_iterators),
+    UNIT_TEST_ITEM(test_at_out_of_range),
+    UNIT_TEST_ITEM(test_comparison_operators),
+    UNIT_TEST_ITEM(test_copy_and_move),
+    UNIT_TEST_ITEM(test_split_pattern),
+    UNIT_TEST_ITEM(test_string_view_trim),
+    UNIT_TEST_ITEM(test_string_view_match_indices),
+    UNIT_TEST_ITEM(test_string_view_split_max),
+    UNIT_TEST_ITEM(test_string_view_iterators),
+    UNIT_TEST_ITEM(test_string_view_to_numeric),
+    UNIT_TEST_ITEM(test_retain),
+    UNIT_TEST_ITEM(test_string_trim_no_whitespace));
 
 } // namespace my::test::test_str_string

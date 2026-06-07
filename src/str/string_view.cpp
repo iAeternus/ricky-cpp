@@ -92,6 +92,25 @@ StringView StringView::slice(const usize start) const noexcept {
     return slice(start, len_);
 }
 
+StringView StringView::slice(const usize start, isize end) const noexcept {
+    if (end < 0) {
+        end = static_cast<isize>(len_) + end;
+        if (end < 0) end = 0;
+    }
+    if (start > len_ || static_cast<usize>(end) > len_ || start > static_cast<usize>(end)) {
+        return StringView{};
+    }
+    return StringView(data_ + start, static_cast<usize>(end) - start);
+}
+
+const u8* StringView::begin() const noexcept {
+    return data_;
+}
+
+const u8* StringView::end() const noexcept {
+    return data_ + len_;
+}
+
 void StringView::CStrDeleter::operator()(char* p) noexcept {
     if (!p) return;
     alloc.deallocate(p, size);
@@ -314,6 +333,46 @@ util::Vec<StringView> StringView::split(const StringView& pat) const {
     return out;
 }
 
+util::Vec<StringView> StringView::split(const StringView& pat, const isize max_split) const {
+    util::Vec<StringView> out;
+    if (max_split == 0) {
+        out.push(*this);
+        return out;
+    }
+    if (pat.len_ == 0) {
+        const auto m_size = len_;
+        const auto actual = (max_split < 0) ? m_size : std::min(static_cast<usize>(max_split), m_size);
+        const u8* p = data_;
+        const u8* end = data_ + m_size;
+        for (usize i = 0; i < actual && p < end; ++i) {
+            const u8* start = p;
+            char32_t cp = 0;
+            if (!detail::decode_next(p, end, cp)) {
+                throw runtime_exception("Invalid UTF-8");
+            }
+            out.push(StringView(start, static_cast<usize>(p - start)));
+        }
+        if (p < end) {
+            out.push(StringView(p, static_cast<usize>(end - p)));
+        }
+        return out;
+    }
+
+    usize start = 0;
+    usize split_cnt = 0;
+    const auto actual_splits = (max_split < 0) ? len_ : std::min(static_cast<usize>(max_split), len_);
+    for (usize i = 0; i + pat.len_ <= len_ && split_cnt < actual_splits; ++i) {
+        if (std::memcmp(data_ + i, pat.data_, pat.len_) == 0) {
+            out.push(StringView(data_ + start, i - start));
+            start = i + pat.len_;
+            i = start == 0 ? 0 : start - 1;
+            ++split_cnt;
+        }
+    }
+    out.push(StringView(data_ + start, len_ - start));
+    return out;
+}
+
 util::Vec<StringView> StringView::split_whitespace() const {
     util::Vec<StringView> out;
     const u8* p = data_;
@@ -368,9 +427,9 @@ util::Vec<StringView> StringView::lines() const {
 StringView StringView::trim() const {
     if (len_ == 0) return *this;
 
-    const u8* p = data_;
     const u8* end = data_ + len_;
-    const u8* start = data_;
+    const u8* p = data_;
+    const u8* start = nullptr;
     const u8* last_non_ws_end = data_;
 
     while (p < end) {
@@ -380,7 +439,7 @@ StringView StringView::trim() const {
             throw runtime_exception("Invalid UTF-8");
         }
         if (!detail::is_ascii_whitespace(cp)) {
-            if (start == data_) start = cur;
+            if (!start) start = cur;
             last_non_ws_end = p;
         }
     }
@@ -389,6 +448,123 @@ StringView StringView::trim() const {
         return StringView(data_, 0);
     }
     return StringView(start, static_cast<usize>(last_non_ws_end - start));
+}
+
+StringView StringView::trim_start() const {
+    if (len_ == 0) return *this;
+    const u8* p = data_;
+    const u8* end = data_ + len_;
+    while (p < end) {
+        const u8* cur = p;
+        char32_t cp = 0;
+        if (!detail::decode_next(p, end, cp)) {
+            throw runtime_exception("Invalid UTF-8");
+        }
+        if (!detail::is_ascii_whitespace(cp)) {
+            return StringView(cur, static_cast<usize>(end - cur));
+        }
+    }
+    return StringView(data_, 0);
+}
+
+StringView StringView::trim_end() const {
+    if (len_ == 0) return *this;
+    const u8* end = data_ + len_;
+    const u8* last_non_ws = nullptr;
+    const u8* p = data_;
+    while (p < end) {
+        char32_t cp = 0;
+        if (!detail::decode_next(p, end, cp)) {
+            throw runtime_exception("Invalid UTF-8");
+        }
+        if (!detail::is_ascii_whitespace(cp)) {
+            last_non_ws = p;
+        }
+    }
+    if (last_non_ws == nullptr) {
+        return StringView(data_, 0);
+    }
+    return StringView(data_, static_cast<usize>(last_non_ws - data_));
+}
+
+StringView StringView::trim_matches(const StringView& pattern) const noexcept {
+    if (pattern.len_ == 0) return *this;
+    usize start = 0;
+    while (start + pattern.len_ <= len_ && std::memcmp(data_ + start, pattern.data_, pattern.len_) == 0) {
+        start += pattern.len_;
+    }
+    usize end = len_;
+    while (end >= pattern.len_ && start + pattern.len_ <= end && std::memcmp(data_ + end - pattern.len_, pattern.data_, pattern.len_) == 0) {
+        end -= pattern.len_;
+    }
+    if (start >= end) return StringView(data_, 0);
+    return StringView(data_ + start, end - start);
+}
+
+StringView StringView::trim_start_matches(const StringView& pattern) const noexcept {
+    if (pattern.len_ == 0) return *this;
+    usize start = 0;
+    while (start + pattern.len_ <= len_ && std::memcmp(data_ + start, pattern.data_, pattern.len_) == 0) {
+        start += pattern.len_;
+    }
+    return StringView(data_ + start, len_ - start);
+}
+
+StringView StringView::trim_end_matches(const StringView& pattern) const noexcept {
+    if (pattern.len_ == 0) return *this;
+    usize end = len_;
+    while (end >= pattern.len_ && std::memcmp(data_ + end - pattern.len_, pattern.data_, pattern.len_) == 0) {
+        end -= pattern.len_;
+    }
+    return StringView(data_, end);
+}
+
+// TODO: 复杂度过高！！
+util::Vec<usize> StringView::match_indices(const StringView& pat) const {
+    util::Vec<usize> out;
+    if (pat.len_ == 0) return out;
+    if (pat.len_ > len_) return out;
+    usize pos = 0;
+    if (pat.len_ == 1) {
+        while (pos < len_) {
+            const void* res = std::memchr(data_ + pos, pat.data_[0], len_ - pos);
+            if (!res) break;
+            const usize found = static_cast<usize>(static_cast<const u8*>(res) - data_);
+            out.push(found);
+            pos = found + 1;
+        }
+    } else {
+        while (pos + pat.len_ <= len_) {
+            auto found = twoway_find(data_ + pos, len_ - pos, pat.data_, pat.len_);
+            if (found.is_none()) break;
+            const usize abs_pos = pos + found.unwrap();
+            out.push(abs_pos);
+            pos = abs_pos + pat.len_;
+        }
+    }
+    return out;
+}
+
+i64 StringView::to_i64() const {
+    if (len_ == 0) return 0;
+    i64 result = 0;
+    const char* str = reinterpret_cast<const char*>(data_);
+    auto [ptr, ec] = std::from_chars(str, str + len_, result);
+    if (ec == std::errc()) {
+        return result;
+    }
+    return 0;
+}
+
+f64 StringView::to_f64() const {
+    if (len_ == 0) return 0.0;
+    f64 result = 0.0;
+    const char* str = reinterpret_cast<const char*>(data_);
+    auto [ptr, ec] = std::from_chars(str, str + len_, result);
+    if (ec == std::errc()) {
+        return result;
+    }
+    return 0.0;
 }
 
 String StringView::to_string() const {
